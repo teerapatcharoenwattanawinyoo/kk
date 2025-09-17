@@ -15,41 +15,21 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useI18n } from '@/lib/i18n'
-import { formatPhoneForAPI } from '@/lib/utils/phone'
-import { useLogin } from '@/modules/auth/hooks/use-auth'
+import { useSignInForm } from '@/modules/auth/hooks/use-sign-in-form'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
 import ForgotPasswordDialog from './forgot-password-dialog'
 
 export default function SignInForm() {
-  const [activeTab, setActiveTab] = useState<'phone' | 'email'>('phone')
-  const [showPassword, setShowPassword] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [keepLoggedIn, setKeepLoggedIn] = useState(false)
-  const [phoneValue, setPhoneValue] = useState<string>('')
-  const [showForgotPassword, setShowForgotPassword] = useState(false)
-
   const { t } = useI18n()
-  const loginMutation = useLogin()
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault()
-
-      const loginData = {
-        ...(activeTab === 'phone'
-          ? { phone: formatPhoneForAPI(phoneValue) }
-          : { email }),
-        password,
-      }
-
-      console.log('Login data:', loginData) // Debug log
-      loginMutation.mutate(loginData)
-    },
-    [activeTab, phoneValue, email, password, loginMutation],
-  )
+  const {
+    state,
+    showPassword,
+    showForgotPassword,
+    formError,
+    loginMutation,
+    actions,
+  } = useSignInForm()
 
   return (
     <Card className="w-full max-w-xl border-0 shadow-none">
@@ -64,8 +44,10 @@ export default function SignInForm() {
 
       <CardContent className="space-y-6 px-0">
         <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as 'phone' | 'email')}
+          value={state.method}
+          onValueChange={(value) =>
+            actions.setMethod(value as 'phone' | 'email')
+          }
           className="w-full"
         >
           <TabsList className="grid w-full grid-cols-2 gap-2 bg-transparent">
@@ -83,15 +65,15 @@ export default function SignInForm() {
             </TabsTrigger>
           </TabsList>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+          <form onSubmit={actions.handleSubmit} className="mt-6 space-y-6">
             <TabsContent value="phone" className="mt-0 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="phone">{t('auth.phone_number')}</Label>
                 <PhoneInput
                   international
                   defaultCountry="TH"
-                  value={phoneValue}
-                  onChange={setPhoneValue}
+                  value={state.phone}
+                  onChange={actions.setPhone}
                   className="w-full"
                   id="phone"
                   name="phone"
@@ -107,8 +89,8 @@ export default function SignInForm() {
                 <Input
                   id="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={state.email ?? ''}
+                  onChange={(e) => actions.setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className="py-6"
                   required
@@ -121,8 +103,8 @@ export default function SignInForm() {
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={state.password}
+                  onChange={(e) => actions.setPassword(e.target.value)}
                   placeholder={t('auth.password')}
                   className="py-6 pr-10"
                   required
@@ -132,7 +114,7 @@ export default function SignInForm() {
                   variant="ghost"
                   size="sm"
                   className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={actions.togglePasswordVisibility}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -147,7 +129,7 @@ export default function SignInForm() {
                   size="sm"
                   className="h-auto px-0"
                   type="button"
-                  onClick={() => setShowForgotPassword(true)}
+                  onClick={() => actions.setShowForgotPassword(true)}
                 >
                   <p className="font-normal text-muted-foreground transition-all hover:text-primary">
                     {t('auth.forgot_password')}
@@ -160,9 +142,9 @@ export default function SignInForm() {
               <Checkbox
                 id="keep-logged-in"
                 className="rounded-xl border-muted-foreground"
-                checked={keepLoggedIn}
+                checked={state.keepLoggedIn}
                 onCheckedChange={(checked) =>
-                  setKeepLoggedIn(checked as boolean)
+                  actions.setKeepLoggedIn(Boolean(checked))
                 }
               />
               <Label
@@ -173,9 +155,11 @@ export default function SignInForm() {
               </Label>
             </div>
 
-            {loginMutation.error && (
+            {(formError || loginMutation.error) && (
               <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">
-                {loginMutation.error instanceof Error
+                {formError
+                  ? formError
+                  : loginMutation.error instanceof Error
                   ? loginMutation.error.message
                   : 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ'}
               </div>
@@ -248,7 +232,7 @@ export default function SignInForm() {
 
       <ForgotPasswordDialog
         open={showForgotPassword}
-        onOpenChange={setShowForgotPassword}
+        onOpenChange={actions.setShowForgotPassword}
       />
     </Card>
   )

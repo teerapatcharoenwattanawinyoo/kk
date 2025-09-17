@@ -14,16 +14,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  useRegisterByEmail,
-  useRegisterByPhone,
-} from '@/modules/auth/hooks/use-auth'
-import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js'
+import { useSignUpForm } from '@/modules/auth/hooks/use-sign-up-form'
 import { ArrowLeft, ChevronDown, Search } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { z } from 'zod'
 import {
   Sheet,
   SheetClose,
@@ -33,141 +26,18 @@ import {
 } from '../../../components/ui/sheet'
 import { PolicyDialog } from './policy-dialog'
 
-// Example country data
-const countries = [{ value: 'TH', label: 'Thai' }]
-
-const signUpSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
-  country: z.string().min(1, { message: 'Please select your country' }),
-  acceptedTerms: z.literal(true, {
-    errorMap: () => ({
-      message: 'Please accept the Privacy Policy and Terms Condition',
-    }),
-  }),
-})
-
-// เพิ่ม schema สำหรับ phone
-const phoneSchema = z.object({
-  phone: z.string().min(1, { message: 'Please enter your phone number' }),
-  country: z.string().min(1, { message: 'Please select your country' }),
-  acceptedTerms: z.literal(true, {
-    errorMap: () => ({
-      message: 'Please accept the Privacy Policy and Terms Condition',
-    }),
-  }),
-})
-
-function toNationalPhone(phone: string, country: string = 'TH') {
-  // country อาจเป็น "" ได้ ให้ fallback เป็น "TH"
-  const countryCode = (country || 'TH') as CountryCode
-  const phoneNumber = parsePhoneNumberFromString(phone, countryCode)
-  // คืนค่าเฉพาะตัวเลข (เช่น 0943718956)
-  return phoneNumber ? phoneNumber.formatNational().replace(/\D/g, '') : phone
-}
-
 export default function SignUpForm() {
-  const [activeTab, setActiveTab] = useState<'phone' | 'email'>('email')
-  const [email, setEmail] = useState('')
-  const [country, setCountry] = useState('')
-  const [acceptedTerms, setAcceptedTerms] = useState(false)
-  const [phoneValue, setPhoneValue] = useState<string>('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [policyDialogOpen, setPolicyDialogOpen] = useState(false)
-  const router = useRouter()
-  const registerByEmail = useRegisterByEmail()
-  const registerByPhone = useRegisterByPhone()
-
-  const filteredCountries = countries.filter((c) =>
-    c.label.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    let result
-    if (activeTab === 'email') {
-      result = signUpSchema.safeParse({
-        email,
-        country,
-        acceptedTerms,
-      })
-    } else {
-      result = phoneSchema.safeParse({
-        phone: phoneValue,
-        country,
-        acceptedTerms,
-      })
-    }
-
-    if (!result.success) {
-      // แสดง error message แรกที่เจอ
-      alert(result.error.errors[0].message)
-      return
-    }
-
-    if (activeTab === 'email') {
-      try {
-        const res = await registerByEmail.mutateAsync({
-          email,
-          country_code: country,
-        })
-        if (res.statusCode === 201) {
-          // เปลี่ยนจากส่ง email เป็น param เป็น redirect ธรรมดา
-          router.push('/verify-email')
-        } else {
-          alert(res.message || 'Registration failed')
-        }
-      } catch (err: unknown) {
-        if (
-          err &&
-          typeof err === 'object' &&
-          'message' in err &&
-          Array.isArray((err as { message?: unknown }).message)
-        ) {
-          alert((err as { message: string[] }).message.join('\n'))
-        } else if (
-          err &&
-          typeof err === 'object' &&
-          'message' in err &&
-          typeof (err as { message?: unknown }).message === 'string'
-        ) {
-          alert((err as { message?: string }).message || 'Registration failed')
-        } else {
-          alert('Registration failed')
-        }
-      }
-    } else {
-      // phone
-      try {
-        const res = await registerByPhone.mutateAsync({
-          phone: toNationalPhone(phoneValue, country),
-          country_code: country,
-        })
-        if (res.statusCode === 201) {
-          router.push('/verify-phone')
-        } else {
-          alert(res.message || 'Registration failed')
-        }
-      } catch (err) {
-        alert('Registration failed')
-        console.log('Registration error:', err)
-      }
-    }
-  }
-
-  const handleCheckboxClick = () => {
-    if (!acceptedTerms) {
-      // If not already accepted, open the dialog
-      setPolicyDialogOpen(true)
-    } else {
-      // If already accepted, allow unchecking
-      setAcceptedTerms(false)
-    }
-  }
-
-  const handleAcceptPolicy = () => {
-    setAcceptedTerms(true)
-  }
+  const {
+    state,
+    searchQuery,
+    policyDialogOpen,
+    formError,
+    countries,
+    filteredCountries,
+    registerByEmail,
+    registerByPhone,
+    actions,
+  } = useSignUpForm()
 
   return (
     <Card className="w-full max-w-md border-0 shadow-none">
@@ -179,10 +49,9 @@ export default function SignUpForm() {
       </CardHeader>
 
       <CardContent className="space-y-6 px-0">
-        {/* Tab Toggle */}
         <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as 'phone' | 'email')}
+          value={state.method}
+          onValueChange={(value) => actions.setMethod(value as 'phone' | 'email')}
         >
           <TabsList className="grid w-full grid-cols-2 gap-2 bg-transparent">
             <TabsTrigger
@@ -200,9 +69,8 @@ export default function SignUpForm() {
           </TabsList>
         </Tabs>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Phone Input */}
-          {activeTab === 'phone' && (
+        <form onSubmit={actions.handleSubmit} className="space-y-6">
+          {state.method === 'phone' && (
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-sm text-muted-foreground">
                 Phone number
@@ -210,8 +78,8 @@ export default function SignUpForm() {
               <PhoneInput
                 international
                 defaultCountry="TH"
-                value={phoneValue}
-                onChange={setPhoneValue}
+                value={state.phone}
+                onChange={actions.setPhone}
                 className="w-full"
                 id="phone"
                 name="phone"
@@ -221,8 +89,7 @@ export default function SignUpForm() {
             </div>
           )}
 
-          {/* Email Input */}
-          {activeTab === 'email' && (
+          {state.method === 'email' && (
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm text-muted-foreground">
                 Email
@@ -230,8 +97,8 @@ export default function SignUpForm() {
               <Input
                 id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={state.email ?? ''}
+                onChange={(e) => actions.setEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="h-12"
                 required
@@ -239,7 +106,6 @@ export default function SignUpForm() {
             </div>
           )}
 
-          {/* Country Select */}
           <div className="space-y-2">
             <Sheet>
               <SheetTrigger asChild>
@@ -248,15 +114,19 @@ export default function SignUpForm() {
                   className="h-auto w-full justify-between py-3.5 hover:bg-transparent"
                 >
                   <p className="text-left font-normal text-muted-foreground">
-                    {country
-                      ? countries.find((c) => c.value === country)?.label ||
+                    {state.country
+                      ? countries.find((c) => c.value === state.country)?.label ||
                         'Select your country'
                       : 'Select your country'}
                   </p>
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-full p-5 sm:max-w-md">
+              <SheetContent
+                side="right"
+                className="w-full p-5 sm:max-w-md"
+                onOpenAutoFocus={(event) => event.preventDefault()}
+              >
                 <div className="mb-4 flex items-center gap-2">
                   <SheetClose asChild>
                     <Button
@@ -268,7 +138,7 @@ export default function SignUpForm() {
                     </Button>
                   </SheetClose>
                 </div>
-                <div className="">
+                <div>
                   <SheetTitle>Select your country</SheetTitle>
                   <p className="text-sm text-muted-foreground">
                     for sign in OneCharge Application
@@ -280,32 +150,32 @@ export default function SignUpForm() {
                     placeholder="Search"
                     className="rounded-full bg-[#E8E6EA] pl-9 placeholder:text-[#B0B0B0]"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => actions.setSearchQuery(e.target.value)}
                   />
                 </div>
 
                 <div className="space-y-1">
-                  {filteredCountries.map((c) => {
-                    const isChecked = country === c.value
+                  {filteredCountries.map((country) => {
+                    const isChecked = state.country === country.value
                     return (
                       <div
-                        key={c.value}
+                        key={country.value}
                         className="flex items-center space-x-2 border-b px-1 py-2"
-                        onClick={() => setCountry(c.value)}
+                        onClick={() => actions.setCountry(country.value)}
                       >
                         <Checkbox
-                          id={`country-${c.value}`}
+                          id={`country-${country.value}`}
                           checked={isChecked}
-                          onCheckedChange={() => setCountry(c.value)}
+                          onCheckedChange={() => actions.setCountry(country.value)}
                           className="rounded-full border-[#E4E4E4] data-[state=checked]:border-[#0DBE34] data-[state=checked]:bg-[#0DBE34] data-[state=checked]:text-white"
                         />
                         <Label
-                          htmlFor={`country-${c.value}`}
+                          htmlFor={`country-${country.value}`}
                           className={`w-full cursor-pointer ${
                             isChecked ? 'text-primary' : 'text-[#717171]'
                           }`}
                         >
-                          {c.label}
+                          {country.label}
                         </Label>
                       </div>
                     )
@@ -315,27 +185,26 @@ export default function SignUpForm() {
             </Sheet>
           </div>
 
-          {/* Terms and Conditions */}
           <div className="flex items-start space-x-2">
             <Checkbox
               id="terms"
-              checked={acceptedTerms}
-              onCheckedChange={handleCheckboxClick}
+              checked={state.acceptedTerms}
+              onCheckedChange={actions.handleCheckboxClick}
               className="mt-0.5 rounded-full border-muted-foreground"
             />
             <Label
               htmlFor="terms"
               className="cursor-pointer text-sm leading-5 text-muted-foreground"
-              onClick={handleCheckboxClick}
+              onClick={actions.handleCheckboxClick}
             >
               I accept the{' '}
               <Button
                 variant="link"
                 size="sm"
                 className="h-auto p-0 text-primary underline"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setPolicyDialogOpen(true)
+                onClick={(event) => {
+                  event.stopPropagation()
+                  actions.setPolicyDialogOpen(true)
                 }}
               >
                 Privacy Policy
@@ -345,9 +214,9 @@ export default function SignUpForm() {
                 variant="link"
                 size="sm"
                 className="h-auto p-0 text-primary underline"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setPolicyDialogOpen(true)
+                onClick={(event) => {
+                  event.stopPropagation()
+                  actions.setPolicyDialogOpen(true)
                 }}
               >
                 Terms Condition
@@ -355,27 +224,31 @@ export default function SignUpForm() {
             </Label>
           </div>
 
-          {/* Next Button */}
           <Button
             type="submit"
-            variant={'default'}
+            variant="default"
             className="h-12 w-full font-medium"
             disabled={
-              activeTab === 'email'
+              state.method === 'email'
                 ? registerByEmail.isPending
                 : registerByPhone.isPending
             }
           >
-            {(
-              activeTab === 'email'
+            {
+              state.method === 'email'
                 ? registerByEmail.isPending
                 : registerByPhone.isPending
-            )
+            }
               ? 'Loading...'
-              : 'Next'}
+              : 'Next'
           </Button>
 
-          {/* Divider */}
+          {formError && (
+            <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+              {formError}
+            </div>
+          )}
+
           <div className="relative">
             <Separator />
             <div className="absolute inset-0 flex items-center justify-center">
@@ -385,7 +258,6 @@ export default function SignUpForm() {
             </div>
           </div>
 
-          {/* Google Sign Up */}
           <Button
             type="button"
             variant="outline"
@@ -413,7 +285,6 @@ export default function SignUpForm() {
           </Button>
         </form>
 
-        {/* Sign In Link */}
         <div className="text-left">
           <p className="text-sm text-muted-foreground">
             You have an account?{' '}
@@ -428,11 +299,10 @@ export default function SignUpForm() {
         </div>
       </CardContent>
 
-      {/* Policy Dialog */}
       <PolicyDialog
         open={policyDialogOpen}
-        onOpenChange={setPolicyDialogOpen}
-        onAccept={handleAcceptPolicy}
+        onOpenChange={actions.setPolicyDialogOpen}
+        onAccept={actions.handleAcceptPolicy}
       />
     </Card>
   )

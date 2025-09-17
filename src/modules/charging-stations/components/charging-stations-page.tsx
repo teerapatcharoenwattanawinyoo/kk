@@ -8,11 +8,12 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { useI18n } from '@/lib/i18n'
 import { useChargingStationsPageController } from '@/modules/charging-stations/hooks'
+import { ChevronDown, Plus, Search } from 'lucide-react'
+import type { JSX } from 'react'
+import { useParams } from 'next/navigation'
 import AddChargingStationDialog from './add-charging-station-dialog'
 import { ChargingStationsTable } from './charging-stations-table'
 import EditsChargingStationDialog from './edits-charging-station-dialog'
-import { ChevronDown, Plus, Search } from 'lucide-react'
-import { useParams } from 'next/navigation'
 
 interface ChargingStationsPageProps {
   teamId: string

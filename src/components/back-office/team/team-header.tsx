@@ -1,8 +1,8 @@
 "use client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TeamGroupAvatar } from "@/components/ui/team-group-avatar";
-import { useTeamHostById } from "@/hooks/use-teams";
 import { useI18n } from "@/lib/i18n";
+import { useTeamHostById } from "@/modules/teams/hooks/use-teams";
 
 interface TeamHeaderProps {
   teamId: string;

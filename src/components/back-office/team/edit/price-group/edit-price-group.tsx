@@ -8,13 +8,13 @@ import {
 } from "@/components/back-office/team/form";
 import { SuccessDialog } from "@/components/notifications";
 import { useUpdatePriceSet } from "@/hooks/use-price-group";
-import { useTeamHostId } from "@/hooks/use-teams";
 import { toast } from "@/hooks/use-toast";
 import {
   getPriceSet,
   PriceGroup,
   UpdatePriceRequest,
 } from "@/lib/api/team-group/price-groups";
+import { useTeamHostId } from "@/modules/teams/hooks/use-teams";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -47,7 +47,7 @@ export default function EditPriceGroup() {
       try {
         const res = await getPriceSet("general", 1, 100);
         const found = res.data.data.find(
-          (g: PriceGroup) => g.id.toString() === priceId,
+          (g: PriceGroup) => g.id.toString() === priceId
         );
         if (found) {
           setInitialData({
@@ -137,7 +137,7 @@ export default function EditPriceGroup() {
           requestData.price_per_kwh = Number(data.priceForm.pricePerKwhMinute);
         if (data.priceForm.price_per_minute)
           requestData.price_per_minute = Number(
-            data.priceForm.price_per_minute,
+            data.priceForm.price_per_minute
           );
       } else if (data.priceType === "PEAK") {
         if (data.priceForm.onPeakPrice)

@@ -19,7 +19,7 @@ import {
   ChargerType,
   ChargingStation,
 } from "@/lib/api/team-group/charger";
-import { TeamHostData } from "@/lib/schemas/team";
+import { TeamHostData } from "@/modules/teams/schemas/team.schema";
 import { UseFormReturn } from "react-hook-form";
 
 interface BasicInfoFormProps {
@@ -145,8 +145,7 @@ export function BasicInfoForm({
                   <SelectContent>
                     {chargerBrands
                       .filter(
-                        (brand) =>
-                          brand.id && brand.id.toString().trim() !== "",
+                        (brand) => brand.id && brand.id.toString().trim() !== ""
                       )
                       .map((brand) => (
                         <SelectItem
@@ -189,8 +188,7 @@ export function BasicInfoForm({
                   <SelectContent>
                     {getModelsForBrand(selectedBrand)
                       .filter(
-                        (model) =>
-                          model.id && model.id.toString().trim() !== "",
+                        (model) => model.id && model.id.toString().trim() !== ""
                       )
                       .map((model) => (
                         <SelectItem
@@ -355,7 +353,7 @@ export function BasicInfoForm({
                       chargingStations
                         .filter(
                           (station) =>
-                            station.id && station.id.toString().trim() !== "",
+                            station.id && station.id.toString().trim() !== ""
                         )
                         .map((station) => (
                           <SelectItem

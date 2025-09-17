@@ -1,12 +1,13 @@
 "use client";
 
-import { TeamCard, type Team } from "@/components/back-office/team/list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useTeams } from "@/hooks/use-teams";
+import { Separator } from "@/components/ui/separator";
 import { useI18n } from "@/lib/i18n";
-import { ITeamList } from "@/lib/schemas/team";
+import { useTeams } from "@/modules/teams/hooks/use-teams";
+import { ITeamList, Team } from "@/modules/teams/schemas/team.schema";
 import { Pagination } from "@/ui/organisms/pagination";
+import { TeamCard } from "@modules/teams/components";
 import { Loader2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -80,14 +81,14 @@ const TeamPage = () => {
             {t("team.add_team")}
           </Button>
         </div>
-        <hr className="border-border" />
+        <Separator className="text-muted-foreground" />
 
         <div className="mb-4 sm:mb-6">
           <Input
             placeholder={t("team.search_by_team")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full sm:max-w-sm"
+            className="w-full sm:max-w-sm bg-muted"
           />
         </div>
 

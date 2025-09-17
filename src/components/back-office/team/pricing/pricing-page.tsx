@@ -12,9 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePriceSet } from "@/hooks/use-price-group";
-import { useTeam } from "@/hooks/use-teams";
 import { PriceGroup } from "@/lib/api/team-group/price-groups";
 import { useI18n } from "@/lib/i18n";
+import { useTeam } from "@/modules/teams/hooks/use-teams";
 import {
   ChevronRight,
   MoreHorizontal,
@@ -50,7 +50,7 @@ export function PricingPage({ teamId }: PricingPageProps) {
   } = usePriceSet(
     activeSubTab === "public-price" ? "general" : "member",
     1,
-    50,
+    50
   );
 
   const priceGroups = pricingData?.data?.data || [];
@@ -123,7 +123,7 @@ export function PricingPage({ teamId }: PricingPageProps) {
                     router.push(
                       activeSubTab === "public-price"
                         ? "price-groups/add-price-group"
-                        : "price-groups/add-member-price-group",
+                        : "price-groups/add-member-price-group"
                     );
                   }}
                 >
@@ -199,7 +199,7 @@ export function PricingPage({ teamId }: PricingPageProps) {
                               router.push(
                                 activeSubTab === "public-price"
                                   ? `price-groups/edit-price-group?priceId=${price.id}`
-                                  : `price-groups/edit-member-price-group?priceId=${price.id}`,
+                                  : `price-groups/edit-member-price-group?priceId=${price.id}`
                               );
                             }}
                             className="flex items-center gap-2"

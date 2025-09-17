@@ -6,7 +6,7 @@ import {
   TeamHostListResponse,
   TeamListParams,
   TeamListResponse,
-} from "@/lib/schemas/team";
+} from "@/modules/teams/schemas/team.schema";
 import { api } from "../config/axios";
 import { IResponse } from "../config/model";
 
@@ -35,20 +35,20 @@ const getTeamListApi = async (params?: TeamListParams) => {
 const createTeamApi = async (formData: FormData) => {
   return api.post(
     API_ENDPOINTS.TEAM_GROUPS.TEAMS.CREATE,
-    formData,
+    formData
   ) as Promise<IResponse>;
 };
 
 const updateTeam = async (id: string, formData: FormData) => {
   return api.put(
     `${API_ENDPOINTS.TEAM_GROUPS.TEAMS.UPDATE.replace("{team_group_id}", id)}`,
-    formData,
+    formData
   ) as Promise<IResponse>;
 };
 
 const deleteTeamApi = async (id: string) => {
   return api.delete(
-    `${API_ENDPOINTS.TEAM_GROUPS.TEAMS.DELETE.replace("{team_group_id}", id)}`,
+    `${API_ENDPOINTS.TEAM_GROUPS.TEAMS.DELETE.replace("{team_group_id}", id)}`
   ) as Promise<IResponse>;
 };
 
@@ -58,7 +58,7 @@ export async function getTeamList(): Promise<TeamListResponse> {
 }
 
 export async function getTeamHostList(
-  params?: TeamHostListParams,
+  params?: TeamHostListParams
 ): Promise<TeamHostListResponse> {
   const searchParams = new URLSearchParams();
 
@@ -96,10 +96,10 @@ export async function getTeamById(teamId: string): Promise<TeamData | null> {
 
     const team = response.data.data.find((teamItem: TeamData) => {
       console.log(
-        `Comparing team.team_group_id (${teamItem.team_group_id}) with teamId (${teamId})`,
+        `Comparing team.team_group_id (${teamItem.team_group_id}) with teamId (${teamId})`
       );
       console.log(
-        `team.team_group_id.toString() === teamId: ${teamItem.team_group_id.toString() === teamId}`,
+        `team.team_group_id.toString() === teamId: ${teamItem.team_group_id.toString() === teamId}`
       );
       return teamItem.team_group_id.toString() === teamId;
     });

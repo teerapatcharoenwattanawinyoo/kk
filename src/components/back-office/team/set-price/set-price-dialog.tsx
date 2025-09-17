@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useTeamHostId } from "@/hooks/use-teams";
 import { Charger } from "@/lib/api/team-group/connectors";
 import {
   CreateByParentRequest,
@@ -19,6 +18,7 @@ import {
   getPriceSet,
 } from "@/lib/api/team-group/price-groups";
 import { QUERY_KEYS } from "@/lib/constants";
+import { useTeamHostId } from "@/modules/teams/hooks/use-teams";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Check, Loader2, Search } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -179,9 +179,9 @@ export default function SetPriceDialog({
       relatedGroups
         .filter(
           (item: PriceGroup) =>
-            item.station_id !== null && item.station_id !== undefined,
+            item.station_id !== null && item.station_id !== undefined
         )
-        .map((item: PriceGroup) => item.station_id),
+        .map((item: PriceGroup) => item.station_id)
     );
 
     return uniqueStations.size;

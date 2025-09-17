@@ -17,9 +17,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { useDeleteTeam } from "@/hooks/use-teams";
 import { useI18n } from "@/lib/i18n";
-import { TeamCardProps } from "@/lib/schemas/team";
+import { useDeleteTeam } from "@/modules/teams/hooks/use-teams";
+import { TeamCardProps } from "@/modules/teams/schemas";
 import {
   Edit,
   Eye,
@@ -76,7 +76,7 @@ export const TeamCard = ({ team }: TeamCardProps) => {
 
   return (
     <Card
-      className={`min-h-[180px] w-full overflow-hidden bg-background px-3 transition-shadow duration-200 ${
+      className={`min-h-[180px] w-full overflow-hidden bg-background px-3 shadow-none ${
         isDeleting || deleteTeamMutation.isPending
           ? "pointer-events-none opacity-50"
           : ""
@@ -84,7 +84,7 @@ export const TeamCard = ({ team }: TeamCardProps) => {
     >
       <CardHeader className="flex flex-row space-y-2 px-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          <Avatar className="h-8 w-8 flex-shrink-0 sm:h-10 sm:w-10">
+          <Avatar className="h-10 w-10 flex-shrink-0 sm:h-10 sm:w-10">
             {team.logoUrl && <AvatarImage src={team.logoUrl} alt={team.name} />}
             <AvatarFallback className="bg-primary-soft text-primary-badge rounded-full font-medium">
               {team.name.charAt(0).toUpperCase()}
@@ -239,6 +239,13 @@ export const TeamCard = ({ team }: TeamCardProps) => {
           </DialogHeader>
           <DialogFooter className="sm:justify-end">
             <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={isDeleting || deleteTeamMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
               variant="destructive"
               onClick={handleConfirmDelete}
               disabled={isDeleting || deleteTeamMutation.isPending}
@@ -247,13 +254,6 @@ export const TeamCard = ({ team }: TeamCardProps) => {
                 <Loader2 className="mr-2 size-4 animate-spin" />
               )}
               Confirm
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteDialog(false)}
-              disabled={isDeleting || deleteTeamMutation.isPending}
-            >
-              Cancel
             </Button>
           </DialogFooter>
         </DialogContent>

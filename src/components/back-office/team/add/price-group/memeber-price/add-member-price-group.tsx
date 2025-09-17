@@ -9,9 +9,9 @@ import {
 } from "@/components/back-office/team/form";
 import { SuccessDialog } from "@/components/notifications";
 import { useCreatePriceSet } from "@/hooks/use-price-group";
-import { useTeam } from "@/hooks/use-teams";
 import { toast } from "@/hooks/use-toast";
 import { CreatePriceRequest } from "@/lib/api/team-group/price-groups";
+import { useTeam } from "@/modules/teams/hooks/use-teams";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -61,10 +61,10 @@ export default function AddMemberPriceGroup() {
         requestData.price_per_kwh = parseFloat(data.priceForm.pricePerKwh);
       } else if (data.priceType === "PER_MINUTE") {
         requestData.price_per_kwh = parseFloat(
-          data.priceForm.pricePerKwhMinute,
+          data.priceForm.pricePerKwhMinute
         );
         requestData.price_per_minute = parseFloat(
-          data.priceForm.price_per_minute,
+          data.priceForm.price_per_minute
         );
       } else if (data.priceType === "PEAK") {
         requestData.price_on_peak = parseFloat(data.priceForm.onPeakPrice);
@@ -103,7 +103,7 @@ export default function AddMemberPriceGroup() {
           description: data.feeForm.idleFeeDescription,
           feePerMin: data.feeForm.feePerMinIdle,
           time_before_idle_fee_applied: parseInt(
-            data.feeForm.timeBeforeIdleFeeApplied,
+            data.feeForm.timeBeforeIdleFeeApplied
           ),
           max_total_idle_fee: data.feeForm.maxTotalIdleFee
             ? parseFloat(data.feeForm.maxTotalIdleFee)

@@ -1,14 +1,14 @@
 "use client";
 
-import TeamAddForm from "@/components/back-office/team/add/team-add-form";
 import { SuccessDialog } from "@/components/notifications";
 import { Button } from "@/components/ui/button";
-import { useCreateTeam, useTeamHostId } from "@/hooks/use-teams";
 import { ROUTES } from "@/lib/constants";
 import { buildLocalizedPath } from "@/lib/helpers/localized-path";
 import { useI18n } from "@/lib/i18n";
-import { TeamFormData } from "@/lib/schemas/team";
 import { colors } from "@/lib/utils/colors";
+import TeamAddForm from "@/modules/teams/components/team-add-form";
+import { TeamFormData } from "@/modules/teams/schemas/team.schema";
+import { useCreateTeam, useTeamHostId } from "@modules/teams/hooks";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -40,13 +40,13 @@ const TeamAddPage = () => {
           "File will be sent as 'icon_group':",
           data.file.name,
           data.file.type,
-          data.file.size,
+          data.file.size
         );
       }
 
       console.log(
         "Sending FormData with file:",
-        data.file ? "included" : "not included",
+        data.file ? "included" : "not included"
       );
 
       // ส่ง FormData ไปให้ mutation
@@ -97,9 +97,9 @@ const TeamAddPage = () => {
             type="submit"
             form="add-team-form"
             size="sm"
+            variant={"success"}
             disabled={createTeamMutation.isPending || !isFormValid}
             className="w-40 text-white"
-            variant={"default"}
           >
             {createTeamMutation.isPending ? (
               <div className="flex items-center gap-2">

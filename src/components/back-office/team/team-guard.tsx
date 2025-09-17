@@ -1,7 +1,7 @@
 "use client";
 
 import FetchLoader from "@/components/FetchLoader";
-import { useTeams } from "@/hooks/use-teams";
+import { useTeams } from "@/modules/teams/hooks/use-teams";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useMemo } from "react";
 
@@ -30,9 +30,9 @@ export const TeamGuard = ({
       Array.isArray(teams) &&
       teams.some(
         (team: { team_group_id: number }) =>
-          team?.team_group_id?.toString() === teamId,
+          team?.team_group_id?.toString() === teamId
       ),
-    [teams, teamId],
+    [teams, teamId]
   );
 
   // Auto redirect ตามตัวเลือก
@@ -52,7 +52,16 @@ export const TeamGuard = ({
     if (!teamExists) {
       router.replace(redirectPath);
     }
-  }, [autoRedirect, isLoading, error, teamsData, teamExists, router, locale, fallbackPath]);
+  }, [
+    autoRedirect,
+    isLoading,
+    error,
+    teamsData,
+    teamExists,
+    router,
+    locale,
+    fallbackPath,
+  ]);
 
   // แสดง loading ขณะตรวจสอบ
   if (isLoading) {

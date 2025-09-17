@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from "@/lib/constants";
-import { TeamHostListResponse } from "@/lib/schemas/team";
+import { TeamHostListResponse } from "@/modules/teams/schemas/team.schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -22,7 +22,7 @@ export const useTeamFromCache = (teamId: string) => {
 
     if (cachedHostList?.data?.data) {
       const team = cachedHostList.data.data.find(
-        (team) => team.team_group_id.toString() === teamId,
+        (team) => team.team_group_id.toString() === teamId
       );
       if (team) return team;
     }

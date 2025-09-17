@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTeamById, useUpdateTeam } from "@/hooks/use-teams";
+import { useTeamById, useUpdateTeam } from "@/modules/teams/hooks/use-teams";
 import { AlertTriangle, Loader2, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -103,7 +103,7 @@ export const GeneralSettingTab = ({
     ];
     if (!validTypes.includes(file.type)) {
       toast.error(
-        "ประเภทไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ PDF, PNG, JPG หรือ JPEG",
+        "ประเภทไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ PDF, PNG, JPG หรือ JPEG"
       );
       return;
     }
@@ -132,7 +132,7 @@ export const GeneralSettingTab = ({
         handleFileSelect(file);
       }
     },
-    [handleFileSelect],
+    [handleFileSelect]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -155,7 +155,7 @@ export const GeneralSettingTab = ({
         handleFileSelect(file);
       }
     },
-    [handleFileSelect],
+    [handleFileSelect]
   );
 
   const handleRemoveFile = useCallback(() => {
@@ -171,7 +171,7 @@ export const GeneralSettingTab = ({
 
   const triggerFileInput = useCallback(() => {
     const input = document.getElementById(
-      "settings-file-input",
+      "settings-file-input"
     ) as HTMLInputElement;
     input?.click();
   }, []);
@@ -184,21 +184,21 @@ export const GeneralSettingTab = ({
         setTeamNameError("");
       }
     },
-    [teamNameError],
+    [teamNameError]
   );
 
   const handleEmailChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData((prev) => ({ ...prev, team_email: e.target.value }));
     },
-    [],
+    []
   );
 
   const handlePhoneChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData((prev) => ({ ...prev, team_phone: e.target.value }));
     },
-    [],
+    []
   );
 
   const handleStatusChange = useCallback((value: string) => {
@@ -321,7 +321,7 @@ export const GeneralSettingTab = ({
 
       {/* General Setting Header */}
       <div className="mb-6">
-        <h2 className="mb-2 text-lg font-semibold text-foreground">
+        <h2 className="mb-2 text-lg font-semibold text-title">
           General Setting
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -341,7 +341,7 @@ export const GeneralSettingTab = ({
               >
                 <div className="mt-0 w-[181px]">
                   {/* Hidden file input */}
-                  <input
+                  <Input
                     id="settings-file-input"
                     type="file"
                     accept=".pdf,.png,.jpg,.jpeg"

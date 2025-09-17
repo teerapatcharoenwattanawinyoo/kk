@@ -2,8 +2,11 @@
 
 import { ImageUploadFormIcon } from "@/components/icons";
 import { useI18n } from "@/lib/i18n";
-import { teamFormDataSchema, type TeamFormData } from "@/lib/schemas/team";
 import { colors } from "@/lib/utils/colors";
+import {
+  teamFormDataSchema,
+  type TeamFormData,
+} from "@/modules/teams/schemas/team.schema";
 import {
   Button,
   Card,
@@ -109,7 +112,7 @@ const TeamAddForm = ({
         setPreviewUrl(null);
       }
     },
-    [t, setValue],
+    [t, setValue]
   );
 
   const handleFileInput = useCallback(
@@ -119,7 +122,7 @@ const TeamAddForm = ({
         handleFileSelect(file);
       }
     },
-    [handleFileSelect],
+    [handleFileSelect]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -142,7 +145,7 @@ const TeamAddForm = ({
         handleFileSelect(file);
       }
     },
-    [handleFileSelect],
+    [handleFileSelect]
   );
 
   const handleRemoveFile = useCallback(() => {
@@ -249,20 +252,13 @@ const TeamAddForm = ({
 
                   {/* Upload area */}
                   <div
-                    className={`flex h-[181px] w-[181px] cursor-pointer flex-col items-center justify-center space-y-4 rounded-lg transition-all ${
+                    className={`flex h-[200px] w-[200px] cursor-pointer border-dashed border-3 flex-col items-center justify-center space-y-4 rounded-lg transition-all ${
                       isDragging
                         ? `border-[${colors.primary[500]}] bg-[${colors.primary[500]}]/5`
                         : selectedFile
-                          ? "border-green-300 bg-green-50"
-                          : "border-gray-300"
+                          ? "border-success bg-success/10"
+                          : "bg-muted"
                     }`}
-                    style={{
-                      backgroundColor: isDragging
-                        ? `${colors.primary[500]}0D` // 5% opacity
-                        : selectedFile
-                          ? "#f0fdf4"
-                          : colors.search.background,
-                    }}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
@@ -281,12 +277,13 @@ const TeamAddForm = ({
                         />
                         <Button
                           type="button"
-                          variant={"secondary"}
+                          variant={"destructive"}
+                          size={"icon"}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRemoveFile();
                           }}
-                          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border bg-card"
+                          className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full border "
                         >
                           <X className="size-3" />
                         </Button>
@@ -294,7 +291,7 @@ const TeamAddForm = ({
                     ) : selectedFile ? (
                       // File selected (non-image)
                       <div className="space-y-2 text-center">
-                        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
+                        <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-lg bg-green-100">
                           <svg
                             className="h-6 w-6 text-green-600"
                             fill="none"
@@ -315,16 +312,16 @@ const TeamAddForm = ({
                         <p className="text-xs text-green-600">
                           {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                         </p>
-                        <button
+                        <Button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRemoveFile();
                           }}
-                          className="text-xs text-red-500 underline hover:text-red-700"
+                          className="text-xs"
                         >
                           {t("team.remove_file")}
-                        </button>
+                        </Button>
                       </div>
                     ) : (
                       // Default upload state
@@ -353,8 +350,7 @@ const TeamAddForm = ({
                     id="team_name"
                     {...register("team_name")}
                     placeholder="Specify"
-                    className={`${errors.team_name ? "border-destructive" : ""}`}
-                    style={{ backgroundColor: colors.search.background }}
+                    className={`bg-muted ${errors.team_name ? "border-destructive" : ""}`}
                   />
                   {errors.team_name && (
                     <p className="text-sm text-destructive">
@@ -371,7 +367,7 @@ const TeamAddForm = ({
                     type="email"
                     {...register("team_email")}
                     placeholder="Specify"
-                    style={{ backgroundColor: colors.search.background }}
+                    className="bg-muted"
                   />
                   {errors.team_email && (
                     <p className="text-sm text-destructive">
@@ -390,7 +386,7 @@ const TeamAddForm = ({
                     type="tel"
                     {...register("team_phone")}
                     placeholder="Specify"
-                    style={{ backgroundColor: colors.search.background }}
+                    className="bg-muted"
                   />
                   {errors.team_phone && (
                     <p className="text-sm text-destructive">
@@ -407,14 +403,11 @@ const TeamAddForm = ({
                     onValueChange={(value) =>
                       setValue(
                         "team_status",
-                        value as "publish" | "draft" | "inactive",
+                        value as "publish" | "draft" | "inactive"
                       )
                     }
                   >
-                    <SelectTrigger
-                      className="w-full"
-                      style={{ backgroundColor: "white" }}
-                    >
+                    <SelectTrigger className="w-full bg-muted">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>

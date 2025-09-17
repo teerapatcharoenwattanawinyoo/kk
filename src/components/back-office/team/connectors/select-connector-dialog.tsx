@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useTeam } from "@/hooks/use-teams";
 import {
   Charger as APICharger,
   getConnectorList,
 } from "@/lib/api/team-group/connectors";
 import { QUERY_KEYS } from "@/lib/constants";
+import { useTeam } from "@/modules/teams/hooks/use-teams";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Search } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -74,7 +74,7 @@ export default function SelectConnectorDialog({
       // Reset connector selection when parent_id changes
       if (selectedConnectors.length > 0) {
         console.log(
-          "🔄 Resetting connector selection due to price group change",
+          "🔄 Resetting connector selection due to price group change"
         );
         setSelectedConnectors([]);
         setSelectAll(false);
@@ -136,7 +136,7 @@ export default function SelectConnectorDialog({
   useEffect(() => {
     if (filteredConnectors.length > 0) {
       const allSelected = filteredConnectors.every((c) =>
-        selectedConnectors.includes(c.id),
+        selectedConnectors.includes(c.id)
       );
       setSelectAll(allSelected);
     }
@@ -159,7 +159,7 @@ export default function SelectConnectorDialog({
   const handleApplyPrice = () => {
     if (onConfirm) {
       const selected = connectors.filter((c) =>
-        selectedConnectors.includes(c.id),
+        selectedConnectors.includes(c.id)
       );
 
       onConfirm(selected);

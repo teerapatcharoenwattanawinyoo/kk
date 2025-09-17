@@ -10,6 +10,7 @@ import {
 } from "@/lib/api/team-group/team";
 import { API_ENDPOINTS, QUERY_KEYS } from "@/lib/constants";
 import { useLocalStorage } from "@/lib/helpers/storage";
+import { UserData } from "@/lib/schemas/user";
 import {
   ITeamListResponse,
   TeamData,
@@ -18,8 +19,7 @@ import {
   TeamListParams,
   TeamListResponse,
   UpdateTeamFormData,
-} from "@/lib/schemas/team";
-import { UserData } from "@/lib/schemas/user";
+} from "@/modules/teams/schemas/team.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -106,7 +106,7 @@ export const useUpdateTeam = () => {
             ? old.data.map((team) =>
                 team.id.toString() === variables.id
                   ? { ...team, ...variables }
-                  : team,
+                  : team
               )
             : old.data;
 
@@ -114,7 +114,7 @@ export const useUpdateTeam = () => {
             ...old,
             data: updatedData,
           };
-        },
+        }
       );
 
       return { previousTeams };
@@ -123,7 +123,7 @@ export const useUpdateTeam = () => {
       if (context?.previousTeams) {
         queryClient.setQueryData(
           [QUERY_KEYS.TEAMS, "list"],
-          context.previousTeams,
+          context.previousTeams
         );
       }
       console.error("Error updating team:", error);
@@ -164,7 +164,7 @@ export const useDeleteTeam = () => {
             ...old,
             data: filteredData,
           };
-        },
+        }
       );
 
       return { previousTeams };
@@ -173,7 +173,7 @@ export const useDeleteTeam = () => {
       if (context?.previousTeams) {
         queryClient.setQueryData(
           [QUERY_KEYS.TEAMS, "list"],
-          context.previousTeams,
+          context.previousTeams
         );
       }
       console.error("Error deleting team:", error);
@@ -192,7 +192,7 @@ export const useTeamById = (teamId: string) => {
   const team =
     teamsData?.data && Array.isArray(teamsData.data.data)
       ? teamsData.data.data.find(
-          (team) => team.team_group_id.toString() === teamId,
+          (team) => team.team_group_id.toString() === teamId
         )
       : null;
 
@@ -284,7 +284,7 @@ export const useTeam = (teamId: string) => {
     "useTeam hook called with teamId:",
     teamId,
     "type:",
-    typeof teamId,
+    typeof teamId
   );
 
   return useQuery<TeamData | null>({
@@ -292,7 +292,7 @@ export const useTeam = (teamId: string) => {
     queryFn: () => {
       console.log(
         "useTeam queryFn called, fetching team data for teamId:",
-        teamId,
+        teamId
       );
       return getTeamById(teamId);
     },

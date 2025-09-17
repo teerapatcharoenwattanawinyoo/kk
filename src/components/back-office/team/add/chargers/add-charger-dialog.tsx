@@ -32,7 +32,7 @@ import {
 } from "@/lib/api/team-group/charger";
 import { getTeamHostList } from "@/lib/api/team-group/team";
 import { ChargerFormData, ChargerFormSchema } from "@/lib/schemas";
-import { TeamHostData } from "@/lib/schemas/team";
+import { TeamHostData } from "@/modules/teams/schemas/team.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -54,7 +54,7 @@ export function AddChargerDialog({
   const [currentStep, setCurrentStep] = useState(1);
   const [isActive, setIsActive] = useState(false);
   const [isControlled] = useState(
-    open !== undefined && onOpenChange !== undefined,
+    open !== undefined && onOpenChange !== undefined
   );
   const [internalOpen, setInternalOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -95,7 +95,7 @@ export function AddChargerDialog({
 
   // Charging stations state
   const [chargingStations, setChargingStations] = useState<ChargingStation[]>(
-    [],
+    []
   );
   const [selectedChargingStation, setSelectedChargingStation] =
     useState<string>("");
@@ -329,7 +329,7 @@ export function AddChargerDialog({
           max_kwh: maxKwh,
           charger_type_id: (() => {
             const found = chargerTypes.find(
-              (type) => type.name === typeConnector,
+              (type) => type.name === typeConnector
             );
             return found ? found.id : 0;
           })(),
@@ -378,7 +378,7 @@ export function AddChargerDialog({
           if (chargerId) {
             console.log(
               "Setting charger ID and moving to next step:",
-              chargerId,
+              chargerId
             );
             setCreatedChargerId(Number(chargerId));
 
@@ -402,7 +402,7 @@ export function AddChargerDialog({
           } else {
             console.log(
               "No charger ID found in response. Full response data:",
-              JSON.stringify(response.data, null, 2),
+              JSON.stringify(response.data, null, 2)
             );
           }
         } else {
@@ -444,7 +444,7 @@ export function AddChargerDialog({
           // Refetch chargers list immediately to update serial number and status
           if (teamGroupId) {
             console.log(
-              "Refetching chargers list after serial number update...",
+              "Refetching chargers list after serial number update..."
             );
             await queryClient.invalidateQueries({
               queryKey: ["chargers-list", teamGroupId],
@@ -548,7 +548,7 @@ export function AddChargerDialog({
                   <div key={step.id} className="flex flex-col items-center">
                     <div
                       className={`flex h-5 w-5 items-center justify-center rounded-full ${getCircleBgClass(
-                        status,
+                        status
                       )}`}
                     >
                       <span className="text-xs">{step.id}</span>
@@ -583,7 +583,7 @@ export function AddChargerDialog({
                       >
                         <div
                           className={`flex h-5 w-5 items-center justify-center rounded-full ${getCircleBgClass(
-                            status,
+                            status
                           )}`}
                         >
                           <span className="text-xs">{step.id}</span>

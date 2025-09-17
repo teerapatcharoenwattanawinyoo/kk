@@ -4,6 +4,8 @@ import {
   setAuthTokens,
 } from '@/lib/auth/tokens'
 import { QUERY_KEYS, ROUTES } from '@/lib/constants'
+import { buildLocalizedPath } from '@/lib/helpers/localized-path'
+import { useI18n } from '@/lib/i18n'
 import {
   createProfile,
   loginByPhone,
@@ -21,6 +23,7 @@ import { useEffect, useState } from 'react'
 export function useLogin() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { locale } = useI18n()
 
   return useMutation({
     mutationFn: loginByPhone,
@@ -48,7 +51,7 @@ export function useLogin() {
         }
         router.push(decodeURIComponent(redirectAfterLogin))
       } else {
-        router.push(ROUTES.DASHBOARD)
+        router.push(buildLocalizedPath(locale, ROUTES.DASHBOARD))
       }
     },
     onError: (error) => {
@@ -113,6 +116,7 @@ export function useUser() {
 export function useLogout() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { locale } = useI18n()
 
   return useMutation({
     mutationFn: logoutUser,
@@ -126,7 +130,7 @@ export function useLogout() {
         localStorage.removeItem('user_data')
       }
       // redirect ไปหน้า login
-      router.push(ROUTES.SIGN_IN)
+      router.push(buildLocalizedPath(locale, ROUTES.SIGN_IN))
     },
     onError: (error) => {
       console.error('Logout failed:', error)
@@ -137,7 +141,7 @@ export function useLogout() {
         localStorage.removeItem('user_data')
       }
 
-      router.push(ROUTES.SIGN_IN)
+      router.push(buildLocalizedPath(locale, ROUTES.SIGN_IN))
     },
   })
 }

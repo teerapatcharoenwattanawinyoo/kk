@@ -32,16 +32,52 @@ export const loginRequestSchema = z
     }
   })
 
+const numericStringToNumberSchema = z.string().transform((value, ctx) => {
+  const trimmedValue = value.trim()
+
+  if (trimmedValue.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Expected number, received empty string',
+    })
+
+    return z.NEVER
+  }
+
+  const parsedNumber = Number(trimmedValue)
+
+  if (!Number.isFinite(parsedNumber)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Expected number, received NaN',
+    })
+
+    return z.NEVER
+  }
+
+  return parsedNumber
+})
+
+const numericSchema = z.union([z.number(), numericStringToNumberSchema])
+
+const nullableNumericSchema = numericSchema.nullable()
+
+const nullableStringToStringSchema = z
+  .union([z.string(), z.null()])
+  .transform((value) => value ?? '')
+
 export const userSchema = z.object({
-  customer_id: z.number(),
-  email: z.string(),
-  phone: z.string(),
+  customer_id: numericSchema,
+  email: z
+    .union([z.string().email(), z.null()])
+    .transform((value) => value ?? ''),
+  phone: nullableStringToStringSchema,
   profilename: z.string(),
   avatar: z.string().nullable(),
   platform_type: z.string(),
-  company_id: z.number().nullable(),
-  team_id: z.number().nullable(),
-  device: z.string(),
+  company_id: nullableNumericSchema,
+  team_id: nullableNumericSchema,
+  device: nullableStringToStringSchema,
 })
 
 export const loginResponseSchema = z.object({

@@ -6,7 +6,7 @@ import { colors } from "@/lib/utils/colors";
 import {
   teamFormDataSchema,
   type TeamFormData,
-} from "@/modules/teams/schemas/team.schema";
+} from "@/modules/teams/schemas";
 import {
   Button,
   Card,

@@ -5,6 +5,7 @@ import { SuccessDialog } from "@/components/notifications";
 import { Button } from "@/components/ui/button";
 import { useCreateTeam, useTeamHostId } from "@/hooks/use-teams";
 import { ROUTES } from "@/lib/constants";
+import { buildLocalizedPath } from "@/lib/helpers/localized-path";
 import { useI18n } from "@/lib/i18n";
 import { TeamFormData } from "@/lib/schemas/team";
 import { colors } from "@/lib/utils/colors";
@@ -16,12 +17,12 @@ const TeamAddPage = () => {
   const router = useRouter();
   const teamHostId = useTeamHostId();
   const createTeamMutation = useCreateTeam();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
 
   const handleBack = () => {
-    router.push(ROUTES.TEAM);
+    router.push(buildLocalizedPath(locale, ROUTES.TEAM));
   };
 
   const handleSubmit = async (data: TeamFormData) => {
@@ -66,7 +67,7 @@ const TeamAddPage = () => {
 
   const handleDialogClose = () => {
     setShowSuccessDialog(false);
-    router.push(ROUTES.TEAM);
+    router.push(buildLocalizedPath(locale, ROUTES.TEAM));
   };
 
   return (

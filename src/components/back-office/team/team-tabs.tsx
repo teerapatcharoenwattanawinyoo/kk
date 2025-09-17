@@ -1,6 +1,8 @@
 "use client";
 
 import { ROUTES } from "@/lib/constants";
+import { buildLocalizedPath } from "@/lib/helpers/localized-path";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -15,17 +17,23 @@ export function TeamTabs({ teamId, activeTab }: TeamTabsProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { locale } = useI18n();
 
   // เมื่อโหลดคอมโพเนนต์ ถ้าอยู่ที่หน้า team/[id] ให้นำทางไปยัง overview
   useEffect(() => {
-    const teamPath = ROUTES.TEAM + `/${teamId}`;
+    const teamPath = buildLocalizedPath(locale, `${ROUTES.TEAM}/${teamId}`);
     if (pathname === teamPath) {
-      router.push(ROUTES.TEAM_OVERVIEW.replace("[id]", teamId));
+      router.push(
+        buildLocalizedPath(
+          locale,
+          ROUTES.TEAM_OVERVIEW.replace("[id]", teamId),
+        ),
+      );
     }
-  }, [pathname, teamId, router]);
+  }, [pathname, teamId, router, locale]);
 
   // Function to preserve URL parameters when navigating
-  const getHrefWithParams = (baseHref: string) => {
+  const getHrefWithParams = (baseHref: string, localizedBaseHref: string) => {
     const currentParams = new URLSearchParams();
 
     // Keep only page and pageSize parameters for chargers page
@@ -38,7 +46,9 @@ export function TeamTabs({ teamId, activeTab }: TeamTabsProps) {
     }
 
     const queryString = currentParams.toString();
-    return queryString ? `${baseHref}?${queryString}` : baseHref;
+    return queryString
+      ? `${localizedBaseHref}?${queryString}`
+      : localizedBaseHref;
   };
 
   const tabs = [
@@ -93,7 +103,9 @@ export function TeamTabs({ teamId, activeTab }: TeamTabsProps) {
     <div className="overflow-x-auto rounded-lg bg-card px-2 py-2">
       <div className="flex min-w-max font-semibold">
         {tabs.map((tab) => {
-          const isCurrentPath = pathname === tab.href;
+          const localizedHref = buildLocalizedPath(locale, tab.href);
+          const hrefWithParams = getHrefWithParams(tab.href, localizedHref);
+          const isCurrentPath = pathname === localizedHref;
 
           // ถ้าเป็นหน้าปัจจุบัน ให้ใช้ button แทน Link เพื่อป้องกันการนำทางซ้ำ
           if (isCurrentPath) {
@@ -115,7 +127,7 @@ export function TeamTabs({ teamId, activeTab }: TeamTabsProps) {
           return (
             <Link
               key={tab.id}
-              href={getHrefWithParams(tab.href)}
+              href={hrefWithParams}
               className={cn(
                 "min-w-[100px] flex-1 truncate px-4 py-2 text-center text-sm transition-colors",
                 activeTab === tab.id

@@ -1,18 +1,17 @@
-import type { QueryClient } from "@tanstack/react-query";
+import type { QueryClient, QueryKey } from "@tanstack/react-query";
 
 import { QUERY_KEYS } from "@/lib/constants";
 
 import type { TeamListQueryResponse } from "@/modules/teams/schemas";
 
-export type TeamListCacheEntry = [readonly unknown[], TeamListQueryResponse | undefined];
+export type TeamListCacheEntry = [QueryKey, TeamListQueryResponse | undefined];
 
 export const getTeamListCaches = (
   queryClient: QueryClient
 ): TeamListCacheEntry[] => {
-  return queryClient.getQueriesData<TeamListQueryResponse>([
-    QUERY_KEYS.TEAMS,
-    "list",
-  ]);
+  return queryClient.getQueriesData<TeamListQueryResponse>({
+    queryKey: [QUERY_KEYS.TEAMS, "list"],
+  });
 };
 
 export const updateTeamListCaches = (

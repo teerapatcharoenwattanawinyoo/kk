@@ -2,184 +2,83 @@ import { removeAuthTokens } from '@/lib/auth/tokens'
 import { API_ENDPOINTS } from '@/lib/constants'
 import { api } from '../../../lib/api/config/axios'
 
-// ---------- Types ----------
+import {
+  createProfileRequestSchema,
+  createProfileResponseSchema,
+  getPolicyResponseSchema,
+  loginApiResponseSchema,
+  loginRequestSchema,
+  registerByEmailRequestSchema,
+  registerByEmailResponseSchema,
+  registerByPhoneRequestSchema,
+  registerByPhoneResponseSchema,
+  verifyEmailRequestSchema,
+  verifyEmailResponseSchema,
+  verifyPhoneOtpRequestSchema,
+  type CreateProfileRequest,
+  type CreateProfileResponse,
+  type GetPolicyResponse,
+  type LoginApiResponse,
+  type LoginRequest,
+  type LoginResponse,
+  type RegisterByEmailRequest,
+  type RegisterByEmailResponse,
+  type RegisterByPhoneRequest,
+  type RegisterByPhoneResponse,
+  type VerifyEmailRequest,
+  type VerifyEmailResponse,
+  type VerifyPhoneOtpRequest,
+} from '../schemas'
 
-export interface LoginRequest {
-  phone?: string
-  email?: string
-  password: string
-}
-
-export interface User {
-  customer_id: number
-  email: string
-  phone: string
-  profilename: string
-  avatar: string | null
-  platform_type: string
-  company_id: number | null
-  team_id: number | null
-  device: string
-}
-
-export interface LoginResponse {
-  access_token: string
-  refresh_token: string
-  user: User
-}
-
-export interface ApiResponse<T> {
-  statusCode: number
-  data: T
-  message: string
-}
-
-export interface RegisterByEmailRequest {
-  email: string
-  country_code: string
-}
-
-export interface RegisterByEmailData {
-  message: string
-  userId: number
-  token: string
-}
-
-export interface RegisterByEmailResponse {
-  statusCode: number
-  data: RegisterByEmailData
-  message: string
-}
-
-export interface VerifyEmailRequest {
-  email: string
-  otp: string
-  token: string
-}
-
-export interface VerifyEmailResponse {
-  statusCode: number
-  message: string
-  // เพิ่ม field อื่นๆ ตาม response ที่ backend ส่งกลับ (ถ้ามี)
-}
-
-export interface CreateProfileRequest {
-  email: string
-  country_code: string
-  profilename: string
-  phone: string
-  password: string
-  token: string // register_token
-}
-
-export interface CreateProfileResponse {
-  statusCode: number
-  message: string
-  // เพิ่ม field อื่นๆ ตาม response ที่ backend ส่งกลับ (ถ้ามี)
-}
-
-export interface PolicyDescription {
-  id: number
-  languageId: number
-  policyId: number
-  name: string
-  detail: string
-  createdAt: string
-  createdBy: number
-  updatedAt: string | null
-  updatedBy: number | null
-  policy_id: number
-}
-
-export interface Policy {
-  id: number
-  name: string
-  version: string
-  slug: string
-  status: number
-  deletedAt: string | null
-  createdAt: string
-  createdBy: number
-  updatedAt: string | null
-  updatedBy: number | null
-  descriptions: PolicyDescription[]
-}
-
-export interface GetPolicyResponse {
-  statusCode: number
-  data: Policy[]
-  message: string
-}
-
-export interface RegisterByPhoneRequest {
-  phone: string
-  country_code: string
-}
-
-export interface RegisterByPhoneData {
-  message: string
-  userId: number
-  token: string
-}
-
-export interface RegisterByPhoneResponse {
-  statusCode: number
-  data: RegisterByPhoneData
-  message: string
-}
-
-export interface VerifyPhoneOtpRequest {
-  phone: string
-  otp: string
-  token: string
-}
-// ---------- API Functions ----------
+export type { User } from '../schemas'
 
 export async function loginByPhone(
   request: LoginRequest,
 ): Promise<LoginResponse> {
-  const result = await api.post<ApiResponse<LoginResponse>>(
+  const payload = loginRequestSchema.parse(request)
+  const response = await api.post<LoginApiResponse>(
     API_ENDPOINTS.AUTH.LOGIN,
-    request,
+    payload,
   )
-  return result.data
+  return loginApiResponseSchema.parse(response).data
 }
 
 export async function registerByEmail(
   request: RegisterByEmailRequest,
 ): Promise<RegisterByEmailResponse> {
-  const result = await api.post<RegisterByEmailResponse>(
+  const payload = registerByEmailRequestSchema.parse(request)
+  const response = await api.post<RegisterByEmailResponse>(
     API_ENDPOINTS.AUTH.REGISTER_EMAIL,
-    request,
+    payload,
   )
-  return result
+  return registerByEmailResponseSchema.parse(response)
 }
 
 export async function verifyEmail(
   request: VerifyEmailRequest,
 ): Promise<VerifyEmailResponse> {
-  const result = await api.post<VerifyEmailResponse>(
+  const payload = verifyEmailRequestSchema.parse(request)
+  const response = await api.post<VerifyEmailResponse>(
     API_ENDPOINTS.AUTH.VERIFY_EMAIL,
-    request,
+    payload,
   )
-  return result
+  return verifyEmailResponseSchema.parse(response)
 }
 
 export async function createProfile(
   request: CreateProfileRequest,
 ): Promise<CreateProfileResponse> {
-  const result = await api.post<CreateProfileResponse>(
+  const payload = createProfileRequestSchema.parse(request)
+  const response = await api.post<CreateProfileResponse>(
     API_ENDPOINTS.AUTH.CREATE_PROFILE,
-    request,
+    payload,
   )
-  return result
+  return createProfileResponseSchema.parse(response)
 }
 
 export async function refreshToken(): Promise<LoginResponse> {
-  const result = await api.get<ApiResponse<LoginResponse>>(
-    API_ENDPOINTS.AUTH.REFRESH,
-  )
-  return result.data
+  const response = await api.get<LoginApiResponse>(API_ENDPOINTS.AUTH.REFRESH)
+  return loginApiResponseSchema.parse(response).data
 }
 
 export async function logoutUser(): Promise<void> {
@@ -190,36 +89,29 @@ export async function logoutUser(): Promise<void> {
 }
 
 export async function getPolicy(): Promise<GetPolicyResponse> {
-  const result = await api.get<GetPolicyResponse>(API_ENDPOINTS.AUTH.POLICY)
-  return result
+  const response = await api.get<GetPolicyResponse>(API_ENDPOINTS.AUTH.POLICY)
+  return getPolicyResponseSchema.parse(response)
 }
 
 export async function getTerm(): Promise<GetPolicyResponse> {
-  const result = await api.get<GetPolicyResponse>(API_ENDPOINTS.AUTH.TERM)
-  return result
+  const response = await api.get<GetPolicyResponse>(API_ENDPOINTS.AUTH.TERM)
+  return getPolicyResponseSchema.parse(response)
 }
 
 export async function registerByPhone(
   request: RegisterByPhoneRequest,
 ): Promise<RegisterByPhoneResponse> {
-  const result = await api.post<RegisterByPhoneResponse>(
+  const payload = registerByPhoneRequestSchema.parse(request)
+  const response = await api.post<RegisterByPhoneResponse>(
     API_ENDPOINTS.AUTH.REGISTER_PHONE,
-    request,
+    payload,
   )
-  return result
-}
-
-export interface VerifyPhoneOtpResponse {
-  statusCode: number
-  message: string
+  return registerByPhoneResponseSchema.parse(response)
 }
 
 export async function verifyPhoneOtp(
   request: VerifyPhoneOtpRequest,
-): Promise<VerifyPhoneOtpResponse> {
-  const result = await api.post<VerifyPhoneOtpResponse>(
-    API_ENDPOINTS.AUTH.VERIFY_PHONE,
-    request,
-  )
-  return result
+): Promise<unknown> {
+  const payload = verifyPhoneOtpRequestSchema.parse(request)
+  return api.post(API_ENDPOINTS.AUTH.VERIFY_PHONE, payload)
 }

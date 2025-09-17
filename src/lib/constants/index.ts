@@ -1,4 +1,10 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const FALLBACK_API_BASE_URL = '/api'
+
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL &&
+  process.env.NEXT_PUBLIC_API_BASE_URL.trim().length > 0
+    ? process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, '')
+    : FALLBACK_API_BASE_URL
 
 export const API_ENDPOINTS = {
   AUTH: {

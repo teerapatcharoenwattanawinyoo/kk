@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { ChargingStation } from '@/modules/charging-stations/hooks/use-charging-stations'
+import type { ChargingStation } from '@/modules/charging-stations/schemas/charging-stations.schema'
 import { Edit, MoreHorizontal, Trash } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 

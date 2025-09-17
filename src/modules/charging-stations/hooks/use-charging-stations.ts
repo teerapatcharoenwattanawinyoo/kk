@@ -1,6 +1,5 @@
 import { QUERY_KEYS } from '@/lib/constants'
 import {
-  convertStationDetailToFormData,
   createChargingStation,
   deleteChargingStation,
   deleteStationImage,
@@ -9,6 +8,7 @@ import {
   getStationCategories,
   updateChargingStation,
 } from '@/modules/charging-stations/api/charging-station'
+import { convertStationDetailToFormData } from '@/modules/charging-stations/services'
 import {
   type ChargingStation,
   type ChargingStationDetail,

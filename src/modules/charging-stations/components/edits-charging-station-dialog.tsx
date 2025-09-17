@@ -12,7 +12,8 @@ import {
 } from '@/modules/charging-stations/hooks/use-charging-stations'
 import {
   type WorkTime,
-  type ChargingStationFormData as ZodChargingStationFormData,
+  type ChargingStationFormSubmission,
+  type ChargingStationFormWithGallery,
   type DayOfWeek as ZodDayOfWeek,
   type OpenCloseFormState as ZodOpenCloseFormState,
   type OpenCloseTime as ZodOpenCloseTime,
@@ -28,8 +29,8 @@ import { toast } from 'sonner'
 interface EditChargingStationDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSubmit: (data: ZodChargingStationFormData) => Promise<void>
-  initialData: ZodChargingStationFormData
+  onSubmit: (data: ChargingStationFormSubmission) => Promise<void>
+  initialData: ChargingStationFormWithGallery
   onShowSuccess?: () => void
 }
 
@@ -154,7 +155,7 @@ export default function EditsChargingStationDialog({
   // State Management
   // ============================
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<ZodChargingStationFormData>(initialData)
+  const [formData, setFormData] = useState<ChargingStationFormWithGallery>(initialData)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const [showErrorDialog, setShowErrorDialog] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -191,6 +192,8 @@ export default function EditsChargingStationDialog({
     { number: 1, name: t('charging-stations.step_edit') },
     { number: 2, name: t('charging-stations.step_detail') },
   ]
+
+  const existingGallery = initialData.existingGallery ?? []
 
   const isFormValid = (() => {
     // ตรวจสอบว่าต้องกรอก EN ด้วยหรือไม่ (ถ้าเลือก TH หรือ LO)
@@ -305,7 +308,7 @@ export default function EditsChargingStationDialog({
   }
 
   const handleInputChange = (
-    field: keyof ZodChargingStationFormData,
+    field: keyof ChargingStationFormWithGallery,
     value: string | number | boolean | { lat: number; lng: number },
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -420,6 +423,7 @@ export default function EditsChargingStationDialog({
         work: workTimeUpdate,
         images: uploadedFiles, // ส่ง array เสมอ (ไม่ว่าจะมีหรือไม่มีรูป)
         contact: formData.contact || '', // ensure contact is included
+        deletedImageIds,
       }
 
       console.log('🔥 formData.contact value:', formData.contact)
@@ -717,17 +721,13 @@ export default function EditsChargingStationDialog({
                 openCloseDialogOpen={openCloseDialogOpen}
                 uploadedFiles={uploadedFiles}
                 dayLabels={dayLabels}
-                existingGallery={((initialData as any).existingGallery || []).filter(
-                  (img: any) => !deletedImageIds.includes(img.id),
-                )}
-                allGalleryImages={(initialData as any).existingGallery || []}
+                existingGallery={existingGallery.filter((img) => !deletedImageIds.includes(img.id))}
+                allGalleryImages={existingGallery}
                 deletedImageIds={deletedImageIds}
                 maxImages={5}
                 remainingSlots={Math.max(
                   0,
-                  5 -
-                    uploadedFiles.length -
-                    (((initialData as any).existingGallery || []).length - deletedImageIds.length),
+                  5 - uploadedFiles.length - (existingGallery.length - deletedImageIds.length),
                 )}
                 onSubmit={handleSubmitForm}
                 onInputChange={handleInputChange}

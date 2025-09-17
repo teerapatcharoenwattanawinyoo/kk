@@ -104,6 +104,12 @@ export const ExtendedUpdateChargingStationRequestSchema = UpdateChargingStationR
   },
 )
 
+export const ChargingStationFormSubmissionSchema = ChargingStationFormSchema.extend({
+  work: z.array(WorkTimeSchema).optional(),
+  images: z.array(z.instanceof(File)).optional(),
+  deletedImageIds: z.array(z.number()).optional(),
+})
+
 // ============================
 // API Response Schemas (จำเป็นสำหรับ API)
 // ============================
@@ -138,6 +144,10 @@ export const PartnerStationGalleryDetailSchema = z.object({
   id: z.number(),
   image: z.string(),
   sort_order: z.number().optional(),
+})
+
+export const ChargingStationFormWithGallerySchema = ChargingStationFormSchema.extend({
+  existingGallery: z.array(PartnerStationGalleryDetailSchema).default([]),
 })
 
 export const ChargingStationSchema = z.object({
@@ -390,4 +400,10 @@ export type GetChargingStationDetailResponse = z.infer<
 >
 export type ExtendedUpdateChargingStationRequest = z.infer<
   typeof ExtendedUpdateChargingStationRequestSchema
+>
+export type ChargingStationFormWithGallery = z.infer<
+  typeof ChargingStationFormWithGallerySchema
+>
+export type ChargingStationFormSubmission = z.infer<
+  typeof ChargingStationFormSubmissionSchema
 >

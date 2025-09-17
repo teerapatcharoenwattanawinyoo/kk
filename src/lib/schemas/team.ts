@@ -24,7 +24,7 @@ export const teamDataSchema = z.object({
 export const teamHostDataSchema = z.object({
   team_group_id: z.number(),
   team_name: z.string(),
-  team_img: z.string().optional(),
+  team_icon_group: z.string().optional(),
 });
 
 export const teamHostListResponseSchema = z.object({
@@ -130,7 +130,7 @@ const fileSchema = z.custom<File>(
   {
     message:
       "File must be a valid image (PNG, JPG, JPEG) or PDF, and less than 10MB",
-  },
+  }
 );
 
 // Team API schemas

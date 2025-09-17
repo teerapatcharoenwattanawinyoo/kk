@@ -24,7 +24,7 @@ export function TeamHeader({
 
   // Fallback ถ้าไม่มีข้อมูล
   const displayName = teamData?.team_name || "";
-  const teamImage = teamData?.team_img; // team_icon_group from API
+  const teamImage = teamData?.team_icon_group; // team_icon_group from API
   const teamGroupId = teamData?.team_group_id;
   const isLoading = teamData?.isLoading;
 

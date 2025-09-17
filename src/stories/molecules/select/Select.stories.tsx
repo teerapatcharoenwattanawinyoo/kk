@@ -7,18 +7,18 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@/ui/molecules/select";
+} from '@/ui/molecules/select'
 
 const meta = {
-  title: "Molecules/Select",
+  title: 'Molecules/Select',
   component: Select,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs'],
+}
 
-export default meta;
+export default meta
 
 export const Default = {
   render: () => (
@@ -35,7 +35,7 @@ export const Default = {
       </SelectContent>
     </Select>
   ),
-};
+}
 
 export const WithGroups = {
   render: () => (
@@ -62,7 +62,7 @@ export const WithGroups = {
       </SelectContent>
     </Select>
   ),
-};
+}
 
 export const WithScrollableOptions = {
   render: () => (
@@ -98,29 +98,21 @@ export const WithScrollableOptions = {
           <SelectItem value="cst_china">China Standard Time (CST)</SelectItem>
           <SelectItem value="jst">Japan Standard Time (JST)</SelectItem>
           <SelectItem value="kst">Korea Standard Time (KST)</SelectItem>
-          <SelectItem value="ist_indonesia">
-            Indonesia central time (WITA)
-          </SelectItem>
+          <SelectItem value="ist_indonesia">Indonesia central time (WITA)</SelectItem>
         </SelectGroup>
         <SelectSeparator />
         <SelectGroup>
           <SelectLabel>Australia & Pacific</SelectLabel>
-          <SelectItem value="awst">
-            Australian Western Standard Time (AWST)
-          </SelectItem>
-          <SelectItem value="acst">
-            Australian Central Standard Time (ACST)
-          </SelectItem>
-          <SelectItem value="aest">
-            Australian Eastern Standard Time (AEST)
-          </SelectItem>
+          <SelectItem value="awst">Australian Western Standard Time (AWST)</SelectItem>
+          <SelectItem value="acst">Australian Central Standard Time (ACST)</SelectItem>
+          <SelectItem value="aest">Australian Eastern Standard Time (AEST)</SelectItem>
           <SelectItem value="nzst">New Zealand Standard Time (NZST)</SelectItem>
           <SelectItem value="fjt">Fiji Time (FJT)</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
   ),
-};
+}
 
 export const Form = {
   render: () => (
@@ -192,4 +184,4 @@ export const Form = {
       </div>
     </div>
   ),
-};
+}

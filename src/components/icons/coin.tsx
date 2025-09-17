@@ -1,5 +1,5 @@
-import * as React from "react";
-type SVGProps = React.SVGProps<SVGSVGElement>;
+import * as React from 'react'
+type SVGProps = React.SVGProps<SVGSVGElement>
 const CoinSolid = (props: SVGProps) => (
   <svg
     width={18}
@@ -26,5 +26,5 @@ const CoinSolid = (props: SVGProps) => (
       fill="#F7DB5E"
     />
   </svg>
-);
-export default CoinSolid;
+)
+export default CoinSolid

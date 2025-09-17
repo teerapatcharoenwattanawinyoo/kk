@@ -1,43 +1,37 @@
-"use client";
+'use client'
 
-import { SuccessDialog } from "@/components/notifications";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { SuccessDialog } from '@/components/notifications'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 interface ProcessContentProps {
-  amount: string;
-  method: string;
-  orderId: string;
-  teamId: string;
-  locale: string;
+  amount: string
+  method: string
+  orderId: string
+  teamId: string
+  locale: string
 }
 
-export function ProcessContent({
-  amount,
-  method,
-  orderId,
-  teamId,
-  locale,
-}: ProcessContentProps) {
-  const router = useRouter();
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(true);
+export function ProcessContent({ amount, method, orderId, teamId, locale }: ProcessContentProps) {
+  const router = useRouter()
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(true)
 
   useEffect(() => {
     // Simulate payment processing
     const timer = setTimeout(() => {
-      setIsProcessing(false);
-      setShowSuccess(true);
-    }, 3000); // 3 seconds simulation
+      setIsProcessing(false)
+      setShowSuccess(true)
+    }, 3000) // 3 seconds simulation
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleSuccessClose = () => {
-    setShowSuccess(false);
+    setShowSuccess(false)
     // Navigate back to team wallet
-    router.push(`/${locale}/team/${teamId}/team-wallet`);
-  };
+    router.push(`/${locale}/team/${teamId}/team-wallet`)
+  }
 
   return (
     <>
@@ -62,5 +56,5 @@ export function ProcessContent({
         onButtonClick={handleSuccessClose}
       />
     </>
-  );
+  )
 }

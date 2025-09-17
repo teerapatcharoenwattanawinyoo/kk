@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -6,23 +6,23 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Loader2 } from "lucide-react";
+} from '@/components/ui/dialog'
+import { Loader2 } from 'lucide-react'
 
 interface DeleteConfirmDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title?: string;
-  description?: string;
-  itemName?: string;
-  onConfirm: () => void;
-  isLoading?: boolean;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title?: string
+  description?: string
+  itemName?: string
+  onConfirm: () => void
+  isLoading?: boolean
 }
 
 export default function DeleteConfirmDialog({
   open,
   onOpenChange,
-  title = "",
+  title = '',
   description,
   itemName,
   onConfirm,
@@ -30,7 +30,7 @@ export default function DeleteConfirmDialog({
 }: DeleteConfirmDialogProps) {
   const defaultDescription = itemName
     ? `Are you sure you want to delete "${itemName}"? This action cannot be undone.`
-    : "Are you sure you want to delete this item? This action cannot be undone.";
+    : 'Are you sure you want to delete this item? This action cannot be undone.'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -39,9 +39,7 @@ export default function DeleteConfirmDialog({
           <DialogHeader className="space-y-0">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
-                <DialogTitle className="text-xl font-semibold text-gray-900">
-                  {title}
-                </DialogTitle>
+                <DialogTitle className="text-xl font-semibold text-gray-900">{title}</DialogTitle>
                 <DialogDescription className="max-w-sm text-lg text-black">
                   {description || defaultDescription}
                 </DialogDescription>
@@ -54,12 +52,10 @@ export default function DeleteConfirmDialog({
             variant="destructive"
             onClick={onConfirm}
             disabled={isLoading}
-            size={"lg"}
+            size={'lg'}
             className="rounded-full bg-[#F46262] px-20 py-6"
           >
-            {isLoading ? (
-              <Loader2 className="mr-2 size-4 animate-spin" />
-            ) : null}
+            {isLoading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
             Confirm
           </Button>
           <Button
@@ -73,5 +69,5 @@ export default function DeleteConfirmDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

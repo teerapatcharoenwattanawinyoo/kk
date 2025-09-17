@@ -1,31 +1,26 @@
-import { Alert, AlertDescription, AlertTitle } from "@/ui/molecules/alert";
+import { Alert, AlertDescription, AlertTitle } from '@/ui/molecules/alert'
 
 const meta = {
-  title: "Molecules/Alert",
+  title: 'Molecules/Alert',
   component: Alert,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
-      control: { type: "select" },
-      options: ["default", "destructive"],
+      control: { type: 'select' },
+      options: ['default', 'destructive'],
     },
   },
-};
+}
 
-export default meta;
+export default meta
 
 export const Default = {
   render: () => (
     <Alert>
-      <svg
-        className="h-4 w-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -39,17 +34,12 @@ export const Default = {
       </AlertDescription>
     </Alert>
   ),
-};
+}
 
 export const Destructive = {
   render: () => (
     <Alert variant="destructive">
-      <svg
-        className="h-4 w-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -58,12 +48,10 @@ export const Destructive = {
         />
       </svg>
       <AlertTitle>Error</AlertTitle>
-      <AlertDescription>
-        Your session has expired. Please log in again.
-      </AlertDescription>
+      <AlertDescription>Your session has expired. Please log in again.</AlertDescription>
     </Alert>
   ),
-};
+}
 
 export const WithoutIcon = {
   render: () => (
@@ -74,28 +62,21 @@ export const WithoutIcon = {
       </AlertDescription>
     </Alert>
   ),
-};
+}
 
 export const OnlyDescription = {
   render: () => (
     <Alert>
-      <AlertDescription>
-        This is a simple alert with only a description.
-      </AlertDescription>
+      <AlertDescription>This is a simple alert with only a description.</AlertDescription>
     </Alert>
   ),
-};
+}
 
 export const Examples = {
   render: () => (
     <div className="w-full max-w-md space-y-4">
       <Alert>
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -104,18 +85,11 @@ export const Examples = {
           />
         </svg>
         <AlertTitle>Success</AlertTitle>
-        <AlertDescription>
-          Your profile has been updated successfully.
-        </AlertDescription>
+        <AlertDescription>Your profile has been updated successfully.</AlertDescription>
       </Alert>
 
       <Alert variant="destructive">
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -130,12 +104,7 @@ export const Examples = {
       </Alert>
 
       <Alert>
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -149,4 +118,4 @@ export const Examples = {
       </Alert>
     </div>
   ),
-};
+}

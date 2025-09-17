@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react'
 
 export interface ImageUploadFormIconProps {
-  width?: number;
-  height?: number;
-  className?: string;
-  fill?: string;
+  width?: number
+  height?: number
+  className?: string
+  fill?: string
 }
 
 export const ImageUploadFormIcon: React.FC<ImageUploadFormIconProps> = ({
   width = 20,
   height = 20,
-  className = "",
-  fill = "currentColor",
+  className = '',
+  fill = 'currentColor',
   ...props
 }) => (
   <svg
@@ -28,4 +28,4 @@ export const ImageUploadFormIcon: React.FC<ImageUploadFormIconProps> = ({
       fill={fill}
     />
   </svg>
-);
+)

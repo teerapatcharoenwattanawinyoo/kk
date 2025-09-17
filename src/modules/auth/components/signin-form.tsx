@@ -2,13 +2,7 @@
 
 import { PhoneInput } from '@/components/phone-input'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,21 +16,13 @@ import ForgotPasswordDialog from './forgot-password-dialog'
 
 export default function SignInForm() {
   const { t } = useI18n()
-  const {
-    state,
-    showPassword,
-    showForgotPassword,
-    formError,
-    loginMutation,
-    actions,
-  } = useSignInForm()
+  const { state, showPassword, showForgotPassword, formError, loginMutation, actions } =
+    useSignInForm()
 
   return (
     <Card className="w-full max-w-xl border-0 shadow-none">
       <CardHeader className="px-0">
-        <CardTitle className="text-4xl font-bold">
-          {t('auth.sign_in')}
-        </CardTitle>
+        <CardTitle className="text-4xl font-bold">{t('auth.sign_in')}</CardTitle>
         <CardDescription className="font-normal text-[#969696]">
           {t('auth.please_login_to_continue')}
         </CardDescription>
@@ -45,9 +31,7 @@ export default function SignInForm() {
       <CardContent className="space-y-6 px-0">
         <Tabs
           value={state.method}
-          onValueChange={(value) =>
-            actions.setMethod(value as 'phone' | 'email')
-          }
+          onValueChange={(value) => actions.setMethod(value as 'phone' | 'email')}
           className="w-full"
         >
           <TabsList className="grid w-full grid-cols-2 gap-2 bg-transparent">
@@ -116,11 +100,7 @@ export default function SignInForm() {
                   className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground hover:bg-transparent"
                   onClick={actions.togglePasswordVisibility}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
               </div>
               <div className="flex justify-end">
@@ -143,14 +123,9 @@ export default function SignInForm() {
                 id="keep-logged-in"
                 className="rounded-xl border-muted-foreground"
                 checked={state.keepLoggedIn}
-                onCheckedChange={(checked) =>
-                  actions.setKeepLoggedIn(Boolean(checked))
-                }
+                onCheckedChange={(checked) => actions.setKeepLoggedIn(Boolean(checked))}
               />
-              <Label
-                htmlFor="keep-logged-in"
-                className="cursor-pointer text-sm font-normal"
-              >
+              <Label htmlFor="keep-logged-in" className="cursor-pointer text-sm font-normal">
                 {t('auth.remember_me')}
               </Label>
             </div>
@@ -160,16 +135,12 @@ export default function SignInForm() {
                 {formError
                   ? formError
                   : loginMutation.error instanceof Error
-                  ? loginMutation.error.message
-                  : 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ'}
+                    ? loginMutation.error.message
+                    : 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ'}
               </div>
             )}
 
-            <Button
-              type="submit"
-              className="h-12 w-full"
-              disabled={loginMutation.isPending}
-            >
+            <Button type="submit" className="h-12 w-full" disabled={loginMutation.isPending}>
               {loginMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -189,11 +160,7 @@ export default function SignInForm() {
               </div>
             </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="h-12 w-full font-medium"
-            >
+            <Button type="button" variant="outline" className="h-12 w-full font-medium">
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"

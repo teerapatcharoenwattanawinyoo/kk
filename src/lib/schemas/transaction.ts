@@ -1,12 +1,12 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 // === Query Parameters ===
 export const transactionListParamsSchema = z.object({
   page: z.number().min(1).optional(),
   pageSize: z.number().min(1).max(100).optional(),
   search: z.string().optional(),
-  teamId: z.string().min(1, "Team ID is required"),
-});
+  teamId: z.string().min(1, 'Team ID is required'),
+})
 
 // === Transaction Item ===
 export const transactionItemSchema = z.object({
@@ -30,7 +30,7 @@ export const transactionItemSchema = z.object({
   price: z.string(),
   charge_method: z.string(),
   payment_method: z.string(),
-});
+})
 
 // === API Response ===
 export const transactionListResponseSchema = z.object({
@@ -39,20 +39,18 @@ export const transactionListResponseSchema = z.object({
   page_size: z.number(),
   item_total: z.number(),
   data: z.array(transactionItemSchema),
-});
+})
 
 // === Type Inference ===
-export type TransactionListParams = z.infer<typeof transactionListParamsSchema>;
-export type TransactionItem = z.infer<typeof transactionItemSchema>;
-export type TransactionListResponse = z.infer<
-  typeof transactionListResponseSchema
->;
+export type TransactionListParams = z.infer<typeof transactionListParamsSchema>
+export type TransactionItem = z.infer<typeof transactionItemSchema>
+export type TransactionListResponse = z.infer<typeof transactionListResponseSchema>
 
 // === Validation Helpers ===
 export const validateTransactionListParams = (data: unknown) => {
-  return transactionListParamsSchema.safeParse(data);
-};
+  return transactionListParamsSchema.safeParse(data)
+}
 
 export const validateTransactionListResponse = (data: unknown) => {
-  return transactionListResponseSchema.safeParse(data);
-};
+  return transactionListResponseSchema.safeParse(data)
+}

@@ -1,31 +1,26 @@
-"use client";
-import { StationIcon } from "@/components/icons/StationIcon";
-import { Button } from "@/components/ui/button";
+'use client'
+import { StationIcon } from '@/components/icons/StationIcon'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { ChargingStation } from "@/hooks/use-charging-stations";
-import { Edit, MoreHorizontal, Trash } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+} from '@/components/ui/dropdown-menu'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { ChargingStation } from '@/modules/charging-stations/hooks/use-charging-stations'
+import { Edit, MoreHorizontal, Trash } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
 
 interface ChargingStationsTableProps {
-  chargingStations: ChargingStation[];
-  isLoading: boolean;
-  error: Error | null;
-  pageSize: number;
-  onEditStation: (station: ChargingStation) => void;
-  onDeleteClick: (station: ChargingStation) => void;
-  formatDateTime: (date: string, time: string) => string;
+  chargingStations: ChargingStation[]
+  isLoading: boolean
+  error: Error | null
+  pageSize: number
+  onEditStation: (station: ChargingStation) => void
+  onDeleteClick: (station: ChargingStation) => void
+  formatDateTime: (date: string, time: string) => string
 }
 
 export function ChargingStationsTable({
@@ -37,10 +32,10 @@ export function ChargingStationsTable({
   onDeleteClick,
   formatDateTime,
 }: ChargingStationsTableProps) {
-  const router = useRouter();
-  const params = useParams();
-  const locale = (params?.locale as string) || "en";
-  const teamId = params?.teamId as string | undefined;
+  const router = useRouter()
+  const params = useParams()
+  const locale = (params?.locale as string) || 'en'
+  const teamId = params?.teamId as string | undefined
   return (
     <div className="-mt-8 overflow-x-auto px-6">
       <table className="min-w-full border-separate border-spacing-y-4">
@@ -99,10 +94,7 @@ export function ChargingStationsTable({
         <tbody>
           {isLoading ? (
             Array.from({ length: pageSize }).map((_, index) => (
-              <tr
-                key={`skeleton-${index}`}
-                className="shadow-xs rounded-lg bg-card"
-              >
+              <tr key={`skeleton-${index}`} className="shadow-xs rounded-lg bg-card">
                 <td className="whitespace-nowrap rounded-l-lg px-2 py-2 md:px-4 md:py-3">
                   <Skeleton className="h-4 w-6" />
                 </td>
@@ -155,10 +147,7 @@ export function ChargingStationsTable({
             </tr>
           ) : (
             chargingStations.map((station) => (
-              <tr
-                key={station.id}
-                className="shadow-xs rounded-lg bg-background"
-              >
+              <tr key={station.id} className="shadow-xs rounded-lg bg-background">
                 <td className="text-muted-blue whitespace-nowrap rounded-l-lg px-2 py-2 text-xs md:px-4 md:py-3">
                   {station.id}
                 </td>
@@ -171,29 +160,25 @@ export function ChargingStationsTable({
                       <StationIcon />
                     </div>
                     <div className="text-muted-blue text-xs leading-snug">
-                      <div className="whitespace-pre-line">
-                        {station.station_detail}
-                      </div>
-                      <div className="whitespace-pre-line font-light">
-                        {station.address}
-                      </div>
+                      <div className="whitespace-pre-line">{station.station_detail}</div>
+                      <div className="whitespace-pre-line font-light">{station.address}</div>
                     </div>
                   </div>
                 </td>
                 <td className="text-muted-blue whitespace-nowrap px-2 py-2 text-xs md:px-4 md:py-3">
-                  {station.chargers || "-"}
+                  {station.chargers || '-'}
                 </td>
                 <td className="text-muted-blue whitespace-nowrap px-2 py-2 text-xs md:px-4 md:py-3">
-                  {station.connectors || "-"}
+                  {station.connectors || '-'}
                 </td>
                 <td className="whitespace-nowrap px-2 py-2 text-xs md:px-4 md:py-3">
                   <span
                     className={
-                      station.aceesibility === "Publish"
-                        ? "font-medium text-green-500"
-                        : station.aceesibility === "Unavailable"
-                          ? "font-medium text-amber-600"
-                          : "text-gray-600"
+                      station.aceesibility === 'Publish'
+                        ? 'font-medium text-green-500'
+                        : station.aceesibility === 'Unavailable'
+                          ? 'font-medium text-amber-600'
+                          : 'text-gray-600'
                     }
                   >
                     {station.aceesibility}
@@ -208,7 +193,7 @@ export function ChargingStationsTable({
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant={"ghost"}
+                            variant={'ghost'}
                             size="sm"
                             className="h-6 w-6 p-0 hover:bg-gray-100"
                             onClick={() => onEditStation(station)}
@@ -221,7 +206,7 @@ export function ChargingStationsTable({
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant={"ghost"}
+                            variant={'ghost'}
                             size="sm"
                             className="h-6 w-6 p-0 hover:bg-gray-100"
                             onClick={() => onDeleteClick(station)}
@@ -234,7 +219,7 @@ export function ChargingStationsTable({
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            variant={"ghost"}
+                            variant={'ghost'}
                             size="sm"
                             className="h-6 w-6 p-0 hover:bg-gray-100"
                           >
@@ -246,13 +231,13 @@ export function ChargingStationsTable({
                             onClick={() => {
                               const basePath = teamId
                                 ? `/${locale}/team/${teamId}/chargers`
-                                : "/chargers";
+                                : '/chargers'
                               const query = new URLSearchParams({
                                 station_id: String(station.id),
-                                page: "1",
-                                pageSize: "10",
-                              });
-                              router.push(`${basePath}?${query.toString()}`);
+                                page: '1',
+                                pageSize: '10',
+                              })
+                              router.push(`${basePath}?${query.toString()}`)
                             }}
                           >
                             Chargers
@@ -268,5 +253,5 @@ export function ChargingStationsTable({
         </tbody>
       </table>
     </div>
-  );
+  )
 }

@@ -1,25 +1,22 @@
-import { TeamGuard } from "@/components/back-office/team/team-guard";
-import { CheckoutContent } from "@/components/back-office/team/team-wallet";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
+import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { CheckoutContent } from '@/components/back-office/team/team-wallet'
+import { Button } from '@/components/ui/button'
+import { ChevronLeft } from 'lucide-react'
+import Link from 'next/link'
 
 interface CheckoutPageProps {
   params: Promise<{
-    locale: string;
-    teamId: string;
-  }>;
+    locale: string
+    teamId: string
+  }>
   searchParams: Promise<{
-    amount?: string;
-  }>;
+    amount?: string
+  }>
 }
 
-export default async function CheckoutPage({
-  params,
-  searchParams,
-}: CheckoutPageProps) {
-  const { teamId, locale } = await params;
-  const { amount } = await searchParams;
+export default async function CheckoutPage({ params, searchParams }: CheckoutPageProps) {
+  const { teamId, locale } = await params
+  const { amount } = await searchParams
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
@@ -31,8 +28,8 @@ export default async function CheckoutPage({
                 <Link href={`/${locale}/team/${teamId}/team-wallet/top-up`}>
                   <Button
                     className="h-8 w-8 rounded-full bg-muted lg:h-9 lg:w-9"
-                    variant={"ghost"}
-                    size={"icon"}
+                    variant={'ghost'}
+                    size={'icon'}
                   >
                     <ChevronLeft className="size-4" />
                   </Button>
@@ -42,15 +39,11 @@ export default async function CheckoutPage({
             </div>
             {/* content payment Method UI */}
             <div className="p-6">
-              <CheckoutContent
-                amount={amount || "0"}
-                teamId={teamId}
-                locale={locale}
-              />
+              <CheckoutContent amount={amount || '0'} teamId={teamId} locale={locale} />
             </div>
           </div>
         </div>
       </div>
     </TeamGuard>
-  );
+  )
 }

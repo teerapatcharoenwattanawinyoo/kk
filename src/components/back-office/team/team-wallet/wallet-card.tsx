@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import { TeamWalletIcon } from "@/components/icons/TeamWalletIcon";
-import Image from "next/image";
+import { TeamWalletIcon } from '@/components/icons/TeamWalletIcon'
+import Image from 'next/image'
 
 interface WalletCardProps {
-  walletBalance: number;
-  teamId: string;
+  walletBalance: number
+  teamId: string
 }
 
 export function WalletCard({ walletBalance, teamId }: WalletCardProps) {
@@ -28,12 +28,10 @@ export function WalletCard({ walletBalance, teamId }: WalletCardProps) {
           </div>
         </div>
         <div className="mt-6">
-          <div className="text-3xl font-bold">
-            {walletBalance.toLocaleString()} ฿
-          </div>
+          <div className="text-3xl font-bold">{walletBalance.toLocaleString()} ฿</div>
           <div className="text-xs font-light">Team ID : {teamId}</div>
         </div>
       </div>
     </div>
-  );
+  )
 }

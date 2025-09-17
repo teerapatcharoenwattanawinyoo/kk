@@ -1,6 +1,6 @@
-import { Button } from "@/ui/atoms/button";
-import { Input } from "@/ui/atoms/input";
-import { Label } from "@/ui/atoms/label";
+import { Button } from '@/ui/atoms/button'
+import { Input } from '@/ui/atoms/input'
+import { Label } from '@/ui/atoms/label'
 import {
   Card,
   CardContent,
@@ -8,19 +8,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/ui/molecules/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/organisms/tabs";
+} from '@/ui/molecules/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/organisms/tabs'
 
 const meta = {
-  title: "Organisms/Tabs",
+  title: 'Organisms/Tabs',
   component: Tabs,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs'],
+}
 
-export default meta;
+export default meta
 
 export const Default = {
   render: () => (
@@ -77,7 +77,7 @@ export const Default = {
       </TabsContent>
     </Tabs>
   ),
-};
+}
 
 export const Simple = {
   render: () => (
@@ -88,9 +88,7 @@ export const Simple = {
         <TabsTrigger value="tab3">Tab 3</TabsTrigger>
       </TabsList>
       <TabsContent value="tab1" className="mt-4">
-        <div className="text-sm">
-          This is the content for Tab 1. You can put any content here.
-        </div>
+        <div className="text-sm">This is the content for Tab 1. You can put any content here.</div>
       </TabsContent>
       <TabsContent value="tab2" className="mt-4">
         <div className="text-sm">
@@ -104,7 +102,7 @@ export const Simple = {
       </TabsContent>
     </Tabs>
   ),
-};
+}
 
 export const WithDisabledTab = {
   render: () => (
@@ -121,9 +119,7 @@ export const WithDisabledTab = {
         <Card>
           <CardHeader>
             <CardTitle>Overview</CardTitle>
-            <CardDescription>
-              A summary of your account activity and stats.
-            </CardDescription>
+            <CardDescription>A summary of your account activity and stats.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
@@ -143,14 +139,11 @@ export const WithDisabledTab = {
         <Card>
           <CardHeader>
             <CardTitle>Analytics</CardTitle>
-            <CardDescription>
-              Detailed analytics and metrics for your application.
-            </CardDescription>
+            <CardDescription>Detailed analytics and metrics for your application.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-sm text-muted-foreground">
-              Analytics dashboard would be displayed here with charts and
-              graphs.
+              Analytics dashboard would be displayed here with charts and graphs.
             </div>
           </CardContent>
         </Card>
@@ -159,17 +152,13 @@ export const WithDisabledTab = {
         <Card>
           <CardHeader>
             <CardTitle>Notifications</CardTitle>
-            <CardDescription>
-              Manage your notification preferences.
-            </CardDescription>
+            <CardDescription>Manage your notification preferences.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium">Email notifications</div>
-                <div className="text-sm text-muted-foreground">
-                  Receive notifications via email
-                </div>
+                <div className="text-sm text-muted-foreground">Receive notifications via email</div>
               </div>
               <input type="checkbox" defaultChecked />
             </div>
@@ -187,15 +176,11 @@ export const WithDisabledTab = {
       </TabsContent>
     </Tabs>
   ),
-};
+}
 
 export const VerticalTabs = {
   render: () => (
-    <Tabs
-      defaultValue="general"
-      orientation="vertical"
-      className="flex w-[600px]"
-    >
+    <Tabs defaultValue="general" orientation="vertical" className="flex w-[600px]">
       <TabsList className="h-auto flex-col">
         <TabsTrigger value="general" className="w-full justify-start">
           General
@@ -221,9 +206,7 @@ export const VerticalTabs = {
           <Card>
             <CardHeader>
               <CardTitle>General Settings</CardTitle>
-              <CardDescription>
-                Manage your general account settings.
-              </CardDescription>
+              <CardDescription>Manage your general account settings.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -248,9 +231,7 @@ export const VerticalTabs = {
           <Card>
             <CardHeader>
               <CardTitle>Security Settings</CardTitle>
-              <CardDescription>
-                Manage your account security and privacy.
-              </CardDescription>
+              <CardDescription>Manage your account security and privacy.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -271,14 +252,10 @@ export const VerticalTabs = {
           <Card>
             <CardHeader>
               <CardTitle>Integrations</CardTitle>
-              <CardDescription>
-                Connect your account with third-party services.
-              </CardDescription>
+              <CardDescription>Connect your account with third-party services.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-muted-foreground">
-                No integrations configured yet.
-              </div>
+              <div className="text-sm text-muted-foreground">No integrations configured yet.</div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -299,14 +276,10 @@ export const VerticalTabs = {
           <Card>
             <CardHeader>
               <CardTitle>Organizations</CardTitle>
-              <CardDescription>
-                Manage your organization memberships.
-              </CardDescription>
+              <CardDescription>Manage your organization memberships.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-muted-foreground">
-                No organizations found.
-              </div>
+              <div className="text-sm text-muted-foreground">No organizations found.</div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -317,13 +290,11 @@ export const VerticalTabs = {
               <CardDescription>Advanced configuration options.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-muted-foreground">
-                Advanced settings panel.
-              </div>
+              <div className="text-sm text-muted-foreground">Advanced settings panel.</div>
             </CardContent>
           </Card>
         </TabsContent>
       </div>
     </Tabs>
   ),
-};
+}

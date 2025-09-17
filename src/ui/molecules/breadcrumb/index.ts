@@ -6,4 +6,4 @@ export {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "./Breadcrumb";
+} from './Breadcrumb'

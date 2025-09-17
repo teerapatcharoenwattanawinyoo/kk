@@ -19,9 +19,7 @@ export type SignInPayloadResult =
   | { success: true; data: LoginRequest }
   | { success: false; error: string }
 
-export const buildLoginPayload = (
-  state: SignInFormState,
-): SignInPayloadResult => {
+export const buildLoginPayload = (state: SignInFormState): SignInPayloadResult => {
   const parsedForm = signInFormSchema.safeParse(state)
 
   if (!parsedForm.success) {
@@ -35,9 +33,7 @@ export const buildLoginPayload = (
   const { method, phone, email, password } = parsedForm.data
 
   const payloadCandidate = {
-    ...(method === 'phone'
-      ? { phone: formatPhoneForAPI(phone ?? '') }
-      : { email: email ?? '' }),
+    ...(method === 'phone' ? { phone: formatPhoneForAPI(phone ?? '') } : { email: email ?? '' }),
     password,
   }
 

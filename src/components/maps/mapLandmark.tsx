@@ -1,18 +1,18 @@
-"use client";
+'use client'
 
-import { Skeleton } from "@/components/ui/skeleton";
-import dynamic from "next/dynamic";
+import { Skeleton } from '@/components/ui/skeleton'
+import dynamic from 'next/dynamic'
 
 interface MapLandmarkProps {
-  width?: string;
-  height?: string;
-  onCoordinatesChange?: (lat: number, lng: number) => void;
-  onAddressChange?: (address: string) => void;
-  initialCoordinates?: { lat: number; lng: number };
-  initialAddress?: string;
+  width?: string
+  height?: string
+  onCoordinatesChange?: (lat: number, lng: number) => void
+  onAddressChange?: (address: string) => void
+  initialCoordinates?: { lat: number; lng: number }
+  initialAddress?: string
 }
 
-const MapWithNoSSR = dynamic(() => import("./map-client"), {
+const MapWithNoSSR = dynamic(() => import('./map-client'), {
   ssr: false,
   loading: () => (
     <div className="flex h-[400px] w-full items-center justify-center rounded-lg bg-[#f2f2f2]">
@@ -25,11 +25,11 @@ const MapWithNoSSR = dynamic(() => import("./map-client"), {
       </div>
     </div>
   ),
-});
+})
 
 export default function MapLandmark({
-  width = "w-full",
-  height = "h-[400px]",
+  width = 'w-full',
+  height = 'h-[400px]',
   onCoordinatesChange,
   onAddressChange,
   initialCoordinates,
@@ -44,5 +44,5 @@ export default function MapLandmark({
       initialCoordinates={initialCoordinates}
       initialAddress={initialAddress}
     />
-  );
+  )
 }

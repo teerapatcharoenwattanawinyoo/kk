@@ -1,7 +1,7 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface ChargerTableSkeletonProps {
-  count?: number;
+  count?: number
 }
 
 export function ChargerTableSkeleton({ count = 5 }: ChargerTableSkeletonProps) {
@@ -42,5 +42,5 @@ export function ChargerTableSkeleton({ count = 5 }: ChargerTableSkeletonProps) {
         </tr>
       ))}
     </>
-  );
+  )
 }

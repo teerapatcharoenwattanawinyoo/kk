@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react'
 
 interface RevenueHeaderIconProps {
-  width?: number;
-  height?: number;
-  className?: string;
+  width?: number
+  height?: number
+  className?: string
 }
 
 // Flexible icon extracted from dashboard-content inline SVG
@@ -11,7 +11,7 @@ interface RevenueHeaderIconProps {
 export const RevenueHeaderIcon: React.FC<RevenueHeaderIconProps> = ({
   width = 24,
   height = 24,
-  className = "",
+  className = '',
 }) => {
   return (
     <svg
@@ -42,5 +42,5 @@ export const RevenueHeaderIcon: React.FC<RevenueHeaderIconProps> = ({
         fill="currentColor"
       />
     </svg>
-  );
-};
+  )
+}

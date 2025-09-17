@@ -15,14 +15,7 @@ import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
 import { useLocale } from '@/hooks/use-locale'
 import { useI18n, type Locale } from '@/lib/i18n'
 import { useAuth } from '@/modules/auth/hooks/use-auth'
-import {
-  Bell,
-  Check,
-  ChevronsUpDown,
-  LogOut,
-  Settings,
-  User,
-} from 'lucide-react'
+import { Bell, Check, ChevronsUpDown, LogOut, Settings, User } from 'lucide-react'
 import Image from 'next/image'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -134,10 +127,7 @@ export function Header() {
               <DropdownMenuItem
                 key={language.code}
                 disabled={language.code === locale}
-                onClick={() =>
-                  language.code !== locale &&
-                  handleLanguageChange(language.code)
-                }
+                onClick={() => language.code !== locale && handleLanguageChange(language.code)}
                 className="flex items-center gap-2 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                 aria-checked={language.code === locale}
                 role="menuitemcheckbox"
@@ -150,9 +140,7 @@ export function Header() {
                   className="h-4 w-4 rounded-full object-cover"
                 />
                 <span className="text-sm">{language.name}</span>
-                {language.code === locale && (
-                  <Check className="ml-auto h-4 w-4" />
-                )}
+                {language.code === locale && <Check className="ml-auto h-4 w-4" />}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -169,13 +157,9 @@ export function Header() {
               </Avatar>
               <div className="hidden flex-col text-sm lg:flex">
                 <span className="font-roboto max-w-24 truncate font-semibold text-[#798BFF] xl:max-w-32">
-                  {isLoading
-                    ? t('messages.loading')
-                    : user?.profilename || 'ไม่สามารถโหลดชื่อได้'}
+                  {isLoading ? t('messages.loading') : user?.profilename || 'ไม่สามารถโหลดชื่อได้'}
                 </span>
-                <span className="text-xs text-muted-foreground">
-                  {t('common.admin_station')}
-                </span>
+                <span className="text-xs text-muted-foreground">{t('common.admin_station')}</span>
               </div>
               <ChevronsUpDown className="h-3 w-3 text-muted-foreground sm:h-4 sm:w-4" />
             </div>

@@ -1,1 +1,1 @@
-export { StatsCard, type StatsCardProps } from "./StatsCard";
+export { StatsCard, type StatsCardProps } from './StatsCard'

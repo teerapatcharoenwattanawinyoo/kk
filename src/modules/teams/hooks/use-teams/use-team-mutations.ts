@@ -1,53 +1,53 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import type { IResponse } from "@/lib/api/config/model";
-import { QUERY_KEYS } from "@/lib/constants";
+import type { IResponse } from '@/lib/api/config/model'
+import { QUERY_KEYS } from '@/lib/constants'
 
 import {
   bulkDeleteTeams,
   createTeam,
   deleteTeamById,
   updateTeamById,
-} from "@/modules/teams/services";
-import type { TeamListQueryResponse, UpdateTeamFormData } from "@/modules/teams/schemas";
+} from '@/modules/teams/services'
+import type { TeamListQueryResponse, UpdateTeamFormData } from '@/modules/teams/schemas'
 
 import {
   restoreTeamListCaches,
   updateTeamListCaches,
   type TeamListCacheEntry,
-} from "./cache-helpers";
+} from './cache-helpers'
 
 interface TeamMutationContext {
-  previousCaches: TeamListCacheEntry[];
+  previousCaches: TeamListCacheEntry[]
 }
 
 export const useCreateTeam = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation<IResponse, Error, FormData>({
     mutationFn: createTeam,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.TEAMS, "list"],
-      });
+        queryKey: [QUERY_KEYS.TEAMS, 'list'],
+      })
     },
-  });
-};
+  })
+}
 
 export const useUpdateTeam = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation<IResponse, Error, UpdateTeamFormData, TeamMutationContext>({
     mutationFn: updateTeamById,
     onMutate: async (variables) => {
       await queryClient.cancelQueries({
-        queryKey: [QUERY_KEYS.TEAMS, "list"],
-      });
+        queryKey: [QUERY_KEYS.TEAMS, 'list'],
+      })
 
       const previousCaches = updateTeamListCaches(queryClient, (data) => {
         const updatedTeams = data.data.data.map((team) => {
           if (team.team_group_id.toString() !== variables.id) {
-            return team;
+            return team
           }
 
           return {
@@ -56,8 +56,8 @@ export const useUpdateTeam = () => {
             team_email: variables.team_email,
             team_phone: variables.team_phone,
             team_status: variables.team_status,
-          };
-        });
+          }
+        })
 
         return {
           ...data,
@@ -65,38 +65,38 @@ export const useUpdateTeam = () => {
             ...data.data,
             data: updatedTeams,
           },
-        } satisfies TeamListQueryResponse;
-      });
+        } satisfies TeamListQueryResponse
+      })
 
-      return { previousCaches } satisfies TeamMutationContext;
+      return { previousCaches } satisfies TeamMutationContext
     },
     onError: (_error, _variables, context) => {
       if (context?.previousCaches) {
-        restoreTeamListCaches(queryClient, context.previousCaches);
+        restoreTeamListCaches(queryClient, context.previousCaches)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.TEAMS, "list"],
-      });
+        queryKey: [QUERY_KEYS.TEAMS, 'list'],
+      })
     },
-  });
-};
+  })
+}
 
 export const useDeleteTeam = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation<IResponse, Error, string, TeamMutationContext>({
     mutationFn: deleteTeamById,
     onMutate: async (teamId) => {
       await queryClient.cancelQueries({
-        queryKey: [QUERY_KEYS.TEAMS, "list"],
-      });
+        queryKey: [QUERY_KEYS.TEAMS, 'list'],
+      })
 
       const previousCaches = updateTeamListCaches(queryClient, (data) => {
         const filteredTeams = data.data.data.filter(
-          (team) => team.team_group_id.toString() !== teamId
-        );
+          (team) => team.team_group_id.toString() !== teamId,
+        )
 
         return {
           ...data,
@@ -105,64 +105,61 @@ export const useDeleteTeam = () => {
             data: filteredTeams,
             item_total: Math.max(0, data.data.item_total - 1),
           },
-        } satisfies TeamListQueryResponse;
-      });
+        } satisfies TeamListQueryResponse
+      })
 
-      return { previousCaches } satisfies TeamMutationContext;
+      return { previousCaches } satisfies TeamMutationContext
     },
     onError: (_error, _teamId, context) => {
       if (context?.previousCaches) {
-        restoreTeamListCaches(queryClient, context.previousCaches);
+        restoreTeamListCaches(queryClient, context.previousCaches)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.TEAMS, "list"],
-      });
+        queryKey: [QUERY_KEYS.TEAMS, 'list'],
+      })
     },
-  });
-};
+  })
+}
 
 export const useBulkDeleteTeams = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation<IResponse[], Error, string[], TeamMutationContext>({
     mutationFn: bulkDeleteTeams,
     onMutate: async (teamIds) => {
       await queryClient.cancelQueries({
-        queryKey: [QUERY_KEYS.TEAMS, "list"],
-      });
+        queryKey: [QUERY_KEYS.TEAMS, 'list'],
+      })
 
       const previousCaches = updateTeamListCaches(queryClient, (data) => {
-        const teamIdSet = new Set(teamIds);
+        const teamIdSet = new Set(teamIds)
         const filteredTeams = data.data.data.filter(
-          (team) => !teamIdSet.has(team.team_group_id.toString())
-        );
+          (team) => !teamIdSet.has(team.team_group_id.toString()),
+        )
 
         return {
           ...data,
           data: {
             ...data.data,
             data: filteredTeams,
-            item_total: Math.max(
-              0,
-              data.data.item_total - teamIds.length
-            ),
+            item_total: Math.max(0, data.data.item_total - teamIds.length),
           },
-        } satisfies TeamListQueryResponse;
-      });
+        } satisfies TeamListQueryResponse
+      })
 
-      return { previousCaches } satisfies TeamMutationContext;
+      return { previousCaches } satisfies TeamMutationContext
     },
     onError: (_error, _teamIds, context) => {
       if (context?.previousCaches) {
-        restoreTeamListCaches(queryClient, context.previousCaches);
+        restoreTeamListCaches(queryClient, context.previousCaches)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.TEAMS, "list"],
-      });
+        queryKey: [QUERY_KEYS.TEAMS, 'list'],
+      })
     },
-  });
-};
+  })
+}

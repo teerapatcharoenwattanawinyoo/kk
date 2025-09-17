@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react'
 
 interface SearchIconProps {
-  width?: number;
-  height?: number;
-  fill?: string;
-  className?: string;
+  width?: number
+  height?: number
+  fill?: string
+  className?: string
 }
 
 export const SearchIcon: React.FC<SearchIconProps> = ({
   width = 18,
   height = 18,
-  fill = "#A1B1D1",
-  className = "",
+  fill = '#A1B1D1',
+  className = '',
 }) => (
   <svg
     width={width}
@@ -28,4 +28,4 @@ export const SearchIcon: React.FC<SearchIconProps> = ({
       fill={fill}
     />
   </svg>
-);
+)

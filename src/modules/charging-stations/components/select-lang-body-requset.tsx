@@ -1,54 +1,54 @@
-"use client";
+'use client'
 
-import { Button } from "@/ui/atoms/button";
-import Image from "next/image";
-import { useState } from "react";
+import { Button } from '@/ui/atoms/button'
+import Image from 'next/image'
+import { useState } from 'react'
 
 interface Language {
-  code: string;
-  name: string;
-  flag: string;
-  alt: string;
+  code: string
+  name: string
+  flag: string
+  alt: string
 }
 
 interface LanguageSelectorBodyRequestProps {
-  onLanguageChange?: (languageCode: string) => void;
-  defaultLanguage?: string;
+  onLanguageChange?: (languageCode: string) => void
+  defaultLanguage?: string
 }
 
 export function LanguageSelectorBodyRequest({
   onLanguageChange,
-  defaultLanguage = "th",
+  defaultLanguage = 'th',
 }: LanguageSelectorBodyRequestProps) {
   const languages: Language[] = [
     {
-      code: "th",
-      name: "TH",
-      flag: "/assets/images/flags/th-flag.png",
-      alt: "TH",
+      code: 'th',
+      name: 'TH',
+      flag: '/assets/images/flags/th-flag.png',
+      alt: 'TH',
     },
     {
-      code: "en",
-      name: "EN",
-      flag: "/assets/images/flags/uk-flag.png",
-      alt: "EN",
+      code: 'en',
+      name: 'EN',
+      flag: '/assets/images/flags/uk-flag.png',
+      alt: 'EN',
     },
     {
-      code: "lo",
-      name: "LAOS",
-      flag: "/assets/images/flags/laos-flag.png",
-      alt: "LAOS",
+      code: 'lo',
+      name: 'LAOS',
+      flag: '/assets/images/flags/laos-flag.png',
+      alt: 'LAOS',
     },
-  ];
+  ]
 
-  const [currentLanguage, setCurrentLanguage] = useState(defaultLanguage);
+  const [currentLanguage, setCurrentLanguage] = useState(defaultLanguage)
 
   const handleLanguageClick = (languageCode: string) => {
-    setCurrentLanguage(languageCode);
+    setCurrentLanguage(languageCode)
     if (onLanguageChange) {
-      onLanguageChange(languageCode);
+      onLanguageChange(languageCode)
     }
-  };
+  }
 
   return (
     <div className="flex gap-2">
@@ -56,7 +56,7 @@ export function LanguageSelectorBodyRequest({
         <Button
           key={language.code}
           type="button"
-          variant={currentLanguage === language.code ? "default" : "outline"}
+          variant={currentLanguage === language.code ? 'default' : 'outline'}
           size="sm"
           className="w-18 flex h-8 items-center justify-center gap-1 px-4"
           onClick={() => handleLanguageClick(language.code)}
@@ -72,5 +72,5 @@ export function LanguageSelectorBodyRequest({
         </Button>
       ))}
     </div>
-  );
+  )
 }

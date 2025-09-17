@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -9,16 +9,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Download } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
+} from '@/components/ui/dialog'
+import { Download } from 'lucide-react'
+import Image from 'next/image'
+import { useState } from 'react'
 
 interface QrPreviewDialogProps {
-  qrUrl: string;
-  connectorName?: string;
-  connectorId?: string | number;
-  children: React.ReactNode;
+  qrUrl: string
+  connectorName?: string
+  connectorId?: string | number
+  children: React.ReactNode
 }
 
 export function QrPreviewDialogDuplicate({
@@ -27,34 +27,34 @@ export function QrPreviewDialogDuplicate({
   connectorId,
   children,
 }: QrPreviewDialogProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
 
   const handleDownload = async () => {
     try {
-      if (qrUrl.startsWith("data:")) {
-        const link = document.createElement("a");
-        link.href = qrUrl;
-        link.download = `qr-code-${connectorName || connectorId || "connector"}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      if (qrUrl.startsWith('data:')) {
+        const link = document.createElement('a')
+        link.href = qrUrl
+        link.download = `qr-code-${connectorName || connectorId || 'connector'}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       } else {
-        const response = await fetch(qrUrl);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `qr-code-${connectorName || connectorId || "connector"}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        const response = await fetch(qrUrl)
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `qr-code-${connectorName || connectorId || 'connector'}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
       }
     } catch (error) {
-      console.error("Failed to download QR code:", error);
+      console.error('Failed to download QR code:', error)
     }
-  };
+  }
 
   return (
     <Dialog>
@@ -73,19 +73,13 @@ export function QrPreviewDialogDuplicate({
             {/* Top row: Title + Badge */}
             <div className="mb-6 flex items-start justify-between">
               <div className="space-y-1">
-                <h3 className="text-lg font-bold text-primary">
-                  {connectorName}
-                </h3>
+                <h3 className="text-lg font-bold text-primary">{connectorName}</h3>
                 <p className="text-sm text-foreground">
-                  Connector ID :{" "}
-                  <span className="font-semibold text-foreground">
-                    {connectorId}
-                  </span>
+                  Connector ID :{' '}
+                  <span className="font-semibold text-foreground">{connectorId}</span>
                 </p>
               </div>
-              <Badge className="rounded-full px-4 py-2 text-white">
-                ⚡ SCAN TO CHARGE
-              </Badge>
+              <Badge className="rounded-full px-4 py-2 text-white">⚡ SCAN TO CHARGE</Badge>
             </div>
 
             {/* QR Container */}
@@ -100,9 +94,7 @@ export function QrPreviewDialogDuplicate({
               {/* Error State */}
               {hasError && (
                 <div className="flex h-full w-full items-center justify-center rounded-xl border-2 border-dashed border-primary/30 bg-primary/5">
-                  <p className="text-sm text-primary/60">
-                    Failed to load QR code
-                  </p>
+                  <p className="text-sm text-primary/60">Failed to load QR code</p>
                 </div>
               )}
 
@@ -114,14 +106,14 @@ export function QrPreviewDialogDuplicate({
                   width={240}
                   height={240}
                   className={`rounded-xl transition-opacity duration-300 ${
-                    isLoading ? "opacity-0" : "opacity-100"
+                    isLoading ? 'opacity-0' : 'opacity-100'
                   } [image-rendering:pixelated]`}
                   priority
                   unoptimized
                   onLoad={() => setIsLoading(false)}
                   onError={() => {
-                    setIsLoading(false);
-                    setHasError(true);
+                    setIsLoading(false)
+                    setHasError(true)
                   }}
                 />
               )}
@@ -148,7 +140,7 @@ export function QrPreviewDialogDuplicate({
             <Button
               onClick={handleDownload}
               type="button"
-              variant={"default"}
+              variant={'default'}
               className="flex items-center gap-3"
               disabled={isLoading}
             >
@@ -159,5 +151,5 @@ export function QrPreviewDialogDuplicate({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

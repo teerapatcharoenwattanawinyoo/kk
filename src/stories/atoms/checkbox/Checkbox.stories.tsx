@@ -1,47 +1,47 @@
-import { Checkbox } from "@/ui/atoms/checkbox";
-import { Label } from "@/ui/atoms/label";
+import { Checkbox } from '@/ui/atoms/checkbox'
+import { Label } from '@/ui/atoms/label'
 
 const meta = {
-  title: "Atoms/Checkbox",
+  title: 'Atoms/Checkbox',
   component: Checkbox,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     disabled: {
-      control: { type: "boolean" },
+      control: { type: 'boolean' },
     },
     checked: {
-      control: { type: "boolean" },
+      control: { type: 'boolean' },
     },
   },
-};
+}
 
-export default meta;
+export default meta
 
 export const Default = {
   args: {},
-};
+}
 
 export const Checked = {
   args: {
     checked: true,
   },
-};
+}
 
 export const Disabled = {
   args: {
     disabled: true,
   },
-};
+}
 
 export const DisabledChecked = {
   args: {
     disabled: true,
     checked: true,
   },
-};
+}
 
 export const WithLabel = {
   render: () => (
@@ -50,7 +50,7 @@ export const WithLabel = {
       <Label htmlFor="terms">Accept terms and conditions</Label>
     </div>
   ),
-};
+}
 
 export const WithDescription = {
   render: () => (
@@ -59,12 +59,10 @@ export const WithDescription = {
         <Checkbox id="notifications" />
         <Label htmlFor="notifications">Email notifications</Label>
       </div>
-      <p className="text-sm text-muted-foreground">
-        Receive emails about your account activity.
-      </p>
+      <p className="text-sm text-muted-foreground">Receive emails about your account activity.</p>
     </div>
   ),
-};
+}
 
 export const MultipleChoices = {
   render: () => (
@@ -90,4 +88,4 @@ export const MultipleChoices = {
       </div>
     </div>
   ),
-};
+}

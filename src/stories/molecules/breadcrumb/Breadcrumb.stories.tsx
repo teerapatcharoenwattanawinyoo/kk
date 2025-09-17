@@ -6,20 +6,20 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/ui/molecules/breadcrumb";
-import type { Meta, StoryObj } from "@storybook/react";
+} from '@/ui/molecules/breadcrumb'
+import type { Meta, StoryObj } from '@storybook/react'
 
 const meta: Meta<typeof Breadcrumb> = {
-  title: "Molecules/Breadcrumb",
+  title: 'Molecules/Breadcrumb',
   component: Breadcrumb,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs'],
+}
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   render: () => (
@@ -39,7 +39,7 @@ export const Default: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-};
+}
 
 export const WithDropdown: Story = {
   render: () => (
@@ -63,7 +63,7 @@ export const WithDropdown: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-};
+}
 
 export const LongPath: Story = {
   render: () => (
@@ -82,9 +82,7 @@ export const LongPath: Story = {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink href="/docs/components/navigation">
-            Navigation
-          </BreadcrumbLink>
+          <BreadcrumbLink href="/docs/components/navigation">Navigation</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
@@ -93,7 +91,7 @@ export const LongPath: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-};
+}
 
 export const CustomSeparator: Story = {
   render: () => (
@@ -117,7 +115,7 @@ export const CustomSeparator: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-};
+}
 
 export const FileSystem: Story = {
   render: () => (
@@ -145,7 +143,7 @@ export const FileSystem: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-};
+}
 
 export const ECommerce: Story = {
   render: () => (
@@ -160,15 +158,11 @@ export const ECommerce: Story = {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink href="/electronics/computers">
-            Computers
-          </BreadcrumbLink>
+          <BreadcrumbLink href="/electronics/computers">Computers</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink href="/electronics/computers/laptops">
-            Laptops
-          </BreadcrumbLink>
+          <BreadcrumbLink href="/electronics/computers/laptops">Laptops</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
@@ -177,4 +171,4 @@ export const ECommerce: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-};
+}

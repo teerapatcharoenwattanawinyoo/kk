@@ -3,27 +3,27 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/ui/organisms/accordion";
+} from '@/ui/organisms/accordion'
 
 const meta = {
-  title: "Organisms/Accordion",
+  title: 'Organisms/Accordion',
   component: Accordion,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     type: {
-      control: { type: "radio" },
-      options: ["single", "multiple"],
+      control: { type: 'radio' },
+      options: ['single', 'multiple'],
     },
     collapsible: {
-      control: { type: "boolean" },
+      control: { type: 'boolean' },
     },
   },
-};
+}
 
-export default meta;
+export default meta
 
 export const Default = {
   args: {},
@@ -38,8 +38,7 @@ export const Default = {
       <AccordionItem value="item-2">
         <AccordionTrigger>Is it styled?</AccordionTrigger>
         <AccordionContent>
-          Yes. It comes with default styles that matches the other components'
-          aesthetic.
+          Yes. It comes with default styles that matches the other components' aesthetic.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
@@ -50,7 +49,7 @@ export const Default = {
       </AccordionItem>
     </Accordion>
   ),
-};
+}
 
 export const Multiple = {
   render: () => (
@@ -80,13 +79,13 @@ export const Multiple = {
       <AccordionItem value="item-3">
         <AccordionTrigger>Usage</AccordionTrigger>
         <AccordionContent>
-          Import the components and use them in your React application. See the
-          documentation for detailed examples.
+          Import the components and use them in your React application. See the documentation for
+          detailed examples.
         </AccordionContent>
       </AccordionItem>
     </Accordion>
   ),
-};
+}
 
 export const FAQ = {
   render: () => (
@@ -96,11 +95,9 @@ export const FAQ = {
         <AccordionItem value="faq-1">
           <AccordionTrigger>What is your return policy?</AccordionTrigger>
           <AccordionContent>
-            We offer a 30-day return policy for all items in their original
-            condition. Items must be returned with original packaging and
-            receipt. Shipping costs for returns are the customer's
-            responsibility unless the item was defective or damaged upon
-            arrival.
+            We offer a 30-day return policy for all items in their original condition. Items must be
+            returned with original packaging and receipt. Shipping costs for returns are the
+            customer's responsibility unless the item was defective or damaged upon arrival.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="faq-2">
@@ -120,8 +117,7 @@ export const FAQ = {
                 </li>
               </ul>
               <p className="text-sm text-muted-foreground">
-                Orders placed after 2 PM EST will be processed the next business
-                day.
+                Orders placed after 2 PM EST will be processed the next business day.
               </p>
             </div>
           </AccordionContent>
@@ -129,24 +125,23 @@ export const FAQ = {
         <AccordionItem value="faq-3">
           <AccordionTrigger>Do you ship internationally?</AccordionTrigger>
           <AccordionContent>
-            Yes, we ship to most countries worldwide. International shipping
-            rates and delivery times vary by destination. Additional customs
-            fees may apply and are the responsibility of the recipient.
+            Yes, we ship to most countries worldwide. International shipping rates and delivery
+            times vary by destination. Additional customs fees may apply and are the responsibility
+            of the recipient.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="faq-4">
           <AccordionTrigger>How can I track my order?</AccordionTrigger>
           <AccordionContent>
-            Once your order ships, you'll receive a tracking number via email.
-            You can also log into your account on our website to view order
-            status and tracking information. Tracking updates may take 24-48
-            hours to appear after shipment.
+            Once your order ships, you'll receive a tracking number via email. You can also log into
+            your account on our website to view order status and tracking information. Tracking
+            updates may take 24-48 hours to appear after shipment.
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>
   ),
-};
+}
 
 export const ProductSpecs = {
   render: () => (
@@ -200,4 +195,4 @@ export const ProductSpecs = {
       </Accordion>
     </div>
   ),
-};
+}

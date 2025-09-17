@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 const FetchLoader = () => {
   return (
@@ -8,7 +8,7 @@ const FetchLoader = () => {
         <p className="mt-2 text-foreground">กำลังโหลดข้อมูล...</p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default FetchLoader;
+export default FetchLoader

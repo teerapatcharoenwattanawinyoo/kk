@@ -1,31 +1,31 @@
-import type { UserData } from "../schemas/user";
+import type { UserData } from '../schemas/user'
 
 /**
  * Get the partner_id (customer_id) from localStorage
  * @returns The customer_id if available, null otherwise
  */
 export function getPartnerIdFromStorage(): string | null {
-  if (typeof window === "undefined") {
-    return null;
+  if (typeof window === 'undefined') {
+    return null
   }
 
   try {
-    const savedData = localStorage.getItem("user_data");
+    const savedData = localStorage.getItem('user_data')
     if (!savedData) {
-      return null;
+      return null
     }
 
-    const userData: UserData = JSON.parse(savedData);
-    const customerId = userData.user?.customer_id;
+    const userData: UserData = JSON.parse(savedData)
+    const customerId = userData.user?.customer_id
 
     if (!customerId) {
-      return null;
+      return null
     }
 
-    return customerId.toString();
+    return customerId.toString()
   } catch (error) {
-    console.error("Error getting partner_id from localStorage:", error);
-    return null;
+    console.error('Error getting partner_id from localStorage:', error)
+    return null
   }
 }
 
@@ -34,29 +34,29 @@ export function getPartnerIdFromStorage(): string | null {
  * @returns The user data if available, null otherwise
  */
 export function getUserDataFromStorage(): UserData | null {
-  if (typeof window === "undefined") {
-    return null;
+  if (typeof window === 'undefined') {
+    return null
   }
 
   try {
-    const savedData = localStorage.getItem("user_data");
+    const savedData = localStorage.getItem('user_data')
     if (!savedData) {
-      return null;
+      return null
     }
 
-    const userData: UserData = JSON.parse(savedData);
+    const userData: UserData = JSON.parse(savedData)
 
-    const isExpired = Date.now() - userData.timestamp > 7 * 24 * 60 * 60 * 1000;
+    const isExpired = Date.now() - userData.timestamp > 7 * 24 * 60 * 60 * 1000
 
     if (isExpired) {
-      localStorage.removeItem("user_data");
-      return null;
+      localStorage.removeItem('user_data')
+      return null
     }
 
-    return userData;
+    return userData
   } catch (error) {
-    console.error("Error getting user data from localStorage:", error);
-    return null;
+    console.error('Error getting user data from localStorage:', error)
+    return null
   }
 }
 
@@ -65,21 +65,21 @@ export function getUserDataFromStorage(): UserData | null {
  * @returns The team_host_id if available, null otherwise
  */
 export function getTeamHostIdFromStorage(): string | null {
-  if (typeof window === "undefined") {
-    return null;
+  if (typeof window === 'undefined') {
+    return null
   }
 
   try {
-    const userData = getUserDataFromStorage();
-    const teamHostId = userData?.user?.team_host_id;
+    const userData = getUserDataFromStorage()
+    const teamHostId = userData?.user?.team_host_id
 
     if (!teamHostId) {
-      return null;
+      return null
     }
 
-    return teamHostId.toString();
+    return teamHostId.toString()
   } catch (error) {
-    console.error("Error getting team_host_id from localStorage:", error);
-    return null;
+    console.error('Error getting team_host_id from localStorage:', error)
+    return null
   }
 }

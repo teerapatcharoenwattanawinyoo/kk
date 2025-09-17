@@ -1,18 +1,18 @@
-import * as React from "react";
+import * as React from 'react'
 
-export type CheckIconProps = React.ComponentPropsWithoutRef<"svg"> & {
+export type CheckIconProps = React.ComponentPropsWithoutRef<'svg'> & {
   /** Optional explicit width; defaults to typographic scaling. */
-  width?: number | string;
+  width?: number | string
   /** Optional explicit height; defaults to typographic scaling. */
-  height?: number | string;
+  height?: number | string
   /** Optional explicit color. If omitted, the icon uses `currentColor`. */
-  color?: string;
-};
+  color?: string
+}
 
 export const CheckIcon: React.FC<CheckIconProps> = ({
-  className = "w-5 h-5",
-  width = "1em",
-  height = "1em",
+  className = 'w-5 h-5',
+  width = '1em',
+  height = '1em',
   color,
   style,
   ...props
@@ -26,7 +26,7 @@ export const CheckIcon: React.FC<CheckIconProps> = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      aria-hidden={props["aria-label"] ? undefined : true}
+      aria-hidden={props['aria-label'] ? undefined : true}
       // allow overriding icon color via prop or external CSS (currentColor)
       style={color ? { color, ...style } : style}
       preserveAspectRatio="xMidYMid meet"
@@ -61,23 +61,11 @@ export const CheckIcon: React.FC<CheckIconProps> = ({
           />
           <feOffset dy={1} />
           <feGaussianBlur stdDeviation={2} />
-          <feColorMatrix
-            type="matrix"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"
-          />
-          <feBlend
-            mode="normal"
-            in2="BackgroundImageFix"
-            result="effect1_dropShadow"
-          />
-          <feBlend
-            mode="normal"
-            in="SourceGraphic"
-            in2="effect1_dropShadow"
-            result="shape"
-          />
+          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" />
+          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow" />
+          <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
         </filter>
       </defs>
     </svg>
-  );
-};
+  )
+}

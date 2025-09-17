@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   Select,
@@ -6,19 +6,19 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/ui/molecules/select";
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+} from '@/ui/molecules/select'
+import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons'
 
-import { colors } from "@/lib/utils/colors";
-import { Button } from "@/ui/atoms/button";
+import { colors } from '@/lib/utils/colors'
+import { Button } from '@/ui/atoms/button'
 
 interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  itemsPerPage: number;
-  totalItems: number;
-  onPageChange: (page: number) => void;
-  onItemsPerPageChange: (value: number) => void;
+  currentPage: number
+  totalPages: number
+  itemsPerPage: number
+  totalItems: number
+  onPageChange: (page: number) => void
+  onItemsPerPageChange: (value: number) => void
 }
 
 export const Pagination = ({
@@ -29,8 +29,8 @@ export const Pagination = ({
   onPageChange,
   onItemsPerPageChange,
 }: PaginationProps) => {
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  const startItem = (currentPage - 1) * itemsPerPage + 1
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
   return (
     <div className="flex items-center justify-between px-2 py-4">
@@ -39,10 +39,7 @@ export const Pagination = ({
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p
-            className="text-sm font-medium"
-            style={{ color: colors.neutral[550] }}
-          >
+          <p className="text-sm font-medium" style={{ color: colors.neutral[550] }}>
             Rows per page
           </p>
           <Select
@@ -89,5 +86,5 @@ export const Pagination = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

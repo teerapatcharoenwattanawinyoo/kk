@@ -1,12 +1,9 @@
-"use client";
+'use client'
 
-import { ImageUploadFormIcon } from "@/components/icons";
-import { useI18n } from "@/lib/i18n";
-import { colors } from "@/lib/utils/colors";
-import {
-  teamFormDataSchema,
-  type TeamFormData,
-} from "@/modules/teams/schemas";
+import { ImageUploadFormIcon } from '@/components/icons'
+import { useI18n } from '@/lib/i18n'
+import { colors } from '@/lib/utils/colors'
+import { teamFormDataSchema, type TeamFormData } from '@/modules/teams/schemas'
 import {
   Button,
   Card,
@@ -18,29 +15,25 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/ui";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
-import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+} from '@/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { X } from 'lucide-react'
+import Image from 'next/image'
+import { useCallback, useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 interface TeamAddFormProps {
-  onSubmit: (data: TeamFormData) => Promise<void>;
-  isSubmitting?: boolean;
-  teamHostId?: string | null;
-  onValidationChange?: (isValid: boolean) => void;
+  onSubmit: (data: TeamFormData) => Promise<void>
+  isSubmitting?: boolean
+  teamHostId?: string | null
+  onValidationChange?: (isValid: boolean) => void
 }
 
-const TeamAddForm = ({
-  onSubmit,
-  teamHostId,
-  onValidationChange,
-}: TeamAddFormProps) => {
-  const { t } = useI18n();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+const TeamAddForm = ({ onSubmit, teamHostId, onValidationChange }: TeamAddFormProps) => {
+  const { t } = useI18n()
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
 
   const {
     register,
@@ -51,183 +44,176 @@ const TeamAddForm = ({
   } = useForm<TeamFormData>({
     resolver: zodResolver(teamFormDataSchema),
     defaultValues: {
-      team_name: "",
-      team_email: "",
-      team_phone: "",
-      team_status: "publish",
+      team_name: '',
+      team_email: '',
+      team_phone: '',
+      team_status: 'publish',
       file: undefined,
     },
-    mode: "onChange",
-  });
+    mode: 'onChange',
+  })
 
-  const watchedValues = watch();
+  const watchedValues = watch()
 
   const onFormSubmit = async (data: TeamFormData) => {
     try {
       // Debug: ดูข้อมูลที่จะส่ง
-      console.log("Form data before submit:", data);
-      console.log("Selected file:", selectedFile);
+      console.log('Form data before submit:', data)
+      console.log('Selected file:', selectedFile)
 
       const formDataWithFile = {
         ...data,
         file: selectedFile || undefined,
-      };
+      }
 
-      console.log("Final data to submit:", formDataWithFile);
-      await onSubmit(formDataWithFile);
+      console.log('Final data to submit:', formDataWithFile)
+      await onSubmit(formDataWithFile)
     } catch (error) {
-      console.error("Error creating team:", error);
-      alert(t("team.create_team_failed"));
+      console.error('Error creating team:', error)
+      alert(t('team.create_team_failed'))
     }
-  };
+  }
 
   const handleFileSelect = useCallback(
     (file: File) => {
       // Validate file type
-      const validTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/jpg",
-        "application/pdf",
-      ];
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
       if (!validTypes.includes(file.type)) {
-        alert(t("team.invalid_file_type"));
-        return;
+        alert(t('team.invalid_file_type'))
+        return
       }
 
       // Validate file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
-        alert(t("team.file_too_large"));
-        return;
+        alert(t('team.file_too_large'))
+        return
       }
 
-      setSelectedFile(file);
-      setValue("file", file);
+      setSelectedFile(file)
+      setValue('file', file)
 
       // Create preview URL for images
-      if (file.type.startsWith("image/")) {
-        const url = URL.createObjectURL(file);
-        setPreviewUrl(url);
+      if (file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file)
+        setPreviewUrl(url)
       } else {
-        setPreviewUrl(null);
+        setPreviewUrl(null)
       }
     },
-    [t, setValue]
-  );
+    [t, setValue],
+  )
 
   const handleFileInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
+      const file = e.target.files?.[0]
       if (file) {
-        handleFileSelect(file);
+        handleFileSelect(file)
       }
     },
-    [handleFileSelect]
-  );
+    [handleFileSelect],
+  )
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
+    e.preventDefault()
+    setIsDragging(true)
+  }, [])
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
+    e.preventDefault()
+    setIsDragging(false)
+  }, [])
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
+      e.preventDefault()
+      setIsDragging(false)
 
-      const file = e.dataTransfer.files[0];
+      const file = e.dataTransfer.files[0]
       if (file) {
-        handleFileSelect(file);
+        handleFileSelect(file)
       }
     },
-    [handleFileSelect]
-  );
+    [handleFileSelect],
+  )
 
   const handleRemoveFile = useCallback(() => {
-    setSelectedFile(null);
-    setValue("file", undefined);
+    setSelectedFile(null)
+    setValue('file', undefined)
     if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
+      URL.revokeObjectURL(previewUrl)
+      setPreviewUrl(null)
     }
-  }, [previewUrl, setValue]);
+  }, [previewUrl, setValue])
 
   const triggerFileInput = useCallback(async () => {
-    if ("showOpenFilePicker" in window) {
+    if ('showOpenFilePicker' in window) {
       try {
         const fileHandles = await (
           window as unknown as {
             showOpenFilePicker: (options: {
               types: Array<{
-                description: string;
-                accept: Record<string, string[]>;
-              }>;
-              excludeAcceptAllOption?: boolean;
-              multiple?: boolean;
-              startIn?: string;
-            }) => Promise<Array<{ getFile: () => Promise<File> }>>;
+                description: string
+                accept: Record<string, string[]>
+              }>
+              excludeAcceptAllOption?: boolean
+              multiple?: boolean
+              startIn?: string
+            }) => Promise<Array<{ getFile: () => Promise<File> }>>
           }
         ).showOpenFilePicker({
           types: [
             {
-              description: "Team Images",
+              description: 'Team Images',
               accept: {
-                "image/png": [".png"],
-                "image/jpeg": [".jpg", ".jpeg"],
+                'image/png': ['.png'],
+                'image/jpeg': ['.jpg', '.jpeg'],
               },
             },
           ],
           excludeAcceptAllOption: true,
           multiple: false,
-          startIn: "desktop",
-        });
+          startIn: 'desktop',
+        })
 
-        const file = await fileHandles[0].getFile();
+        const file = await fileHandles[0].getFile()
         if (file) {
-          handleFileSelect(file);
+          handleFileSelect(file)
         }
       } catch {
-        const input = document.getElementById("file-input") as HTMLInputElement;
+        const input = document.getElementById('file-input') as HTMLInputElement
 
-        input?.click();
+        input?.click()
       }
     } else {
-      const input = document.getElementById("file-input") as HTMLInputElement;
-      input?.click();
+      const input = document.getElementById('file-input') as HTMLInputElement
+      input?.click()
     }
-  }, [handleFileSelect]);
+  }, [handleFileSelect])
 
   // ตรวจสอบความครบถ้วนของข้อมูล
   useEffect(() => {
     const allFieldsValid =
-      watchedValues.team_name.trim() !== "" &&
-      watchedValues.team_email.trim() !== "" &&
-      watchedValues.team_phone.trim() !== "" &&
-      watchedValues.team_status.trim() !== "";
+      watchedValues.team_name.trim() !== '' &&
+      watchedValues.team_email.trim() !== '' &&
+      watchedValues.team_phone.trim() !== '' &&
+      watchedValues.team_status.trim() !== ''
 
-    onValidationChange?.(allFieldsValid && isValid);
-  }, [watchedValues, isValid, onValidationChange]);
+    onValidationChange?.(allFieldsValid && isValid)
+  }, [watchedValues, isValid, onValidationChange])
 
   useEffect(() => {
     return () => {
       if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
+        URL.revokeObjectURL(previewUrl)
       }
-    };
-  }, [previewUrl]);
+    }
+  }, [previewUrl])
 
   return (
     <div>
       {/* แสดงข้อมูล team_host_id  */}
       {teamHostId && (
-        <div className="mb-4 text-xs text-gray-500">
-          (DEBUG:) Team Host ID: {teamHostId}
-        </div>
+        <div className="mb-4 text-xs text-gray-500">(DEBUG:) Team Host ID: {teamHostId}</div>
       )}
 
       {/* Form */}
@@ -238,7 +224,7 @@ const TeamAddForm = ({
               {/* Left Column - File Upload */}
               <div
                 className="flex flex-1 items-start justify-center border-b pb-6 pt-2 md:pb-0 md:pt-4 lg:border-b-0 lg:border-r lg:pr-8"
-                style={{ minHeight: "max(300px, 100%)" }}
+                style={{ minHeight: 'max(300px, 100%)' }}
               >
                 <div className="mt-0 w-[181px]">
                   {/* Hidden file input */}
@@ -252,12 +238,12 @@ const TeamAddForm = ({
 
                   {/* Upload area */}
                   <div
-                    className={`flex h-[200px] w-[200px] cursor-pointer border-dashed border-3 flex-col items-center justify-center space-y-4 rounded-lg transition-all ${
+                    className={`border-3 flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center space-y-4 rounded-lg border-dashed transition-all ${
                       isDragging
                         ? `border-[${colors.primary[500]}] bg-[${colors.primary[500]}]/5`
                         : selectedFile
-                          ? "border-success bg-success/10"
-                          : "bg-muted"
+                          ? 'border-success bg-success/10'
+                          : 'bg-muted'
                     }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -277,13 +263,13 @@ const TeamAddForm = ({
                         />
                         <Button
                           type="button"
-                          variant={"destructive"}
-                          size={"icon"}
+                          variant={'destructive'}
+                          size={'icon'}
                           onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveFile();
+                            e.stopPropagation()
+                            handleRemoveFile()
                           }}
-                          className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full border "
+                          className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full border"
                         >
                           <X className="size-3" />
                         </Button>
@@ -306,21 +292,19 @@ const TeamAddForm = ({
                             />
                           </svg>
                         </div>
-                        <p className="text-sm font-medium text-green-700">
-                          {selectedFile.name}
-                        </p>
+                        <p className="text-sm font-medium text-green-700">{selectedFile.name}</p>
                         <p className="text-xs text-green-600">
                           {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                         </p>
                         <Button
                           type="button"
                           onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveFile();
+                            e.stopPropagation()
+                            handleRemoveFile()
                           }}
                           className="text-xs"
                         >
-                          {t("team.remove_file")}
+                          {t('team.remove_file')}
                         </Button>
                       </div>
                     ) : (
@@ -330,11 +314,9 @@ const TeamAddForm = ({
                           <ImageUploadFormIcon className="text-primary" />
                         </div>
                         <p className="text-sm font-medium text-gray-700">
-                          {t("team.image_upload_label")}
+                          {t('team.image_upload_label')}
                         </p>
-                        <p className="text-xs text-gray-500">
-                          {t("team.supported_formats")}
-                        </p>
+                        <p className="text-xs text-gray-500">{t('team.supported_formats')}</p>
                       </div>
                     )}
                   </div>
@@ -345,12 +327,12 @@ const TeamAddForm = ({
               <div className="flex-1 space-y-4 px-4 pb-6 pt-6 md:px-6 md:pb-8 md:pt-8 lg:pl-8 lg:pr-0">
                 {/* Team Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="team_name">{t("team.forms.team_name")}</Label>
+                  <Label htmlFor="team_name">{t('team.forms.team_name')}</Label>
                   <Input
                     id="team_name"
-                    {...register("team_name")}
+                    {...register('team_name')}
                     placeholder="Specify"
-                    className={`bg-muted ${errors.team_name ? "border-destructive" : ""}`}
+                    className={`bg-muted ${errors.team_name ? 'border-destructive' : ''}`}
                   />
                   {errors.team_name && (
                     <p className="text-sm text-destructive">
@@ -361,50 +343,41 @@ const TeamAddForm = ({
 
                 {/* Email */}
                 <div className="space-y-2">
-                  <Label htmlFor="team_email">{t("team.forms.email")}</Label>
+                  <Label htmlFor="team_email">{t('team.forms.email')}</Label>
                   <Input
                     id="team_email"
                     type="email"
-                    {...register("team_email")}
+                    {...register('team_email')}
                     placeholder="Specify"
                     className="bg-muted"
                   />
                   {errors.team_email && (
-                    <p className="text-sm text-destructive">
-                      {errors.team_email.message}
-                    </p>
+                    <p className="text-sm text-destructive">{errors.team_email.message}</p>
                   )}
                 </div>
 
                 {/* Phone Number */}
                 <div className="space-y-2">
-                  <Label htmlFor="team_phone">
-                    {t("team.forms.phone_number")}
-                  </Label>
+                  <Label htmlFor="team_phone">{t('team.forms.phone_number')}</Label>
                   <Input
                     id="team_phone"
                     type="tel"
-                    {...register("team_phone")}
+                    {...register('team_phone')}
                     placeholder="Specify"
                     className="bg-muted"
                   />
                   {errors.team_phone && (
-                    <p className="text-sm text-destructive">
-                      {errors.team_phone.message}
-                    </p>
+                    <p className="text-sm text-destructive">{errors.team_phone.message}</p>
                   )}
                 </div>
 
                 {/* Status */}
                 <div className="space-y-2">
-                  <Label htmlFor="team_status">{t("team.forms.status")}</Label>
+                  <Label htmlFor="team_status">{t('team.forms.status')}</Label>
                   <Select
                     value={watchedValues.team_status}
                     onValueChange={(value) =>
-                      setValue(
-                        "team_status",
-                        value as "publish" | "draft" | "inactive"
-                      )
+                      setValue('team_status', value as 'publish' | 'draft' | 'inactive')
                     }
                   >
                     <SelectTrigger className="w-full bg-muted">
@@ -418,9 +391,7 @@ const TeamAddForm = ({
                     </SelectContent>
                   </Select>
                   {errors.team_status && (
-                    <p className="text-sm text-destructive">
-                      {errors.team_status.message}
-                    </p>
+                    <p className="text-sm text-destructive">{errors.team_status.message}</p>
                   )}
                 </div>
               </div>
@@ -429,7 +400,7 @@ const TeamAddForm = ({
         </Card>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default TeamAddForm;
+export default TeamAddForm

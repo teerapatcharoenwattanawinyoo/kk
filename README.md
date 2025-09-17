@@ -1,11 +1,12 @@
-
 ![Logo](https://onecharge.co.th/img/2025/logo-onecharge.svg)
 &nbsp;
 
 &nbsp;
+
 # OneCharge Partner (Backoffice)
 
 Front-End dashboard for OneCharge partners to manage teams/groups, stations, chargers, transactions, revenue/taxes, and members.
+
 ## Tech Stack
 
 **Framework:** `Next.js 15 (App Router)` , `React 19` , `TypeScript`
@@ -16,14 +17,11 @@ Front-End dashboard for OneCharge partners to manage teams/groups, stations, cha
 
 **Forms/Validation:** `react-hook-form`,`zod`,`@hookform/resolvers`
 
-**State:**  `@tanstack/react-query`,`Zustand`
+**State:** `@tanstack/react-query`,`Zustand`
 
 **Tooling:** `ESLint`, `Prettier`, `Storybook` (Vite), `Vitest`
 
 **Runtime Environment:** `Node.js ≥ 18.x`
-
-
-
 
 ## Run Locally
 
@@ -72,6 +70,7 @@ Note: There's a `rewrites` configuration in `next.config.mjs` for proxying `"/ap
 - `pnpm check-all`: Run comprehensive lint/format/build check
 - `pnpm storybook`: Run Storybook on port 6006
 - `pnpm build-storybook`: Build static Storybook
+
 ## Deployment
 
 To deploy this project run
@@ -84,17 +83,16 @@ To deploy this project run
   pnpm build
 
 ```
+
 or
 
 ```md
-  pnpm check-all
-  pnpm pre-commit
+pnpm check-all
+pnpm pre-commit
 ```
+
 > **Note:** Run the following commands **to ensure the pipeline build passes** before deploying.
-
-
 
 ## Authors
 
 - [@DevW4Kim](https://www.github.com/octokatherine)
-

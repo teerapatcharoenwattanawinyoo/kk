@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react'
 
 interface LayersIconProps {
-  width?: number;
-  height?: number;
-  className?: string;
-  fill?: string;
+  width?: number
+  height?: number
+  className?: string
+  fill?: string
 }
 
 export const LayersIcon: React.FC<LayersIconProps> = ({
   width = 17,
   height = 17,
-  className = "",
-  fill = "#3F567F",
+  className = '',
+  fill = '#3F567F',
 }) => {
   return (
     <svg
@@ -27,5 +27,5 @@ export const LayersIcon: React.FC<LayersIconProps> = ({
         fill={fill}
       />
     </svg>
-  );
-};
+  )
+}

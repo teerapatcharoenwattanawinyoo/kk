@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { OneChargeHeader, OneChargeLogoSecondary } from "@/components/icons";
+import { OneChargeHeader, OneChargeLogoSecondary } from '@/components/icons'
 import {
   SidebarContent,
   SidebarGroup,
@@ -12,45 +12,45 @@ import {
   SidebarMenuItem,
   Sidebar as UISidebar,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { useLocale } from "@/hooks/use-locale";
-import { useI18n } from "@/lib/i18n";
-import { ArrowDownUp, LayoutDashboard, Users } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+} from '@/components/ui/sidebar'
+import { useLocale } from '@/hooks/use-locale'
+import { useI18n } from '@/lib/i18n'
+import { ArrowDownUp, LayoutDashboard, Users } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export function Sidebar() {
-  const { state, isMobile } = useSidebar();
-  const pathname = usePathname();
-  const { localizePath } = useLocale();
-  const { t } = useI18n();
+  const { state, isMobile } = useSidebar()
+  const pathname = usePathname()
+  const { localizePath } = useLocale()
+  const { t } = useI18n()
 
   const isActive = (path: string) => {
-    const localizedPath = localizePath(path);
-    if (path === "/dashboard") {
-      return pathname === localizedPath;
+    const localizedPath = localizePath(path)
+    if (path === '/dashboard') {
+      return pathname === localizedPath
     }
-    return pathname.startsWith(localizedPath);
-  };
+    return pathname.startsWith(localizedPath)
+  }
 
   const menuItems = [
     {
-      path: "/dashboard",
-      labelKey: "common.dashboard",
+      path: '/dashboard',
+      labelKey: 'common.dashboard',
       icon: <LayoutDashboard className="h-4 w-4" />,
     },
     {
-      path: "/team",
-      labelKey: "common.team",
-      href: localizePath("/team?page=1&pageSize=10"),
+      path: '/team',
+      labelKey: 'common.team',
+      href: localizePath('/team?page=1&pageSize=10'),
       icon: <Users className="h-4 w-4" />,
     },
     {
-      path: "/transaction",
-      labelKey: "common.transaction",
+      path: '/transaction',
+      labelKey: 'common.transaction',
       icon: <ArrowDownUp className="h-4 w-4" />,
     },
-  ];
+  ]
 
   return (
     <UISidebar collapsible="icon">
@@ -59,7 +59,7 @@ export function Sidebar() {
           size="lg"
           className="data-[state=open]:bg-primary data-[state=open]:text-primary"
         >
-          {state === "collapsed" && !isMobile ? (
+          {state === 'collapsed' && !isMobile ? (
             <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
               <Link
                 href="/dashboard"
@@ -87,9 +87,7 @@ export function Sidebar() {
       <SidebarContent className="px-2">
         {/* Menu group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground">
-            Menu
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -112,5 +110,5 @@ export function Sidebar() {
         </SidebarGroup>
       </SidebarContent>
     </UISidebar>
-  );
+  )
 }

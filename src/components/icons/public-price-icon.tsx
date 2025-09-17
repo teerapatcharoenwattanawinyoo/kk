@@ -1,12 +1,10 @@
-import React from "react";
+import React from 'react'
 
 interface PublicPriceIconProps {
-  className?: string;
+  className?: string
 }
 
-export const PublicPriceIcon: React.FC<PublicPriceIconProps> = ({
-  className,
-}) => (
+export const PublicPriceIcon: React.FC<PublicPriceIconProps> = ({ className }) => (
   <svg
     width="27"
     height="31"
@@ -28,4 +26,4 @@ export const PublicPriceIcon: React.FC<PublicPriceIconProps> = ({
       fill="white"
     />
   </svg>
-);
+)

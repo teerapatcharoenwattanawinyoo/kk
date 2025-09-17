@@ -1,68 +1,59 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useCallback, useState } from "react";
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useCallback, useState } from 'react'
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useLocale } from "@/hooks/use-locale";
-import { useI18n } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useLocale } from '@/hooks/use-locale'
+import { useI18n } from '@/lib/i18n'
+import { cn } from '@/lib/utils'
+import { ChevronDown } from 'lucide-react'
 
 interface StationMenuProps {
-  isMenuCollapsed: boolean;
+  isMenuCollapsed: boolean
 }
 
 export function StationMenu({ isMenuCollapsed }: StationMenuProps) {
-  const [isStationMenuOpen, setIsStationMenuOpen] = useState(true);
-  const pathname = usePathname();
-  const { t } = useI18n();
-  const { localizePath } = useLocale();
+  const [isStationMenuOpen, setIsStationMenuOpen] = useState(true)
+  const pathname = usePathname()
+  const { t } = useI18n()
+  const { localizePath } = useLocale()
 
   const toggleStationMenu = useCallback(() => {
-    setIsStationMenuOpen(!isStationMenuOpen);
-  }, [isStationMenuOpen]);
+    setIsStationMenuOpen(!isStationMenuOpen)
+  }, [isStationMenuOpen])
 
   const isActive = useCallback(
     (path: string) => {
-      const localizedPath = localizePath(path);
-      if (path === "/dashboard") {
-        return pathname === localizedPath;
+      const localizedPath = localizePath(path)
+      if (path === '/dashboard') {
+        return pathname === localizedPath
       }
-      return pathname.startsWith(localizedPath);
+      return pathname.startsWith(localizedPath)
     },
     [pathname, localizePath],
-  );
+  )
 
   return (
-    <div className={cn(isMenuCollapsed ? "w-10" : "w-full")}>
+    <div className={cn(isMenuCollapsed ? 'w-10' : 'w-full')}>
       {isMenuCollapsed ? (
         <Tooltip>
           <TooltipTrigger asChild>
             <button
               onClick={toggleStationMenu}
               className={cn(
-                "flex items-center rounded-lg transition-colors",
+                'flex items-center rounded-lg transition-colors',
                 isMenuCollapsed
-                  ? "h-12 w-12 justify-center p-0"
-                  : "w-full justify-between px-3 py-3",
-                isActive("/station") ||
-                  isActive("/charger") ||
-                  isActive("/connector")
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                  ? 'h-12 w-12 justify-center p-0'
+                  : 'w-full justify-between px-3 py-3',
+                isActive('/station') || isActive('/charger') || isActive('/connector')
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
               )}
             >
               <div
-                className={cn(
-                  "flex items-center gap-3",
-                  isMenuCollapsed ? "justify-center" : "",
-                )}
+                className={cn('flex items-center gap-3', isMenuCollapsed ? 'justify-center' : '')}
               >
                 <svg
                   width="21"
@@ -80,31 +71,20 @@ export function StationMenu({ isMenuCollapsed }: StationMenuProps) {
               </div>
             </button>
           </TooltipTrigger>
-          <TooltipContent side="right">
-            {t("navigation.station_charger_connector")}
-          </TooltipContent>
+          <TooltipContent side="right">{t('navigation.station_charger_connector')}</TooltipContent>
         </Tooltip>
       ) : (
         <button
           onClick={toggleStationMenu}
           className={cn(
-            "flex items-center rounded-lg transition-colors",
-            isMenuCollapsed
-              ? "h-12 w-12 justify-center p-0"
-              : "w-full justify-between px-3 py-3",
-            isActive("/station") ||
-              isActive("/charger") ||
-              isActive("/connector")
-              ? "bg-blue-50 text-blue-600"
-              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+            'flex items-center rounded-lg transition-colors',
+            isMenuCollapsed ? 'h-12 w-12 justify-center p-0' : 'w-full justify-between px-3 py-3',
+            isActive('/station') || isActive('/charger') || isActive('/connector')
+              ? 'bg-blue-50 text-blue-600'
+              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
           )}
         >
-          <div
-            className={cn(
-              "flex items-center gap-3",
-              isMenuCollapsed ? "justify-center" : "",
-            )}
-          >
+          <div className={cn('flex items-center gap-3', isMenuCollapsed ? 'justify-center' : '')}>
             <svg
               width="21"
               height="20"
@@ -120,16 +100,13 @@ export function StationMenu({ isMenuCollapsed }: StationMenuProps) {
             </svg>
             {!isMenuCollapsed && (
               <span className="max-w-[150px] truncate text-sm font-medium">
-                {t("navigation.station_charger_connector")}
+                {t('navigation.station_charger_connector')}
               </span>
             )}
           </div>
           {!isMenuCollapsed && (
             <ChevronDown
-              className={cn(
-                "h-4 w-4 transition-transform",
-                isStationMenuOpen ? "rotate-180" : "",
-              )}
+              className={cn('h-4 w-4 transition-transform', isStationMenuOpen ? 'rotate-180' : '')}
             />
           )}
         </button>
@@ -137,47 +114,40 @@ export function StationMenu({ isMenuCollapsed }: StationMenuProps) {
       {isStationMenuOpen && !isMenuCollapsed && (
         <div className="ml-8 mt-1 flex flex-col gap-1">
           <Link
-            href={localizePath("/station")}
+            href={localizePath('/station')}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-6 py-2 text-sm transition-colors",
-              isActive("/station") && !isActive("/station/charger")
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+              'flex items-center gap-2 rounded-lg px-6 py-2 text-sm transition-colors',
+              isActive('/station') && !isActive('/station/charger')
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
             )}
           >
-            <span className="max-w-[120px] truncate">
-              {t("common.stations")}
-            </span>
+            <span className="max-w-[120px] truncate">{t('common.stations')}</span>
           </Link>
           <Link
-            href={localizePath("/station/charger")}
+            href={localizePath('/station/charger')}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-6 py-2 text-sm transition-colors",
-              isActive("/station/charger") &&
-                !isActive("/station/charger/connector")
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+              'flex items-center gap-2 rounded-lg px-6 py-2 text-sm transition-colors',
+              isActive('/station/charger') && !isActive('/station/charger/connector')
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
             )}
           >
-            <span className="max-w-[120px] truncate">
-              {t("common.chargers")}
-            </span>
+            <span className="max-w-[120px] truncate">{t('common.chargers')}</span>
           </Link>
           <Link
-            href={localizePath("/station/charger/connector")}
+            href={localizePath('/station/charger/connector')}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-6 py-2 text-sm transition-colors",
-              isActive("/station/charger/connector")
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+              'flex items-center gap-2 rounded-lg px-6 py-2 text-sm transition-colors',
+              isActive('/station/charger/connector')
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
             )}
           >
-            <span className="max-w-[120px] truncate">
-              {t("common.connector")}
-            </span>
+            <span className="max-w-[120px] truncate">{t('common.connector')}</span>
           </Link>
         </div>
       )}
     </div>
-  );
+  )
 }

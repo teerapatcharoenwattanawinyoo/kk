@@ -16,12 +16,8 @@ import { z } from 'zod'
 const createProfileSchema = z
   .object({
     profilename: z.string().min(1, { message: 'Profile name is required' }),
-    password: z
-      .string()
-      .min(6, { message: 'Password must be at least 6 characters' }),
-    confirmPassword: z
-      .string()
-      .min(6, { message: 'Confirm password is required' }),
+    password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+    confirmPassword: z.string().min(6, { message: 'Confirm password is required' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match!',
@@ -69,8 +65,7 @@ export default function CreateProfile() {
     } catch (err: unknown) {
       setFormErrors({
         general:
-          (err as { message?: string })?.message ||
-          'Create profile failed, please try again.',
+          (err as { message?: string })?.message || 'Create profile failed, please try again.',
       })
     }
   }
@@ -112,12 +107,7 @@ export default function CreateProfile() {
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <circle
-                      cx="17"
-                      cy="17"
-                      r="17"
-                      fill="url(#paint0_linear_19372_10608)"
-                    />
+                    <circle cx="17" cy="17" r="17" fill="url(#paint0_linear_19372_10608)" />
                     <path
                       fillRule="evenodd"
                       clipRule="evenodd"
@@ -162,9 +152,7 @@ export default function CreateProfile() {
                 className={`h-12 rounded-lg ${formErrors.profilename ? 'border-destructive' : ''}`}
               />
               {formErrors.profilename && (
-                <p className="text-sm text-destructive">
-                  {formErrors.profilename}
-                </p>
+                <p className="text-sm text-destructive">{formErrors.profilename}</p>
               )}
             </div>
 
@@ -189,17 +177,11 @@ export default function CreateProfile() {
                   className="absolute inset-y-0 right-0 h-full px-3 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </Button>
               </div>
               {formErrors.password && (
-                <p className="text-sm text-destructive">
-                  {formErrors.password}
-                </p>
+                <p className="text-sm text-destructive">{formErrors.password}</p>
               )}
             </div>
 
@@ -232,16 +214,12 @@ export default function CreateProfile() {
                 </Button>
               </div>
               {formErrors.confirmPassword && (
-                <p className="text-sm text-destructive">
-                  {formErrors.confirmPassword}
-                </p>
+                <p className="text-sm text-destructive">{formErrors.confirmPassword}</p>
               )}
             </div>
 
             {/* General error */}
-            {formErrors.general && (
-              <p className="text-sm text-destructive">{formErrors.general}</p>
-            )}
+            {formErrors.general && <p className="text-sm text-destructive">{formErrors.general}</p>}
 
             <Button
               type="submit"

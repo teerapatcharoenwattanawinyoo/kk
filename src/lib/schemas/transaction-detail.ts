@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 // === Partner Station Schema ===
 export const partnerStationSchema = z.object({
@@ -6,17 +6,17 @@ export const partnerStationSchema = z.object({
   address: z.string(),
   longtitude: z.string(),
   latitude: z.string(),
-});
+})
 
 // === Customer Schema ===
 export const customerSchema = z.object({
   charge_by: z.string(),
-});
+})
 
 // === Charger Plug Power Schema ===
 export const chargerPlugPowerSchema = z.object({
   plug_id: z.number(),
-});
+})
 
 // === Payment Schema ===
 export const paymentSchema = z.object({
@@ -30,7 +30,7 @@ export const paymentSchema = z.object({
   financing: z.string(),
   expiry_date: z.string(),
   card_status: z.string(),
-});
+})
 
 // === Charge Schema ===
 export const chargeSchema = z.object({
@@ -63,45 +63,41 @@ export const chargeSchema = z.object({
   partner_station: partnerStationSchema,
   customer: customerSchema,
   charger_plug_power: chargerPlugPowerSchema,
-});
+})
 
 // === Transaction Detail Data Schema ===
 export const transactionDetailDataSchema = z.object({
   charge: chargeSchema,
   payment: paymentSchema,
-});
+})
 
 // === Transaction Detail Response Schema ===
 export const transactionDetailResponseSchema = z.object({
   statusCode: z.number(),
   data: transactionDetailDataSchema,
   message: z.string(),
-});
+})
 
 // === Query Parameters ===
 export const transactionDetailParamsSchema = z.object({
-  transaction_id: z.string().min(1, "Transaction ID is required"),
-});
+  transaction_id: z.string().min(1, 'Transaction ID is required'),
+})
 
 // === Type Inference ===
-export type PartnerStation = z.infer<typeof partnerStationSchema>;
-export type Customer = z.infer<typeof customerSchema>;
-export type ChargerPlugPower = z.infer<typeof chargerPlugPowerSchema>;
-export type Payment = z.infer<typeof paymentSchema>;
-export type Charge = z.infer<typeof chargeSchema>;
-export type TransactionDetailData = z.infer<typeof transactionDetailDataSchema>;
-export type TransactionDetailResponse = z.infer<
-  typeof transactionDetailResponseSchema
->;
-export type TransactionDetailParams = z.infer<
-  typeof transactionDetailParamsSchema
->;
+export type PartnerStation = z.infer<typeof partnerStationSchema>
+export type Customer = z.infer<typeof customerSchema>
+export type ChargerPlugPower = z.infer<typeof chargerPlugPowerSchema>
+export type Payment = z.infer<typeof paymentSchema>
+export type Charge = z.infer<typeof chargeSchema>
+export type TransactionDetailData = z.infer<typeof transactionDetailDataSchema>
+export type TransactionDetailResponse = z.infer<typeof transactionDetailResponseSchema>
+export type TransactionDetailParams = z.infer<typeof transactionDetailParamsSchema>
 
 // === Validation Helpers ===
 export const validateTransactionDetailParams = (data: unknown) => {
-  return transactionDetailParamsSchema.safeParse(data);
-};
+  return transactionDetailParamsSchema.safeParse(data)
+}
 
 export const validateTransactionDetailResponse = (data: unknown) => {
-  return transactionDetailResponseSchema.safeParse(data);
-};
+  return transactionDetailResponseSchema.safeParse(data)
+}

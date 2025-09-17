@@ -1,37 +1,37 @@
-"use client";
+'use client'
 
-import { useState } from "react";
+import { useState } from 'react'
 
 // ข้อมูลสถานีชาร์จ
 const stations = [
   {
     id: 1,
-    name: "AIWIN Station",
-    status: "online" as const,
+    name: 'AIWIN Station',
+    status: 'online' as const,
     x: 50, // เปอร์เซ็นต์จากซ้ายไปขวา
     y: 50, // เปอร์เซ็นต์จากบนลงล่าง
-    address: "Muang Thong Thani Tower, Nonthaburi",
+    address: 'Muang Thong Thani Tower, Nonthaburi',
   },
   {
     id: 2,
-    name: "Tesla Max",
-    status: "online" as const,
+    name: 'Tesla Max',
+    status: 'online' as const,
     x: 30,
     y: 40,
-    address: "Chaengwattana Road, Bangkok",
+    address: 'Chaengwattana Road, Bangkok',
   },
   {
     id: 3,
-    name: "DTC Pack co.,ltd",
-    status: "offline" as const,
+    name: 'DTC Pack co.,ltd',
+    status: 'offline' as const,
     x: 70,
     y: 60,
-    address: "Pakkret, Nonthaburi",
+    address: 'Pakkret, Nonthaburi',
   },
-];
+]
 
 export function SimpleMap() {
-  const [activeStation, setActiveStation] = useState<number | null>(null);
+  const [activeStation, setActiveStation] = useState<number | null>(null)
 
   return (
     <div className="relative h-full w-full bg-blue-50">
@@ -75,13 +75,11 @@ export function SimpleMap() {
           key={station.id}
           className="absolute z-10 -translate-x-1/2 -translate-y-1/2 transform cursor-pointer"
           style={{ left: `${station.x}%`, top: `${station.y}%` }}
-          onClick={() =>
-            setActiveStation(activeStation === station.id ? null : station.id)
-          }
+          onClick={() => setActiveStation(activeStation === station.id ? null : station.id)}
         >
           <div
             className={`h-4 w-4 rounded-full border-2 border-white shadow-md ${
-              station.status === "online" ? "bg-green-500" : "bg-red-500"
+              station.status === 'online' ? 'bg-green-500' : 'bg-red-500'
             }`}
           ></div>
 
@@ -92,17 +90,17 @@ export function SimpleMap() {
               <div className="text-[10px] text-gray-500">{station.address}</div>
               <div
                 className={
-                  station.status === "online"
-                    ? "text-[10px] text-green-500"
-                    : "text-[10px] text-red-500"
+                  station.status === 'online'
+                    ? 'text-[10px] text-green-500'
+                    : 'text-[10px] text-red-500'
                 }
               >
-                {station.status === "online" ? "Online" : "Offline"}
+                {station.status === 'online' ? 'Online' : 'Offline'}
               </div>
             </div>
           )}
         </div>
       ))}
     </div>
-  );
+  )
 }

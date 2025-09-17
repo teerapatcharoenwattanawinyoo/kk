@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const teamSchema = z.object({
   id: z.string(),
@@ -10,11 +10,11 @@ export const teamSchema = z.object({
   connectors: z.number(),
   package: z.string(),
   wallet: z.number(),
-});
+})
 
 export const teamCardPropsSchema = z.object({
   team: teamSchema,
-});
+})
 
-export type Team = z.infer<typeof teamSchema>;
-export type TeamCardProps = z.infer<typeof teamCardPropsSchema>;
+export type Team = z.infer<typeof teamSchema>
+export type TeamCardProps = z.infer<typeof teamCardPropsSchema>

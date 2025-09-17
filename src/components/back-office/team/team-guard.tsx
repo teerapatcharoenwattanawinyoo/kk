@@ -1,17 +1,17 @@
-"use client";
+'use client'
 
-import FetchLoader from "@/components/FetchLoader";
-import { useTeams } from "@/modules/teams/hooks/use-teams";
-import { useRouter } from "next/navigation";
-import { ReactNode, useEffect, useMemo } from "react";
+import FetchLoader from '@/components/FetchLoader'
+import { useTeams } from '@/modules/teams/hooks/use-teams'
+import { useRouter } from 'next/navigation'
+import { ReactNode, useEffect, useMemo } from 'react'
 
 interface TeamGuardProps {
-  teamId: string;
-  locale: string;
-  children: ReactNode;
-  fallbackPath?: string; // ถ้าไม่ระบุจะไปหน้า teams
+  teamId: string
+  locale: string
+  children: ReactNode
+  fallbackPath?: string // ถ้าไม่ระบุจะไปหน้า teams
   // ถ้าให้ true จะ redirect อัตโนมัติเมื่อไม่พบทีม/เกิด error (ค่าเริ่มต้น: false)
-  autoRedirect?: boolean;
+  autoRedirect?: boolean
 }
 
 export const TeamGuard = ({
@@ -21,47 +21,35 @@ export const TeamGuard = ({
   fallbackPath,
   autoRedirect = false,
 }: TeamGuardProps) => {
-  const router = useRouter();
-  const { data: teamsData, isLoading, error } = useTeams();
+  const router = useRouter()
+  const { data: teamsData, isLoading, error } = useTeams()
 
-  const teams = useMemo(() => teamsData?.data?.data || [], [teamsData]);
+  const teams = useMemo(() => teamsData?.data?.data || [], [teamsData])
   const teamExists = useMemo(
     () =>
       Array.isArray(teams) &&
-      teams.some(
-        (team: { team_group_id: number }) =>
-          team?.team_group_id?.toString() === teamId
-      ),
-    [teams, teamId]
-  );
+      teams.some((team: { team_group_id: number }) => team?.team_group_id?.toString() === teamId),
+    [teams, teamId],
+  )
 
   // Auto redirect ตามตัวเลือก
   useEffect(() => {
-    if (!autoRedirect) return;
-    if (isLoading) return;
+    if (!autoRedirect) return
+    if (isLoading) return
 
-    const redirectPath = fallbackPath || `/${locale}/team`;
+    const redirectPath = fallbackPath || `/${locale}/team`
 
     // กรณี error หรือไม่มีข้อมูลเลย
     if (error || !teamsData) {
-      router.replace(redirectPath);
-      return;
+      router.replace(redirectPath)
+      return
     }
 
     // กรณีไม่พบทีม
     if (!teamExists) {
-      router.replace(redirectPath);
+      router.replace(redirectPath)
     }
-  }, [
-    autoRedirect,
-    isLoading,
-    error,
-    teamsData,
-    teamExists,
-    router,
-    locale,
-    fallbackPath,
-  ]);
+  }, [autoRedirect, isLoading, error, teamsData, teamExists, router, locale, fallbackPath])
 
   // แสดง loading ขณะตรวจสอบ
   if (isLoading) {
@@ -69,12 +57,10 @@ export const TeamGuard = ({
       <div className="bg-mute-background flex h-screen items-center justify-center">
         <div className="text-center">
           <FetchLoader />
-          <p className="mt-4 text-sm text-foreground">
-            กำลังตรวจสอบข้อมูลทีม...
-          </p>
+          <p className="mt-4 text-sm text-foreground">กำลังตรวจสอบข้อมูลทีม...</p>
         </div>
       </div>
-    );
+    )
   }
 
   // ถ้ามี error หรือยังไม่มีข้อมูล
@@ -97,9 +83,7 @@ export const TeamGuard = ({
               />
             </svg>
           </div>
-          <h2 className="mb-2 text-lg font-semibold text-gray-900">
-            เกิดข้อผิดพลาด
-          </h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-900">เกิดข้อผิดพลาด</h2>
           <p className="mb-4 text-sm text-gray-600">ไม่สามารถดึงข้อมูลทีมได้</p>
           {autoRedirect ? (
             <p className="text-xs text-muted-foreground">กำลังพาไปหน้าทีม...</p>
@@ -113,7 +97,7 @@ export const TeamGuard = ({
           )}
         </div>
       </div>
-    );
+    )
   }
 
   if (!teamExists) {
@@ -135,12 +119,9 @@ export const TeamGuard = ({
               />
             </svg>
           </div>
-          <h2 className="mb-2 text-lg font-semibold text-gray-900">
-            ไม่พบทีมนี้
-          </h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-900">ไม่พบทีมนี้</h2>
           <p className="mb-4 text-sm text-gray-600">
-            ทีม ID:{" "}
-            <code className="rounded bg-gray-100 px-2 py-1">{teamId}</code>{" "}
+            ทีม ID: <code className="rounded bg-gray-100 px-2 py-1">{teamId}</code>{' '}
             ไม่ถูกต้องหรือไม่มีอยู่ในระบบ
           </p>
           {autoRedirect ? (
@@ -155,8 +136,8 @@ export const TeamGuard = ({
           )}
         </div>
       </div>
-    );
+    )
   }
 
-  return <>{children}</>;
-};
+  return <>{children}</>
+}

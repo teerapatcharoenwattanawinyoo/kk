@@ -1,8 +1,6 @@
-import React from "react";
+import React from 'react'
 
-export const OneChargeHeader: React.FC<React.SVGProps<SVGSVGElement>> = (
-  props,
-) => (
+export const OneChargeHeader: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     width="100%"
     height="100%"
@@ -157,4 +155,4 @@ export const OneChargeHeader: React.FC<React.SVGProps<SVGSVGElement>> = (
       </linearGradient>
     </defs>
   </svg>
-);
+)

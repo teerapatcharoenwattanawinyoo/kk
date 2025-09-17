@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react'
 
 interface WalletIconProps {
-  width?: number;
-  height?: number;
-  className?: string;
+  width?: number
+  height?: number
+  className?: string
 }
 
 export const WalletIcon: React.FC<WalletIconProps> = ({
   width = 30,
   height = 29,
-  className = "",
+  className = '',
 }) => {
   return (
     <svg
@@ -48,15 +48,8 @@ export const WalletIcon: React.FC<WalletIconProps> = ({
           <feOffset />
           <feGaussianBlur stdDeviation="4" />
           <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix
-            type="matrix"
-            values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.34 0"
-          />
-          <feBlend
-            mode="normal"
-            in2="BackgroundImageFix"
-            result="effect1_dropShadow_318_8389"
-          />
+          <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.34 0" />
+          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_318_8389" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -66,5 +59,5 @@ export const WalletIcon: React.FC<WalletIconProps> = ({
         </filter>
       </defs>
     </svg>
-  );
-};
+  )
+}

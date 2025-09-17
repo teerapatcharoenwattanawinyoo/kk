@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useMemo,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from 'react'
+import { useCallback, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { useRegisterByEmail, useRegisterByPhone } from './use-auth'
@@ -169,10 +163,7 @@ export const useSignUpForm = (): UseSignUpFormResult => {
     [registerByEmail, registerByPhone, router, state],
   )
 
-  const filteredCountries = useMemo(
-    () => filterCountries(COUNTRIES, searchQuery),
-    [searchQuery],
-  )
+  const filteredCountries = useMemo(() => filterCountries(COUNTRIES, searchQuery), [searchQuery])
 
   const actions: UseSignUpFormActions = {
     setMethod,

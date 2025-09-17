@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react'
 
 interface StationIconProps {
-  className?: string;
+  className?: string
 }
 
 export const StationIcon: React.FC<StationIconProps> = ({ className }) => {
@@ -19,5 +19,5 @@ export const StationIcon: React.FC<StationIconProps> = ({ className }) => {
         fill="currentColor"
       />
     </svg>
-  );
-};
+  )
+}

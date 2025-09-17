@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ChargeCard } from "@/types";
-import { Plus } from "lucide-react";
-import { ChargeCardsTable } from "./charge-cards-table";
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { ChargeCard } from '@/types'
+import { Plus } from 'lucide-react'
+import { ChargeCardsTable } from './charge-cards-table'
 
 interface ChargeCardsTabProps {
-  chargeCards: ChargeCard[];
+  chargeCards: ChargeCard[]
 }
 
 export function ChargeCardsTab({ chargeCards }: ChargeCardsTabProps) {
@@ -45,5 +45,5 @@ export function ChargeCardsTab({ chargeCards }: ChargeCardsTabProps) {
 
       <ChargeCardsTable cards={chargeCards} />
     </div>
-  );
+  )
 }

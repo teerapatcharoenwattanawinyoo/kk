@@ -1,43 +1,39 @@
-import { Separator } from "@/ui/atoms/separator";
-import type { Meta, StoryObj } from "@storybook/react";
+import { Separator } from '@/ui/atoms/separator'
+import type { Meta, StoryObj } from '@storybook/react'
 
 const meta: Meta<typeof Separator> = {
-  title: "Atoms/Separator",
+  title: 'Atoms/Separator',
   component: Separator,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     orientation: {
-      control: { type: "radio" },
-      options: ["horizontal", "vertical"],
+      control: { type: 'radio' },
+      options: ['horizontal', 'vertical'],
     },
   },
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Horizontal: Story = {
   render: () => (
     <div className="w-[300px] space-y-4">
       <div>
         <p className="text-sm">First section</p>
-        <p className="text-xs text-muted-foreground">
-          This is the first section of content.
-        </p>
+        <p className="text-xs text-muted-foreground">This is the first section of content.</p>
       </div>
       <Separator />
       <div>
         <p className="text-sm">Second section</p>
-        <p className="text-xs text-muted-foreground">
-          This is the second section of content.
-        </p>
+        <p className="text-xs text-muted-foreground">This is the second section of content.</p>
       </div>
     </div>
   ),
-};
+}
 
 export const Vertical: Story = {
   render: () => (
@@ -58,15 +54,13 @@ export const Vertical: Story = {
       </div>
     </div>
   ),
-};
+}
 
 export const InContent: Story = {
   render: () => (
     <div className="max-w-md space-y-1">
       <h4 className="text-sm font-medium leading-none">Account Settings</h4>
-      <p className="text-sm text-muted-foreground">
-        Manage your account settings and preferences.
-      </p>
+      <p className="text-sm text-muted-foreground">Manage your account settings and preferences.</p>
       <Separator className="my-4" />
       <div className="flex h-5 items-center space-x-4 text-sm">
         <div>Profile</div>
@@ -77,7 +71,7 @@ export const InContent: Story = {
       </div>
     </div>
   ),
-};
+}
 
 export const NavigationMenu: Story = {
   render: () => (
@@ -99,4 +93,4 @@ export const NavigationMenu: Story = {
       </a>
     </div>
   ),
-};
+}

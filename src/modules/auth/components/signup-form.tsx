@@ -2,13 +2,7 @@
 
 import { PhoneInput } from '@/components/phone-input'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -43,9 +37,7 @@ export default function SignUpForm() {
     <Card className="w-full max-w-md border-0 shadow-none">
       <CardHeader className="px-0 pb-6">
         <CardTitle className="text-4xl font-bold">Sign Up</CardTitle>
-        <CardDescription>
-          Empower your experience, sign up for a free account today
-        </CardDescription>
+        <CardDescription>Empower your experience, sign up for a free account today</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6 px-0">
@@ -140,9 +132,7 @@ export default function SignUpForm() {
                 </div>
                 <div>
                   <SheetTitle>Select your country</SheetTitle>
-                  <p className="text-sm text-muted-foreground">
-                    for sign in OneCharge Application
-                  </p>
+                  <p className="text-sm text-muted-foreground">for sign in OneCharge Application</p>
                 </div>
                 <div className="relative mb-4">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#515151]" />
@@ -229,18 +219,11 @@ export default function SignUpForm() {
             variant="default"
             className="h-12 w-full font-medium"
             disabled={
-              state.method === 'email'
-                ? registerByEmail.isPending
-                : registerByPhone.isPending
+              state.method === 'email' ? registerByEmail.isPending : registerByPhone.isPending
             }
           >
-            {
-              state.method === 'email'
-                ? registerByEmail.isPending
-                : registerByPhone.isPending
-            }
-              ? 'Loading...'
-              : 'Next'
+            {state.method === 'email' ? registerByEmail.isPending : registerByPhone.isPending}?
+            'Loading...' : 'Next'
           </Button>
 
           {formError && (
@@ -252,17 +235,11 @@ export default function SignUpForm() {
           <div className="relative">
             <Separator />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="bg-background px-2 text-sm text-muted-foreground">
-                or
-              </span>
+              <span className="bg-background px-2 text-sm text-muted-foreground">or</span>
             </div>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            className="h-12 w-full font-medium"
-          >
+          <Button type="button" variant="outline" className="h-12 w-full font-medium">
             <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -288,11 +265,7 @@ export default function SignUpForm() {
         <div className="text-left">
           <p className="text-sm text-muted-foreground">
             You have an account?{' '}
-            <Button
-              variant="link"
-              size="sm"
-              className="h-auto px-0 font-medium text-blue-600"
-            >
+            <Button variant="link" size="sm" className="h-auto px-0 font-medium text-blue-600">
               <Link href={'/sign-in'}>Sign in</Link>
             </Button>
           </p>

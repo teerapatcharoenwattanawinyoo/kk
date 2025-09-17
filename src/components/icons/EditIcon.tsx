@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react'
 
 interface EditIconProps {
-  className?: string;
+  className?: string
 }
 
-export const EditIcon: React.FC<EditIconProps> = ({ className = "" }) => {
+export const EditIcon: React.FC<EditIconProps> = ({ className = '' }) => {
   return (
     <svg
       width="13"
@@ -21,5 +21,5 @@ export const EditIcon: React.FC<EditIconProps> = ({ className = "" }) => {
         fill="#2E2E2E"
       />
     </svg>
-  );
-};
+  )
+}

@@ -1,6 +1,1 @@
-export {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Alert as CustomAlert,
-} from "./Alert";
+export { Alert, AlertDescription, AlertTitle, Alert as CustomAlert } from './Alert'

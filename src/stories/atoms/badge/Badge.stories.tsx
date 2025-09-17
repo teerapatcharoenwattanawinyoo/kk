@@ -1,49 +1,49 @@
-import { Badge } from "@/ui/atoms/badge";
+import { Badge } from '@/ui/atoms/badge'
 
 const meta = {
-  title: "Atoms/Badge",
+  title: 'Atoms/Badge',
   component: Badge,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
-      control: { type: "select" },
-      options: ["default", "secondary", "destructive", "outline"],
+      control: { type: 'select' },
+      options: ['default', 'secondary', 'destructive', 'outline'],
     },
   },
-};
+}
 
-export default meta;
+export default meta
 
 export const Default = {
   args: {
-    children: "Badge",
-    variant: "default",
+    children: 'Badge',
+    variant: 'default',
   },
-};
+}
 
 export const Secondary = {
   args: {
-    children: "Secondary",
-    variant: "secondary",
+    children: 'Secondary',
+    variant: 'secondary',
   },
-};
+}
 
 export const Destructive = {
   args: {
-    children: "Destructive",
-    variant: "destructive",
+    children: 'Destructive',
+    variant: 'destructive',
   },
-};
+}
 
 export const Outline = {
   args: {
-    children: "Outline",
-    variant: "outline",
+    children: 'Outline',
+    variant: 'outline',
   },
-};
+}
 
 export const WithIcon = {
   args: {
@@ -55,9 +55,9 @@ export const WithIcon = {
         Verified
       </>
     ),
-    variant: "default",
+    variant: 'default',
   },
-};
+}
 
 export const Status = {
   render: () => (
@@ -68,7 +68,7 @@ export const Status = {
       <Badge variant="outline">Draft</Badge>
     </div>
   ),
-};
+}
 
 export const WithNumbers = {
   render: () => (
@@ -78,4 +78,4 @@ export const WithNumbers = {
       <Badge variant="outline">New</Badge>
     </div>
   ),
-};
+}

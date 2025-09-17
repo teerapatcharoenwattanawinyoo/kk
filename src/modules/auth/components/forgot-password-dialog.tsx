@@ -1,38 +1,23 @@
-"use client"
+'use client'
 
-import { PhoneInput } from "@/components/phone-input"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/ui/atoms/button"
-import { Input } from "@/ui/atoms/input"
-import { Eye, EyeOff } from "lucide-react"
-import { useCallback } from "react"
+import { PhoneInput } from '@/components/phone-input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/ui/atoms/button'
+import { Input } from '@/ui/atoms/input'
+import { Eye, EyeOff } from 'lucide-react'
+import { useCallback } from 'react'
 
-import { useForgotPasswordDialog } from "../hooks/use-forgot-password-dialog"
+import { useForgotPasswordDialog } from '../hooks/use-forgot-password-dialog'
 
 interface ForgotPasswordDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export default function ForgotPasswordDialog({
-  open,
-  onOpenChange,
-}: ForgotPasswordDialogProps) {
-  const {
-    state,
-    step,
-    showPassword,
-    showConfirmPassword,
-    formError,
-    actions,
-    mutations,
-  } = useForgotPasswordDialog()
+export default function ForgotPasswordDialog({ open, onOpenChange }: ForgotPasswordDialogProps) {
+  const { state, step, showPassword, showConfirmPassword, formError, actions, mutations } =
+    useForgotPasswordDialog()
 
   const handleClose = useCallback(
     (nextOpen: boolean) => {
@@ -60,7 +45,7 @@ export default function ForgotPasswordDialog({
 
   const renderContent = () => {
     switch (step) {
-      case "select":
+      case 'select':
         return (
           <div className="space-y-6">
             <div className="text-center">
@@ -70,16 +55,12 @@ export default function ForgotPasswordDialog({
                 </svg>
               </div>
               <h2 className="text-2xl font-bold">Forgot Password</h2>
-              <p className="text-gray-600">
-                Forgot your password? Reset it in seconds
-              </p>
+              <p className="text-gray-600">Forgot your password? Reset it in seconds</p>
             </div>
 
             <Tabs
               value={state.method}
-              onValueChange={(value: string) =>
-                actions.setMethod(value as "phone" | "email")
-              }
+              onValueChange={(value: string) => actions.setMethod(value as 'phone' | 'email')}
             >
               <TabsList className="grid w-full grid-cols-2 gap-2 bg-transparent">
                 <TabsTrigger
@@ -132,24 +113,24 @@ export default function ForgotPasswordDialog({
                   size="lg"
                   disabled={mutations.forgotPassword.isPending}
                 >
-                  {mutations.forgotPassword.isPending ? "Sending..." : "Next"}
+                  {mutations.forgotPassword.isPending ? 'Sending...' : 'Next'}
                 </Button>
               </form>
             </Tabs>
           </div>
         )
 
-      case "verify":
+      case 'verify':
         return (
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold">Verify OTP</h2>
               <p className="text-blue-600">
-                {state.method === "phone" ? state.phone : state.email}
+                {state.method === 'phone' ? state.phone : state.email}
               </p>
               <p className="text-gray-600">
-                Please enter the code received from{" "}
-                {state.method === "phone" ? "phone SMS Number" : "email"}
+                Please enter the code received from{' '}
+                {state.method === 'phone' ? 'phone SMS Number' : 'email'}
               </p>
             </div>
 
@@ -164,9 +145,7 @@ export default function ForgotPasswordDialog({
                     pattern="[0-9]"
                     maxLength={1}
                     value={digit}
-                    onChange={(event) =>
-                      handleOtpChange(index, event.target.value)
-                    }
+                    onChange={(event) => handleOtpChange(index, event.target.value)}
                     className="h-14 w-14 text-center text-xl font-semibold"
                     required
                   />
@@ -184,14 +163,14 @@ export default function ForgotPasswordDialog({
                 className="w-full"
                 size="lg"
                 disabled={
-                  state.otp.join("").length !== 6 ||
+                  state.otp.join('').length !== 6 ||
                   mutations.verifyEmail.isPending ||
                   mutations.verifyPhone.isPending
                 }
               >
                 {mutations.verifyEmail.isPending || mutations.verifyPhone.isPending
-                  ? "Verifying..."
-                  : "Submit"}
+                  ? 'Verifying...'
+                  : 'Submit'}
               </Button>
 
               <div className="text-center text-sm text-gray-600">
@@ -202,7 +181,7 @@ export default function ForgotPasswordDialog({
           </div>
         )
 
-      case "reset":
+      case 'reset':
         return (
           <div className="space-y-6">
             <div className="text-center">
@@ -214,7 +193,7 @@ export default function ForgotPasswordDialog({
                 <label className="text-sm text-blue-600">Password</label>
                 <div className="relative">
                   <Input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     value={state.password}
                     onChange={(event) => actions.setPassword(event.target.value)}
                     placeholder="••••••"
@@ -237,11 +216,9 @@ export default function ForgotPasswordDialog({
                 <label className="text-sm text-gray-600">Confirm Password</label>
                 <div className="relative">
                   <Input
-                    type={showConfirmPassword ? "text" : "password"}
+                    type={showConfirmPassword ? 'text' : 'password'}
                     value={state.confirmPassword}
-                    onChange={(event) =>
-                      actions.setConfirmPassword(event.target.value)
-                    }
+                    onChange={(event) => actions.setConfirmPassword(event.target.value)}
                     placeholder="••••••"
                     className="py-3 pr-10"
                     required
@@ -279,7 +256,7 @@ export default function ForgotPasswordDialog({
                   mutations.resetPassword.isPending
                 }
               >
-                {mutations.resetPassword.isPending ? "Resetting..." : "Submit"}
+                {mutations.resetPassword.isPending ? 'Resetting...' : 'Submit'}
               </Button>
             </form>
           </div>

@@ -1,36 +1,31 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import Image from "next/image";
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import Image from 'next/image'
 
 interface ErrorDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title?: string;
-  message?: string;
-  buttonText?: string;
-  onButtonClick?: () => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title?: string
+  message?: string
+  buttonText?: string
+  onButtonClick?: () => void
 }
 
 export default function ErrorDialog({
   open,
   onOpenChange,
-  title = "Error",
-  message = "Something went wrong",
-  buttonText = "Close",
+  title = 'Error',
+  message = 'Something went wrong',
+  buttonText = 'Close',
   onButtonClick,
 }: ErrorDialogProps) {
   const handleButtonClick = () => {
     if (onButtonClick) {
-      onButtonClick();
+      onButtonClick()
     } else {
-      onOpenChange(false);
+      onOpenChange(false)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
@@ -52,9 +47,7 @@ export default function ErrorDialog({
               className="h-[60px] w-[60px] sm:h-[81.68px] sm:w-[81.68px]"
             />
           </div>
-          <h2 className="mb-1 text-lg font-medium sm:mb-2 sm:text-xl">
-            {title}
-          </h2>
+          <h2 className="mb-1 text-lg font-medium sm:mb-2 sm:text-xl">{title}</h2>
           <p className="mb-6 px-2 text-center text-sm font-light text-muted-foreground sm:mb-8 sm:px-0">
             {message}
           </p>
@@ -68,5 +61,5 @@ export default function ErrorDialog({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

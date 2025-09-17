@@ -1,29 +1,29 @@
-import { Skeleton } from "@/ui/atoms/skeleton";
-import type { Meta, StoryObj } from "@storybook/react";
+import { Skeleton } from '@/ui/atoms/skeleton'
+import type { Meta, StoryObj } from '@storybook/react'
 
 const meta: Meta<typeof Skeleton> = {
-  title: "Atoms/Skeleton",
+  title: 'Atoms/Skeleton',
   component: Skeleton,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs'],
+}
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   render: () => <Skeleton className="h-4 w-[250px]" />,
-};
+}
 
 export const Circle: Story = {
   render: () => <Skeleton className="h-12 w-12 rounded-full" />,
-};
+}
 
 export const Rectangle: Story = {
   render: () => <Skeleton className="h-20 w-20 rounded-md" />,
-};
+}
 
 export const Text: Story = {
   render: () => (
@@ -33,7 +33,7 @@ export const Text: Story = {
       <Skeleton className="h-4 w-[250px]" />
     </div>
   ),
-};
+}
 
 export const Card: Story = {
   render: () => (
@@ -45,7 +45,7 @@ export const Card: Story = {
       </div>
     </div>
   ),
-};
+}
 
 export const Article: Story = {
   render: () => (
@@ -62,7 +62,7 @@ export const Article: Story = {
       </div>
     </div>
   ),
-};
+}
 
 export const Table: Story = {
   render: () => (
@@ -83,4 +83,4 @@ export const Table: Story = {
       ))}
     </div>
   ),
-};
+}

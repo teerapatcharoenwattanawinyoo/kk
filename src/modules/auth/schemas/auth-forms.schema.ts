@@ -12,9 +12,7 @@ export const signInFormStateSchema = z.object({
 
 export const signInFormSchema = signInFormStateSchema
   .extend({
-    password: z
-      .string({ required_error: 'Password is required' })
-      .min(1, 'Password is required'),
+    password: z.string({ required_error: 'Password is required' }).min(1, 'Password is required'),
   })
   .superRefine((value, ctx) => {
     if (value.method === 'phone' && !value.phone) {
@@ -42,8 +40,7 @@ export const signUpFormStateSchema = z.object({
   acceptedTerms: z.boolean(),
 })
 
-const requireAcceptedTermsMessage =
-  'Please accept the Privacy Policy and Terms Condition'
+const requireAcceptedTermsMessage = 'Please accept the Privacy Policy and Terms Condition'
 
 const withAcceptedTerms = <Schema extends z.ZodTypeAny>(schema: Schema) =>
   schema.superRefine((value, ctx) => {
@@ -58,9 +55,7 @@ const withAcceptedTerms = <Schema extends z.ZodTypeAny>(schema: Schema) =>
 
 const signUpByEmailObjectSchema = signUpFormStateSchema.extend({
   method: z.literal('email'),
-  email: z
-    .string({ required_error: 'Email is required' })
-    .email('Invalid email address'),
+  email: z.string({ required_error: 'Email is required' }).email('Invalid email address'),
 })
 
 const signUpByPhoneObjectSchema = signUpFormStateSchema.extend({
@@ -75,10 +70,7 @@ export const signUpByEmailSchema = withAcceptedTerms(signUpByEmailObjectSchema)
 export const signUpByPhoneSchema = withAcceptedTerms(signUpByPhoneObjectSchema)
 
 export const signUpFormSchema = withAcceptedTerms(
-  z.discriminatedUnion('method', [
-    signUpByEmailObjectSchema,
-    signUpByPhoneObjectSchema,
-  ]),
+  z.discriminatedUnion('method', [signUpByEmailObjectSchema, signUpByPhoneObjectSchema]),
 )
 
 export const forgotPasswordRequestSchema = z.discriminatedUnion('method', [
@@ -90,9 +82,7 @@ export const forgotPasswordRequestSchema = z.discriminatedUnion('method', [
   }),
   z.object({
     method: z.literal('email'),
-    email: z
-      .string({ required_error: 'Email is required' })
-      .email('Invalid email address'),
+    email: z.string({ required_error: 'Email is required' }).email('Invalid email address'),
   }),
 ])
 

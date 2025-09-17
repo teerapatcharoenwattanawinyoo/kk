@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -6,59 +6,59 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { ChevronDown } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
+} from '@/components/ui/select'
+import { ChevronDown } from 'lucide-react'
+import { UseFormReturn } from 'react-hook-form'
 
 interface ChargerItem {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
 interface ChargerType {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
 interface PriceGroup {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
 interface ConnectorFormData {
-  connector_name: string;
-  charger_id: string;
-  charger_type_id: string;
-  connector_type: string;
-  power: string;
-  connection_id: string;
-  ocpp_id_tag?: string;
+  connector_name: string
+  charger_id: string
+  charger_type_id: string
+  connector_type: string
+  power: string
+  connection_id: string
+  ocpp_id_tag?: string
 }
 
 interface ConnectorFormProps {
-  form: UseFormReturn<ConnectorFormData>;
+  form: UseFormReturn<ConnectorFormData>
   chargersListData?: {
     data?: {
-      data?: ChargerItem[];
-    };
-  };
-  isChargersListLoading: boolean;
+      data?: ChargerItem[]
+    }
+  }
+  isChargersListLoading: boolean
   chargerTypesData?: {
-    data?: ChargerType[];
-  };
-  isChargerTypesLoading: boolean;
-  selectedPriceGroup: PriceGroup | null;
-  onSetPriceClick: () => void;
-  onSubmit: (data: ConnectorFormData) => void;
-  mode?: "add" | "edit";
+    data?: ChargerType[]
+  }
+  isChargerTypesLoading: boolean
+  selectedPriceGroup: PriceGroup | null
+  onSetPriceClick: () => void
+  onSubmit: (data: ConnectorFormData) => void
+  mode?: 'add' | 'edit'
 }
 
 export function ConnectorForm({
@@ -70,7 +70,7 @@ export function ConnectorForm({
   selectedPriceGroup,
   onSetPriceClick,
   onSubmit,
-  mode = "add",
+  mode = 'add',
 }: ConnectorFormProps) {
   return (
     <Form {...form}>
@@ -105,14 +105,14 @@ export function ConnectorForm({
                 </FormLabel>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value);
+                    field.onChange(value)
                   }}
                   value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger
                       className={`h-10 w-full border-none bg-[#f2f2f2] text-sm sm:h-11 ${
-                        field.value ? "text-zinc-900" : "text-[#CACACA]"
+                        field.value ? 'text-zinc-900' : 'text-[#CACACA]'
                       }`}
                     >
                       <SelectValue placeholder="Specify" />
@@ -120,9 +120,7 @@ export function ConnectorForm({
                   </FormControl>
                   <SelectContent>
                     {isChargersListLoading ? (
-                      <div className="px-4 py-2 text-xs text-gray-400">
-                        Loading...
-                      </div>
+                      <div className="px-4 py-2 text-xs text-gray-400">Loading...</div>
                     ) : chargersListData?.data?.data?.length ? (
                       chargersListData.data.data.map((item) => (
                         <SelectItem key={item.id} value={String(item.id)}>
@@ -130,9 +128,7 @@ export function ConnectorForm({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-4 py-2 text-xs text-gray-400">
-                        No data
-                      </div>
+                      <div className="px-4 py-2 text-xs text-gray-400">No data</div>
                     )}
                   </SelectContent>
                 </Select>
@@ -152,7 +148,7 @@ export function ConnectorForm({
                   <FormControl>
                     <SelectTrigger
                       className={`h-10 w-full border-none bg-[#f2f2f2] text-sm sm:h-11 ${
-                        field.value ? "text-zinc-900" : "text-[#CACACA]"
+                        field.value ? 'text-zinc-900' : 'text-[#CACACA]'
                       }`}
                     >
                       <SelectValue placeholder="Select" />
@@ -160,9 +156,7 @@ export function ConnectorForm({
                   </FormControl>
                   <SelectContent>
                     {isChargerTypesLoading ? (
-                      <div className="px-4 py-2 text-xs text-gray-400">
-                        Loading...
-                      </div>
+                      <div className="px-4 py-2 text-xs text-gray-400">Loading...</div>
                     ) : chargerTypesData?.data?.length ? (
                       chargerTypesData.data.map((type) => (
                         <SelectItem key={type.id} value={String(type.id)}>
@@ -170,9 +164,7 @@ export function ConnectorForm({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-4 py-2 text-xs text-gray-400">
-                        No data
-                      </div>
+                      <div className="px-4 py-2 text-xs text-gray-400">No data</div>
                     )}
                   </SelectContent>
                 </Select>
@@ -193,7 +185,7 @@ export function ConnectorForm({
                     <FormControl>
                       <SelectTrigger
                         className={`h-10 w-full border-none bg-[#f2f2f2] text-sm sm:h-11 ${
-                          field.value ? "text-zinc-900" : "text-[#CACACA]"
+                          field.value ? 'text-zinc-900' : 'text-[#CACACA]'
                         }`}
                       >
                         <SelectValue placeholder="Select" />
@@ -232,9 +224,7 @@ export function ConnectorForm({
             />
             {/* Pricing Label */}
             <div className="flex flex-col">
-              <FormLabel className="mb-2 block text-sm font-medium">
-                Pricing
-              </FormLabel>
+              <FormLabel className="mb-2 block text-sm font-medium">Pricing</FormLabel>
               <Button
                 type="button"
                 variant="outline"
@@ -260,8 +250,7 @@ export function ConnectorForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Charger Connector ID{" "}
-                  <span className="text-destructive">*</span>
+                  Charger Connector ID <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -297,5 +286,5 @@ export function ConnectorForm({
         </div>
       </form>
     </Form>
-  );
+  )
 }

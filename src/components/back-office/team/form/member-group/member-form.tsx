@@ -1,19 +1,14 @@
 // shadcn/ui version
-"use client";
+'use client'
 
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react'
 
 // shadcn/ui
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogClose,
@@ -22,58 +17,58 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { Check, ChevronRight, Info, Plus, Search, X, Zap } from "lucide-react";
+} from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import { Check, ChevronRight, Info, Plus, Search, X, Zap } from 'lucide-react'
 
 // ---------------- Data types ----------------
 type Member = {
-  id: number;
-  name: string;
-  connectors: "all" | string[]; // 'all' means all connectors; otherwise list
-};
+  id: number
+  name: string
+  connectors: 'all' | string[] // 'all' means all connectors; otherwise list
+}
 
 // ---------------- Mock members ----------------
 const MOCK_MEMBERS: Member[] = Array.from({ length: 50 }).map((_, i) => {
-  const id = 27360 + i;
+  const id = 27360 + i
   const base: Member = {
     id,
     name: [
-      "Soravit Kreankawo",
-      "Korrawit Srichan",
-      "Thitinan PungKang",
-      "Paris Pratan",
-      "Namo Trussaprom",
-      "Supatipunno Pakawata",
-      "Korn P.",
-      "Nattanan R.",
-      "Chanakan T.",
-      "Thanawat P.",
+      'Soravit Kreankawo',
+      'Korrawit Srichan',
+      'Thitinan PungKang',
+      'Paris Pratan',
+      'Namo Trussaprom',
+      'Supatipunno Pakawata',
+      'Korn P.',
+      'Nattanan R.',
+      'Chanakan T.',
+      'Thanawat P.',
     ][i % 10],
-    connectors: i % 3 === 0 ? "all" : ["Left 3B", "Right 4B", "2 mores"],
-  };
-  return base;
-});
+    connectors: i % 3 === 0 ? 'all' : ['Left 3B', 'Right 4B', '2 mores'],
+  }
+  return base
+})
 
 function InitialsAvatar({ name }: { name: string }) {
   const initials = useMemo(() => {
-    const parts = name.split(" ").filter(Boolean);
-    const a = parts[0]?.[0] ?? "";
-    const b = parts[1]?.[0] ?? "";
-    return (a + b).toUpperCase();
-  }, [name]);
+    const parts = name.split(' ').filter(Boolean)
+    const a = parts[0]?.[0] ?? ''
+    const b = parts[1]?.[0] ?? ''
+    return (a + b).toUpperCase()
+  }, [name])
   return (
     <Avatar className="h-9 w-9">
       <AvatarImage src="" alt={name} />
@@ -81,53 +76,43 @@ function InitialsAvatar({ name }: { name: string }) {
         {initials}
       </AvatarFallback>
     </Avatar>
-  );
+  )
 }
 
 // ---------------- Right Panel ----------------
 export function MemberGroupRightPanel() {
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
 
-  const [openConnectorFor, setOpenConnectorFor] = useState<number | null>(null);
-  const [memberConnectors, setMemberConnectors] = useState<
-    Record<number, string[]>
-  >({});
+  const [openConnectorFor, setOpenConnectorFor] = useState<number | null>(null)
+  const [memberConnectors, setMemberConnectors] = useState<Record<number, string[]>>({})
 
-  const pageSize = 10;
+  const pageSize = 10
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return MOCK_MEMBERS;
-    return MOCK_MEMBERS.filter(
-      (m) => m.name.toLowerCase().includes(q) || String(m.id).includes(q),
-    );
-  }, [query]);
+    const q = query.trim().toLowerCase()
+    if (!q) return MOCK_MEMBERS
+    return MOCK_MEMBERS.filter((m) => m.name.toLowerCase().includes(q) || String(m.id).includes(q))
+  }, [query])
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const start = (page - 1) * pageSize;
-  const members = filtered.slice(start, start + pageSize);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const start = (page - 1) * pageSize
+  const members = filtered.slice(start, start + pageSize)
 
-  const allCheckedOnPage = members.every((m) => selectedIds.includes(m.id));
+  const allCheckedOnPage = members.every((m) => selectedIds.includes(m.id))
 
   const toggleAll = () => {
     if (allCheckedOnPage) {
-      setSelectedIds((prev) =>
-        prev.filter((id) => !members.some((m) => m.id === id)),
-      );
+      setSelectedIds((prev) => prev.filter((id) => !members.some((m) => m.id === id)))
     } else {
-      setSelectedIds((prev) =>
-        Array.from(new Set([...prev, ...members.map((m) => m.id)])),
-      );
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...members.map((m) => m.id)])))
     }
-  };
+  }
 
   const toggleOne = (id: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-  };
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  }
 
   return (
     <Card className="h-full w-full bg-background shadow-none">
@@ -139,8 +124,8 @@ export function MemberGroupRightPanel() {
             <Input
               value={query}
               onChange={(e) => {
-                setPage(1);
-                setQuery(e.target.value);
+                setPage(1)
+                setQuery(e.target.value)
               }}
               placeholder="Search Name , ID"
               className="h-10 w-full rounded-md bg-input pl-9"
@@ -155,17 +140,12 @@ export function MemberGroupRightPanel() {
           {/* Subheader: select-all + right column header */}
           <div className="mt-3 flex items-center justify-between border-t p-3 pt-3">
             <Label className="inline-flex items-center">
-              <Checkbox
-                checked={allCheckedOnPage}
-                onCheckedChange={toggleAll}
-              />
+              <Checkbox checked={allCheckedOnPage} onCheckedChange={toggleAll} />
               <span className="p-2 text-sm text-muted-foreground">
                 เลือกทั้งหมด : {selectedIds.length} รายการ
               </span>
             </Label>
-            <div className="text-sm font-normal text-muted-foreground">
-              Connector Access
-            </div>
+            <div className="text-sm font-normal text-muted-foreground">Connector Access</div>
           </div>
           {members.map((m) => (
             <div
@@ -179,12 +159,8 @@ export function MemberGroupRightPanel() {
                 />
                 <InitialsAvatar name={m.name} />
                 <div className="min-w-0">
-                  <div className="text-title truncate text-sm font-medium">
-                    {m.name}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    ID: {m.id}
-                  </div>
+                  <div className="text-title truncate text-sm font-medium">{m.name}</div>
+                  <div className="text-xs text-muted-foreground">ID: {m.id}</div>
                 </div>
               </div>
 
@@ -192,8 +168,8 @@ export function MemberGroupRightPanel() {
                 {memberConnectors[m.id] && memberConnectors[m.id].length > 0 ? (
                   <div className="flex max-w-[460px] flex-wrap items-center justify-end gap-2">
                     {memberConnectors[m.id].slice(0, 3).map((id) => {
-                      const c = MOCK_CONNECTORS.find((x) => x.id === id);
-                      const label = c ? c.label : id;
+                      const c = MOCK_CONNECTORS.find((x) => x.id === id)
+                      const label = c ? c.label : id
                       return (
                         <Badge
                           key={id}
@@ -206,13 +182,11 @@ export function MemberGroupRightPanel() {
                             onClick={() =>
                               setMemberConnectors((prev) => ({
                                 ...prev,
-                                [m.id]: (prev[m.id] || []).filter(
-                                  (x) => x !== id,
-                                ),
+                                [m.id]: (prev[m.id] || []).filter((x) => x !== id),
                               }))
                             }
-                            variant={"destructive"}
-                            size={"icon"}
+                            variant={'destructive'}
+                            size={'icon'}
                             className="ml-1 grid h-4 w-4 place-items-center"
                             aria-label="Remove connector"
                             title="Remove"
@@ -220,7 +194,7 @@ export function MemberGroupRightPanel() {
                             <X className="size-3" />
                           </Button>
                         </Badge>
-                      );
+                      )
                     })}
                     {memberConnectors[m.id].length > 3 && (
                       <Badge variant="secondary" className="rounded-full">
@@ -248,8 +222,8 @@ export function MemberGroupRightPanel() {
 
       <CardFooter className="flex items-center justify-between text-xs text-muted-foreground">
         <div>
-          Showing {start + 1} to {Math.min(start + pageSize, filtered.length)}{" "}
-          of {filtered.length} Results
+          Showing {start + 1} to {Math.min(start + pageSize, filtered.length)} of {filtered.length}{' '}
+          Results
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -263,19 +237,19 @@ export function MemberGroupRightPanel() {
           {Array.from({ length: totalPages })
             .slice(0, 6)
             .map((_, i) => {
-              const idx = i + 1;
-              const active = page === idx;
+              const idx = i + 1
+              const active = page === idx
               return (
                 <Button
                   key={idx}
-                  variant={active ? "default" : "outline"}
+                  variant={active ? 'default' : 'outline'}
                   size="sm"
-                  className={`h-7 w-7 p-0 ${active ? "bg-primary/20 text-primary hover:text-primary-foreground" : ""}`}
+                  className={`h-7 w-7 p-0 ${active ? 'bg-primary/20 text-primary hover:text-primary-foreground' : ''}`}
                   onClick={() => setPage(idx)}
                 >
                   {idx}
                 </Button>
-              );
+              )
             })}
           {totalPages > 6 && <span className="px-1">…</span>}
           <Button
@@ -291,49 +265,41 @@ export function MemberGroupRightPanel() {
       <ConnectorDialog
         open={openConnectorFor !== null}
         onOpenChange={(v) => !v && setOpenConnectorFor(null)}
-        selected={
-          openConnectorFor ? (memberConnectors[openConnectorFor] ?? []) : []
-        }
+        selected={openConnectorFor ? (memberConnectors[openConnectorFor] ?? []) : []}
         onSubmit={(next) => {
           if (openConnectorFor !== null) {
             setMemberConnectors((prev) => ({
               ...prev,
               [openConnectorFor]: next,
-            }));
+            }))
           }
-          setOpenConnectorFor(null);
+          setOpenConnectorFor(null)
         }}
       />
     </Card>
-  );
+  )
 }
 
 // ---------------- Station Dialog (shadcn) ----------------
 const MOCK_STATIONS = [
-  "EV Station พระราม 5",
-  "Ev One",
-  "Roger Station EV",
-  "Ev OneOr",
-  "สถานี การไฟฟ้านครหลวง กรุงเทพมหานคร",
-  "Central Rama 2",
-  "The Mall NGV",
-  "BTS Bang Wa",
-];
+  'EV Station พระราม 5',
+  'Ev One',
+  'Roger Station EV',
+  'Ev OneOr',
+  'สถานี การไฟฟ้านครหลวง กรุงเทพมหานคร',
+  'Central Rama 2',
+  'The Mall NGV',
+  'BTS Bang Wa',
+]
 
 type StationDialogProps = {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  selected: string[];
-  onChange: (next: string[]) => void;
-};
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  selected: string[]
+  onChange: (next: string[]) => void
+}
 
-function StationChip({
-  label,
-  onRemove,
-}: {
-  label: string;
-  onRemove?: () => void;
-}) {
+function StationChip({ label, onRemove }: { label: string; onRemove?: () => void }) {
   return (
     <Badge
       variant="default"
@@ -343,8 +309,8 @@ function StationChip({
       {onRemove && (
         <Button
           type="button"
-          variant={"destructive"}
-          size={"icon"}
+          variant={'destructive'}
+          size={'icon'}
           onClick={onRemove}
           className="-mr-1 grid size-5 place-items-center rounded-full bg-destructive"
         >
@@ -352,51 +318,42 @@ function StationChip({
         </Button>
       )}
     </Badge>
-  );
+  )
 }
 
 // ---------------- Connector Dialog (shadcn) ----------------
 const MOCK_CONNECTORS = [
-  { id: "L3B_TW", label: "Left 3B", charger: "Tailwin Charger" },
-  { id: "L1B_AC", label: "Left 1B", charger: "ACDC Charger" },
-  { id: "R1A_KU", label: "Right 1A", charger: "Ku AC22" },
-  { id: "L3B_SD", label: "Left 3B", charger: "SuDC1234" },
-];
+  { id: 'L3B_TW', label: 'Left 3B', charger: 'Tailwin Charger' },
+  { id: 'L1B_AC', label: 'Left 1B', charger: 'ACDC Charger' },
+  { id: 'R1A_KU', label: 'Right 1A', charger: 'Ku AC22' },
+  { id: 'L3B_SD', label: 'Left 3B', charger: 'SuDC1234' },
+]
 
 type ConnectorDialogProps = {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  selected: string[]; // array of connector ids
-  onSubmit: (next: string[]) => void;
-};
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  selected: string[] // array of connector ids
+  onSubmit: (next: string[]) => void
+}
 
-function ConnectorDialog({
-  open,
-  onOpenChange,
-  selected,
-  onSubmit,
-}: ConnectorDialogProps) {
-  const [q, setQ] = useState("");
-  const [pick, setPick] = useState<string[]>(selected);
-  const [showDropdown, setShowDropdown] = useState(false);
+function ConnectorDialog({ open, onOpenChange, selected, onSubmit }: ConnectorDialogProps) {
+  const [q, setQ] = useState('')
+  const [pick, setPick] = useState<string[]>(selected)
+  const [showDropdown, setShowDropdown] = useState(false)
 
   const filtered = useMemo(() => {
-    const s = q.trim().toLowerCase();
+    const s = q.trim().toLowerCase()
     return !s
       ? MOCK_CONNECTORS
       : MOCK_CONNECTORS.filter(
-          (c) =>
-            c.label.toLowerCase().includes(s) ||
-            c.charger.toLowerCase().includes(s),
-        );
-  }, [q]);
+          (c) => c.label.toLowerCase().includes(s) || c.charger.toLowerCase().includes(s),
+        )
+  }, [q])
 
   const toggle = (id: string) => {
-    setPick((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-    setShowDropdown(false);
-  };
+    setPick((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+    setShowDropdown(false)
+  }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="h-auto max-w-4xl">
@@ -419,11 +376,7 @@ function ConnectorDialog({
                 placeholder="Search Station"
                 className="h-11 rounded-r-none bg-muted shadow-none"
               />
-              <Button
-                type="button"
-                variant="default"
-                className="h-11 rounded-l-none"
-              >
+              <Button type="button" variant="default" className="h-11 rounded-l-none">
                 <Search className="size-4" />
               </Button>
             </div>
@@ -437,13 +390,13 @@ function ConnectorDialog({
                   </div>
                 ) : (
                   filtered.map((c) => {
-                    const active = pick.includes(c.id);
+                    const active = pick.includes(c.id)
                     return (
                       <button
                         key={c.id}
                         type="button"
                         onClick={() => toggle(c.id)}
-                        className={`flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted ${active ? "bg-card" : ""}`}
+                        className={`flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted ${active ? 'bg-card' : ''}`}
                       >
                         <Checkbox
                           checked={active}
@@ -458,7 +411,7 @@ function ConnectorDialog({
                           </div>
                         </div>
                       </button>
-                    );
+                    )
                   })
                 )}
               </div>
@@ -467,9 +420,7 @@ function ConnectorDialog({
 
           {/* Selected chips */}
           <div>
-            <div className="mb-3 text-sm text-muted-foreground">
-              {pick.length} Connector
-            </div>
+            <div className="mb-3 text-sm text-muted-foreground">{pick.length} Connector</div>
             <div className="flex flex-wrap gap-3 rounded-lg border-2 border-dashed p-2 py-4">
               {pick.length === 0 ? (
                 <div className="flex w-full items-center justify-center py-4 text-sm text-muted-foreground">
@@ -477,7 +428,7 @@ function ConnectorDialog({
                 </div>
               ) : (
                 pick.map((id) => {
-                  const c = MOCK_CONNECTORS.find((x) => x.id === id)!;
+                  const c = MOCK_CONNECTORS.find((x) => x.id === id)!
                   return (
                     <Badge
                       key={id}
@@ -487,15 +438,15 @@ function ConnectorDialog({
                       <span className="truncate pr-1">{c.label}</span>
                       <Button
                         type="button"
-                        variant={"destructive"}
-                        size={"icon"}
+                        variant={'destructive'}
+                        size={'icon'}
                         onClick={() => toggle(id)}
                         className="grid size-4 items-center rounded-full"
                       >
                         <X className="size-3" />
                       </Button>
                     </Badge>
-                  );
+                  )
                 })
               )}
             </div>
@@ -521,38 +472,29 @@ function ConnectorDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
-function StationDialog({
-  open,
-  onOpenChange,
-  selected,
-  onChange,
-}: StationDialogProps) {
-  const [q, setQ] = useState("");
+function StationDialog({ open, onOpenChange, selected, onChange }: StationDialogProps) {
+  const [q, setQ] = useState('')
   const filtered = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    return !s
-      ? MOCK_STATIONS
-      : MOCK_STATIONS.filter((x) => x.toLowerCase().includes(s));
-  }, [q]);
+    const s = q.trim().toLowerCase()
+    return !s ? MOCK_STATIONS : MOCK_STATIONS.filter((x) => x.toLowerCase().includes(s))
+  }, [q])
 
   const toggle = (name: string) => {
     if (selected.includes(name)) {
-      onChange(selected.filter((x) => x !== name));
+      onChange(selected.filter((x) => x !== name))
     } else {
-      onChange([...selected, name]);
+      onChange([...selected, name])
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="text-title text-2xl font-bold">
-            Select Station
-          </DialogTitle>
+          <DialogTitle className="text-title text-2xl font-bold">Select Station</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -568,11 +510,7 @@ function StationDialog({
                 placeholder="Search Station"
                 className="h-11 rounded-r-none"
               />
-              <Button
-                type="button"
-                variant="default"
-                className="h-11 rounded-l-none"
-              >
+              <Button type="button" variant="default" className="h-11 rounded-l-none">
                 <Search className="size-4" />
               </Button>
             </div>
@@ -580,9 +518,7 @@ function StationDialog({
 
           {/* Selected chips */}
           <div>
-            <div className="mb-3 text-sm text-muted-foreground">
-              {selected.length} Stations
-            </div>
+            <div className="mb-3 text-sm text-muted-foreground">{selected.length} Stations</div>
             <div className="flex flex-wrap gap-3">
               {selected.map((s) => (
                 <StationChip
@@ -599,28 +535,24 @@ function StationDialog({
           {/* List */}
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {filtered.map((name) => {
-              const active = selected.includes(name);
+              const active = selected.includes(name)
               return (
                 <Button
                   key={name}
                   type="button"
-                  variant={active ? "secondary" : "outline"}
+                  variant={active ? 'secondary' : 'outline'}
                   className="justify-between"
                   onClick={() => toggle(name)}
                 >
                   <span className="truncate pr-2 text-left">{name}</span>
                   <span
-                    className={`grid size-5 place-items-center rounded-full text-sm ${active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+                    className={`grid size-5 place-items-center rounded-full text-sm ${active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
                   >
-                    {" "}
-                    {active ? (
-                      <Check className="size-3" />
-                    ) : (
-                      <Plus className="size-3" />
-                    )}{" "}
+                    {' '}
+                    {active ? <Check className="size-3" /> : <Plus className="size-3" />}{' '}
                   </span>
                 </Button>
-              );
+              )
             })}
           </div>
 
@@ -644,24 +576,24 @@ function StationDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
 // ---------------- Left Panel ----------------
 function MemberGroupLeftForm() {
-  const [groupName, setGroupName] = useState("");
-  const [details, setDetails] = useState("");
-  const [userType, setUserType] = useState("Internal");
-  const [status, setStatus] = useState("Publish");
-  const [walletAllowed, setWalletAllowed] = useState(true);
-  const [scope, setScope] = useState<"any" | "team">("any");
+  const [groupName, setGroupName] = useState('')
+  const [details, setDetails] = useState('')
+  const [userType, setUserType] = useState('Internal')
+  const [status, setStatus] = useState('Publish')
+  const [walletAllowed, setWalletAllowed] = useState(true)
+  const [scope, setScope] = useState<'any' | 'team'>('any')
 
   const [selectedStations, setSelectedStations] = useState<string[]>([
-    "EV Station พระราม 5",
-    "Ev One",
-    "Roger",
-  ]);
-  const [openStation, setOpenStation] = useState(false);
+    'EV Station พระราม 5',
+    'Ev One',
+    'Roger',
+  ])
+  const [openStation, setOpenStation] = useState(false)
 
   return (
     <Card className="max-w-2xl bg-background shadow-none">
@@ -681,10 +613,7 @@ function MemberGroupLeftForm() {
         <div>
           <div className="mb-1 flex items-center justify-between">
             <Label>
-              Details{" "}
-              <span className="align-middle text-xs text-muted-foreground">
-                (Optional)
-              </span>
+              Details <span className="align-middle text-xs text-muted-foreground">(Optional)</span>
             </Label>
           </div>
           <Textarea
@@ -719,9 +648,7 @@ function MemberGroupLeftForm() {
                 <div className="flex w-full items-center justify-between">
                   <div className="flex items-center gap-1.5 overflow-hidden">
                     {selectedStations.length === 0 ? (
-                      <span className="text-sm font-normal text-muted-foreground">
-                        เลือกสถานี
-                      </span>
+                      <span className="text-sm font-normal text-muted-foreground">เลือกสถานี</span>
                     ) : (
                       <>
                         {selectedStations.slice(0, 2).map((s) => (
@@ -733,15 +660,15 @@ function MemberGroupLeftForm() {
                             <span className="max-w-[80px] truncate">{s}</span>
                             <Button
                               type="button"
-                              variant={"destructive"}
-                              size={"icon"}
+                              variant={'destructive'}
+                              size={'icon'}
                               className="grid size-3 place-items-center rounded-full"
                               onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
+                                e.preventDefault()
+                                e.stopPropagation()
                                 setSelectedStations((prev) =>
                                   prev.filter((station) => station !== s),
-                                );
+                                )
                               }}
                             >
                               <X className="size-2" />
@@ -825,9 +752,7 @@ function MemberGroupLeftForm() {
           </div>
 
           <div className="flex items-stretch justify-between pb-2">
-            <div className="mb-4 text-sm">
-              Can pay charging fees with Team wallet
-            </div>
+            <div className="mb-4 text-sm">Can pay charging fees with Team wallet</div>
             <Switch
               checked={walletAllowed}
               onCheckedChange={setWalletAllowed}
@@ -835,36 +760,23 @@ function MemberGroupLeftForm() {
             />
           </div>
 
-          <RadioGroup
-            value={scope}
-            onValueChange={(v: "any" | "team") => setScope(v)}
-          >
+          <RadioGroup value={scope} onValueChange={(v: 'any' | 'team') => setScope(v)}>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="any"
-                id="scope-any"
-                disabled={!walletAllowed}
-              />
+              <RadioGroupItem value="any" id="scope-any" disabled={!walletAllowed} />
               <Label
                 htmlFor="scope-any"
                 className={`text-xs ${
-                  !walletAllowed
-                    ? "text-xs text-muted-foreground"
-                    : "text-muted-foreground"
+                  !walletAllowed ? 'text-xs text-muted-foreground' : 'text-muted-foreground'
                 }`}
               >
                 On any chargers in OneCharge
               </Label>
             </div>
             <div className="mt-2 flex items-start gap-2">
-              <RadioGroupItem
-                value="team"
-                id="scope-team"
-                disabled={!walletAllowed}
-              />
+              <RadioGroupItem value="team" id="scope-team" disabled={!walletAllowed} />
               <Label
                 htmlFor="scope-team"
-                className={`leading-5 ${!walletAllowed ? "text-muted-foreground" : ""}`}
+                className={`leading-5 ${!walletAllowed ? 'text-muted-foreground' : ''}`}
               >
                 <span className="block text-xs text-muted-foreground">
                   On chargers within this team
@@ -878,7 +790,7 @@ function MemberGroupLeftForm() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // ---------------- Layout Wrapper (default export) ----------------
@@ -888,5 +800,5 @@ export default function MemberGroupForm() {
       <MemberGroupLeftForm />
       <MemberGroupRightPanel />
     </div>
-  );
+  )
 }

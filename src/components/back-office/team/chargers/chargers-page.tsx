@@ -1,185 +1,158 @@
-"use client";
-import {
-  ChargersTable,
-  OcppUrlDialog,
-} from "@/components/back-office/team/chargers";
-import { ConnectorsTable } from "@/components/back-office/team/connectors";
-import { TeamHeader } from "@/components/back-office/team/team-header";
-import { DeleteConfirmDialog } from "@/components/notifications";
+'use client'
+import { ChargersTable, OcppUrlDialog } from '@/components/back-office/team/chargers'
+import { ConnectorsTable } from '@/components/back-office/team/connectors'
+import { TeamHeader } from '@/components/back-office/team/team-header'
+import { DeleteConfirmDialog } from '@/components/notifications'
 
-import {
-  AddChargerDialog,
-  AddConnectorDialog,
-} from "@/components/back-office/team/add";
-import {
-  EditChargerDialog,
-  EditConnectorDialog,
-} from "@/components/back-office/team/edit";
-import {
-  SetPriceDialog,
-  SetPriceDialogFormTable,
-} from "@/components/back-office/team/set-price";
+import { AddChargerDialog, AddConnectorDialog } from '@/components/back-office/team/add'
+import { EditChargerDialog, EditConnectorDialog } from '@/components/back-office/team/edit'
+import { SetPriceDialog, SetPriceDialogFormTable } from '@/components/back-office/team/set-price'
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 
-import { TeamTabMenu } from "@/components/back-office/team/settings/TeamTabMenu";
-import { useChargersList } from "@/hooks/use-chargers";
-import { useConnectorsList, useDeleteConnector } from "@/hooks/use-connectors";
-import {
-  deleteCharger,
-  EditChargerInitialValues,
-} from "@/lib/api/team-group/charger";
-import { Charger, ConnectorListItem } from "@/lib/api/team-group/connectors";
-import { useI18n } from "@/lib/i18n";
-import { Plus, Search, X } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { TeamTabMenu } from '@/components/back-office/team/settings/TeamTabMenu'
+import { useChargersList } from '@/hooks/use-chargers'
+import { useConnectorsList, useDeleteConnector } from '@/hooks/use-connectors'
+import { deleteCharger, EditChargerInitialValues } from '@/lib/api/team-group/charger'
+import { Charger, ConnectorListItem } from '@/lib/api/team-group/connectors'
+import { useI18n } from '@/lib/i18n'
+import { Plus, Search, X } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 interface ChargersPageProps {
-  teamId: string;
-  locale: string;
-  page?: string;
-  pageSize?: string;
+  teamId: string
+  locale: string
+  page?: string
+  pageSize?: string
 }
 
-export function ChargersPage({
-  teamId,
-  locale,
-  page,
-  pageSize,
-}: ChargersPageProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const stationIdParam = searchParams.get("station_id") || undefined;
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
+export function ChargersPage({ teamId, locale, page, pageSize }: ChargersPageProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const stationIdParam = searchParams.get('station_id') || undefined
+  const [isClient, setIsClient] = useState(false)
+  useEffect(() => setIsClient(true), [])
   // Initialize pagination states from props or URL params
   const [currentPage, setCurrentPage] = useState(() => {
-    return page || searchParams.get("page") || "1";
-  });
+    return page || searchParams.get('page') || '1'
+  })
   const [pageSizeState, setPageSize] = useState(() => {
-    return pageSize || searchParams.get("pageSize") || "10";
-  });
-  const { t } = useI18n();
+    return pageSize || searchParams.get('pageSize') || '10'
+  })
+  const { t } = useI18n()
 
   // Dialog states
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [addConnectorDialogOpen, setAddConnectorDialogOpen] = useState(false);
-  const [editConnectorDialogOpen, setEditConnectorDialogOpen] = useState(false);
-  const [selectedConnectorData, setSelectedConnectorData] =
-    useState<ConnectorListItem | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false)
+  const [addConnectorDialogOpen, setAddConnectorDialogOpen] = useState(false)
+  const [editConnectorDialogOpen, setEditConnectorDialogOpen] = useState(false)
+  const [selectedConnectorData, setSelectedConnectorData] = useState<ConnectorListItem | null>(null)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [editChargerInitialValues, setEditChargerInitialValues] =
-    useState<EditChargerInitialValues | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [pendingDeleteId, setPendingDeleteId] = useState<
-    string | number | null
-  >(null);
-  const [pendingDeleteConnectorId, setPendingDeleteConnectorId] = useState<
-    string | number | null
-  >(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [setPriceDialogFromTableOpen, setsetPriceDialogFromTableOpen] =
-    useState(false);
-  const [setPriceDialogOpen, setsetPriceDialogOpen] = useState(false);
+    useState<EditChargerInitialValues | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | number | null>(null)
+  const [pendingDeleteConnectorId, setPendingDeleteConnectorId] = useState<string | number | null>(
+    null,
+  )
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [setPriceDialogFromTableOpen, setsetPriceDialogFromTableOpen] = useState(false)
+  const [setPriceDialogOpen, setsetPriceDialogOpen] = useState(false)
   const [selectedConnectorForPricing, setSelectedConnectorForPricing] =
-    useState<ConnectorListItem | null>(null);
-  const [ocppDialogOpen, setOcppDialogOpen] = useState(false);
-  const [ocppUrl, setOcppUrl] = useState("");
-  const ocppUrlInputRef = useRef<HTMLInputElement>(null);
-  const [isSetIntegrationMode, setIsSetIntegrationMode] = useState(false);
+    useState<ConnectorListItem | null>(null)
+  const [ocppDialogOpen, setOcppDialogOpen] = useState(false)
+  const [ocppUrl, setOcppUrl] = useState('')
+  const ocppUrlInputRef = useRef<HTMLInputElement>(null)
+  const [isSetIntegrationMode, setIsSetIntegrationMode] = useState(false)
 
-  const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(
-    tabParam === "connectors" ? "connectors" : "chargers",
-  );
+  const tabParam = searchParams.get('tab')
+  const [activeTab, setActiveTab] = useState(tabParam === 'connectors' ? 'connectors' : 'chargers')
 
   // Consolidated search and filter state management
   const [filters, setFilters] = useState({
-    searchTerm: "",
-    debouncedSearchTerm: "",
-    statusFilter: "",
+    searchTerm: '',
+    debouncedSearchTerm: '',
+    statusFilter: '',
     isSearching: false,
-  });
+  })
 
-  const { searchTerm, debouncedSearchTerm, statusFilter, isSearching } =
-    filters;
+  const { searchTerm, debouncedSearchTerm, statusFilter, isSearching } = filters
 
-  const chargerIdParam = searchParams.get("charger_id") || undefined;
+  const chargerIdParam = searchParams.get('charger_id') || undefined
   const updateURLParams = useCallback(
     (page: string, size: string) => {
-      const nextParams = new URLSearchParams(searchParams.toString());
-      nextParams.set("page", page);
-      nextParams.set("pageSize", size);
+      const nextParams = new URLSearchParams(searchParams.toString())
+      nextParams.set('page', page)
+      nextParams.set('pageSize', size)
       // Preserve station filter if present
-      if (stationIdParam) nextParams.set("station_id", stationIdParam);
-      else nextParams.delete("station_id");
+      if (stationIdParam) nextParams.set('station_id', stationIdParam)
+      else nextParams.delete('station_id')
       // Preserve charger filter if present
-      if (chargerIdParam) nextParams.set("charger_id", chargerIdParam);
-      else nextParams.delete("charger_id");
+      if (chargerIdParam) nextParams.set('charger_id', chargerIdParam)
+      else nextParams.delete('charger_id')
       // Preserve active tab
-      if (activeTab) nextParams.set("tab", activeTab);
+      if (activeTab) nextParams.set('tab', activeTab)
 
-      const currentPath = window.location.pathname;
-      const newUrl = `${currentPath}?${nextParams.toString()}`;
+      const currentPath = window.location.pathname
+      const newUrl = `${currentPath}?${nextParams.toString()}`
 
-      window.history.replaceState({}, "", newUrl);
-      router.replace(newUrl, { scroll: false });
+      window.history.replaceState({}, '', newUrl)
+      router.replace(newUrl, { scroll: false })
     },
     [router, searchParams, stationIdParam, chargerIdParam, activeTab],
-  );
+  )
 
   // Helper function to map API accessibility values to form values
   const mapApiAccessToForm = (apiAccess: string | null): string => {
-    if (!apiAccess) return "";
+    if (!apiAccess) return ''
 
     // Handle both string names and numeric values from API
-    const access = apiAccess.toString().trim().toLowerCase();
+    const access = apiAccess.toString().trim().toLowerCase()
 
     switch (access) {
-      case "public":
-      case "1":
-        return "1";
-      case "private":
-      case "2":
-        return "2";
-      case "unavailable":
-      case "3":
-        return "3";
+      case 'public':
+      case '1':
+        return '1'
+      case 'private':
+      case '2':
+        return '2'
+      case 'unavailable':
+      case '3':
+        return '3'
       default:
-        console.log("Unknown accessibility value from API:", apiAccess);
-        return "";
+        console.log('Unknown accessibility value from API:', apiAccess)
+        return ''
     }
-  };
+  }
 
   // Initialize URL on first load
   useEffect(() => {
-    updateURLParams(currentPage, pageSizeState);
-  }, [currentPage, pageSizeState, updateURLParams]);
+    updateURLParams(currentPage, pageSizeState)
+  }, [currentPage, pageSizeState, updateURLParams])
 
   // Reflect active tab in URL when it changes
   useEffect(() => {
-    updateURLParams(currentPage, pageSizeState);
-  }, [activeTab, currentPage, pageSizeState, updateURLParams]);
+    updateURLParams(currentPage, pageSizeState)
+  }, [activeTab, currentPage, pageSizeState, updateURLParams])
 
   // Sync activeTab with URL `tab` param when it changes (e.g., via router.push)
   useEffect(() => {
-    const urlTab = searchParams.get("tab");
-    if (urlTab === "connectors" || urlTab === "chargers") {
+    const urlTab = searchParams.get('tab')
+    if (urlTab === 'connectors' || urlTab === 'chargers') {
       if (urlTab !== activeTab) {
-        setActiveTab(urlTab);
+        setActiveTab(urlTab)
       }
     }
-  }, [searchParams]);
+  }, [searchParams])
 
   // Debounce search term for server-side filtering
   useEffect(() => {
@@ -188,32 +161,32 @@ export function ChargersPage({
         ...prev,
         debouncedSearchTerm: searchTerm,
         isSearching: false,
-      }));
-    }, 500); // 500ms debounce
+      }))
+    }, 500) // 500ms debounce
 
     if (searchTerm) {
-      setFilters((prev) => ({ ...prev, isSearching: true }));
+      setFilters((prev) => ({ ...prev, isSearching: true }))
     }
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(timer)
       if (searchTerm) {
-        setFilters((prev) => ({ ...prev, isSearching: false }));
+        setFilters((prev) => ({ ...prev, isSearching: false }))
       }
-    };
-  }, [searchTerm]);
+    }
+  }, [searchTerm])
 
   // Reset to page 1 when search or filter changes
   useEffect(() => {
     if (debouncedSearchTerm || statusFilter) {
-      setCurrentPage("1");
-      updateURLParams("1", pageSizeState);
+      setCurrentPage('1')
+      updateURLParams('1', pageSizeState)
     }
-  }, [debouncedSearchTerm, statusFilter, pageSizeState, updateURLParams]);
+  }, [debouncedSearchTerm, statusFilter, pageSizeState, updateURLParams])
 
   // Parse current page and pageSize to numbers for calculations
-  const currentPageNum = parseInt(currentPage, 10);
-  const pageSizeNum = parseInt(pageSizeState, 10);
+  const currentPageNum = parseInt(currentPage, 10)
+  const pageSizeNum = parseInt(pageSizeState, 10)
 
   const {
     data: chargersData,
@@ -225,10 +198,8 @@ export function ChargersPage({
     search: debouncedSearchTerm,
     status: statusFilter,
     stationId: stationIdParam,
-    enabled:
-      isClient &&
-      (!!stationIdParam ? !Number.isNaN(parseInt(stationIdParam, 10)) : true),
-  });
+    enabled: isClient && (!!stationIdParam ? !Number.isNaN(parseInt(stationIdParam, 10)) : true),
+  })
 
   const {
     data: connectorsData,
@@ -241,88 +212,82 @@ export function ChargersPage({
     search: debouncedSearchTerm,
     status: statusFilter,
     chargerId: chargerIdParam,
-    enabled:
-      isClient &&
-      (!!chargerIdParam ? !Number.isNaN(parseInt(chargerIdParam, 10)) : true),
-  });
+    enabled: isClient && (!!chargerIdParam ? !Number.isNaN(parseInt(chargerIdParam, 10)) : true),
+  })
 
   // Delete connector mutation
-  const deleteConnectorMutation = useDeleteConnector();
+  const deleteConnectorMutation = useDeleteConnector()
 
   // Extract and calculate data with memoization for performance
-  const chargers = chargersData?.data?.data || [];
-  const totalItems = chargersData?.data?.item_total || 0;
+  const chargers = chargersData?.data?.data || []
+  const totalItems = chargersData?.data?.item_total || 0
   const totalPages = useMemo(() => {
-    if (totalItems <= 0) return 0;
-    return Math.ceil(totalItems / pageSizeNum);
-  }, [totalItems, pageSizeNum]);
+    if (totalItems <= 0) return 0
+    return Math.ceil(totalItems / pageSizeNum)
+  }, [totalItems, pageSizeNum])
 
-  const connectors = connectorsData?.data?.data || [];
-  const connectorTotalItems = connectorsData?.data?.item_total || 0;
+  const connectors = connectorsData?.data?.data || []
+  const connectorTotalItems = connectorsData?.data?.item_total || 0
   const connectorTotalPages = useMemo(() => {
-    if (connectorTotalItems <= 0) return 0;
-    return Math.ceil(connectorTotalItems / pageSizeNum);
-  }, [connectorTotalItems, pageSizeNum]);
+    if (connectorTotalItems <= 0) return 0
+    return Math.ceil(connectorTotalItems / pageSizeNum)
+  }, [connectorTotalItems, pageSizeNum])
 
   // Clear all filters function - reusable
   const clearAllFilters = useCallback(() => {
     setFilters({
-      searchTerm: "",
-      debouncedSearchTerm: "",
-      statusFilter: "",
+      searchTerm: '',
+      debouncedSearchTerm: '',
+      statusFilter: '',
       isSearching: false,
-    });
-  }, []);
+    })
+  }, [])
 
   // Handle charger editing
   const handleEditCharger = (editChargerData: EditChargerInitialValues) => {
-    setEditChargerInitialValues(editChargerData);
-    setEditDialogOpen(true);
-  };
+    setEditChargerInitialValues(editChargerData)
+    setEditDialogOpen(true)
+  }
 
   // Handle Set Integration callback
   const handleSetIntegration = async (chargerId: number) => {
-    console.log("Set Integration for charger ID:", chargerId);
+    console.log('Set Integration for charger ID:', chargerId)
 
     // Find the charger in the current list
-    const charger = chargers.find((c) => c.id === chargerId);
+    const charger = chargers.find((c) => c.id === chargerId)
     if (!charger) {
-      console.error("Charger not found:", chargerId);
-      return;
+      console.error('Charger not found:', chargerId)
+      return
     }
 
     // Use the edit functionality but with integration mode
-    setIsSetIntegrationMode(true);
+    setIsSetIntegrationMode(true)
 
     // Trigger the edit process which will fetch detailed data and open dialog
     handleEditCharger({
       id: charger.id?.toString(),
-      chargerName: charger.name ?? "",
-      chargerAccess: charger.charger_access ?? "",
+      chargerName: charger.name ?? '',
+      chargerAccess: charger.charger_access ?? '',
       selectedBrand:
-        charger.brand_id !== undefined && charger.brand_id !== null
-          ? String(charger.brand_id)
-          : "",
+        charger.brand_id !== undefined && charger.brand_id !== null ? String(charger.brand_id) : '',
       selectedModel:
-        charger.model_id !== undefined && charger.model_id !== null
-          ? String(charger.model_id)
-          : "",
-      typeConnector: charger.type_connector ?? "",
-      selectedPowerLevel: charger.power_level ?? "",
+        charger.model_id !== undefined && charger.model_id !== null ? String(charger.model_id) : '',
+      typeConnector: charger.type_connector ?? '',
+      selectedPowerLevel: charger.power_level ?? '',
       selectedChargingStation:
         charger.station_id !== undefined && charger.station_id !== null
           ? String(charger.station_id)
-          : "",
-      serialNumber: charger.serial_number ?? "",
-    });
-  };
+          : '',
+      serialNumber: charger.serial_number ?? '',
+    })
+  }
 
   // Handle charger delete
   const handleDeleteCharger = (chargerId: string | number | undefined) => {
-    if (!chargerId) return;
-    setPendingDeleteId(chargerId);
-    setDeleteDialogOpen(true);
-  };
+    if (!chargerId) return
+    setPendingDeleteId(chargerId)
+    setDeleteDialogOpen(true)
+  }
 
   // Handle search input change with instant UI feedback
   const handleSearchChange = (value: string) => {
@@ -330,30 +295,28 @@ export function ChargersPage({
       ...prev,
       searchTerm: value,
       isSearching: value.trim() ? true : prev.isSearching,
-    }));
-  };
+    }))
+  }
 
   // Handle status filter change
   const handleStatusFilterChange = (value: string) => {
     setFilters((prev) => ({
       ...prev,
-      statusFilter: value === "all" ? "" : value,
-    }));
-  };
+      statusFilter: value === 'all' ? '' : value,
+    }))
+  }
 
   // Pagination logic with memoized calculations
   const paginationData = useMemo(() => {
-    const totalPagesForTab =
-      activeTab === "chargers" ? totalPages : connectorTotalPages;
-    const totalItemsForTab =
-      activeTab === "chargers" ? totalItems : connectorTotalItems;
+    const totalPagesForTab = activeTab === 'chargers' ? totalPages : connectorTotalPages
+    const totalItemsForTab = activeTab === 'chargers' ? totalItems : connectorTotalItems
 
     return {
       totalPagesForTab,
       totalItemsForTab,
       showingFrom: (currentPageNum - 1) * pageSizeNum + 1,
       showingTo: Math.min(currentPageNum * pageSizeNum, totalItemsForTab),
-    };
+    }
   }, [
     activeTab,
     totalPages,
@@ -362,7 +325,7 @@ export function ChargersPage({
     connectorTotalItems,
     currentPageNum,
     pageSizeNum,
-  ]);
+  ])
 
   // Handle page change (used for both tabs)
   const handlePageChange = useCallback(
@@ -372,70 +335,70 @@ export function ChargersPage({
         newPage <= paginationData.totalPagesForTab &&
         paginationData.totalPagesForTab > 0
       ) {
-        setCurrentPage(newPage.toString());
-        updateURLParams(newPage.toString(), pageSizeState);
+        setCurrentPage(newPage.toString())
+        updateURLParams(newPage.toString(), pageSizeState)
       }
     },
     [paginationData.totalPagesForTab, pageSizeState, updateURLParams],
-  );
+  )
 
   // Handle page size change (used for both tabs)
   const handlePageSizeChange = useCallback(
     (newPageSize: number) => {
-      setPageSize(newPageSize.toString());
-      setCurrentPage("1"); // Reset to first page when changing page size
-      updateURLParams("1", newPageSize.toString());
+      setPageSize(newPageSize.toString())
+      setCurrentPage('1') // Reset to first page when changing page size
+      updateURLParams('1', newPageSize.toString())
     },
     [updateURLParams],
-  );
+  )
 
   const handleDeleteConnector = (connectorId: string | number | undefined) => {
-    if (!connectorId) return;
-    setPendingDeleteConnectorId(connectorId);
-    setDeleteDialogOpen(true);
-  };
+    if (!connectorId) return
+    setPendingDeleteConnectorId(connectorId)
+    setDeleteDialogOpen(true)
+  }
 
   const handleEditConnector = (connector: ConnectorListItem) => {
-    setSelectedConnectorData(connector);
-    setEditConnectorDialogOpen(true);
-  };
+    setSelectedConnectorData(connector)
+    setEditConnectorDialogOpen(true)
+  }
 
   const handleConfirmDelete = async () => {
     if (pendingDeleteId) {
       // Delete charger
-      setIsDeleting(true);
+      setIsDeleting(true)
       try {
-        await deleteCharger(pendingDeleteId);
-        setDeleteDialogOpen(false);
-        setPendingDeleteId(null);
-        refetchChargers();
-        console.log("Charger deleted successfully");
+        await deleteCharger(pendingDeleteId)
+        setDeleteDialogOpen(false)
+        setPendingDeleteId(null)
+        refetchChargers()
+        console.log('Charger deleted successfully')
       } catch (err) {
-        console.error("Failed to delete charger:", err);
-        setDeleteDialogOpen(false);
-        setPendingDeleteId(null);
+        console.error('Failed to delete charger:', err)
+        setDeleteDialogOpen(false)
+        setPendingDeleteId(null)
       } finally {
-        setIsDeleting(false);
+        setIsDeleting(false)
       }
     } else if (pendingDeleteConnectorId) {
       // Delete connector using mutation
-      setIsDeleting(true);
+      setIsDeleting(true)
       deleteConnectorMutation.mutate(pendingDeleteConnectorId, {
         onSuccess: () => {
-          setDeleteDialogOpen(false);
-          setPendingDeleteConnectorId(null);
+          setDeleteDialogOpen(false)
+          setPendingDeleteConnectorId(null)
         },
         onError: (error) => {
-          console.error("Failed to delete connector:", error);
-          setDeleteDialogOpen(false);
-          setPendingDeleteConnectorId(null);
+          console.error('Failed to delete connector:', error)
+          setDeleteDialogOpen(false)
+          setPendingDeleteConnectorId(null)
         },
         onSettled: () => {
-          setIsDeleting(false);
+          setIsDeleting(false)
         },
-      });
+      })
     }
-  };
+  }
 
   useEffect(() => {
     if (
@@ -444,11 +407,8 @@ export function ChargersPage({
       paginationData.totalPagesForTab > 0 &&
       currentPageNum > paginationData.totalPagesForTab
     ) {
-      setCurrentPage(paginationData.totalPagesForTab.toString());
-      updateURLParams(
-        paginationData.totalPagesForTab.toString(),
-        pageSizeState,
-      );
+      setCurrentPage(paginationData.totalPagesForTab.toString())
+      updateURLParams(paginationData.totalPagesForTab.toString(), pageSizeState)
     }
   }, [
     currentPageNum,
@@ -457,12 +417,12 @@ export function ChargersPage({
     isConnectorsLoading,
     pageSizeState,
     updateURLParams,
-  ]);
+  ])
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">
       {/* Header Section */}
-      <TeamHeader teamId={teamId} pageTitle={t("team_tabs.chargers")} />
+      <TeamHeader teamId={teamId} pageTitle={t('team_tabs.chargers')} />
 
       {/* Navigation Tabs Section */}
       <div className="px-4 md:px-6">
@@ -480,25 +440,25 @@ export function ChargersPage({
                 <div className="flex items-center gap-8">
                   <div className="flex items-center gap-6">
                     <button
-                      onClick={() => setActiveTab("chargers")}
+                      onClick={() => setActiveTab('chargers')}
                       className={`pb-2 text-2xl font-medium tracking-[-0.84px] ${
-                        activeTab === "chargers"
-                          ? "text-title border-b-2 border-primary py-1 font-medium"
-                          : "py-1 text-[#A1B1D1]"
+                        activeTab === 'chargers'
+                          ? 'text-title border-b-2 border-primary py-1 font-medium'
+                          : 'py-1 text-[#A1B1D1]'
                       }`}
                     >
-                      {t("chargers.chargers_name")}
+                      {t('chargers.chargers_name')}
                     </button>
                     <div className="h-8 w-px bg-border" />
                     <button
-                      onClick={() => setActiveTab("connectors")}
+                      onClick={() => setActiveTab('connectors')}
                       className={`pb-2 text-2xl font-medium tracking-[-0.84px] ${
-                        activeTab === "connectors"
-                          ? "text-title border-b-2 border-primary py-1 font-medium"
-                          : "py-1 text-[#A1B1D1]"
+                        activeTab === 'connectors'
+                          ? 'text-title border-b-2 border-primary py-1 font-medium'
+                          : 'py-1 text-[#A1B1D1]'
                       }`}
                     >
-                      {t("connectors.connectors_name")}
+                      {t('connectors.connectors_name')}
                     </button>
                   </div>
                 </div>
@@ -512,7 +472,7 @@ export function ChargersPage({
                 {/* Search Input */}
                 <div className="relative max-w-[240px]">
                   <Input
-                    placeholder={`${t("common.search")}${activeTab === "connectors" ? t("connectors.connectors_name") : t("chargers.chargers_name")}`}
+                    placeholder={`${t('common.search')}${activeTab === 'connectors' ? t('connectors.connectors_name') : t('chargers.chargers_name')}`}
                     className="h-10 w-full border bg-[#ECF2F8] pl-3 pr-9 text-xs placeholder:text-xs placeholder:font-medium placeholder:text-[#A1B1D1] sm:pl-4 sm:pr-10 sm:text-sm sm:placeholder:text-sm"
                     value={searchTerm}
                     onChange={(e) => handleSearchChange(e.target.value)}
@@ -524,42 +484,34 @@ export function ChargersPage({
 
                 {/* Filter Button */}
                 <Select
-                  value={statusFilter || "all"}
+                  value={statusFilter || 'all'}
                   onValueChange={(v) => handleStatusFilterChange(v)}
                 >
                   <SelectTrigger className="rounded-md border bg-[#ECF2F8] font-medium text-[#A1B1D1] sm:text-sm">
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("status.all")}</SelectItem>
-                    <SelectItem value="Available">
-                      {t("status.available")}
-                    </SelectItem>
-                    <SelectItem value="Charging">
-                      {t("status.charging")}
-                    </SelectItem>
-                    <SelectItem value="Integrate">
-                      {t("status.integrate")}
-                    </SelectItem>
-                    <SelectItem value="Offline">
-                      {t("status.offline")}
-                    </SelectItem>
+                    <SelectItem value="all">{t('status.all')}</SelectItem>
+                    <SelectItem value="Available">{t('status.available')}</SelectItem>
+                    <SelectItem value="Charging">{t('status.charging')}</SelectItem>
+                    <SelectItem value="Integrate">{t('status.integrate')}</SelectItem>
+                    <SelectItem value="Offline">{t('status.offline')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Right side: Action Buttons */}
               <div className="flex gap-2">
-                {activeTab === "connectors" && (
+                {activeTab === 'connectors' && (
                   <>
                     <Button
                       variant="darkwhite"
                       className="h-10 rounded-lg px-6 text-sm"
                       onClick={() => {
-                        setsetPriceDialogOpen(true);
+                        setsetPriceDialogOpen(true)
                       }}
                     >
-                      {t("buttons.set-price")}
+                      {t('buttons.set-price')}
                     </Button>
                     <Button
                       variant="default"
@@ -567,28 +519,28 @@ export function ChargersPage({
                       onClick={() => setAddConnectorDialogOpen(true)}
                     >
                       <Plus className="size-4" />
-                      {t("buttons.add")}
+                      {t('buttons.add')}
                     </Button>
                     <AddConnectorDialog
                       open={addConnectorDialogOpen}
                       onOpenChange={(open) => {
-                        setAddConnectorDialogOpen(open);
+                        setAddConnectorDialogOpen(open)
                         if (!open) {
-                          refetchConnectors();
+                          refetchConnectors()
                         }
                       }}
                       teamId={teamId}
                     />
                   </>
                 )}
-                {activeTab !== "connectors" && (
+                {activeTab !== 'connectors' && (
                   <Button
                     variant="default"
                     className="h-10 sm:h-10 sm:text-sm"
                     onClick={() => setAddDialogOpen(true)}
                   >
                     <Plus className="h-3 w-3" />
-                    {t("buttons.add")}
+                    {t('buttons.add')}
                   </Button>
                 )}
               </div>
@@ -597,7 +549,7 @@ export function ChargersPage({
           </div>
 
           {/* Table Section - Switch by Tab */}
-          {activeTab === "chargers" ? (
+          {activeTab === 'chargers' ? (
             <ChargersTable
               chargers={chargers}
               isLoading={isLoading}
@@ -639,9 +591,9 @@ export function ChargersPage({
                       onClick={() => {
                         setFilters((prev) => ({
                           ...prev,
-                          searchTerm: "",
-                          debouncedSearchTerm: "",
-                        }));
+                          searchTerm: '',
+                          debouncedSearchTerm: '',
+                        }))
                       }}
                       className="ml-1 text-blue-600 hover:text-blue-800"
                     >
@@ -653,9 +605,7 @@ export function ChargersPage({
                   <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
                     Status: {statusFilter}
                     <button
-                      onClick={() =>
-                        setFilters((prev) => ({ ...prev, statusFilter: "" }))
-                      }
+                      onClick={() => setFilters((prev) => ({ ...prev, statusFilter: '' }))}
                       className="ml-1 text-green-600 hover:text-green-800"
                     >
                       <X className="h-3 w-3" />
@@ -674,8 +624,7 @@ export function ChargersPage({
             <div className="flex flex-col items-center justify-between gap-3 sm:flex-row sm:gap-4">
               <div className="flex flex-col items-center space-y-2 text-center sm:flex-row sm:space-x-4 sm:space-y-0 sm:text-left">
                 <div className="text-xs text-muted-foreground sm:text-sm">
-                  Showing {paginationData.showingFrom} to{" "}
-                  {paginationData.showingTo} of{" "}
+                  Showing {paginationData.showingFrom} to {paginationData.showingTo} of{' '}
                   {paginationData.totalItemsForTab} Results
                   {(debouncedSearchTerm || statusFilter) && (
                     <span className="text-gray-500"> (filtered)</span>
@@ -685,9 +634,7 @@ export function ChargersPage({
                   <select
                     className="h-7 rounded-md border bg-input px-1.5 py-0.5 text-xs sm:h-8 md:h-9 md:px-3 md:py-1 md:text-sm"
                     value={pageSizeNum}
-                    onChange={(e) =>
-                      handlePageSizeChange(Number(e.target.value))
-                    }
+                    onChange={(e) => handlePageSizeChange(Number(e.target.value))}
                   >
                     <option value="1">1 List</option>
                     <option value="2">2 List</option>
@@ -701,12 +648,10 @@ export function ChargersPage({
               <div className="flex items-center space-x-1">
                 {/* Previous Button */}
                 <Button
-                  variant={"ghost"}
+                  variant={'ghost'}
                   size="icon"
                   className="h-6 w-6 sm:h-7 sm:w-7 md:h-9 md:w-9"
-                  disabled={
-                    currentPageNum === 1 || isLoading || isConnectorsLoading
-                  }
+                  disabled={currentPageNum === 1 || isLoading || isConnectorsLoading}
                   onClick={() => handlePageChange(currentPageNum - 1)}
                 >
                   <svg
@@ -727,17 +672,17 @@ export function ChargersPage({
 
                 {/* Page Numbers */}
                 {(() => {
-                  const current = currentPageNum;
-                  const total = paginationData.totalPagesForTab;
-                  const pages = [];
+                  const current = currentPageNum
+                  const total = paginationData.totalPagesForTab
+                  const pages = []
 
                   // Don't show page numbers if no data or loading
                   if (
                     total <= 0 ||
-                    (activeTab === "chargers" && isLoading) ||
-                    (activeTab === "connectors" && isConnectorsLoading)
+                    (activeTab === 'chargers' && isLoading) ||
+                    (activeTab === 'connectors' && isConnectorsLoading)
                   ) {
-                    return null;
+                    return null
                   }
 
                   // Always show first page
@@ -745,70 +690,60 @@ export function ChargersPage({
                     pages.push(
                       <Button
                         key={1}
-                        variant={current === 1 ? "default" : "ghost"}
+                        variant={current === 1 ? 'default' : 'ghost'}
                         size="icon"
                         className={`h-6 w-6 sm:h-7 sm:w-7 md:h-9 md:w-9 ${
                           current === 1
-                            ? "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary"
-                            : "hover:bg-gray-100"
+                            ? 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+                            : 'hover:bg-gray-100'
                         }`}
                         onClick={() => handlePageChange(1)}
                       >
-                        <span className="text-xs font-medium sm:text-sm">
-                          1
-                        </span>
+                        <span className="text-xs font-medium sm:text-sm">1</span>
                       </Button>,
-                    );
+                    )
                   }
 
                   // Show ellipsis if current page is far from start
                   if (current > 4) {
                     pages.push(
-                      <span
-                        key="start-ellipsis"
-                        className="px-2 text-xs text-gray-500 sm:text-sm"
-                      >
+                      <span key="start-ellipsis" className="px-2 text-xs text-gray-500 sm:text-sm">
                         ...
                       </span>,
-                    );
+                    )
                   }
 
                   // Show pages around current page
-                  const start = Math.max(2, current - 1);
-                  const end = Math.min(total - 1, current + 1);
+                  const start = Math.max(2, current - 1)
+                  const end = Math.min(total - 1, current + 1)
 
                   for (let i = start; i <= end; i++) {
                     if (i > 1 && i < total) {
                       pages.push(
                         <Button
                           key={i}
-                          variant={current === i ? "default" : "ghost"}
+                          variant={current === i ? 'default' : 'ghost'}
                           size="icon"
                           className={`h-6 w-6 sm:h-7 sm:w-7 md:h-9 md:w-9 ${
                             current === i
-                              ? "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary"
-                              : "hover:bg-gray-100"
+                              ? 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+                              : 'hover:bg-gray-100'
                           }`}
                           onClick={() => handlePageChange(i)}
                         >
-                          <span className="text-xs font-medium sm:text-sm">
-                            {i}
-                          </span>
+                          <span className="text-xs font-medium sm:text-sm">{i}</span>
                         </Button>,
-                      );
+                      )
                     }
                   }
 
                   // Show ellipsis if current page is far from end
                   if (current < total - 3) {
                     pages.push(
-                      <span
-                        key="end-ellipsis"
-                        className="px-2 text-xs text-gray-500 sm:text-sm"
-                      >
+                      <span key="end-ellipsis" className="px-2 text-xs text-gray-500 sm:text-sm">
                         ...
                       </span>,
-                    );
+                    )
                   }
 
                   // Always show last page (if more than 1 page)
@@ -816,28 +751,26 @@ export function ChargersPage({
                     pages.push(
                       <Button
                         key={total}
-                        variant={current === total ? "default" : "ghost"}
+                        variant={current === total ? 'default' : 'ghost'}
                         size="icon"
                         className={`h-6 w-6 sm:h-7 sm:w-7 md:h-9 md:w-9 ${
                           current === total
-                            ? "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary"
-                            : "hover:bg-gray-100"
+                            ? 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+                            : 'hover:bg-gray-100'
                         }`}
                         onClick={() => handlePageChange(total)}
                       >
-                        <span className="text-xs font-medium sm:text-sm">
-                          {total}
-                        </span>
+                        <span className="text-xs font-medium sm:text-sm">{total}</span>
                       </Button>,
-                    );
+                    )
                   }
 
-                  return pages;
+                  return pages
                 })()}
 
                 {/* Next Button */}
                 <Button
-                  variant={"ghost"}
+                  variant={'ghost'}
                   size="icon"
                   className="h-6 w-6 sm:h-7 sm:w-7 md:h-9 md:w-9"
                   disabled={
@@ -872,9 +805,9 @@ export function ChargersPage({
       <AddChargerDialog
         open={addDialogOpen}
         onOpenChange={(open) => {
-          setAddDialogOpen(open);
+          setAddDialogOpen(open)
           if (!open) {
-            refetchChargers();
+            refetchChargers()
           }
         }}
         teamGroupId={teamId}
@@ -883,29 +816,27 @@ export function ChargersPage({
       <SetPriceDialogFormTable
         open={setPriceDialogFromTableOpen}
         onOpenChange={(open) => {
-          setsetPriceDialogFromTableOpen(open);
+          setsetPriceDialogFromTableOpen(open)
           if (!open) {
-            setSelectedConnectorForPricing(null);
+            setSelectedConnectorForPricing(null)
           }
         }}
         onConfirm={(selectedPriceGroup) => {
-          console.log("Selected price group:", selectedPriceGroup);
+          console.log('Selected price group:', selectedPriceGroup)
           // Add your price setting logic here
         }}
         initialSelectedConnectors={
-          selectedConnectorForPricing
-            ? [selectedConnectorForPricing as unknown as Charger]
-            : []
+          selectedConnectorForPricing ? [selectedConnectorForPricing as unknown as Charger] : []
         }
       />
 
       <SetPriceDialog
         open={setPriceDialogOpen}
         onOpenChange={(open) => {
-          setsetPriceDialogOpen(open);
+          setsetPriceDialogOpen(open)
         }}
         onConfirm={(selectedPriceGroup) => {
-          console.log("Selected price group:", selectedPriceGroup);
+          console.log('Selected price group:', selectedPriceGroup)
           // Add your price setting logic here
         }}
       />
@@ -921,11 +852,11 @@ export function ChargersPage({
       <EditChargerDialog
         open={editDialogOpen}
         onOpenChange={(open) => {
-          setEditDialogOpen(open);
+          setEditDialogOpen(open)
           if (!open) {
-            setEditChargerInitialValues(null);
-            setIsSetIntegrationMode(false);
-            refetchChargers();
+            setEditChargerInitialValues(null)
+            setIsSetIntegrationMode(false)
+            refetchChargers()
           }
         }}
         teamGroupId={teamId}
@@ -935,9 +866,9 @@ export function ChargersPage({
       <EditConnectorDialog
         open={editConnectorDialogOpen}
         onOpenChange={(open) => {
-          setEditConnectorDialogOpen(open);
+          setEditConnectorDialogOpen(open)
           if (!open) {
-            setSelectedConnectorData(null);
+            setSelectedConnectorData(null)
           }
         }}
         teamId={teamId}
@@ -946,20 +877,20 @@ export function ChargersPage({
       <DeleteConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={(open) => {
-          setDeleteDialogOpen(open);
+          setDeleteDialogOpen(open)
           if (!open) {
-            setPendingDeleteId(null);
-            setPendingDeleteConnectorId(null);
+            setPendingDeleteId(null)
+            setPendingDeleteConnectorId(null)
           }
         }}
         description={
           pendingDeleteId
-            ? "Are you sure you want to delete this charger?"
-            : "Are you sure you want to delete this connector?"
+            ? 'Are you sure you want to delete this charger?'
+            : 'Are you sure you want to delete this connector?'
         }
         onConfirm={handleConfirmDelete}
         isLoading={isDeleting}
       />
     </div>
-  );
+  )
 }

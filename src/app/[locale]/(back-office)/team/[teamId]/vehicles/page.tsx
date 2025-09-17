@@ -1,18 +1,18 @@
-import { TeamGuard } from "@/components/back-office/team/team-guard";
-import VehiclesPage from "@/components/back-office/team/vehicles/vehicls-page";
+import { TeamGuard } from '@/components/back-office/team/team-guard'
+import VehiclesPage from '@/components/back-office/team/vehicles/vehicls-page'
 
 interface VehiclesPageProps {
   params: Promise<{
-    locale: string;
-    teamId: string;
-  }>;
+    locale: string
+    teamId: string
+  }>
 }
 
 export default async function page(props: VehiclesPageProps) {
-  const params = await props.params;
+  const params = await props.params
   return (
     <TeamGuard teamId={params.teamId} locale={params.locale}>
       <VehiclesPage teamId={params.teamId} />
     </TeamGuard>
-  );
+  )
 }

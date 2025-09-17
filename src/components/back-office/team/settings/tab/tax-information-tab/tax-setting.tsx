@@ -1,28 +1,22 @@
-"use client";
+'use client'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/organisms/tabs";
-import { InvoiceNumberPrefixTab } from "../invoice-number-prefix-tab";
-import { ReceiptTaxInvoiceTab } from "../receipt-tax-invoice-tab";
-import { TaxInformationTab } from "../tax-information-tab";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/organisms/tabs'
+import { InvoiceNumberPrefixTab } from '../invoice-number-prefix-tab'
+import { ReceiptTaxInvoiceTab } from '../receipt-tax-invoice-tab'
+import { TaxInformationTab } from '../tax-information-tab'
 
 interface TaxSettingProps {
-  teamId: string;
-  onCreateClick: () => void;
-  onEditClick?: (taxData: { id: string; [key: string]: unknown }) => void;
+  teamId: string
+  onCreateClick: () => void
+  onEditClick?: (taxData: { id: string; [key: string]: unknown }) => void
 }
 
-export const TaxSetting = ({
-  teamId,
-  onCreateClick,
-  onEditClick,
-}: TaxSettingProps) => {
+export const TaxSetting = ({ teamId, onCreateClick, onEditClick }: TaxSettingProps) => {
   return (
     <div className="">
       <div className="border-b p-6">
         <h2 className="text-title mb-1 text-xl font-semibold">Tax Setting</h2>
-        <p className="text-muted-blue text-sm">
-          Configure tax invoice settings
-        </p>
+        <p className="text-muted-blue text-sm">Configure tax invoice settings</p>
       </div>
 
       <div className="mx-auto max-w-4xl p-6">
@@ -66,5 +60,5 @@ export const TaxSetting = ({
         </Tabs>
       </div>
     </div>
-  );
-};
+  )
+}

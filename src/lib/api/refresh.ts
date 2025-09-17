@@ -3,9 +3,7 @@ import axios from 'axios'
 import type { ApiResponse, LoginResponse } from '../../modules/auth/api/auth'
 
 // Use direct axios instance to avoid interceptor conflicts
-export async function refreshAccessToken(
-  refreshToken: string | undefined,
-): Promise<LoginResponse> {
+export async function refreshAccessToken(refreshToken: string | undefined): Promise<LoginResponse> {
   if (!refreshToken) {
     throw new Error('No refresh token available')
   }

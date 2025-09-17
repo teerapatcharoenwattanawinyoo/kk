@@ -32,14 +32,9 @@ import {
 
 export type { User } from '../schemas'
 
-export async function loginByPhone(
-  request: LoginRequest,
-): Promise<LoginResponse> {
+export async function loginByPhone(request: LoginRequest): Promise<LoginResponse> {
   const payload = loginRequestSchema.parse(request)
-  const response = await api.post<LoginApiResponse>(
-    API_ENDPOINTS.AUTH.LOGIN,
-    payload,
-  )
+  const response = await api.post<LoginApiResponse>(API_ENDPOINTS.AUTH.LOGIN, payload)
   return loginApiResponseSchema.parse(response).data
 }
 
@@ -54,25 +49,15 @@ export async function registerByEmail(
   return registerByEmailResponseSchema.parse(response)
 }
 
-export async function verifyEmail(
-  request: VerifyEmailRequest,
-): Promise<VerifyEmailResponse> {
+export async function verifyEmail(request: VerifyEmailRequest): Promise<VerifyEmailResponse> {
   const payload = verifyEmailRequestSchema.parse(request)
-  const response = await api.post<VerifyEmailResponse>(
-    API_ENDPOINTS.AUTH.VERIFY_EMAIL,
-    payload,
-  )
+  const response = await api.post<VerifyEmailResponse>(API_ENDPOINTS.AUTH.VERIFY_EMAIL, payload)
   return verifyEmailResponseSchema.parse(response)
 }
 
-export async function createProfile(
-  request: CreateProfileRequest,
-): Promise<CreateProfileResponse> {
+export async function createProfile(request: CreateProfileRequest): Promise<CreateProfileResponse> {
   const payload = createProfileRequestSchema.parse(request)
-  const response = await api.post<CreateProfileResponse>(
-    API_ENDPOINTS.AUTH.CREATE_PROFILE,
-    payload,
-  )
+  const response = await api.post<CreateProfileResponse>(API_ENDPOINTS.AUTH.CREATE_PROFILE, payload)
   return createProfileResponseSchema.parse(response)
 }
 
@@ -109,9 +94,7 @@ export async function registerByPhone(
   return registerByPhoneResponseSchema.parse(response)
 }
 
-export async function verifyPhoneOtp(
-  request: VerifyPhoneOtpRequest,
-): Promise<unknown> {
+export async function verifyPhoneOtp(request: VerifyPhoneOtpRequest): Promise<unknown> {
   const payload = verifyPhoneOtpRequestSchema.parse(request)
   return api.post(API_ENDPOINTS.AUTH.VERIFY_PHONE, payload)
 }

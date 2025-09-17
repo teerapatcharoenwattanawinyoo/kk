@@ -1,11 +1,7 @@
 import { useCallback, useState, type Dispatch, type SetStateAction } from 'react'
 
 import { useLogin } from './use-auth'
-import {
-  buildLoginPayload,
-  createInitialSignInState,
-  type SignInPayloadResult,
-} from '../services'
+import { buildLoginPayload, createInitialSignInState, type SignInPayloadResult } from '../services'
 import type { ContactMethod, SignInFormState } from '../schemas'
 
 interface UseSignInFormActions {

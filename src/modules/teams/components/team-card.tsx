@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -9,77 +9,65 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-import { useI18n } from "@/lib/i18n";
-import { useDeleteTeam } from "@/modules/teams/hooks/use-teams";
-import { TeamCardProps } from "@/modules/teams/schemas";
-import {
-  Edit,
-  Eye,
-  Info,
-  Layers,
-  Loader2,
-  MoreVertical,
-  Trash2,
-  Users,
-  Wallet,
-} from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
+} from '@/components/ui/dropdown-menu'
+import { Separator } from '@/components/ui/separator'
+import { useI18n } from '@/lib/i18n'
+import { useDeleteTeam } from '@/modules/teams/hooks/use-teams'
+import { TeamCardProps } from '@/modules/teams/schemas'
+import { Edit, Eye, Info, Layers, Loader2, MoreVertical, Trash2, Users, Wallet } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
 export const TeamCard = ({ team }: TeamCardProps) => {
-  const { t } = useI18n();
-  const router = useRouter();
-  const params = useParams();
-  const deleteTeamMutation = useDeleteTeam();
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { t } = useI18n()
+  const router = useRouter()
+  const params = useParams()
+  const deleteTeamMutation = useDeleteTeam()
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const handleViewTeam = () => {
-    router.push(`/${params.locale}/team/${team.id}/overview`);
-  };
+    router.push(`/${params.locale}/team/${team.id}/overview`)
+  }
 
   const handleEditTeam = () => {
-    router.push(`/${params.locale}/team/${team.id}/settings`);
-  };
+    router.push(`/${params.locale}/team/${team.id}/settings`)
+  }
 
   const handleDeleteTeam = () => {
-    setShowDeleteDialog(true);
-  };
+    setShowDeleteDialog(true)
+  }
 
   const handleConfirmDelete = async () => {
-    setIsDeleting(true);
+    setIsDeleting(true)
     try {
-      await deleteTeamMutation.mutateAsync(team.id);
+      await deleteTeamMutation.mutateAsync(team.id)
 
       // แสดง success toast หลังจากลบสำเร็จ
       setTimeout(() => {
-        toast.success(`Team "${team.name}" ถูกลบเรียบร้อยแล้ว`);
-      }, 100);
+        toast.success(`Team "${team.name}" ถูกลบเรียบร้อยแล้ว`)
+      }, 100)
 
-      setShowDeleteDialog(false);
+      setShowDeleteDialog(false)
     } catch (error) {
-      console.error("Error deleting team:", error);
-      toast.error("เกิดข้อผิดพลาดในการลบ Team กรุณาลองอีกครั้ง");
+      console.error('Error deleting team:', error)
+      toast.error('เกิดข้อผิดพลาดในการลบ Team กรุณาลองอีกครั้ง')
     } finally {
-      setIsDeleting(false);
+      setIsDeleting(false)
     }
-  };
+  }
 
   return (
     <Card
       className={`min-h-[180px] w-full overflow-hidden bg-background px-3 shadow-none ${
-        isDeleting || deleteTeamMutation.isPending
-          ? "pointer-events-none opacity-50"
-          : ""
+        isDeleting || deleteTeamMutation.isPending ? 'pointer-events-none opacity-50' : ''
       }`}
     >
       <CardHeader className="flex flex-row space-y-2 px-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
@@ -95,7 +83,7 @@ export const TeamCard = ({ team }: TeamCardProps) => {
               {team.name}
             </CardTitle>
             <p className="text-muted-blue truncate text-xs">
-              {t("team.team_id")}: {team.id}
+              {t('team.team_id')}: {team.id}
             </p>
           </div>
         </div>
@@ -106,12 +94,12 @@ export const TeamCard = ({ team }: TeamCardProps) => {
                 <Wallet className="size-4 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xs">{t("team.wallet")}</span>
+                <span className="text-xs">{t('team.wallet')}</span>
                 <div className="text-xs font-semibold sm:text-sm">
                   <span className="hidden sm:inline">
-                    {team.wallet.toLocaleString("en-US", {
+                    {team.wallet.toLocaleString('en-US', {
                       minimumFractionDigits: 0,
-                    })}{" "}
+                    })}{' '}
                     ฿
                   </span>
                   <span className="sm:hidden">
@@ -127,29 +115,21 @@ export const TeamCard = ({ team }: TeamCardProps) => {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 flex-shrink-0 sm:h-8 sm:w-8"
-              >
+              <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0 sm:h-8 sm:w-8">
                 <MoreVertical className="text-p-onecharge h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuItem onClick={handleEditTeam}>
                 <Edit className="h-3.5 w-3.5" />
-                {t("buttons.edit")}
+                {t('buttons.edit')}
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={
-                  isDeleting || deleteTeamMutation.isPending
-                    ? () => {}
-                    : handleDeleteTeam
-                }
+                onClick={isDeleting || deleteTeamMutation.isPending ? () => {} : handleDeleteTeam}
                 variant="destructive"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                {isDeleting ? t("buttons.deleting") : t("buttons.delete")}
+                {isDeleting ? t('buttons.deleting') : t('buttons.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -162,9 +142,7 @@ export const TeamCard = ({ team }: TeamCardProps) => {
             <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center">
               <Users className="text-p-onecharge h-4 w-4" />
             </div>
-            <span className="text-p-onecharge flex-shrink-0">
-              {t("team.members")}:
-            </span>
+            <span className="text-p-onecharge flex-shrink-0">{t('team.members')}:</span>
             <span className="font-semibold text-primary">{team.members}</span>
           </div>
         </div>
@@ -174,45 +152,30 @@ export const TeamCard = ({ team }: TeamCardProps) => {
             <div className="flex h-6 w-6 items-center justify-center rounded-sm">
               <Layers className="text-p-onecharge size-4" />
             </div>
-            <div className="text-p-onecharge text-xs leading-none">
-              {t("team.stations")}:
-            </div>
-            <div className="text-xs font-semibold leading-none text-primary">
-              {team.stations}
-            </div>
+            <div className="text-p-onecharge text-xs leading-none">{t('team.stations')}:</div>
+            <div className="text-xs font-semibold leading-none text-primary">{team.stations}</div>
           </div>
 
           <div className="absolute bottom-0 left-1/3 top-0 w-px bg-border" />
 
           <div className="flex min-w-0 items-center justify-center gap-1">
             <div className="h-3"></div>
-            <div className="text-p-onecharge text-xs leading-none">
-              {t("team.chargers")}:
-            </div>
-            <div className="text-xs font-semibold leading-none text-primary">
-              {team.chargers}
-            </div>
+            <div className="text-p-onecharge text-xs leading-none">{t('team.chargers')}:</div>
+            <div className="text-xs font-semibold leading-none text-primary">{team.chargers}</div>
           </div>
 
           <div className="absolute bottom-0 left-2/3 top-0 w-px bg-border" />
 
           <div className="flex min-w-0 items-center justify-center gap-1">
             <div className="h-3"></div>
-            <div className="text-p-onecharge text-xs leading-none">
-              {t("team.connectors")}:
-            </div>
-            <div className="text-xs font-semibold leading-none text-primary">
-              {team.connectors}
-            </div>
+            <div className="text-p-onecharge text-xs leading-none">{t('team.connectors')}:</div>
+            <div className="text-xs font-semibold leading-none text-primary">{team.connectors}</div>
           </div>
         </div>
         <Separator />
         <div className="flex items-center justify-between pt-2">
           {team.package && (
-            <Badge
-              variant="secondary"
-              className="gap-1 bg-primary/10 px-2 py-2 text-primary"
-            >
+            <Badge variant="secondary" className="gap-1 bg-primary/10 px-2 py-2 text-primary">
               <Info />
               {team.package} Package
             </Badge>
@@ -220,11 +183,11 @@ export const TeamCard = ({ team }: TeamCardProps) => {
 
           <Button
             className="ml-auto flex h-6 flex-shrink-0 items-center gap-1 rounded-md px-3 py-4 text-xs"
-            variant={"default"}
+            variant={'default'}
             onClick={handleViewTeam}
           >
             <Eye className="h-3 w-3" />
-            {t("buttons.view")}
+            {t('buttons.view')}
           </Button>
         </div>
       </CardContent>
@@ -232,7 +195,7 @@ export const TeamCard = ({ team }: TeamCardProps) => {
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent className="sm:max-w-[360px]">
           <DialogHeader>
-            <DialogTitle>{t("team.delete_team")}</DialogTitle>
+            <DialogTitle>{t('team.delete_team')}</DialogTitle>
             <DialogDescription>
               {`คุณแน่ใจหรือไม่ที่จะลบ Team "${team.name}"? การดำเนินการนี้ไม่สามารถย้อนกลับได้`}
             </DialogDescription>
@@ -259,5 +222,5 @@ export const TeamCard = ({ team }: TeamCardProps) => {
         </DialogContent>
       </Dialog>
     </Card>
-  );
-};
+  )
+}

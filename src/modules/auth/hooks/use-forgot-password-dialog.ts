@@ -70,9 +70,7 @@ export const useForgotPasswordDialog = (): UseForgotPasswordDialogResult => {
   const verifyPhone = useVerifyPhoneOTP()
   const resetPassword = useResetPassword()
 
-  const [state, setState] = useState<ForgotPasswordState>(
-    createInitialForgotPasswordState(),
-  )
+  const [state, setState] = useState<ForgotPasswordState>(createInitialForgotPasswordState())
   const [step, setStep] = useState<ForgotPasswordStep>('select')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)

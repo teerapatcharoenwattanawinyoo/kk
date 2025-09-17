@@ -1,27 +1,27 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
-import { Card, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
-import { useMemo } from "react";
+import { Button } from '@/components/ui/button'
+import { Card, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import Image from 'next/image'
+import { useMemo } from 'react'
 
 interface PaymentMethod {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
+  id: string
+  name: string
+  icon: string
+  description: string
 }
 
 interface OrderSummaryProps {
-  amount: string;
-  paymentMethod: string;
-  paymentMethodData?: PaymentMethod;
-  orderId: string;
-  description?: string;
-  logoSrc?: string;
-  logoAlt?: string;
-  onConfirm: () => void;
+  amount: string
+  paymentMethod: string
+  paymentMethodData?: PaymentMethod
+  orderId: string
+  description?: string
+  logoSrc?: string
+  logoAlt?: string
+  onConfirm: () => void
 }
 
 export function OrderSummary({
@@ -29,28 +29,27 @@ export function OrderSummary({
   paymentMethod,
   paymentMethodData,
   orderId,
-  description = "เติมเงินเข้ากระเป๋าผ่านระบบออนไลน์",
-  logoSrc = "/assets/icons/iconOnecharge.png",
-  logoAlt = "OneCharge",
+  description = 'เติมเงินเข้ากระเป๋าผ่านระบบออนไลน์',
+  logoSrc = '/assets/icons/iconOnecharge.png',
+  logoAlt = 'OneCharge',
   onConfirm,
 }: OrderSummaryProps) {
   const THB = useMemo(
-    () =>
-      new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }),
+    () => new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
     [],
-  );
+  )
 
-  const amountNum = Number(amount) || 0;
-  const fee = 30; // ค่าธรรมเนียม
-  const total = amountNum + fee;
+  const amountNum = Number(amount) || 0
+  const fee = 30 // ค่าธรรมเนียม
+  const total = amountNum + fee
 
   const paymentMethodName =
     paymentMethodData?.name ||
-    (paymentMethod === "promptpay" ? "บัตรดิต / เดบิต (ATM)" : paymentMethod);
+    (paymentMethod === 'promptpay' ? 'บัตรดิต / เดบิต (ATM)' : paymentMethod)
 
   // Use payment method icon if available, otherwise use logo
-  const displayIcon = paymentMethodData?.icon || logoSrc;
-  const displayAlt = paymentMethodData?.name || logoAlt;
+  const displayIcon = paymentMethodData?.icon || logoSrc
+  const displayAlt = paymentMethodData?.name || logoAlt
 
   return (
     <div className="space-y-10">
@@ -112,12 +111,9 @@ export function OrderSummary({
       </Card>
 
       {/* Proceed Button */}
-      <Button
-        className="h-12 w-full bg-primary hover:bg-primary/90"
-        onClick={onConfirm}
-      >
+      <Button className="h-12 w-full bg-primary hover:bg-primary/90" onClick={onConfirm}>
         ชำระเงิน
       </Button>
     </div>
-  );
+  )
 }

@@ -1,28 +1,28 @@
-import { Label } from "@/ui/atoms/label";
-import type { Meta, StoryObj } from "@storybook/react";
+import { Label } from '@/ui/atoms/label'
+import type { Meta, StoryObj } from '@storybook/react'
 
 const meta: Meta<typeof Label> = {
-  title: "Atoms/Label",
+  title: 'Atoms/Label',
   component: Label,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs'],
+}
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    children: "Label Text",
+    children: 'Label Text',
   },
-};
+}
 
 export const WithHtmlFor: Story = {
   args: {
-    htmlFor: "email",
-    children: "Email Address",
+    htmlFor: 'email',
+    children: 'Email Address',
   },
   render: (args) => (
     <div className="space-y-2">
@@ -35,7 +35,7 @@ export const WithHtmlFor: Story = {
       />
     </div>
   ),
-};
+}
 
 export const Required: Story = {
   args: {
@@ -45,12 +45,12 @@ export const Required: Story = {
       </>
     ),
   },
-};
+}
 
 export const Disabled: Story = {
   args: {
-    children: "Disabled Label",
-    className: "peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+    children: 'Disabled Label',
+    className: 'peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
   },
   render: (args) => (
     <div className="space-y-2">
@@ -63,4 +63,4 @@ export const Disabled: Story = {
       />
     </div>
   ),
-};
+}

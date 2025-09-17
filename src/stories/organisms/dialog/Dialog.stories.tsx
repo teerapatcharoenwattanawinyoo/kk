@@ -1,6 +1,6 @@
-import { Button } from "@/ui/atoms/button";
-import { Input } from "@/ui/atoms/input";
-import { Label } from "@/ui/atoms/label";
+import { Button } from '@/ui/atoms/button'
+import { Input } from '@/ui/atoms/input'
+import { Label } from '@/ui/atoms/label'
 import {
   Dialog,
   DialogClose,
@@ -10,18 +10,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/ui/organisms/dialog";
+} from '@/ui/organisms/dialog'
 
 const meta = {
-  title: "Organisms/Dialog",
+  title: 'Organisms/Dialog',
   component: Dialog,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs'],
+}
 
-export default meta;
+export default meta
 
 export const Default = {
   render: () => (
@@ -41,21 +41,13 @@ export const Default = {
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-            <Input
-              id="name"
-              defaultValue="Pedro Duarte"
-              className="col-span-3"
-            />
+            <Input id="name" defaultValue="Pedro Duarte" className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="username" className="text-right">
               Username
             </Label>
-            <Input
-              id="username"
-              defaultValue="@peduarte"
-              className="col-span-3"
-            />
+            <Input id="username" defaultValue="@peduarte" className="col-span-3" />
           </div>
         </div>
         <DialogFooter>
@@ -64,7 +56,7 @@ export const Default = {
       </DialogContent>
     </Dialog>
   ),
-};
+}
 
 export const Simple = {
   render: () => (
@@ -76,8 +68,8 @@ export const Simple = {
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            This action cannot be undone. This will permanently delete your account and remove your
+            data from our servers.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -89,7 +81,7 @@ export const Simple = {
       </DialogContent>
     </Dialog>
   ),
-};
+}
 
 export const CustomSize = {
   render: () => (
@@ -112,11 +104,7 @@ export const CustomSize = {
           <div className="space-y-2">
             <Label htmlFor="notifications">Notifications</Label>
             <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="marketing"
-                className="rounded border border-input"
-              />
+              <input type="checkbox" id="marketing" className="rounded border border-input" />
               <Label htmlFor="marketing" className="text-sm font-normal">
                 Marketing emails
               </Label>
@@ -151,7 +139,7 @@ export const CustomSize = {
       </DialogContent>
     </Dialog>
   ),
-};
+}
 
 export const ConfirmationDialog = {
   render: () => (
@@ -163,8 +151,7 @@ export const ConfirmationDialog = {
         <DialogHeader>
           <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this item? This action cannot be
-            undone.
+            Are you sure you want to delete this item? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
@@ -176,7 +163,7 @@ export const ConfirmationDialog = {
       </DialogContent>
     </Dialog>
   ),
-};
+}
 
 export const FormDialog = {
   render: () => (
@@ -222,4 +209,4 @@ export const FormDialog = {
       </DialogContent>
     </Dialog>
   ),
-};
+}

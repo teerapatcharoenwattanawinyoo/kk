@@ -1,5 +1,1 @@
-export {
-  LineChart,
-  type ChartDataPoint,
-  type LineChartProps,
-} from "./LineChart";
+export { LineChart, type ChartDataPoint, type LineChartProps } from './LineChart'

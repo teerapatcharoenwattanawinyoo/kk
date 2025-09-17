@@ -8,22 +8,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/ui/atoms/alert-dialog";
-import { Button } from "@/ui/atoms/button";
-import type { Meta, StoryObj } from "@storybook/react";
+} from '@/ui/atoms/alert-dialog'
+import { Button } from '@/ui/atoms/button'
+import type { Meta, StoryObj } from '@storybook/react'
 
 const meta: Meta<typeof AlertDialog> = {
-  title: "Atoms/AlertDialog",
+  title: 'Atoms/AlertDialog',
   component: AlertDialog,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {},
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   render: () => (
@@ -35,8 +35,8 @@ export const Default: Story = {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            This action cannot be undone. This will permanently delete your account and remove your
+            data from our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -46,7 +46,7 @@ export const Default: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-};
+}
 
 export const WithCustomAction: Story = {
   render: () => (
@@ -58,8 +58,8 @@ export const WithCustomAction: Story = {
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Account</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete your account and all associated data.
-            This action cannot be undone.
+            This will permanently delete your account and all associated data. This action cannot be
+            undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -71,4 +71,4 @@ export const WithCustomAction: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-};
+}

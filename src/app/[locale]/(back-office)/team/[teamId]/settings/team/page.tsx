@@ -1,19 +1,19 @@
-"use client";
+'use client'
 
-import { DevelopmentPlaceholder } from "@/components/back-office/team/settings/development-placeholder";
-import { SettingsLayout } from "@/components/back-office/team/settings/settings-layout";
-import { TeamGuard } from "@/components/back-office/team/team-guard";
-import { use } from "react";
+import { DevelopmentPlaceholder } from '@/components/back-office/team/settings/development-placeholder'
+import { SettingsLayout } from '@/components/back-office/team/settings/settings-layout'
+import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { use } from 'react'
 
 interface TeamSettingPageProps {
   params: Promise<{
-    locale: string;
-    teamId: string;
-  }>;
+    locale: string
+    teamId: string
+  }>
 }
 
 const TeamSettingPage = ({ params }: TeamSettingPageProps) => {
-  const { locale, teamId } = use(params);
+  const { locale, teamId } = use(params)
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
@@ -23,7 +23,7 @@ const TeamSettingPage = ({ params }: TeamSettingPageProps) => {
         </div>
       </SettingsLayout>
     </TeamGuard>
-  );
-};
+  )
+}
 
-export default TeamSettingPage;
+export default TeamSettingPage

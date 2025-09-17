@@ -1,42 +1,35 @@
-import { useMemo } from "react";
+import { useMemo } from 'react'
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query'
 
-import { QUERY_KEYS } from "@/lib/constants";
+import { QUERY_KEYS } from '@/lib/constants'
 
-import {
-  fetchLegacyTeamList,
-  fetchTeamDetails,
-} from "@/modules/teams/services";
-import type { TeamData, TeamListResponse } from "@/modules/teams/schemas";
+import { fetchLegacyTeamList, fetchTeamDetails } from '@/modules/teams/services'
+import type { TeamData, TeamListResponse } from '@/modules/teams/schemas'
 
-import { useTeams } from "./use-team-list";
+import { useTeams } from './use-team-list'
 
 export const useTeamById = (teamId: string) => {
-  const { data: teamsData, isLoading, error } = useTeams();
+  const { data: teamsData, isLoading, error } = useTeams()
 
   const team = useMemo(() => {
-    if (!teamsData?.data?.data) return null;
+    if (!teamsData?.data?.data) return null
 
-    return (
-      teamsData.data.data.find(
-        (item) => item.team_group_id.toString() === teamId
-      ) || null
-    );
-  }, [teamsData, teamId]);
+    return teamsData.data.data.find((item) => item.team_group_id.toString() === teamId) || null
+  }, [teamsData, teamId])
 
   return {
     team,
     isLoading,
     error,
     isNotFound: !isLoading && !error && !!teamsData?.data && !team,
-  };
-};
+  }
+}
 
 export const useTeamData = (teamId: string) => {
-  const { team } = useTeamById(teamId);
-  return team;
-};
+  const { team } = useTeamById(teamId)
+  return team
+}
 
 export const useTeamList = () => {
   return useQuery<TeamListResponse>({
@@ -46,8 +39,8 @@ export const useTeamList = () => {
     refetchOnMount: false,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
-  });
-};
+  })
+}
 
 export const useTeam = (teamId: string) => {
   return useQuery<TeamData | null>({
@@ -58,6 +51,5 @@ export const useTeam = (teamId: string) => {
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-  });
-};
-
+  })
+}

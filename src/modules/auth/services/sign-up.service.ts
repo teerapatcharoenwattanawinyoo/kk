@@ -25,15 +25,10 @@ export const normalizePhoneNumber = (phone: string, country: string): string => 
   return phoneNumber ? phoneNumber.formatNational().replace(/\D/g, '') : phone
 }
 
-export const filterCountries = (
-  countries: CountryOption[],
-  query: string,
-): CountryOption[] => {
+export const filterCountries = (countries: CountryOption[], query: string): CountryOption[] => {
   if (!query) return countries
   const normalizedQuery = query.toLowerCase()
-  return countries.filter((country) =>
-    country.label.toLowerCase().includes(normalizedQuery),
-  )
+  return countries.filter((country) => country.label.toLowerCase().includes(normalizedQuery))
 }
 
 export type SignUpPayload =
@@ -44,9 +39,7 @@ export type SignUpPayloadResult =
   | { success: true; data: SignUpPayload }
   | { success: false; error: string }
 
-export const buildSignUpPayload = (
-  state: SignUpFormState,
-): SignUpPayloadResult => {
+export const buildSignUpPayload = (state: SignUpFormState): SignUpPayloadResult => {
   const parsedForm = signUpFormSchema.safeParse(state)
 
   if (!parsedForm.success) {

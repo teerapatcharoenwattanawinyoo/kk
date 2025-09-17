@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -8,16 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Download } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
+} from '@/components/ui/dialog'
+import { Download } from 'lucide-react'
+import Image from 'next/image'
+import { useState } from 'react'
 
 interface QrPreviewDialogProps {
-  qrUrl: string;
-  connectorName?: string;
-  connectorId?: string | number;
-  children: React.ReactNode;
+  qrUrl: string
+  connectorName?: string
+  connectorId?: string | number
+  children: React.ReactNode
 }
 
 export function QrPreviewDialog({
@@ -26,34 +26,34 @@ export function QrPreviewDialog({
   connectorId,
   children,
 }: QrPreviewDialogProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
 
   const handleDownload = async () => {
     try {
-      if (qrUrl.startsWith("data:")) {
-        const link = document.createElement("a");
-        link.href = qrUrl;
-        link.download = `qr-code-${connectorName || connectorId || "connector"}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      if (qrUrl.startsWith('data:')) {
+        const link = document.createElement('a')
+        link.href = qrUrl
+        link.download = `qr-code-${connectorName || connectorId || 'connector'}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       } else {
-        const response = await fetch(qrUrl);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `qr-code-${connectorName || connectorId || "connector"}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        const response = await fetch(qrUrl)
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `qr-code-${connectorName || connectorId || 'connector'}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
       }
     } catch (error) {
-      console.error("Failed to download QR code:", error);
+      console.error('Failed to download QR code:', error)
     }
-  };
+  }
 
   return (
     <Dialog>
@@ -76,14 +76,13 @@ export function QrPreviewDialog({
                   {connectorName}
                 </p>
                 <p className="px-1 text-xs font-semibold text-zinc-800">
-                  Connector ID:{" "}
-                  <span className="font-medium">{connectorId}</span>
+                  Connector ID: <span className="font-medium">{connectorId}</span>
                 </p>
               </div>
               <Button
                 type="button"
                 size="sm"
-                variant={"default"}
+                variant={'default'}
                 className="h-7 rounded-full px-3 text-[10px] font-semibold tracking-wide text-white"
                 disabled={hasError}
               >
@@ -110,13 +109,13 @@ export function QrPreviewDialog({
                   alt="QR Code"
                   width={340}
                   height={240}
-                  className={`border-3 rounded-lg border-dashed transition-opacity ${isLoading ? "opacity-0" : "opacity-100"} [image-rendering:pixelated]`}
+                  className={`border-3 rounded-lg border-dashed transition-opacity ${isLoading ? 'opacity-0' : 'opacity-100'} [image-rendering:pixelated]`}
                   priority
                   unoptimized
                   onLoad={() => setIsLoading(false)}
                   onError={() => {
-                    setIsLoading(false);
-                    setHasError(true);
+                    setIsLoading(false)
+                    setHasError(true)
                   }}
                 />
               )}
@@ -154,5 +153,5 @@ export function QrPreviewDialog({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

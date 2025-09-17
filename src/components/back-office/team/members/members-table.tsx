@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -8,62 +8,62 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { MoreHorizontal } from "lucide-react";
-import { useState } from "react";
+} from '@/components/ui/table'
+import { MoreHorizontal } from 'lucide-react'
+import { useState } from 'react'
 
 interface Member {
-  id: string;
-  name: string;
-  role: string;
-  memberGroup: string | null;
-  priceGroup: string | null;
-  status: "joined" | "invite";
-  joinedDate: string | null;
-  isOnline: boolean;
+  id: string
+  name: string
+  role: string
+  memberGroup: string | null
+  priceGroup: string | null
+  status: 'joined' | 'invite'
+  joinedDate: string | null
+  isOnline: boolean
 }
 
 interface MembersTableProps {
   // Props can be added here if needed for table data
-  props: null;
+  props: null
 }
 
 const mockMembers: Member[] = [
   {
-    id: "182787",
-    name: "Soravit Kreankawo",
-    role: "Owner",
-    memberGroup: "C-Level Group",
-    priceGroup: "VIP Price",
-    status: "joined",
-    joinedDate: "12/01/2023\n11 : 23 : 38",
+    id: '182787',
+    name: 'Soravit Kreankawo',
+    role: 'Owner',
+    memberGroup: 'C-Level Group',
+    priceGroup: 'VIP Price',
+    status: 'joined',
+    joinedDate: '12/01/2023\n11 : 23 : 38',
     isOnline: true,
   },
   {
-    id: "182781",
-    name: "Korakit Areonuo",
-    role: "User",
-    memberGroup: "Sales Group",
-    priceGroup: "General Price",
-    status: "invite",
+    id: '182781',
+    name: 'Korakit Areonuo',
+    role: 'User',
+    memberGroup: 'Sales Group',
+    priceGroup: 'General Price',
+    status: 'invite',
     joinedDate: null,
     isOnline: true,
   },
   {
-    id: "182783",
-    name: "Porait Hreonup",
-    role: "User",
+    id: '182783',
+    name: 'Porait Hreonup',
+    role: 'User',
     memberGroup: null,
     priceGroup: null,
-    status: "invite",
+    status: 'invite',
     joinedDate: null,
     isOnline: true,
   },
-];
+]
 
 export function MembersTable({}: MembersTableProps) {
-  const [selectAll] = useState(false);
-  const [selectedMembers] = useState<string[]>([]);
+  const [selectAll] = useState(false)
+  const [selectedMembers] = useState<string[]>([])
 
   return (
     <>
@@ -118,10 +118,7 @@ export function MembersTable({}: MembersTableProps) {
           </TableHeader>
           <TableBody>
             {mockMembers.map((member) => (
-              <TableRow
-                key={member.id}
-                className="h-14 border-0 bg-background sm:h-16"
-              >
+              <TableRow key={member.id} className="h-14 border-0 bg-background sm:h-16">
                 <TableCell className="text-center">
                   <div className="flex justify-center">
                     <div className="h-3 w-3 rounded border bg-primary-foreground sm:h-4 sm:w-4">
@@ -199,55 +196,49 @@ export function MembersTable({}: MembersTableProps) {
                 <TableCell className="hidden text-center sm:table-cell">
                   <span
                     className={`text-[10px] font-medium leading-[16px] tracking-[0.15px] sm:text-[12px] sm:leading-[18px] ${
-                      member.memberGroup ? "text-title" : "text-[#DADADA]"
+                      member.memberGroup ? 'text-title' : 'text-[#DADADA]'
                     }`}
                   >
-                    {member.memberGroup || "No Member Group"}
+                    {member.memberGroup || 'No Member Group'}
                   </span>
                 </TableCell>
                 <TableCell className="hidden text-center md:table-cell">
                   <span
                     className={`text-[10px] font-medium leading-[16px] tracking-[0.15px] sm:text-[12px] sm:leading-[18px] ${
-                      member.priceGroup ? "text-title" : "text-[#DADADA]"
+                      member.priceGroup ? 'text-title' : 'text-[#DADADA]'
                     }`}
                   >
-                    {member.priceGroup || "No Price Group"}
+                    {member.priceGroup || 'No Price Group'}
                   </span>
                 </TableCell>
                 <TableCell className="text-center">
                   <div
                     className={`inline-flex h-6 items-center rounded px-2 sm:h-7 sm:px-3 ${
-                      member.status === "joined"
-                        ? "bg-[#DFF8F3]"
-                        : "bg-[#D1E9FF]"
+                      member.status === 'joined' ? 'bg-[#DFF8F3]' : 'bg-[#D1E9FF]'
                     }`}
                   >
                     <span
                       className={`font-open-sans text-[10px] font-semibold leading-[20px] sm:text-[12px] sm:leading-[24px] ${
-                        member.status === "joined"
-                          ? "text-[#0D8A72]"
-                          : "text-[#40A3FF]"
+                        member.status === 'joined' ? 'text-[#0D8A72]' : 'text-[#40A3FF]'
                       }`}
                     >
-                      {member.status === "joined" ? "Joined" : "Invite"}
+                      {member.status === 'joined' ? 'Joined' : 'Invite'}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell className="hidden text-center lg:table-cell">
                   <span
                     className={`text-[10px] leading-[12px] tracking-[0.15px] sm:text-[11px] sm:leading-[14px] ${
-                      member.joinedDate
-                        ? "text-title whitespace-pre-line"
-                        : "text-[#DADADA]"
+                      member.joinedDate ? 'text-title whitespace-pre-line' : 'text-[#DADADA]'
                     }`}
                   >
-                    {member.joinedDate || "N/A"}
+                    {member.joinedDate || 'N/A'}
                   </span>
                 </TableCell>
                 <TableCell className="text-center">
                   <Button
-                    variant={"ghost"}
-                    size={"icon"}
+                    variant={'ghost'}
+                    size={'icon'}
                     className="h-6 w-6 rounded-full p-1 sm:h-8 sm:w-8 sm:p-1.5"
                   >
                     <MoreHorizontal className="text-title h-3 w-3 sm:h-4 sm:w-4" />
@@ -259,5 +250,5 @@ export function MembersTable({}: MembersTableProps) {
         </Table>
       </div>
     </>
-  );
+  )
 }

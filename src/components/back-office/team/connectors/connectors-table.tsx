@@ -1,34 +1,26 @@
-"use client";
+'use client'
 
-import { ConnectorTableSkeleton } from "@/components/skeleton-components";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  ConnectorListItem,
-  getConnectorDetail,
-} from "@/lib/api/team-group/connectors";
-import { useI18n } from "@/lib/i18n";
-import { Pen, Trash2 } from "lucide-react";
-import Image from "next/image";
-import { toast } from "sonner";
-import { QrPreviewDialog } from "./qr-preview-dialog";
+import { ConnectorTableSkeleton } from '@/components/skeleton-components'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { ConnectorListItem, getConnectorDetail } from '@/lib/api/team-group/connectors'
+import { useI18n } from '@/lib/i18n'
+import { Pen, Trash2 } from 'lucide-react'
+import Image from 'next/image'
+import { toast } from 'sonner'
+import { QrPreviewDialog } from './qr-preview-dialog'
 
 interface ConnectorsTableProps {
-  connectors: ConnectorListItem[];
-  isConnectorsLoading: boolean;
-  connectorsError: Error | null;
-  debouncedSearchTerm: string;
-  statusFilter: string;
-  clearAllFilters: () => void;
-  setSelectedConnectorForPricing: (connector: ConnectorListItem) => void;
-  setsetPriceDialogFromTableOpen: (open: boolean) => void;
-  handleEditConnector: (connector: ConnectorListItem) => void;
-  handleDeleteConnector: (connectorId: string | number | undefined) => void;
+  connectors: ConnectorListItem[]
+  isConnectorsLoading: boolean
+  connectorsError: Error | null
+  debouncedSearchTerm: string
+  statusFilter: string
+  clearAllFilters: () => void
+  setSelectedConnectorForPricing: (connector: ConnectorListItem) => void
+  setsetPriceDialogFromTableOpen: (open: boolean) => void
+  handleEditConnector: (connector: ConnectorListItem) => void
+  handleDeleteConnector: (connectorId: string | number | undefined) => void
 }
 
 export function ConnectorsTable({
@@ -43,27 +35,26 @@ export function ConnectorsTable({
   handleEditConnector,
   handleDeleteConnector,
 }: ConnectorsTableProps) {
-  const { t } = useI18n();
+  const { t } = useI18n()
 
   const handleConnectorIdClick = async (connectorId: number) => {
     try {
-      const response = await getConnectorDetail(connectorId);
-      console.log("Connector detail:", response.data);
+      const response = await getConnectorDetail(connectorId)
+      console.log('Connector detail:', response.data)
 
       // Show success toast with connector name or ID
-      const connectorName =
-        response.data.connector_name || `ID: ${connectorId}`;
-      toast.success(`Loaded details for connector: ${connectorName}`);
+      const connectorName = response.data.connector_name || `ID: ${connectorId}`
+      toast.success(`Loaded details for connector: ${connectorName}`)
 
       // You can add more logic here to show the details in a modal or navigate to detail page
       // For example:
       // setSelectedConnectorDetail(response.data);
       // setDetailDialogOpen(true);
     } catch (error) {
-      console.error("Error fetching connector detail:", error);
-      toast.error("Failed to load connector details");
+      console.error('Error fetching connector detail:', error)
+      toast.error('Failed to load connector details')
     }
-  };
+  }
 
   const EmptyState = ({ colSpan }: { colSpan: number }) => (
     <tr>
@@ -85,36 +76,34 @@ export function ConnectorsTable({
         )}
       </td>
     </tr>
-  );
+  )
 
   const getStatusChargeDisplay = (status: string) => {
     const statusConfig = {
       Available: {
-        bgColor: "bg-[#DFF8F3] dark:bg-[#0D8A72]/10",
-        textColor: "text-[#0D8A72] dark:text-green-400",
-        label: "Online",
+        bgColor: 'bg-[#DFF8F3] dark:bg-[#0D8A72]/10',
+        textColor: 'text-[#0D8A72] dark:text-green-400',
+        label: 'Online',
       },
       Charging: {
-        bgColor: "bg-[#FFE5D1] dark:bg-[#FF9640]/10",
-        textColor: "text-[#FF9640] dark:text-[#FF9640]",
-        label: "Charging",
+        bgColor: 'bg-[#FFE5D1] dark:bg-[#FF9640]/10',
+        textColor: 'text-[#FF9640] dark:text-[#FF9640]',
+        label: 'Charging',
       },
-    };
+    }
 
     const config = statusConfig[status as keyof typeof statusConfig] || {
-      bgColor: "bg-destructive/10",
-      textColor: "text-destructive",
+      bgColor: 'bg-destructive/10',
+      textColor: 'text-destructive',
       label: status,
-    };
+    }
 
     return (
-      <span
-        className={`rounded px-3 py-1 ${config.bgColor} ${config.textColor}`}
-      >
+      <span className={`rounded px-3 py-1 ${config.bgColor} ${config.textColor}`}>
         {config.label}
       </span>
-    );
-  };
+    )
+  }
 
   return (
     <div className="-mt-8 overflow-x-auto px-4 sm:px-4">
@@ -122,34 +111,34 @@ export function ConnectorsTable({
         <thead className="rounded-lg bg-primary">
           <tr>
             <th className="rounded-tl-lg px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.chargers")}
+              {t('connectors.table.chargers')}
             </th>
             <th className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.charging_stations")}
+              {t('connectors.table.charging_stations')}
             </th>
             <th className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.connector_id")}
+              {t('connectors.table.connector_id')}
             </th>
             <th className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.type")}
+              {t('connectors.table.type')}
             </th>
             <th className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.qr_code")}
+              {t('connectors.table.qr_code')}
             </th>
             <th className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.pricing")}
+              {t('connectors.table.pricing')}
             </th>
             <th className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.status_charge")}
+              {t('connectors.table.status_charge')}
             </th>
             <th className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.status")}
+              {t('connectors.table.status')}
             </th>
             <th className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.created")}
+              {t('connectors.table.created')}
             </th>
             <th className="rounded-tr-lg px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground md:px-4 md:py-3">
-              {t("connectors.table.action")}
+              {t('connectors.table.action')}
             </th>
           </tr>
         </thead>
@@ -168,10 +157,7 @@ export function ConnectorsTable({
             <EmptyState colSpan={10} />
           ) : (
             connectors.map((connector) => (
-              <tr
-                key={connector.id}
-                className="shadow-xs rounded-lg bg-background"
-              >
+              <tr key={connector.id} className="shadow-xs rounded-lg bg-background">
                 <td className="text-muted-blue whitespace-nowrap rounded-l-lg px-2 py-2 text-center text-xs md:px-4 md:py-3">
                   <div className="flex items-center">
                     <div className="mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-muted font-bold">
@@ -185,10 +171,10 @@ export function ConnectorsTable({
                     </div>
                     <div className="text-left">
                       <div className="text-muted-blue text-xs font-medium">
-                        {connector.name || "Null"}
+                        {connector.name || 'Null'}
                       </div>
                       <div className="text-muted-blue text-xs font-light">
-                        {connector.serial_number || "Null"}
+                        {connector.serial_number || 'Null'}
                       </div>
                     </div>
                   </div>
@@ -205,9 +191,7 @@ export function ConnectorsTable({
                   {connector.type}
                 </td>
                 <td className="whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
-                  {connector.qr &&
-                  connector.qr !== "null" &&
-                  connector.qr !== "" ? (
+                  {connector.qr && connector.qr !== 'null' && connector.qr !== '' ? (
                     <QrPreviewDialog
                       qrUrl={connector.qr}
                       connectorName={connector.name || undefined}
@@ -219,7 +203,7 @@ export function ConnectorsTable({
                             <TooltipTrigger asChild>
                               <Button
                                 type="button"
-                                variant={"ghost"}
+                                variant={'ghost'}
                                 aria-label="Preview QR code"
                                 className="cursor-pointer appearance-none bg-transparent p-0 transition-transform hover:scale-105"
                               >
@@ -246,18 +230,18 @@ export function ConnectorsTable({
                   )}
                 </td>
                 <td className="text-muted-blue whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
-                  {connector.pricing !== "Set Price" ? (
+                  {connector.pricing !== 'Set Price' ? (
                     connector.pricing
                   ) : (
                     <Button
                       variant="default"
                       className="h-5 rounded-xl bg-zinc-950 py-3 text-[10px] text-primary-foreground transition duration-150 hover:scale-105 hover:bg-zinc-700 sm:h-5 sm:text-[10px]"
                       onClick={() => {
-                        setSelectedConnectorForPricing(connector);
-                        setsetPriceDialogFromTableOpen(true);
+                        setSelectedConnectorForPricing(connector)
+                        setsetPriceDialogFromTableOpen(true)
                       }}
                     >
-                      {t("buttons.set-price")}
+                      {t('buttons.set-price')}
                     </Button>
                   )}
                 </td>
@@ -286,7 +270,7 @@ export function ConnectorsTable({
                             <Pen />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>{t("buttons.edit")}</TooltipContent>
+                        <TooltipContent>{t('buttons.edit')}</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                     <TooltipProvider>
@@ -302,7 +286,7 @@ export function ConnectorsTable({
                             <Trash2 className="h-[10px] w-[10px]" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>{t("buttons.delete")}</TooltipContent>
+                        <TooltipContent>{t('buttons.delete')}</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </div>
@@ -313,5 +297,5 @@ export function ConnectorsTable({
         </tbody>
       </table>
     </div>
-  );
+  )
 }

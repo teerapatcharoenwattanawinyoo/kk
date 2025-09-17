@@ -1,16 +1,16 @@
-import { colors } from "@/lib/utils/colors";
-import { Card, CardContent } from "@/ui/molecules/card";
-import React from "react";
+import { colors } from '@/lib/utils/colors'
+import { Card, CardContent } from '@/ui/molecules/card'
+import React from 'react'
 
 export interface StatsCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
+  title: string
+  value: string | number
+  icon: React.ReactNode
   trend?: {
-    value: string;
-    type: "up" | "down" | "neutral";
-  };
-  iconBackgroundColor?: string;
+    value: string
+    type: 'up' | 'down' | 'neutral'
+  }
+  iconBackgroundColor?: string
 }
 
 export const StatsCard = ({
@@ -21,17 +21,12 @@ export const StatsCard = ({
   iconBackgroundColor = colors.primary[100],
 }: StatsCardProps) => {
   const getTrendIcon = () => {
-    if (!trend) return null;
+    if (!trend) return null
 
     switch (trend.type) {
-      case "up":
+      case 'up':
         return (
-          <svg
-            className="h-3 w-3"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -39,15 +34,10 @@ export const StatsCard = ({
               d="M7 17l9.2-9.2M17 17V7H7"
             />
           </svg>
-        );
-      case "down":
+        )
+      case 'down':
         return (
-          <svg
-            className="h-3 w-3"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -55,28 +45,28 @@ export const StatsCard = ({
               d="M17 7l-9.2 9.2M7 7v10h10"
             />
           </svg>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   const getTrendColor = () => {
-    if (!trend) return "";
+    if (!trend) return ''
 
     switch (trend.type) {
-      case "up":
-        return "text-green-600";
-      case "down":
-        return "text-red-600";
+      case 'up':
+        return 'text-green-600'
+      case 'down':
+        return 'text-red-600'
       default:
-        return "text-gray-600";
+        return 'text-gray-600'
     }
-  };
+  }
 
   // Function to render percentage with colored numbers
   const renderTrendValue = (value: string) => {
-    const parts = value.split(/(\d+%)/);
+    const parts = value.split(/(\d+%)/)
     return (
       <>
         {parts.map((part, index) => {
@@ -85,17 +75,17 @@ export const StatsCard = ({
               <span key={index} className={`font-semibold ${getTrendColor()}`}>
                 {part}
               </span>
-            );
+            )
           }
           return (
             <span key={index} className="text-gray-600">
               {part}
             </span>
-          );
+          )
         })}
       </>
-    );
-  };
+    )
+  }
 
   return (
     <Card className="border-0 bg-card shadow-sm">
@@ -117,5 +107,5 @@ export const StatsCard = ({
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

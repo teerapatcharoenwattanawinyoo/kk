@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react'
 
 interface UsersIconProps {
-  width?: number;
-  height?: number;
-  className?: string;
-  fill?: string;
+  width?: number
+  height?: number
+  className?: string
+  fill?: string
 }
 
 export const UsersIcon: React.FC<UsersIconProps> = ({
   width = 25,
   height = 26,
-  className = "",
-  fill = "#3F567F",
+  className = '',
+  fill = '#3F567F',
 }) => {
   return (
     <svg
@@ -27,5 +27,5 @@ export const UsersIcon: React.FC<UsersIconProps> = ({
         fill={fill}
       />
     </svg>
-  );
-};
+  )
+}

@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import MapLandmark from "@/components/maps/mapLandmark";
-import { Button } from "@/components/ui/button";
+import MapLandmark from '@/components/maps/mapLandmark'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -9,9 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -20,54 +20,50 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { useStationCategories } from "@/hooks/use-charging-stations";
-import { useI18n } from "@/lib/i18n";
-import {
-  ChargingStationFormData,
-  DayOfWeek,
-  OpenCloseFormState,
-} from "@/lib/schemas";
-import { ChevronDown, Loader2, X } from "lucide-react";
-import Image from "next/image";
-import { useRef } from "react";
-import { LanguageSelectorBodyRequest } from "./select-lang-body-requset";
+} from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import { useI18n } from '@/lib/i18n'
+import { ChargingStationFormData, DayOfWeek, OpenCloseFormState } from '@/lib/schemas'
+import { LanguageSelectorBodyRequest } from '@/modules/charging-stations/components/select-lang-body-requset'
+import { useStationCategories } from '@/modules/charging-stations/hooks/use-charging-stations'
+import { ChevronDown, Loader2, X } from 'lucide-react'
+import Image from 'next/image'
+import { useRef } from 'react'
 
 // ============================
 // Types & Interfaces
 // ============================
 
 interface ChargingStationFormProps {
-  mode: "add" | "edit";
-  currentStep: number;
-  formData: ChargingStationFormData;
-  selectedLanguage: string;
-  openCloseForm: OpenCloseFormState;
-  openCloseDialogOpen: boolean;
-  uploadedFiles: File[];
-  dayLabels: Record<DayOfWeek, string>;
-  existingGallery?: { id: number; image: string; sort_order: number }[]; // เพิ่มรูปที่มีอยู่แล้ว
-  allGalleryImages?: { id: number; image: string; sort_order: number }[]; // รูปทั้งหมดรวมที่จะลบ
-  deletedImageIds?: number[]; // เพิ่มรายการ ID ของรูปที่จะลบ
-  maxImages?: number; // เพิ่มจำนวนรูปสูงสุด
-  remainingSlots?: number; // เพิ่มจำนวนที่เหลือ
-  onSubmit: (e: React.FormEvent) => void;
-  onInputChange: (field: keyof ChargingStationFormData, value: any) => void;
-  onLanguageChange: (language: string) => void;
-  onOpenCloseDialogChange: (open: boolean) => void;
+  mode: 'add' | 'edit'
+  currentStep: number
+  formData: ChargingStationFormData
+  selectedLanguage: string
+  openCloseForm: OpenCloseFormState
+  openCloseDialogOpen: boolean
+  uploadedFiles: File[]
+  dayLabels: Record<DayOfWeek, string>
+  existingGallery?: { id: number; image: string; sort_order: number }[] // เพิ่มรูปที่มีอยู่แล้ว
+  allGalleryImages?: { id: number; image: string; sort_order: number }[] // รูปทั้งหมดรวมที่จะลบ
+  deletedImageIds?: number[] // เพิ่มรายการ ID ของรูปที่จะลบ
+  maxImages?: number // เพิ่มจำนวนรูปสูงสุด
+  remainingSlots?: number // เพิ่มจำนวนที่เหลือ
+  onSubmit: (e: React.FormEvent) => void
+  onInputChange: (field: keyof ChargingStationFormData, value: any) => void
+  onLanguageChange: (language: string) => void
+  onOpenCloseDialogChange: (open: boolean) => void
   onOpenCloseChange: (
     day: DayOfWeek,
-    field: "enabled" | "open" | "close",
+    field: 'enabled' | 'open' | 'close',
     value: boolean | string,
-  ) => void;
-  onOpen24hrs: (checked: boolean) => void;
-  onSameEveryday: (checked: boolean) => void;
-  onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemoveFile: (index: number) => void;
-  onRemoveExistingImage?: (imageId: number) => void; // เพิ่มสำหรับลบรูปเก่า
-  onUndoDeleteImage?: (imageId: number) => void; // เพิ่มสำหรับยกเลิกการลบ
+  ) => void
+  onOpen24hrs: (checked: boolean) => void
+  onSameEveryday: (checked: boolean) => void
+  onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onRemoveFile: (index: number) => void
+  onRemoveExistingImage?: (imageId: number) => void // เพิ่มสำหรับลบรูปเก่า
+  onUndoDeleteImage?: (imageId: number) => void // เพิ่มสำหรับยกเลิกการลบ
 }
 
 // ============================
@@ -103,14 +99,14 @@ export function ChargingStationForm({
   // ============================
   // Hooks & Data
   // ============================
-  const { t } = useI18n();
-  const formRef = useRef<HTMLFormElement>(null);
+  const { t } = useI18n()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const {
     data: stationCategories = [],
     isLoading: isLoadingCategories,
     error: categoriesError,
-  } = useStationCategories();
+  } = useStationCategories()
 
   // ============================
   // Return JSX
@@ -120,45 +116,35 @@ export function ChargingStationForm({
       {currentStep === 1 && (
         <>
           <div className="mb-6 sm:mb-8">
-            <LanguageSelectorBodyRequest
-              onLanguageChange={onLanguageChange}
-              defaultLanguage="en"
-            />
+            <LanguageSelectorBodyRequest onLanguageChange={onLanguageChange} defaultLanguage="en" />
             <p className="mt-2 text-xs text-gray-500">
-              กรอกชื่อสถานีในแต่ละภาษา
-              เพื่อให้ผู้ใช้เห็นข้อมูลถูกต้องตามภาษาที่เลือก
+              กรอกชื่อสถานีในแต่ละภาษา เพื่อให้ผู้ใช้เห็นข้อมูลถูกต้องตามภาษาที่เลือก
             </p>
           </div>
           <div>
             <div className="mb-2 flex items-center">
               <Label className="text-sm font-normal tracking-[0.15px] text-black">
-                {t("charging-stations.station_name")} (
-                {selectedLanguage.toUpperCase()})
+                {t('charging-stations.station_name')} ({selectedLanguage.toUpperCase()})
               </Label>
-              <span className="ml-1 text-[15px] font-normal text-destructive">
-                *
-              </span>
+              <span className="ml-1 text-[15px] font-normal text-destructive">*</span>
             </div>
             <Input
               id="station_name"
               value={
-                selectedLanguage === "th"
+                selectedLanguage === 'th'
                   ? formData.station_name_th
-                  : selectedLanguage === "en"
+                  : selectedLanguage === 'en'
                     ? formData.station_name
                     : formData.station_name_lao
               }
               onChange={(e) => {
                 const field =
-                  selectedLanguage === "th"
-                    ? "station_name_th"
-                    : selectedLanguage === "en"
-                      ? "station_name"
-                      : "station_name_lao";
-                onInputChange(
-                  field as keyof ChargingStationFormData,
-                  e.target.value,
-                );
+                  selectedLanguage === 'th'
+                    ? 'station_name_th'
+                    : selectedLanguage === 'en'
+                      ? 'station_name'
+                      : 'station_name_lao'
+                onInputChange(field as keyof ChargingStationFormData, e.target.value)
               }}
               placeholder={`Specify Name in ${selectedLanguage.toUpperCase()}`}
               className="h-10 border-none bg-[#f2f2f2] text-sm placeholder:text-[#CACACA] sm:h-11"
@@ -167,29 +153,25 @@ export function ChargingStationForm({
 
           <div>
             <Label className="mb-2 block text-sm font-normal tracking-[0.15px] text-black">
-              {t("charging-stations.station_detail")} (
-              {selectedLanguage.toUpperCase()})
+              {t('charging-stations.station_detail')} ({selectedLanguage.toUpperCase()})
             </Label>
             <Textarea
               id="description"
               value={
-                selectedLanguage === "th"
+                selectedLanguage === 'th'
                   ? formData.station_detail_th
-                  : selectedLanguage === "en"
+                  : selectedLanguage === 'en'
                     ? formData.station_detail
                     : formData.station_detail_lao
               }
               onChange={(e) => {
                 const field =
-                  selectedLanguage === "th"
-                    ? "station_detail_th"
-                    : selectedLanguage === "en"
-                      ? "station_detail"
-                      : "station_detail_lao";
-                onInputChange(
-                  field as keyof ChargingStationFormData,
-                  e.target.value,
-                );
+                  selectedLanguage === 'th'
+                    ? 'station_detail_th'
+                    : selectedLanguage === 'en'
+                      ? 'station_detail'
+                      : 'station_detail_lao'
+                onInputChange(field as keyof ChargingStationFormData, e.target.value)
               }}
               placeholder={`Add Charging Station Description in ${selectedLanguage.toUpperCase()}`}
               className="h-[120px] resize-none border-none bg-[#f2f2f2] text-sm placeholder:text-[#CACACA] sm:h-[195px]"
@@ -200,25 +182,17 @@ export function ChargingStationForm({
           <div>
             <div className="mb-2 flex items-center">
               <Label className="text-sm font-normal tracking-[0.15px] text-black">
-                {t("charging-stations.station_category")}
+                {t('charging-stations.station_category')}
               </Label>
-              <span className="ml-1 text-[15px] font-normal text-destructive">
-                *
-              </span>
+              <span className="ml-1 text-[15px] font-normal text-destructive">*</span>
             </div>
             <Select
-              value={
-                formData.station_type_id
-                  ? formData.station_type_id.toString()
-                  : undefined
-              }
-              onValueChange={(value) =>
-                onInputChange("station_type_id", Number(value))
-              }
+              value={formData.station_type_id ? formData.station_type_id.toString() : undefined}
+              onValueChange={(value) => onInputChange('station_type_id', Number(value))}
               disabled={isLoadingCategories}
             >
               <SelectTrigger
-                className={`!h-12 w-full border-none bg-[#f2f2f2] text-sm sm:h-11 ${formData.station_type_id ? "text-zinc-900" : "text-[#CACACA]"}`}
+                className={`!h-12 w-full border-none bg-[#f2f2f2] text-sm sm:h-11 ${formData.station_type_id ? 'text-zinc-900' : 'text-[#CACACA]'}`}
               >
                 {isLoadingCategories ? (
                   <div className="flex items-center">
@@ -226,17 +200,13 @@ export function ChargingStationForm({
                     Loading categories...
                   </div>
                 ) : (
-                  <SelectValue
-                    placeholder={t(
-                      "charging-stations.station_category_placeholder",
-                    )}
-                  />
+                  <SelectValue placeholder={t('charging-stations.station_category_placeholder')} />
                 )}
               </SelectTrigger>
               <SelectContent className="z-[1000] bg-background text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">
                 <SelectGroup>
                   <SelectLabel className="px-2 py-1.5 text-xs font-medium text-[#8D93A5]">
-                    {t("charging-stations.station_category_placeholder")}
+                    {t('charging-stations.station_category_placeholder')}
                   </SelectLabel>
                   {isLoadingCategories ? (
                     <SelectItem value="loading" disabled>
@@ -255,10 +225,7 @@ export function ChargingStationForm({
                     </SelectItem>
                   ) : (
                     stationCategories.map((category) => (
-                      <SelectItem
-                        key={category.id}
-                        value={category.station_type_id.toString()}
-                      >
+                      <SelectItem key={category.id} value={category.station_type_id.toString()}>
                         {category.name}
                       </SelectItem>
                     ))
@@ -274,10 +241,10 @@ export function ChargingStationForm({
         <>
           <MapLandmark
             onCoordinatesChange={(lat, lng) => {
-              onInputChange("coordinates", { lat, lng });
+              onInputChange('coordinates', { lat, lng })
             }}
             onAddressChange={(address) => {
-              onInputChange("address", address);
+              onInputChange('address', address)
             }}
             initialCoordinates={formData.coordinates}
             initialAddress={formData.address}
@@ -285,12 +252,9 @@ export function ChargingStationForm({
 
           <div className="border-t py-4">
             <Label className="mb-2 block text-sm font-normal tracking-[0.15px] text-black">
-              {t("charging-stations.working_hours_label")}
+              {t('charging-stations.working_hours_label')}
             </Label>
-            <Dialog
-              open={openCloseDialogOpen}
-              onOpenChange={onOpenCloseDialogChange}
-            >
+            <Dialog open={openCloseDialogOpen} onOpenChange={onOpenCloseDialogChange}>
               <DialogTrigger asChild>
                 <Button
                   type="button"
@@ -300,44 +264,31 @@ export function ChargingStationForm({
                   <div className="text-left">
                     {openCloseForm.open24hrs ? (
                       <div>
-                        <p className="font-normal text-[#364A63]">
-                          เปิดให้บริการ 24 ชั่วโมง
-                        </p>
-                        <p className="mt-1 text-xs text-green-600">
-                          ทุกวัน 00:00 - 23:59
-                        </p>
+                        <p className="font-normal text-[#364A63]">เปิดให้บริการ 24 ชั่วโมง</p>
+                        <p className="mt-1 text-xs text-green-600">ทุกวัน 00:00 - 23:59</p>
                       </div>
                     ) : openCloseForm.sameEveryday ? (
                       <div>
-                        <p className="font-normal text-[#364A63]">
-                          เวลาเดียวกันทุกวัน
-                        </p>
+                        <p className="font-normal text-[#364A63]">เวลาเดียวกันทุกวัน</p>
                         <p className="mt-1 text-xs text-blue-600">
-                          {openCloseForm.days.monday?.open} -{" "}
-                          {openCloseForm.days.monday?.close}
+                          {openCloseForm.days.monday?.open} - {openCloseForm.days.monday?.close}
                         </p>
                       </div>
-                    ) : Object.values(openCloseForm.days).some(
-                        (day) => day.enabled,
-                      ) ? (
+                    ) : Object.values(openCloseForm.days).some((day) => day.enabled) ? (
                       <div>
                         <p className="mt-1 text-xs">
                           {Object.entries(openCloseForm.days)
                             .filter(([_, day]) => day.enabled)
-                            .map(
-                              ([dayName, day]) =>
-                                `${dayLabels[dayName as DayOfWeek]}`,
-                            )
+                            .map(([dayName, day]) => `${dayLabels[dayName as DayOfWeek]}`)
                             .slice(0, 7)
-                            .join(", ")}
-                          {Object.values(openCloseForm.days).filter(
-                            (day) => day.enabled,
-                          ).length > 7}
+                            .join(', ')}
+                          {Object.values(openCloseForm.days).filter((day) => day.enabled).length >
+                            7}
                         </p>
                       </div>
                     ) : (
                       <p className="font-normal text-[#CACACA]">
-                        {t("charging-stations.working_hours_placeholder")}
+                        {t('charging-stations.working_hours_placeholder')}
                       </p>
                     )}
                   </div>
@@ -346,9 +297,7 @@ export function ChargingStationForm({
               </DialogTrigger>
               <DialogContent className="max-w-[min(96vw,800px)]! md:w-[800px]! max-h-[min(92vh,800px)] w-full overflow-y-auto p-6">
                 <DialogHeader>
-                  <DialogTitle className="text-xl text-primary">
-                    Add Open - Closed
-                  </DialogTitle>
+                  <DialogTitle className="text-xl text-primary">Add Open - Closed</DialogTitle>
                 </DialogHeader>
                 <div className="my-4 flex flex-col gap-6 md:flex-row">
                   {/* Left: Date And Time */}
@@ -360,17 +309,15 @@ export function ChargingStationForm({
                       >
                         <Switch
                           checked={openCloseForm.days[day]?.enabled ?? false}
-                          onCheckedChange={(checked) =>
-                            onOpenCloseChange(day, "enabled", checked)
-                          }
+                          onCheckedChange={(checked) => onOpenCloseChange(day, 'enabled', checked)}
                           disabled={openCloseForm.open24hrs}
                           className="ml-4 data-[state=checked]:bg-[#1ED86B] data-[state=unchecked]:bg-[#CECECE]"
                         />
                         <span
                           className={`w-24 ${
                             openCloseForm.days[day]?.enabled
-                              ? "font-normal"
-                              : "font-light text-[#606060]"
+                              ? 'font-normal'
+                              : 'font-light text-[#606060]'
                           }`}
                         >
                           {dayLabels[day]}
@@ -379,29 +326,17 @@ export function ChargingStationForm({
                           <>
                             <Input
                               type="time"
-                              value={openCloseForm.days[day]?.open ?? "00:00"}
+                              value={openCloseForm.days[day]?.open ?? '00:00'}
                               onChange={(e) => {
                                 if (openCloseForm.sameEveryday) {
                                   // sync ทุกวัน
-                                  (
-                                    Object.keys(
-                                      openCloseForm.days,
-                                    ) as DayOfWeek[]
-                                  ).forEach((d) => {
+                                  ;(Object.keys(openCloseForm.days) as DayOfWeek[]).forEach((d) => {
                                     if (openCloseForm.days[d]?.enabled) {
-                                      onOpenCloseChange(
-                                        d,
-                                        "open",
-                                        e.target.value,
-                                      );
+                                      onOpenCloseChange(d, 'open', e.target.value)
                                     }
-                                  });
+                                  })
                                 } else {
-                                  onOpenCloseChange(
-                                    day,
-                                    "open",
-                                    e.target.value,
-                                  );
+                                  onOpenCloseChange(day, 'open', e.target.value)
                                 }
                               }}
                               disabled={openCloseForm.open24hrs}
@@ -410,28 +345,16 @@ export function ChargingStationForm({
                             <span className="text-[#7C7C7C]">-</span>
                             <Input
                               type="time"
-                              value={openCloseForm.days[day]?.close ?? "00:00"}
+                              value={openCloseForm.days[day]?.close ?? '00:00'}
                               onChange={(e) => {
                                 if (openCloseForm.sameEveryday) {
-                                  (
-                                    Object.keys(
-                                      openCloseForm.days,
-                                    ) as DayOfWeek[]
-                                  ).forEach((d) => {
+                                  ;(Object.keys(openCloseForm.days) as DayOfWeek[]).forEach((d) => {
                                     if (openCloseForm.days[d]?.enabled) {
-                                      onOpenCloseChange(
-                                        d,
-                                        "close",
-                                        e.target.value,
-                                      );
+                                      onOpenCloseChange(d, 'close', e.target.value)
                                     }
-                                  });
+                                  })
                                 } else {
-                                  onOpenCloseChange(
-                                    day,
-                                    "close",
-                                    e.target.value,
-                                  );
+                                  onOpenCloseChange(day, 'close', e.target.value)
                                 }
                               }}
                               disabled={openCloseForm.open24hrs}
@@ -440,9 +363,7 @@ export function ChargingStationForm({
                           </>
                         )}
                         {openCloseForm.open24hrs && (
-                          <span className="ml-3 text-xs text-green-600">
-                            24 ชั่วโมง
-                          </span>
+                          <span className="ml-3 text-xs text-green-600">24 ชั่วโมง</span>
                         )}
                       </div>
                     ))}
@@ -451,9 +372,7 @@ export function ChargingStationForm({
                   <div className="flex w-64 flex-col gap-6">
                     <div>
                       <Label className="font-semibold">Open 24hrs</Label>
-                      <p className="mb-2 text-xs text-gray-500">
-                        for station ev charger
-                      </p>
+                      <p className="mb-2 text-xs text-gray-500">for station ev charger</p>
                       <Switch
                         checked={openCloseForm.open24hrs}
                         onCheckedChange={onOpen24hrs}
@@ -461,9 +380,7 @@ export function ChargingStationForm({
                       />
                     </div>
                     <div>
-                      <Label className="font-semibold">
-                        Set the same time every day
-                      </Label>
+                      <Label className="font-semibold">Set the same time every day</Label>
                       <p className="mb-2 text-xs text-gray-500">
                         Auto–charge your EV at your preferred time every day.
                       </p>
@@ -488,8 +405,8 @@ export function ChargingStationForm({
                   <Button
                     type="button"
                     onClick={() => {
-                      onInputChange("openClose", JSON.stringify(openCloseForm));
-                      onOpenCloseDialogChange(false);
+                      onInputChange('openClose', JSON.stringify(openCloseForm))
+                      onOpenCloseDialogChange(false)
                     }}
                     className="w-40 bg-zinc-800 transition hover:bg-zinc-700"
                   >
@@ -502,18 +419,18 @@ export function ChargingStationForm({
 
           <div>
             <Label className="mb-2 block text-sm font-normal tracking-[0.15px] text-black">
-              {t("charging-stations.contact")}
+              {t('charging-stations.contact')}
             </Label>
             <Input
               id="contact"
               type="tel"
-              value={formData.contact || ""}
+              value={formData.contact || ''}
               onChange={(e) => {
                 // กรองให้เฉพาะตัวเลข
-                const numericValue = e.target.value.replace(/[^0-9]/g, "");
-                onInputChange("contact", numericValue);
+                const numericValue = e.target.value.replace(/[^0-9]/g, '')
+                onInputChange('contact', numericValue)
               }}
-              placeholder={t("charging-stations.contact_placeholder")}
+              placeholder={t('charging-stations.contact_placeholder')}
               className="h-10 border-none bg-[#f2f2f2] text-sm placeholder:text-[#CACACA] sm:h-11"
               maxLength={15} // จำกัดความยาวเบอร์โทร
             />
@@ -521,10 +438,10 @@ export function ChargingStationForm({
 
           <div>
             <Label className="mb-2 block text-sm font-normal tracking-[0.15px] text-black">
-              {t("charging-stations.place_photo")}
+              {t('charging-stations.place_photo')}
             </Label>
             <p className="mb-4 text-sm text-gray-600">
-              {t("charging-stations.place_photo_description")}
+              {t('charging-stations.place_photo_description')}
             </p>
 
             {/* แสดงข้อมูลรูปภาพ */}
@@ -558,12 +475,12 @@ export function ChargingStationForm({
                 variant="outline"
                 className={`flex h-12 items-center gap-2 rounded-full border ${
                   remainingSlots > 0
-                    ? "text-primary hover:text-primary"
-                    : "cursor-not-allowed text-gray-400"
+                    ? 'text-primary hover:text-primary'
+                    : 'cursor-not-allowed text-gray-400'
                 }`}
                 onClick={() => {
                   if (remainingSlots > 0) {
-                    document.getElementById("photo-upload")?.click();
+                    document.getElementById('photo-upload')?.click()
                   }
                 }}
                 disabled={remainingSlots <= 0}
@@ -576,35 +493,31 @@ export function ChargingStationForm({
                   className="h-5 w-5"
                 />
                 {remainingSlots > 0
-                  ? `${t("charging-stations.add_photo")} (${remainingSlots} / 5)`
-                  : `${t("charging-stations.add_photo")}`}
+                  ? `${t('charging-stations.add_photo')} (${remainingSlots} / 5)`
+                  : `${t('charging-stations.add_photo')}`}
               </Button>
 
               {/* Display images marked for deletion with undo option */}
-              {mode === "edit" && deletedImageIds.length > 0 && (
+              {mode === 'edit' && deletedImageIds.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {deletedImageIds.map((imageId) => {
                     // หารูปจาก allGalleryImages
-                    const originalImage = allGalleryImages.find(
-                      (img: any) => img.id === imageId,
-                    );
-                    if (!originalImage) return null;
+                    const originalImage = allGalleryImages.find((img: any) => img.id === imageId)
+                    if (!originalImage) return null
 
                     return (
                       <Button
                         key={imageId}
                         type="button"
-                        variant={"link"}
-                        size={"lg"}
-                        onClick={() =>
-                          onUndoDeleteImage && onUndoDeleteImage(imageId)
-                        }
+                        variant={'link'}
+                        size={'lg'}
+                        onClick={() => onUndoDeleteImage && onUndoDeleteImage(imageId)}
                         className="flex items-center gap-1 text-sm text-destructive"
                         title="Undo deletion"
                       >
                         Undo
                       </Button>
-                    );
+                    )
                   })}
                 </div>
               )}
@@ -627,11 +540,11 @@ export function ChargingStationForm({
                       </div>
 
                       {/* เพิ่มปุ่มลบสำหรับโหมด edit */}
-                      {mode === "edit" && onRemoveExistingImage && (
+                      {mode === 'edit' && onRemoveExistingImage && (
                         <Button
                           type="button"
-                          variant={"destructive"}
-                          size={"icon"}
+                          variant={'destructive'}
+                          size={'icon'}
                           onClick={() => onRemoveExistingImage(item.id)}
                           className="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full"
                           title="Delete image"
@@ -665,15 +578,13 @@ export function ChargingStationForm({
                       </div>
                       <Button
                         type="button"
-                        variant={"destructive"}
+                        variant={'destructive'}
                         onClick={() => onRemoveFile(index)}
                         className="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full"
                       >
                         <X className="size-3" />
                       </Button>
-                      <p className="mt-1 truncate text-xs text-gray-500">
-                        {file.name}
-                      </p>
+                      <p className="mt-1 truncate text-xs text-gray-500">{file.name}</p>
                     </div>
                   ))}
                 </div>
@@ -681,24 +592,22 @@ export function ChargingStationForm({
             )}
 
             <p className="mt-2 text-xs text-gray-500">
-              {t("charging-stations.place_photo_detail")}
+              {t('charging-stations.place_photo_detail')}
             </p>
           </div>
 
           <div className="my-2">
-            <Label className="block py-2 font-normal">
-              {t("status.status")}
-            </Label>
+            <Label className="block py-2 font-normal">{t('status.status')}</Label>
             <Select
-              value={formData.status?.toString() || "1"}
-              onValueChange={(value) => onInputChange("status", Number(value))}
+              value={formData.status?.toString() || '1'}
+              onValueChange={(value) => onInputChange('status', Number(value))}
             >
               <SelectTrigger className="w-full bg-[#f2f2f2] text-sm placeholder:text-[#CACACA]">
                 <SelectValue placeholder="Select a status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>{t("status.status")}</SelectLabel>
+                  <SelectLabel>{t('status.status')}</SelectLabel>
                   <SelectItem value="1">Public</SelectItem>
                   <SelectItem value="4">Private</SelectItem>
                   <SelectItem value="6">Restricted</SelectItem>
@@ -718,9 +627,7 @@ export function ChargingStationForm({
               <Switch
                 id="status-sidebar"
                 checked={formData.show_on_map}
-                onCheckedChange={(checked) =>
-                  onInputChange("show_on_map", checked)
-                }
+                onCheckedChange={(checked) => onInputChange('show_on_map', checked)}
                 className="data-[state=checked]:bg-[#00DD9C]"
               />
             </div>
@@ -745,5 +652,5 @@ export function ChargingStationForm({
         </>
       )}
     </form>
-  );
+  )
 }

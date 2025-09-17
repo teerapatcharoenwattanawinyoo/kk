@@ -1,22 +1,22 @@
-import { Pagination } from "@/ui/organisms/pagination";
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import { Pagination } from '@/ui/organisms/pagination'
+import type { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 
 const meta = {
-  title: "Organisms/Pagination",
+  title: 'Organisms/Pagination',
   component: Pagination,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   args: {
     onPageChange: fn(),
     onItemsPerPageChange: fn(),
   },
-} satisfies Meta<typeof Pagination>;
+} satisfies Meta<typeof Pagination>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
@@ -25,7 +25,7 @@ export const Default: Story = {
     itemsPerPage: 10,
     totalItems: 130,
   },
-};
+}
 
 export const MiddlePage: Story = {
   args: {
@@ -34,7 +34,7 @@ export const MiddlePage: Story = {
     itemsPerPage: 10,
     totalItems: 130,
   },
-};
+}
 
 export const LastPage: Story = {
   args: {
@@ -43,4 +43,4 @@ export const LastPage: Story = {
     itemsPerPage: 10,
     totalItems: 130,
   },
-};
+}

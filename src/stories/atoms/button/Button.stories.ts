@@ -1,103 +1,96 @@
-import { Button } from "@/ui/atoms/button";
+import { Button } from '@/ui/atoms/button'
 
 const meta = {
-  title: "Atoms/Button",
+  title: 'Atoms/Button',
   component: Button,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
-      control: { type: "select" },
-      options: [
-        "default",
-        "destructive",
-        "outline",
-        "secondary",
-        "ghost",
-        "link",
-      ],
+      control: { type: 'select' },
+      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
     },
     size: {
-      control: { type: "select" },
-      options: ["default", "sm", "lg", "icon"],
+      control: { type: 'select' },
+      options: ['default', 'sm', 'lg', 'icon'],
     },
     disabled: {
-      control: { type: "boolean" },
+      control: { type: 'boolean' },
     },
   },
-};
+}
 
-export default meta;
+export default meta
 
 export const Default = {
   args: {
-    children: "Button",
-    variant: "default",
-    size: "default",
+    children: 'Button',
+    variant: 'default',
+    size: 'default',
   },
-};
+}
 
 export const Destructive = {
   args: {
-    children: "Delete",
-    variant: "destructive",
+    children: 'Delete',
+    variant: 'destructive',
   },
-};
+}
 
 export const Outline = {
   args: {
-    children: "Outline",
-    variant: "outline",
+    children: 'Outline',
+    variant: 'outline',
   },
-};
+}
 
 export const Secondary = {
   args: {
-    children: "Secondary",
-    variant: "secondary",
+    children: 'Secondary',
+    variant: 'secondary',
   },
-};
+}
 
 export const Ghost = {
   args: {
-    children: "Ghost",
-    variant: "ghost",
+    children: 'Ghost',
+    variant: 'ghost',
   },
-};
+}
 
 export const Link = {
   args: {
-    children: "Link",
-    variant: "link",
+    children: 'Link',
+    variant: 'link',
   },
-};
+}
 
 export const Small = {
   args: {
-    children: "Small Button",
-    size: "sm",
+    children: 'Small Button',
+    size: 'sm',
   },
-};
+}
 
 export const Large = {
   args: {
-    children: "Large Button",
-    size: "lg",
+    children: 'Large Button',
+    size: 'lg',
   },
-};
+}
 
 export const Icon = {
   args: {
-    children: "💖",
-    size: "icon",
+    children: '💖',
+    size: 'icon',
   },
-};
+}
 
 export const Disabled = {
   args: {
-    children: "Disabled",
+    children: 'Disabled',
     disabled: true,
   },
-};
+}

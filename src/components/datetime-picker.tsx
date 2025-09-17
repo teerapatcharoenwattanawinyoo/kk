@@ -1,47 +1,43 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "lucide-react";
+import { Button } from '@/components/ui/button'
+import { Calendar as CalendarComponent } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from 'lucide-react'
 
 interface DateTimePickerProps {
-  selectedDate?: Date;
-  selectedTime: string;
-  onDateChange: (date: Date | undefined) => void;
-  onTimeChange: (time: string) => void;
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  isEnabled?: boolean;
-  triggerClassName?: string;
+  selectedDate?: Date
+  selectedTime: string
+  onDateChange: (date: Date | undefined) => void
+  onTimeChange: (time: string) => void
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  isEnabled?: boolean
+  triggerClassName?: string
 }
 
 interface TimeOption {
-  display: string;
-  value: string;
+  display: string
+  value: string
 }
 
 const generateTimeOptions = (): TimeOption[] => {
-  const times: TimeOption[] = [];
+  const times: TimeOption[] = []
   // Generate times from 6:00 AM to 11:30 PM in 15-minute intervals
   for (let hour = 6; hour <= 23; hour++) {
     for (let minute = 0; minute < 60; minute += 15) {
-      const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-      const period = hour < 12 ? "AM" : "PM";
-      const timeStr = `${hour12}:${minute.toString().padStart(2, "0")} ${period}`;
-      const time24 = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+      const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
+      const period = hour < 12 ? 'AM' : 'PM'
+      const timeStr = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`
+      const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
       times.push({
         display: timeStr,
         value: time24,
-      });
+      })
     }
   }
-  return times;
-};
+  return times
+}
 
 export function DateTimePicker({
   selectedDate,
@@ -51,9 +47,9 @@ export function DateTimePicker({
   isOpen,
   onOpenChange,
   isEnabled = true,
-  triggerClassName = "",
+  triggerClassName = '',
 }: DateTimePickerProps) {
-  const timeOptions = generateTimeOptions();
+  const timeOptions = generateTimeOptions()
 
   return (
     <Popover open={isOpen} onOpenChange={onOpenChange}>
@@ -62,9 +58,7 @@ export function DateTimePicker({
           variant="ghost"
           size="sm"
           className={`mt-1 h-auto p-0 text-xs underline hover:bg-transparent ${
-            isEnabled
-              ? "text-primary hover:text-primary"
-              : "text-[#949494] hover:text-[#949494]"
+            isEnabled ? 'text-primary hover:text-primary' : 'text-[#949494] hover:text-[#949494]'
           } ${triggerClassName}`}
         >
           ตั้งค่าวันที่เวลา
@@ -90,13 +84,13 @@ export function DateTimePicker({
               {timeOptions.map(({ display, value }) => (
                 <Button
                   key={value}
-                  variant={selectedTime === value ? "default" : "ghost"}
+                  variant={selectedTime === value ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => onTimeChange(value)}
                   className={`w-full justify-center text-sm font-normal ${
                     selectedTime === value
-                      ? "rounded-lg bg-primary text-white hover:bg-primary"
-                      : "rounded-lg border shadow-md hover:bg-zinc-100"
+                      ? 'rounded-lg bg-primary text-white hover:bg-primary'
+                      : 'rounded-lg border shadow-md hover:bg-zinc-100'
                   }`}
                 >
                   {display}
@@ -107,5 +101,5 @@ export function DateTimePicker({
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

@@ -1,39 +1,35 @@
-"use client";
-import { LocationPinIcon } from "@/components/icons/location-pin-icon";
-import { Button } from "@/components/ui/button";
+'use client'
+import { LocationPinIcon } from '@/components/icons/location-pin-icon'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { useCreatePriceSetByParent } from "@/hooks/use-price-group";
-import { Charger } from "@/lib/api/team-group/connectors";
-import {
-  CreateByParentRequest,
-  PriceGroup,
-  getPriceSet,
-} from "@/lib/api/team-group/price-groups";
-import { QUERY_KEYS } from "@/lib/constants";
-import { useTeamHostId } from "@/modules/teams/hooks/use-teams";
-import { useQuery } from "@tanstack/react-query";
-import { Check, Loader2, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { useCreatePriceSetByParent } from '@/hooks/use-price-group'
+import { Charger } from '@/lib/api/team-group/connectors'
+import { CreateByParentRequest, PriceGroup, getPriceSet } from '@/lib/api/team-group/price-groups'
+import { QUERY_KEYS } from '@/lib/constants'
+import { useTeamHostId } from '@/modules/teams/hooks/use-teams'
+import { useQuery } from '@tanstack/react-query'
+import { Check, Loader2, Search } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 import {
   SelectConnectorDialog,
   SelectedConnectorsDisplay,
-} from "@/components/back-office/team/connectors";
-import { SuccessDialog } from "@/components/notifications";
+} from '@/components/back-office/team/connectors'
+import { SuccessDialog } from '@/components/notifications'
 
 interface SetPriceDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onConfirm?: (selectedPriceGroup: PriceGroup) => void;
-  initialSelectedConnectors?: Charger[];
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onConfirm?: (selectedPriceGroup: PriceGroup) => void
+  initialSelectedConnectors?: Charger[]
 }
 
 export default function SetPriceDialogFormTable({
@@ -42,13 +38,13 @@ export default function SetPriceDialogFormTable({
   onConfirm,
   initialSelectedConnectors,
 }: SetPriceDialogProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showConnectorDialog, setShowConnectorDialog] = useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [selectedConnectors, setSelectedConnectors] = useState<Charger[]>([]);
-  const [isApplying, setIsApplying] = useState(false);
-  const teamHostId = useTeamHostId();
-  const createPriceSetMutation = useCreatePriceSetByParent();
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showConnectorDialog, setShowConnectorDialog] = useState(false)
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
+  const [selectedConnectors, setSelectedConnectors] = useState<Charger[]>([])
+  const [isApplying, setIsApplying] = useState(false)
+  const teamHostId = useTeamHostId()
+  const createPriceSetMutation = useCreatePriceSetByParent()
 
   // Use react-query directly to fetch price set data
   const {
@@ -56,197 +52,188 @@ export default function SetPriceDialogFormTable({
     isLoading,
     error,
   } = useQuery({
-    queryKey: [...QUERY_KEYS.PRICE_SET, "general", 1, 100],
+    queryKey: [...QUERY_KEYS.PRICE_SET, 'general', 1, 100],
     queryFn: () => {
-      return getPriceSet("general", 1, 100);
+      return getPriceSet('general', 1, 100)
     },
     enabled: !!teamHostId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-  });
+  })
 
   // Extract deduplicated groups and total count from API response
-  const dedupedGroups = priceSetResponse?.data?.data || [];
+  const dedupedGroups = priceSetResponse?.data?.data || []
   // const totalCount = priceSetResponse?.data?.count || 0;
 
   // Filter price groups based on search term
   const filteredPriceGroups = dedupedGroups.filter((group: PriceGroup) => {
     // If search term is empty, include all groups
-    if (!searchTerm) return true;
+    if (!searchTerm) return true
 
     // Safely check if name includes search term
-    const groupName = group.name || "";
-    return groupName.toLowerCase().includes(searchTerm.toLowerCase());
-  });
+    const groupName = group.name || ''
+    return groupName.toLowerCase().includes(searchTerm.toLowerCase())
+  })
 
-  const [selectedPriceGroup, setSelectedPriceGroup] =
-    useState<PriceGroup | null>(null);
+  const [selectedPriceGroup, setSelectedPriceGroup] = useState<PriceGroup | null>(null)
 
   // Select first item by default when data loads
   useEffect(() => {
     if (filteredPriceGroups.length > 0 && !selectedPriceGroup) {
-      setSelectedPriceGroup(filteredPriceGroups[0]);
+      setSelectedPriceGroup(filteredPriceGroups[0])
     }
-  }, [filteredPriceGroups, selectedPriceGroup]);
+  }, [filteredPriceGroups, selectedPriceGroup])
 
   // Reset states when dialog closes
   useEffect(() => {
     if (!open) {
-      setSelectedConnectors([]);
-      setSelectedPriceGroup(null);
-      setSearchTerm("");
-      setShowSuccessDialog(false);
+      setSelectedConnectors([])
+      setSelectedPriceGroup(null)
+      setSearchTerm('')
+      setShowSuccessDialog(false)
     }
-  }, [open]);
+  }, [open])
 
   // Set initial selected connectors when provided
   useEffect(() => {
     if (open && initialSelectedConnectors) {
-      setSelectedConnectors(initialSelectedConnectors);
+      setSelectedConnectors(initialSelectedConnectors)
     }
-  }, [open, initialSelectedConnectors]);
+  }, [open, initialSelectedConnectors])
 
   // Helper function to format price display
   const formatPriceDisplay = (group: PriceGroup) => {
-    if (!group) return "N/A";
+    if (!group) return 'N/A'
 
     try {
-      const prices = [];
+      const prices = []
 
       // Handle different number formats safely
       if (group.price_per_kwh) {
-        prices.push(`${group.price_per_kwh} THB/kWh`);
+        prices.push(`${group.price_per_kwh} THB/kWh`)
       }
 
       if (group.price_per_minute) {
-        prices.push(`${group.price_per_minute} THB/min`);
+        prices.push(`${group.price_per_minute} THB/min`)
       }
 
       // Add peak/off-peak prices if available
       if (group.price_on_peak && parseFloat(group.price_on_peak) > 0) {
-        prices.push(`${group.price_on_peak} THB peak`);
+        prices.push(`${group.price_on_peak} THB peak`)
       }
 
       if (group.price_off_peak && parseFloat(group.price_off_peak) > 0) {
-        prices.push(`${group.price_off_peak} THB off-peak`);
+        prices.push(`${group.price_off_peak} THB off-peak`)
       }
 
-      return prices.length > 0 ? prices.join(", ") : "No pricing information";
+      return prices.length > 0 ? prices.join(', ') : 'No pricing information'
     } catch {
-      return "Price information unavailable";
+      return 'Price information unavailable'
     }
-  };
+  }
 
   // Helper function to calculate applied stations count
   const getAppliedStationsCount = (group: PriceGroup) => {
-    if (!group) return 0;
+    if (!group) return 0
 
     // Count how many items in dedupedGroups have the same name and parent_id but different station_id
     const relatedGroups = dedupedGroups.filter((item: PriceGroup) => {
-      if (!item) return false;
+      if (!item) return false
 
-      const itemName = item.name || "";
-      const groupName = group.name || "";
+      const itemName = item.name || ''
+      const groupName = group.name || ''
 
       // Compare parent_id safely (can be null)
       const sameParentId =
         (group.parent_id === null && item.parent_id === null) ||
-        (group.parent_id !== null &&
-          item.parent_id !== null &&
-          group.parent_id === item.parent_id);
+        (group.parent_id !== null && item.parent_id !== null && group.parent_id === item.parent_id)
 
-      return itemName === groupName && sameParentId;
-    });
+      return itemName === groupName && sameParentId
+    })
 
     // Count unique station_ids (excluding null)
     const uniqueStations = new Set(
       relatedGroups
-        .filter(
-          (item: PriceGroup) =>
-            item.station_id !== null && item.station_id !== undefined
-        )
-        .map((item: PriceGroup) => item.station_id)
-    );
+        .filter((item: PriceGroup) => item.station_id !== null && item.station_id !== undefined)
+        .map((item: PriceGroup) => item.station_id),
+    )
 
-    return uniqueStations.size;
-  };
+    return uniqueStations.size
+  }
 
   const handleContinue = () => {
     if (selectedPriceGroup) {
       if (selectedConnectors.length > 0) {
-        handleApplyPrice();
+        handleApplyPrice()
       } else {
-        setShowConnectorDialog(true);
+        setShowConnectorDialog(true)
       }
     }
-  };
+  }
 
   const handleApplyPrice = () => {
     if (!selectedPriceGroup || selectedConnectors.length === 0) {
-      console.error("Missing required data for price application");
-      return;
+      console.error('Missing required data for price application')
+      return
     }
 
     // Prepare the request data
     const requestData: CreateByParentRequest = {
       parent_id: selectedPriceGroup.id,
       plug_id: selectedConnectors.map((connector) => connector.id),
-    };
+    }
 
-    console.log("Applying price with data:", {
+    console.log('Applying price with data:', {
       timestamp: new Date().toISOString(),
       requestBody: requestData,
       priceGroup: selectedPriceGroup,
       connectorCount: selectedConnectors.length,
-    });
+    })
 
-    setIsApplying(true);
+    setIsApplying(true)
 
     // Execute the mutation with callbacks
     createPriceSetMutation.mutate(requestData, {
       onSuccess: (response) => {
-        console.log("Price application response:", response);
-        setIsApplying(false);
-        setShowSuccessDialog(true);
-        setSelectedConnectors([]);
-        setShowConnectorDialog(false);
+        console.log('Price application response:', response)
+        setIsApplying(false)
+        setShowSuccessDialog(true)
+        setSelectedConnectors([])
+        setShowConnectorDialog(false)
       },
       onError: (error) => {
-        console.error("Price application error:", error);
-        setIsApplying(false);
+        console.error('Price application error:', error)
+        setIsApplying(false)
         // Handle error case - you might want to show an error message to user
       },
-    });
-  };
+    })
+  }
 
   const handleConnectorDialogBack = () => {
-    setShowConnectorDialog(false);
-  };
+    setShowConnectorDialog(false)
+  }
 
   const handleConnectorConfirm = (connectors: Charger[]) => {
-    console.log("Selected connectors:", connectors);
-    setSelectedConnectors(connectors);
-    setShowConnectorDialog(false);
-  };
+    console.log('Selected connectors:', connectors)
+    setSelectedConnectors(connectors)
+    setShowConnectorDialog(false)
+  }
 
   const handleCancel = () => {
-    onOpenChange(false);
-  };
+    onOpenChange(false)
+  }
 
   const handleSuccessDialogClose = () => {
-    setShowSuccessDialog(false);
+    setShowSuccessDialog(false)
     if (onConfirm && selectedPriceGroup) {
-      onConfirm(selectedPriceGroup);
+      onConfirm(selectedPriceGroup)
     }
-    onOpenChange(false);
-  };
+    onOpenChange(false)
+  }
 
   return (
     <>
-      <Dialog
-        open={open && !showConnectorDialog && !showSuccessDialog}
-        onOpenChange={onOpenChange}
-      >
+      <Dialog open={open && !showConnectorDialog && !showSuccessDialog} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl gap-4 rounded-lg bg-card p-0">
           {/* Header with Title and Close Button */}
           <div className="flex items-center justify-between px-6 py-4">
@@ -259,10 +246,7 @@ export default function SetPriceDialogFormTable({
 
           <Separator />
           {/* Selected Connectors Section */}
-          <SelectedConnectorsDisplay
-            selectedConnectors={selectedConnectors}
-            showSeparator={true}
-          />
+          <SelectedConnectorsDisplay selectedConnectors={selectedConnectors} showSeparator={true} />
           {/* General Price Section and Search */}
           <div className="px-6 py-6">
             <div className="mb-6 flex items-center justify-between">
@@ -291,30 +275,24 @@ export default function SetPriceDialogFormTable({
               {isLoading ? (
                 <div className="col-span-2 py-8 text-center">
                   <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin text-[#355FF5]" />
-                  <div className="text-sm text-gray-500">
-                    Loading price groups...
-                  </div>
+                  <div className="text-sm text-gray-500">Loading price groups...</div>
                 </div>
               ) : error ? (
                 <div className="col-span-2 py-8 text-center">
-                  <div className="text-sm text-red-500">
-                    Error loading price groups
-                  </div>
+                  <div className="text-sm text-red-500">Error loading price groups</div>
                 </div>
               ) : filteredPriceGroups.length === 0 ? (
                 <div className="col-span-2 py-8 text-center">
-                  <div className="text-sm text-gray-500">
-                    No price groups found
-                  </div>
+                  <div className="text-sm text-gray-500">No price groups found</div>
                 </div>
               ) : (
                 <>
                   {/* Show info about filtered results if search is active */}
                   {searchTerm && (
                     <div className="col-span-2 mb-2 text-xs text-[#818894]">
-                      Found {filteredPriceGroups.length}{" "}
-                      {filteredPriceGroups.length === 1 ? "result" : "results"}{" "}
-                      for &quot;{searchTerm}&quot;
+                      Found {filteredPriceGroups.length}{' '}
+                      {filteredPriceGroups.length === 1 ? 'result' : 'results'} for &quot;
+                      {searchTerm}&quot;
                     </div>
                   )}
                   {filteredPriceGroups.map((group) => (
@@ -322,8 +300,8 @@ export default function SetPriceDialogFormTable({
                       key={group.id}
                       className={`relative min-h-[120px] cursor-pointer rounded-[5px] border p-3 transition-colors sm:min-h-[160px] sm:p-4 ${
                         selectedPriceGroup?.id === group.id
-                          ? "border-[#2ACF35] bg-white"
-                          : "border-[#808080] bg-white hover:bg-gray-50"
+                          ? 'border-[#2ACF35] bg-white'
+                          : 'border-[#808080] bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedPriceGroup(group)}
                     >
@@ -339,12 +317,10 @@ export default function SetPriceDialogFormTable({
                         </div>
 
                         <div className="flex-1">
-                          <h4 className="text-sm font-medium text-[#364A63]">
-                            {group.name}
-                          </h4>
+                          <h4 className="text-sm font-medium text-[#364A63]">{group.name}</h4>
                           <p
                             className={`text-xs text-[#818894] ${
-                              getAppliedStationsCount(group) > 0 ? "mb-4" : ""
+                              getAppliedStationsCount(group) > 0 ? 'mb-4' : ''
                             }`}
                           >
                             {formatPriceDisplay(group)}
@@ -358,8 +334,7 @@ export default function SetPriceDialogFormTable({
                                 </span>
                               </div>
                               <span className="text-xs text-[#818894]">
-                                Applied to {getAppliedStationsCount(group)}{" "}
-                                Stations
+                                Applied to {getAppliedStationsCount(group)} Stations
                               </span>
                             </div>
                           )}
@@ -374,10 +349,7 @@ export default function SetPriceDialogFormTable({
 
           {/* Footer with Create new price group link and Action Buttons */}
           <DialogFooter className="flex-col items-center gap-4 border-t px-6 pb-6 pt-4">
-            <Button
-              variant="link"
-              className="h-auto p-0 text-sm font-medium text-[#4E4E4E]"
-            >
+            <Button variant="link" className="h-auto p-0 text-sm font-medium text-[#4E4E4E]">
               Create new price group
             </Button>
             <div className="flex w-full justify-end gap-3">
@@ -399,9 +371,9 @@ export default function SetPriceDialogFormTable({
                     Applying...
                   </>
                 ) : selectedConnectors.length > 0 ? (
-                  "Apply Price"
+                  'Apply Price'
                 ) : (
-                  "Continue"
+                  'Continue'
                 )}
               </Button>
             </div>
@@ -427,5 +399,5 @@ export default function SetPriceDialogFormTable({
         onButtonClick={handleSuccessDialogClose}
       />
     </>
-  );
+  )
 }

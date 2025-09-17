@@ -1,34 +1,32 @@
-"use client";
+'use client'
 
-import { TaxInformationForm } from "@/components/back-office/team/settings/tab/tax-information-form";
-import { TeamGuard } from "@/components/back-office/team/team-guard";
-import { useRouter } from "next/navigation";
-import { use } from "react";
+import { TaxInformationForm } from '@/components/back-office/team/settings/tab/tax-information-form'
+import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { useRouter } from 'next/navigation'
+import { use } from 'react'
 
 interface TaxInformationCreatePageProps {
   params: Promise<{
-    locale: string;
-    teamId: string;
-  }>;
+    locale: string
+    teamId: string
+  }>
 }
 
-const TaxInformationCreatePage = ({
-  params,
-}: TaxInformationCreatePageProps) => {
-  const { locale, teamId } = use(params);
-  const router = useRouter();
+const TaxInformationCreatePage = ({ params }: TaxInformationCreatePageProps) => {
+  const { locale, teamId } = use(params)
+  const router = useRouter()
 
   const handleBack = () => {
-    router.push(`/${locale}/team/${teamId}/settings/tax`);
-  };
+    router.push(`/${locale}/team/${teamId}/settings/tax`)
+  }
 
   const handleSave = () => {
-    router.push(`/${locale}/team/${teamId}/settings/tax`);
-  };
+    router.push(`/${locale}/team/${teamId}/settings/tax`)
+  }
 
   const handleCancel = () => {
-    router.push(`/${locale}/team/${teamId}/settings/tax`);
-  };
+    router.push(`/${locale}/team/${teamId}/settings/tax`)
+  }
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
@@ -40,12 +38,7 @@ const TaxInformationCreatePage = ({
               onClick={handleBack}
               className="flex items-center text-gray-600 hover:text-gray-800"
             >
-              <svg
-                className="mr-2 h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -54,9 +47,7 @@ const TaxInformationCreatePage = ({
                 />
               </svg>
             </button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Create Tax Information
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Create Tax Information</h1>
           </div>
         </div>
 
@@ -70,7 +61,7 @@ const TaxInformationCreatePage = ({
         </div>
       </div>
     </TeamGuard>
-  );
-};
+  )
+}
 
-export default TaxInformationCreatePage;
+export default TaxInformationCreatePage

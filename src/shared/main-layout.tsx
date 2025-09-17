@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import type React from "react";
+import type React from 'react'
 
-import { Footer, Header, Sidebar } from "@/components/back-office/layouts";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Footer, Header, Sidebar } from '@/components/back-office/layouts'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 interface MainLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
@@ -22,5 +22,5 @@ export function MainLayout({ children }: MainLayoutProps) {
         <Footer />
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

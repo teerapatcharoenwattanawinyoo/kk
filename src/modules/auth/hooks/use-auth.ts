@@ -1,8 +1,4 @@
-import {
-  getAuthTokens,
-  removeAuthTokens,
-  setAuthTokens,
-} from '@/lib/auth/tokens'
+import { getAuthTokens, removeAuthTokens, setAuthTokens } from '@/lib/auth/tokens'
 import { QUERY_KEYS, ROUTES } from '@/lib/constants'
 import { buildLocalizedPath } from '@/lib/helpers/localized-path'
 import { useI18n } from '@/lib/i18n'
@@ -46,8 +42,7 @@ export function useLogin() {
         // Clear the stored URL from both sessionStorage and cookie
         if (typeof window !== 'undefined') {
           sessionStorage.removeItem('redirectAfterLogin')
-          document.cookie =
-            'redirectAfterLogin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+          document.cookie = 'redirectAfterLogin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
         }
         router.push(decodeURIComponent(redirectAfterLogin))
       } else {
@@ -194,11 +189,7 @@ export function useRegisterByEmail() {
         if (variables && 'email' in variables && variables.email) {
           document.cookie = `register_email=${encodeURIComponent(variables.email)}; path=/; secure; samesite=strict;`
         }
-        if (
-          variables &&
-          'country_code' in variables &&
-          variables.country_code
-        ) {
+        if (variables && 'country_code' in variables && variables.country_code) {
           setCountryCodeCookie(variables.country_code as string)
         }
       }
@@ -227,11 +218,7 @@ export function useRegisterByPhone() {
         if (variables && 'phone' in variables && variables.phone) {
           document.cookie = `phone=${encodeURIComponent(variables.phone)}; path=/; secure; samesite=strict;`
         }
-        if (
-          variables &&
-          'country_code' in variables &&
-          variables.country_code
-        ) {
+        if (variables && 'country_code' in variables && variables.country_code) {
           setCountryCodeCookie(variables.country_code as string)
         }
       }
@@ -273,8 +260,7 @@ export function useVerifyPhoneOtp() {
     mutationFn: async (params: { otp: string }) => {
       const phone = getCookie('phone')
       const token = getCookie('register_token')
-      if (!phone || !token)
-        throw new Error('Missing phone or register_token in cookies')
+      if (!phone || !token) throw new Error('Missing phone or register_token in cookies')
       return verifyPhoneOtp({
         phone,
         otp: params.otp,

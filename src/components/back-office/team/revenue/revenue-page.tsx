@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import { TeamHeader } from "@/components/back-office/team/team-header";
-import { TeamTabs } from "@/components/back-office/team/team-tabs";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
-import { format } from "date-fns";
-import { Search } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { DateTimePicker } from "../../../datetime-picker";
+import { TeamHeader } from '@/components/back-office/team/team-header'
+import { TeamTabs } from '@/components/back-office/team/team-tabs'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Switch } from '@/components/ui/switch'
+import { format } from 'date-fns'
+import { Search } from 'lucide-react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { DateTimePicker } from '../../../datetime-picker'
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -24,84 +24,84 @@ import {
   ExportIcon,
   RevenueCardIcon,
   WarningIcon,
-} from "../../../icons";
-import { Separator } from "../../../ui/separator";
+} from '../../../icons'
+import { Separator } from '../../../ui/separator'
 
 interface RevenuePageProps {
-  teamId: string;
+  teamId: string
 }
 
 export function RevenuePage({ teamId }: RevenuePageProps) {
-  const router = useRouter();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [withdrawalMethod, setWithdrawalMethod] = useState("bank");
-  const [resultsPerPage, setResultsPerPage] = useState("10");
-  const [isAutoWithdrawalEnabled, setIsAutoWithdrawalEnabled] = useState(true);
-  const [activeTab, setActiveTab] = useState("pending");
-  const [selectedDate, setSelectedDate] = useState<Date>();
-  const [selectedTime, setSelectedTime] = useState("09:00");
-  const [isDateTimeOpen, setIsDateTimeOpen] = useState(false);
+  const router = useRouter()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [withdrawalMethod, setWithdrawalMethod] = useState('bank')
+  const [resultsPerPage, setResultsPerPage] = useState('10')
+  const [isAutoWithdrawalEnabled, setIsAutoWithdrawalEnabled] = useState(true)
+  const [activeTab, setActiveTab] = useState('pending')
+  const [selectedDate, setSelectedDate] = useState<Date>()
+  const [selectedTime, setSelectedTime] = useState('09:00')
+  const [isDateTimeOpen, setIsDateTimeOpen] = useState(false)
 
   // Mock data for the team based on teamId
   const teamData = {
     id: teamId,
     name:
-      teamId === "onecharge-gang"
-        ? "OneCharge Gang"
-        : teamId === "one-co-ltd"
-          ? "One Co.ltd"
-          : teamId === "sitt-group"
-            ? "SITT Group"
-            : "Delept Tech",
-    teamId: "ID Team : ONE678-18907",
+      teamId === 'onecharge-gang'
+        ? 'OneCharge Gang'
+        : teamId === 'one-co-ltd'
+          ? 'One Co.ltd'
+          : teamId === 'sitt-group'
+            ? 'SITT Group'
+            : 'Delept Tech',
+    teamId: 'ID Team : ONE678-18907',
     totalRevenue: 17240689.0,
     availableForWithdrawal: 7340000.0,
-    lastWithdrawal: "30 กันยายน 2567 13:00 น.",
-  };
+    lastWithdrawal: '30 กันยายน 2567 13:00 น.',
+  }
 
   // Mock data for transactions
   const transactions = [
     {
       id: 2,
-      source: "ค่าบริการชาร์จแพลตฟอร์ม (OneCharge)",
+      source: 'ค่าบริการชาร์จแพลตฟอร์ม (OneCharge)',
       amount: 3790000.06,
-      recipient: "ไทยพาณิชย์ 339****192**1",
-      date: "13/01/2024\n13 : 00 : 00",
-      status: "สำเร็จ",
+      recipient: 'ไทยพาณิชย์ 339****192**1',
+      date: '13/01/2024\n13 : 00 : 00',
+      status: 'สำเร็จ',
     },
     {
       id: 1,
-      source: "ค่าบริการชาร์จแพลตฟอร์ม (OneCharge)",
+      source: 'ค่าบริการชาร์จแพลตฟอร์ม (OneCharge)',
       amount: 90000.06,
-      recipient: "ไทยพาณิชย์ 339****192**1",
-      date: "13/01/2024\n13 : 00 : 00",
-      status: "ยกเลิก",
+      recipient: 'ไทยพาณิชย์ 339****192**1',
+      date: '13/01/2024\n13 : 00 : 00',
+      status: 'ยกเลิก',
     },
-  ];
+  ]
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "สำเร็จ":
+      case 'สำเร็จ':
         return (
           <Badge className="rounded-md bg-[#DFF8F3] px-4 py-1 font-normal text-[#0D8A72] hover:bg-[#DFF8F3] hover:text-[#0D8A72]">
             {status}
           </Badge>
-        );
-      case "ยกเลิก":
+        )
+      case 'ยกเลิก':
         return (
           <Badge className="rounded-md bg-[#FFE8D7] px-4 py-1 font-normal text-[#F67416] hover:bg-[#FFE8D7] hover:text-[#F67416]">
             {status}
           </Badge>
-        );
+        )
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline">{status}</Badge>
     }
-  };
+  }
 
   const handleManageBankAccount = () => {
-    router.push(`/team/${teamId}/manage-bank-account`);
-  };
+    router.push(`/team/${teamId}/manage-bank-account`)
+  }
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">
@@ -121,9 +121,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
             {/* Revenue Wallet Card */}
             <Card className="border-none shadow-md transition-shadow hover:shadow-lg lg:col-span-1">
               <CardHeader className="pb-4 sm:pb-6">
-                <div className="text-base font-medium text-[#364A63] sm:text-lg">
-                  กระเป๋ารายรับ
-                </div>
+                <div className="text-base font-medium text-[#364A63] sm:text-lg">กระเป๋ารายรับ</div>
               </CardHeader>
               <CardContent className="gap-6 pb-4 sm:gap-8 sm:pb-6">
                 <div className="relative h-32 w-full overflow-hidden rounded-t-2xl bg-[#98AEFF] sm:h-36 lg:h-32">
@@ -143,8 +141,8 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                           ยอดเตรียมรับโอน
                         </span>
                         <div className="text-xl font-bold sm:text-3xl lg:text-2xl">
-                          ฿{" "}
-                          {teamData.totalRevenue.toLocaleString("th-TH", {
+                          ฿{' '}
+                          {teamData.totalRevenue.toLocaleString('th-TH', {
                             minimumFractionDigits: 2,
                           })}
                         </div>
@@ -170,22 +168,16 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                           </div>
                         </div>
                       </div>
-                      <Separator
-                        orientation="vertical"
-                        className="h-[60px] sm:h-[72px]"
-                      />
+                      <Separator orientation="vertical" className="h-[60px] sm:h-[72px]" />
                       <div className="mr-3 text-right sm:mr-6">
                         <div className="text-xs text-muted-foreground sm:text-sm">
                           ยอดที่ได้รับแล้ว
                         </div>
                         <div className="text-lg font-semibold sm:text-xl">
                           ฿
-                          {teamData.availableForWithdrawal.toLocaleString(
-                            "th-TH",
-                            {
-                              minimumFractionDigits: 2,
-                            },
-                          )}
+                          {teamData.availableForWithdrawal.toLocaleString('th-TH', {
+                            minimumFractionDigits: 2,
+                          })}
                         </div>
                       </div>
                     </div>
@@ -197,9 +189,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
             {/* Withdrawal Settings Card */}
             <Card className="border-none shadow-md transition-shadow hover:shadow-lg lg:col-span-1">
               <CardHeader className="pb-3">
-                <div className="text-base font-medium text-[#364A63] sm:text-lg">
-                  การถอนเงิน
-                </div>
+                <div className="text-base font-medium text-[#364A63] sm:text-lg">การถอนเงิน</div>
                 <Separator className="my-4 sm:my-6" />
               </CardHeader>
               <CardContent>
@@ -210,9 +200,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                       onCheckedChange={setIsAutoWithdrawalEnabled}
                       className="data-[state=checked]:bg-[#00DD9C]"
                     />
-                    <span className="px-1 text-sm font-medium">
-                      ถอนอัตโนมัติ
-                    </span>
+                    <span className="px-1 text-sm font-medium">ถอนอัตโนมัติ</span>
                   </div>
                   <div className="lg:hidden">
                     <Separator className="my-4" />
@@ -229,9 +217,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                       <RadioGroupItem
                         value="monthly"
                         className={
-                          withdrawalMethod === "monthly"
-                            ? "border-primary"
-                            : "border-[#C0C0C0]"
+                          withdrawalMethod === 'monthly' ? 'border-primary' : 'border-[#C0C0C0]'
                         }
                         id="monthly"
                       />
@@ -239,18 +225,14 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                         <Label
                           htmlFor="monthly"
                           className={`cursor-pointer text-sm ${
-                            withdrawalMethod === "monthly"
-                              ? "text-primary"
-                              : "text-[#949494]"
+                            withdrawalMethod === 'monthly' ? 'text-primary' : 'text-[#949494]'
                           }`}
                         >
                           ทุกสิ้นเดือน
                         </Label>
                         <p
                           className={`text-xs ${
-                            withdrawalMethod === "monthly"
-                              ? "text-primary"
-                              : "text-[#949494]"
+                            withdrawalMethod === 'monthly' ? 'text-primary' : 'text-[#949494]'
                           }`}
                         >
                           (ทุกวันที่ 29 ของเดือน)
@@ -261,9 +243,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                       <RadioGroupItem
                         value="schedule"
                         className={
-                          withdrawalMethod === "schedule"
-                            ? "border-primary"
-                            : "border-[#C0C0C0]"
+                          withdrawalMethod === 'schedule' ? 'border-primary' : 'border-[#C0C0C0]'
                         }
                         id="schedule"
                       />
@@ -271,15 +251,13 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                         <Label
                           htmlFor="schedule"
                           className={`cursor-pointer text-sm ${
-                            withdrawalMethod === "schedule"
-                              ? "text-primary"
-                              : "text-[#949494]"
+                            withdrawalMethod === 'schedule' ? 'text-primary' : 'text-[#949494]'
                           }`}
                         >
-                          ทุกวันที่ :{" "}
+                          ทุกวันที่ :{' '}
                           {selectedDate && selectedTime
-                            ? `${format(selectedDate, "dd")} เวลา ${selectedTime} น.`
-                            : "ระบุวันที่"}
+                            ? `${format(selectedDate, 'dd')} เวลา ${selectedTime} น.`
+                            : 'ระบุวันที่'}
                         </Label>
                         <DateTimePicker
                           selectedDate={selectedDate}
@@ -288,7 +266,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                           onTimeChange={setSelectedTime}
                           isOpen={isDateTimeOpen}
                           onOpenChange={setIsDateTimeOpen}
-                          isEnabled={withdrawalMethod === "schedule"}
+                          isEnabled={withdrawalMethod === 'schedule'}
                         />
                       </div>
                     </div>
@@ -300,17 +278,15 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                   <div className="flex items-start gap-3">
                     <WarningIcon />
                     <div className="text-sm font-medium text-[#F67416]">
-                      คุณสามารถถอนเงินได้ฟรี 1 ครั้งต่อเดือน {""}
-                      <span className="font-light">
-                        ขยับแพ็คเก็จของคุณเพื่อประโยชน์เพิ่มขึ้น
-                      </span>
+                      คุณสามารถถอนเงินได้ฟรี 1 ครั้งต่อเดือน {''}
+                      <span className="font-light">ขยับแพ็คเก็จของคุณเพื่อประโยชน์เพิ่มขึ้น</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex justify-end">
                   <Button
-                    variant={"default"}
+                    variant={'default'}
                     className="mt-4 w-full px-6 transition-colors hover:bg-primary/90 sm:mt-6 sm:w-auto sm:px-20"
                   >
                     ถอนเงิน
@@ -323,11 +299,9 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
             <Card className="border-none shadow-md transition-shadow hover:shadow-lg lg:col-span-1">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="text-base font-medium text-[#364A63] sm:text-lg">
-                    บัญชีธนาคาร
-                  </div>
+                  <div className="text-base font-medium text-[#364A63] sm:text-lg">บัญชีธนาคาร</div>
                   <Button
-                    variant={"default"}
+                    variant={'default'}
                     size="sm"
                     className="w-18 sm:w-22 h-7 rounded-xl text-sm transition-colors hover:bg-primary/90 sm:h-8"
                     onClick={handleManageBankAccount}
@@ -340,9 +314,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
               <CardContent className="mt-3">
                 <div className="space-y-4">
                   <div className="rounded-lg bg-[#D0DAFF] p-4 sm:p-6">
-                    <div className="mb-3 text-base text-primary sm:text-lg">
-                      บัญชีรับเงินหลัก
-                    </div>
+                    <div className="mb-3 text-base text-primary sm:text-lg">บัญชีรับเงินหลัก</div>
                     <div className="flex items-center gap-3 sm:gap-4">
                       <div className="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12">
                         <Image
@@ -357,9 +329,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                         <div className="text-sm font-medium text-primary sm:text-base">
                           ไทยพาณิชย์ 339****192**1
                         </div>
-                        <div className="text-sm text-primary sm:text-base">
-                          345*****9801
-                        </div>
+                        <div className="text-sm text-primary sm:text-base">345*****9801</div>
                       </div>
                       <Button
                         variant="ghost"
@@ -378,32 +348,30 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
           {/* Withdrawal History Section */}
           <Card className="border shadow-md transition-shadow hover:shadow-lg">
             <CardHeader className="pb-4 sm:pb-6">
-              <div className="text-lg font-semibold text-[#364A63] sm:text-xl">
-                รายการของฉัน
-              </div>
+              <div className="text-lg font-semibold text-[#364A63] sm:text-xl">รายการของฉัน</div>
             </CardHeader>
             <CardContent>
               {/* Search and Filter */}
               <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:gap-6">
                 <div className="flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0">
                   <Button
-                    onClick={() => setActiveTab("pending")}
-                    variant={"ghost"}
+                    onClick={() => setActiveTab('pending')}
+                    variant={'ghost'}
                     className={`pb-2 text-sm font-medium transition-all duration-200 hover:text-blue-700 sm:text-base ${
-                      activeTab === "pending"
-                        ? "bg-zinc-950 text-white hover:bg-zinc-800 hover:text-neutral-50"
-                        : "bg-[#EEF1FF] text-primary hover:bg-blue-50"
+                      activeTab === 'pending'
+                        ? 'bg-zinc-950 text-white hover:bg-zinc-800 hover:text-neutral-50'
+                        : 'bg-[#EEF1FF] text-primary hover:bg-blue-50'
                     }`}
                   >
                     รายการเตรียมโอน
                   </Button>
                   <Button
-                    variant={"ghost"}
-                    onClick={() => setActiveTab("received")}
+                    variant={'ghost'}
+                    onClick={() => setActiveTab('received')}
                     className={`pb-2 text-sm font-medium transition-all duration-200 hover:text-blue-700 sm:text-base ${
-                      activeTab === "received"
-                        ? "bg-zinc-950 text-white hover:bg-zinc-800 hover:text-neutral-50"
-                        : "bg-[#EEF1FF] text-primary hover:bg-blue-50"
+                      activeTab === 'received'
+                        ? 'bg-zinc-950 text-white hover:bg-zinc-800 hover:text-neutral-50'
+                        : 'bg-[#EEF1FF] text-primary hover:bg-blue-50'
                     }`}
                   >
                     ยอดได้รับแล้ว
@@ -426,9 +394,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                     size="sm"
                     className="h-10 gap-1 whitespace-nowrap bg-[#ECF2F8]"
                   >
-                    <span className="hidden text-[#A1B1D1] sm:inline">
-                      ดูทั้งหมด / ช่วงเวลา
-                    </span>
+                    <span className="hidden text-[#A1B1D1] sm:inline">ดูทั้งหมด / ช่วงเวลา</span>
                     <span className="text-[#A1B1D1] sm:hidden">ตัวกรอง</span>
                     <ChevronDownIcon />
                   </Button>
@@ -454,29 +420,23 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                         <div className="space-y-2 text-sm">
                           <div>
                             <span className="text-gray-500">ยอดที่ได้รับ:</span>
-                            <div className="break-words text-blue-600">
-                              {transaction.source}
-                            </div>
+                            <div className="break-words text-blue-600">{transaction.source}</div>
                           </div>
                           <div>
                             <span className="text-gray-500">จำนวนเงิน:</span>
                             <div className="font-medium text-gray-900">
-                              {transaction.amount.toLocaleString("th-TH", {
+                              {transaction.amount.toLocaleString('th-TH', {
                                 minimumFractionDigits: 2,
-                              })}{" "}
+                              })}{' '}
                               ฿
                             </div>
                           </div>
                           <div>
                             <span className="text-gray-500">บัญชีปลายทาง:</span>
-                            <div className="text-[#6E82A5]">
-                              {transaction.recipient}
-                            </div>
+                            <div className="text-[#6E82A5]">{transaction.recipient}</div>
                           </div>
                           <div>
-                            <span className="text-gray-500">
-                              รอบโอนจ่ายวันที่:
-                            </span>
+                            <span className="text-gray-500">รอบโอนจ่ายวันที่:</span>
                             <div className="whitespace-pre-line text-[#6E82A5]">
                               {transaction.date}
                             </div>
@@ -537,9 +497,9 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
                             {transaction.source}
                           </td>
                           <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
-                            {transaction.amount.toLocaleString("th-TH", {
+                            {transaction.amount.toLocaleString('th-TH', {
                               minimumFractionDigits: 2,
-                            })}{" "}
+                            })}{' '}
                             ฿
                           </td>
                           <td className="whitespace-nowrap px-4 py-3 text-sm text-[#6E82A5]">
@@ -570,9 +530,7 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
 
               {/* Pagination */}
               <div className="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
-                <div className="text-sm text-gray-700">
-                  Showing 1 to 10 of 130 Results
-                </div>
+                <div className="text-sm text-gray-700">Showing 1 to 10 of 130 Results</div>
                 <div className="flex flex-col items-center space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
                   <select
                     className="h-8 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm"
@@ -625,5 +583,5 @@ export function RevenuePage({ teamId }: RevenuePageProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

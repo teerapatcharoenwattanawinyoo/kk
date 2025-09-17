@@ -42,44 +42,44 @@ export const signUpFormStateSchema = z.object({
   acceptedTerms: z.boolean(),
 })
 
-export const signUpByEmailSchema = signUpFormStateSchema
-  .extend({
-    method: z.literal('email'),
-    email: z
-      .string({ required_error: 'Email is required' })
-      .email('Invalid email address'),
-  })
-  .superRefine((value, ctx) => {
+const requireAcceptedTermsMessage =
+  'Please accept the Privacy Policy and Terms Condition'
+
+const withAcceptedTerms = <Schema extends z.ZodTypeAny>(schema: Schema) =>
+  schema.superRefine((value, ctx) => {
     if (!value.acceptedTerms) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Please accept the Privacy Policy and Terms Condition',
+        message: requireAcceptedTermsMessage,
         path: ['acceptedTerms'],
       })
     }
   })
 
-export const signUpByPhoneSchema = signUpFormStateSchema
-  .extend({
-    method: z.literal('phone'),
-    phone: z
-      .string({ required_error: 'Phone number is required' })
-      .min(1, 'Phone number is required'),
-  })
-  .superRefine((value, ctx) => {
-    if (!value.acceptedTerms) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Please accept the Privacy Policy and Terms Condition',
-        path: ['acceptedTerms'],
-      })
-    }
-  })
+const signUpByEmailObjectSchema = signUpFormStateSchema.extend({
+  method: z.literal('email'),
+  email: z
+    .string({ required_error: 'Email is required' })
+    .email('Invalid email address'),
+})
 
-export const signUpFormSchema = z.discriminatedUnion('method', [
-  signUpByEmailSchema,
-  signUpByPhoneSchema,
-])
+const signUpByPhoneObjectSchema = signUpFormStateSchema.extend({
+  method: z.literal('phone'),
+  phone: z
+    .string({ required_error: 'Phone number is required' })
+    .min(1, 'Phone number is required'),
+})
+
+export const signUpByEmailSchema = withAcceptedTerms(signUpByEmailObjectSchema)
+
+export const signUpByPhoneSchema = withAcceptedTerms(signUpByPhoneObjectSchema)
+
+export const signUpFormSchema = withAcceptedTerms(
+  z.discriminatedUnion('method', [
+    signUpByEmailObjectSchema,
+    signUpByPhoneObjectSchema,
+  ]),
+)
 
 export const forgotPasswordRequestSchema = z.discriminatedUnion('method', [
   z.object({

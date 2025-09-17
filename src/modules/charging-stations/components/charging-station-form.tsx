@@ -44,8 +44,8 @@ interface ChargingStationFormProps {
   openCloseDialogOpen: boolean
   uploadedFiles: File[]
   dayLabels: Record<DayOfWeek, string>
-  existingGallery?: { id: number; image: string; sort_order: number }[] // เพิ่มรูปที่มีอยู่แล้ว
-  allGalleryImages?: { id: number; image: string; sort_order: number }[] // รูปทั้งหมดรวมที่จะลบ
+  existingGallery?: { id: number; image: string; sort_order?: number }[] // เพิ่มรูปที่มีอยู่แล้ว
+  allGalleryImages?: { id: number; image: string; sort_order?: number }[] // รูปทั้งหมดรวมที่จะลบ
   deletedImageIds?: number[] // เพิ่มรายการ ID ของรูปที่จะลบ
   maxImages?: number // เพิ่มจำนวนรูปสูงสุด
   remainingSlots?: number // เพิ่มจำนวนที่เหลือ
@@ -527,12 +527,12 @@ export function ChargingStationForm({
             {existingGallery.length > 0 && (
               <div className="mt-4 space-y-2">
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-                  {existingGallery.map((item) => (
+                  {existingGallery.map((item, index) => (
                     <div key={item.id} className="relative">
                       <div className="aspect-square overflow-hidden rounded-lg border">
                         <Image
                           src={item.image}
-                          alt={`Station image ${item.sort_order}`}
+                          alt={`Station image ${item.sort_order ?? index + 1}`}
                           className="h-full w-full object-cover"
                           width={100}
                           height={100}

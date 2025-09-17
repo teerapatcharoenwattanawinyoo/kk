@@ -50,8 +50,6 @@ export const loginResponseSchema = z.object({
   user: userSchema,
 })
 
-export const loginApiResponseSchema = createApiResponseSchema(loginResponseSchema)
-
 const apiResponseBaseSchema = z.object({
   statusCode: z.number(),
   message: z.string(),
@@ -61,6 +59,8 @@ export const createApiResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =
   apiResponseBaseSchema.extend({
     data: dataSchema,
   })
+
+export const loginApiResponseSchema = createApiResponseSchema(loginResponseSchema)
 
 export const registerByEmailRequestSchema = z.object({
   email: optionalEmailSchema,

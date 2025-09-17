@@ -32,54 +32,26 @@ export const loginRequestSchema = z
     }
   });
 
-const numericStringToNumberSchema = z.string().transform((value, ctx) => {
-  const trimmedValue = value.trim();
+const stringOrNumberToStringSchema = z
+  .union([z.string(), z.number()])
+  .transform((value) => value.toString());
 
-  if (trimmedValue.length === 0) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Expected number, received empty string",
-    });
+const nullableStringOrNumberToStringSchema = z
+  .union([z.string(), z.number(), z.null()])
+  .transform((value) => {
+    if (value === null) {
+      return null;
+    }
 
-    return z.NEVER;
-  }
-
-  const normalisedValue = trimmedValue.replace(/[,_\s]/g, "");
-  const numericPattern = /^[-+]?\d+(\.\d+)?$/;
-
-  if (!numericPattern.test(normalisedValue)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Expected number, received non-numeric string",
-    });
-
-    return z.NEVER;
-  }
-
-  const parsedNumber = Number(normalisedValue);
-
-  if (!Number.isFinite(parsedNumber)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Expected number, received NaN",
-    });
-
-    return z.NEVER;
-  }
-
-  return parsedNumber;
-});
-
-const numericSchema = z.union([z.number(), numericStringToNumberSchema]);
-
-const nullableNumericSchema = numericSchema.nullable();
+    return value.toString();
+  });
 
 const nullableStringToStringSchema = z
   .union([z.string(), z.null()])
   .transform((value) => value ?? "");
 
 export const userSchema = z.object({
-  customer_id: numericSchema,
+  customer_id: stringOrNumberToStringSchema,
   email: z
     .union([z.string().email(), z.null()])
     .transform((value) => value ?? ""),
@@ -87,9 +59,10 @@ export const userSchema = z.object({
   profilename: z.string(),
   avatar: z.string().nullable(),
   platform_type: z.string(),
-  company_id: nullableNumericSchema,
-  team_id: nullableNumericSchema,
+  company_id: nullableStringOrNumberToStringSchema,
+  team_id: nullableStringOrNumberToStringSchema,
   device: nullableStringToStringSchema,
+  team_host_id: nullableStringToStringSchema,
 });
 
 export const loginResponseSchema = z.object({
@@ -120,7 +93,7 @@ export const registerByEmailRequestSchema = z.object({
 
 export const registerByEmailDataSchema = z.object({
   message: z.string(),
-  userId: z.number(),
+  userId: stringOrNumberToStringSchema,
   token: z.string(),
 });
 
@@ -143,7 +116,7 @@ export const registerByPhoneRequestSchema = z.object({
 
 export const registerByPhoneDataSchema = z.object({
   message: z.string(),
-  userId: z.number(),
+  userId: stringOrNumberToStringSchema,
   token: z.string(),
 });
 
@@ -204,29 +177,29 @@ export const createProfileRequestSchema = z.object({
 export const createProfileResponseSchema = apiResponseBaseSchema;
 
 export const policyDescriptionSchema = z.object({
-  id: z.number(),
-  languageId: z.number(),
-  policyId: z.number(),
+  id: stringOrNumberToStringSchema,
+  languageId: stringOrNumberToStringSchema,
+  policyId: stringOrNumberToStringSchema,
   name: z.string(),
   detail: z.string(),
   createdAt: z.string(),
-  createdBy: z.number(),
+  createdBy: stringOrNumberToStringSchema,
   updatedAt: z.string().nullable(),
-  updatedBy: z.number().nullable(),
-  policy_id: z.number(),
+  updatedBy: nullableStringOrNumberToStringSchema,
+  policy_id: stringOrNumberToStringSchema,
 });
 
 export const policySchema = z.object({
-  id: z.number(),
+  id: stringOrNumberToStringSchema,
   name: z.string(),
   version: z.string(),
   slug: z.string(),
-  status: z.number(),
+  status: stringOrNumberToStringSchema,
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
-  createdBy: z.number(),
+  createdBy: stringOrNumberToStringSchema,
   updatedAt: z.string().nullable(),
-  updatedBy: z.number().nullable(),
+  updatedBy: nullableStringOrNumberToStringSchema,
   descriptions: z.array(policyDescriptionSchema),
 });
 

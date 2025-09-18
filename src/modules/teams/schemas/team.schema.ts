@@ -1,6 +1,0 @@
-export * from './team-api.schema'
-export * from './team-form.schema'
-export * from './team-hooks.schema'
-export * from './team-shared.schema'
-export * from './team-ui.schema'
-export * from './team-validators'

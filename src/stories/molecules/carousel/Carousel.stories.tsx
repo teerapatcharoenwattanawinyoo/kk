@@ -1,30 +1,30 @@
-import { Card, CardContent } from '@/ui/molecules/card'
+import { Card, CardContent } from "@/ui/molecules/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/ui/molecules/carousel'
-import type { Meta, StoryObj } from '@storybook/react'
+} from "@/ui/molecules/carousel";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
-  title: 'Molecules/Carousel',
+  title: "Molecules/Carousel",
   component: Carousel,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     orientation: {
-      control: { type: 'select' },
-      options: ['horizontal', 'vertical'],
+      control: { type: "select" },
+      options: ["horizontal", "vertical"],
     },
   },
-} satisfies Meta<typeof Carousel>
+} satisfies Meta<typeof Carousel>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -46,13 +46,13 @@ export const Default: Story = {
       <CarouselNext />
     </Carousel>
   ),
-}
+};
 
 export const WithBasis: Story = {
   render: () => (
     <Carousel
       opts={{
-        align: 'start',
+        align: "start",
       }}
       className="w-full max-w-sm"
     >
@@ -73,14 +73,14 @@ export const WithBasis: Story = {
       <CarouselNext />
     </Carousel>
   ),
-}
+};
 
 export const Vertical: Story = {
   render: () => (
     <Carousel
       orientation="vertical"
       opts={{
-        align: 'start',
+        align: "start",
       }}
       className="w-full max-w-xs"
     >
@@ -101,4 +101,4 @@ export const Vertical: Story = {
       <CarouselNext />
     </Carousel>
   ),
-}
+};

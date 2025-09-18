@@ -1,1 +1,1 @@
-export { CustomAlert } from './Alert'
+export { CustomAlert } from "./Alert";

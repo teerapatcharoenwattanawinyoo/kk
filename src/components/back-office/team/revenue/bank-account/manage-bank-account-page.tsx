@@ -1,54 +1,64 @@
-'use client'
+"use client";
 
-import { useBankAccounts } from '@/hooks'
-import { Button, Card, CardContent } from '@/ui'
-import { ChevronLeft, Plus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useCallback, useState } from 'react'
-import { BankAccountCard } from './bank-account-card'
+import { useBankAccounts } from "@/hooks";
+import { Button, Card, CardContent } from "@/ui";
+import { ChevronLeft, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
+import { BankAccountCard } from "./bank-account-card";
 
 interface ManageBankAccountPageProps {
-  teamId: string
-  locale: string
+  teamId: string;
+  locale: string;
 }
 
-export const ManageBankAccountPage = ({ teamId, locale }: ManageBankAccountPageProps) => {
-  const router = useRouter()
-  const { data: bankAccountsResponse, isLoading, error } = useBankAccounts()
-  const [selectedAccounts, setSelectedAccounts] = useState<Set<number>>(new Set())
+export const ManageBankAccountPage = ({
+  teamId,
+  locale,
+}: ManageBankAccountPageProps) => {
+  const router = useRouter();
+  const { data: bankAccountsResponse, isLoading, error } = useBankAccounts();
+  const [selectedAccounts, setSelectedAccounts] = useState<Set<number>>(
+    new Set(),
+  );
 
-  const bankAccounts = bankAccountsResponse?.data || []
+  const bankAccounts = bankAccountsResponse?.data || [];
 
   const handleBack = useCallback(() => {
-    router.push(`/${locale}/team/${teamId}/revenue`)
-  }, [router, locale, teamId])
+    router.push(`/${locale}/team/${teamId}/revenue`);
+  }, [router, locale, teamId]);
 
   const handleAddAccount = useCallback(() => {
-    router.push(`/${locale}/team/${teamId}/revenue/bank-account/add`)
-  }, [router, locale, teamId])
+    router.push(`/${locale}/team/${teamId}/revenue/bank-account/add`);
+  }, [router, locale, teamId]);
 
-  const handleToggleAccount = useCallback((accountId: number, isEnabled: boolean) => {
-    if (isEnabled) {
-      setSelectedAccounts((prev) => new Set([...prev, accountId]))
-    } else {
-      setSelectedAccounts((prev) => {
-        const newSet = new Set(prev)
-        newSet.delete(accountId)
-        return newSet
-      })
-    }
-  }, [])
+  const handleToggleAccount = useCallback(
+    (accountId: number, isEnabled: boolean) => {
+      if (isEnabled) {
+        setSelectedAccounts((prev) => new Set([...prev, accountId]));
+      } else {
+        setSelectedAccounts((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(accountId);
+          return newSet;
+        });
+      }
+    },
+    [],
+  );
 
   const handleEditAccount = useCallback(
     (accountId: number) => {
-      router.push(`/${locale}/team/${teamId}/revenue/bank-account/edit/${accountId}`)
+      router.push(
+        `/${locale}/team/${teamId}/revenue/bank-account/edit/${accountId}`,
+      );
     },
     [router, locale, teamId],
-  )
+  );
 
   const handleDeleteAccount = useCallback((accountId: number) => {
-    console.log('Delete account:', accountId)
-  }, [])
+    console.log("Delete account:", accountId);
+  }, []);
 
   if (isLoading) {
     return (
@@ -58,7 +68,9 @@ export const ManageBankAccountPage = ({ teamId, locale }: ManageBankAccountPageP
             <Button variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">Manage Bank Account</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Manage Bank Account
+            </h1>
           </div>
         </div>
         <div className="flex items-center justify-center p-8">
@@ -67,7 +79,7 @@ export const ManageBankAccountPage = ({ teamId, locale }: ManageBankAccountPageP
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -78,18 +90,22 @@ export const ManageBankAccountPage = ({ teamId, locale }: ManageBankAccountPageP
             <Button variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">Manage Bank Account</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Manage Bank Account
+            </h1>
           </div>
         </div>
         <div className="flex items-center justify-center p-8">
           <Card className="w-full max-w-md">
             <CardContent className="pt-6">
-              <div className="text-center text-red-600">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>
+              <div className="text-center text-red-600">
+                เกิดข้อผิดพลาดในการโหลดข้อมูล
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -101,9 +117,14 @@ export const ManageBankAccountPage = ({ teamId, locale }: ManageBankAccountPageP
             <Button variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">Manage Bank Account</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Manage Bank Account
+            </h1>
           </div>
-          <Button onClick={handleAddAccount} className="bg-blue-600 text-white hover:bg-blue-700">
+          <Button
+            onClick={handleAddAccount}
+            className="bg-blue-600 text-white hover:bg-blue-700"
+          >
             <Plus className="mr-2 h-4 w-4" />
             ADD
           </Button>
@@ -138,5 +159,5 @@ export const ManageBankAccountPage = ({ teamId, locale }: ManageBankAccountPageP
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,12 +1,12 @@
 // src/components/icons/BankLogoSCB.tsx
-import Image from 'next/image'
+import Image from "next/image";
 
 export const BankLogoSCB = ({
   size = 43,
-  className = '',
+  className = "",
 }: {
-  size?: number
-  className?: string
+  size?: number;
+  className?: string;
 }) => (
   <Image
     src="/assets/images/icons/bank/scb-bank.png"
@@ -14,7 +14,7 @@ export const BankLogoSCB = ({
     width={size}
     height={size}
     className={className}
-    style={{ borderRadius: '50%' }}
+    style={{ borderRadius: "50%" }}
     priority
   />
-)
+);

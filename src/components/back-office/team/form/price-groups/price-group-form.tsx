@@ -1,75 +1,75 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { toast } from '@/hooks/use-toast'
-import { ChevronLeft, Loader2 } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+} from "@/components/ui/select";
+import { toast } from "@/hooks/use-toast";
+import { ChevronLeft, Loader2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 // Types
-export type PriceType = 'PER_KWH' | 'PER_MINUTE' | 'PEAK' | 'free'
-export type StatusType = 'GENERAL' | 'MEMBER'
-export type Mode = 'add' | 'edit'
+export type PriceType = "PER_KWH" | "PER_MINUTE" | "PEAK" | "free";
+export type StatusType = "GENERAL" | "MEMBER";
+export type Mode = "add" | "edit";
 
 export interface FormData {
-  groupName: string
-  status: string
+  groupName: string;
+  status: string;
 }
 
 export interface PriceFormData {
-  pricePerKwh: string
-  pricePerKwhMinute: string
-  price_per_minute: string
-  onPeakPrice: string
-  offPeakPrice: string
-  freeKw: string
-  freeKwh: string
+  pricePerKwh: string;
+  pricePerKwhMinute: string;
+  price_per_minute: string;
+  onPeakPrice: string;
+  offPeakPrice: string;
+  freeKw: string;
+  freeKwh: string;
 }
 
 export interface FeeFormData {
-  startingFeeDescription: string
-  fee: string
-  chargingFeeDescription: string
-  feePrice: string
-  applyAfterMinute: string
-  minuteFeeDescription: string
-  feePerMin: string
-  applyFeeAfterMinute: string
-  feeStopsAfterMinute: string
-  idleFeeDescription: string
-  feePerMinIdle: string
-  timeBeforeIdleFeeApplied: string
-  maxTotalIdleFee: string
+  startingFeeDescription: string;
+  fee: string;
+  chargingFeeDescription: string;
+  feePrice: string;
+  applyAfterMinute: string;
+  minuteFeeDescription: string;
+  feePerMin: string;
+  applyFeeAfterMinute: string;
+  feeStopsAfterMinute: string;
+  idleFeeDescription: string;
+  feePerMinIdle: string;
+  timeBeforeIdleFeeApplied: string;
+  maxTotalIdleFee: string;
 }
 
 export interface PriceGroupFormProps {
-  mode: Mode
-  statusType: StatusType
+  mode: Mode;
+  statusType: StatusType;
   initialData?: {
-    form?: Partial<FormData>
-    priceForm?: Partial<PriceFormData>
-    feeForm?: Partial<FeeFormData>
-    priceType?: PriceType
-  }
-  isLoading?: boolean
+    form?: Partial<FormData>;
+    priceForm?: Partial<PriceFormData>;
+    feeForm?: Partial<FeeFormData>;
+    priceType?: PriceType;
+  };
+  isLoading?: boolean;
   onSubmit: (data: {
-    form: FormData
-    priceForm: PriceFormData
-    feeForm: FeeFormData
-    priceType: PriceType
-  }) => Promise<void>
-  onBack: () => void
-  teamGroupId?: string | null
+    form: FormData;
+    priceForm: PriceFormData;
+    feeForm: FeeFormData;
+    priceType: PriceType;
+  }) => Promise<void>;
+  onBack: () => void;
+  teamGroupId?: string | null;
 }
 
 export default function PriceGroupForm({
@@ -81,41 +81,44 @@ export default function PriceGroupForm({
   onBack,
   teamGroupId,
 }: PriceGroupFormProps) {
-  const [priceType, setPriceType] = useState<PriceType>(initialData?.priceType || 'PER_KWH')
+  const [priceType, setPriceType] = useState<PriceType>(
+    initialData?.priceType || "PER_KWH",
+  );
 
   // Main form state
   const [form, setForm] = useState<FormData>({
-    groupName: initialData?.form?.groupName || '',
-    status: initialData?.form?.status || 'publish',
-  })
+    groupName: initialData?.form?.groupName || "",
+    status: initialData?.form?.status || "publish",
+  });
 
   // Price-specific form state
   const [priceForm, setPriceForm] = useState<PriceFormData>({
-    pricePerKwh: initialData?.priceForm?.pricePerKwh || '',
-    pricePerKwhMinute: initialData?.priceForm?.pricePerKwhMinute || '',
-    price_per_minute: initialData?.priceForm?.price_per_minute || '',
-    onPeakPrice: initialData?.priceForm?.onPeakPrice || '',
-    offPeakPrice: initialData?.priceForm?.offPeakPrice || '',
-    freeKw: initialData?.priceForm?.freeKw || '',
-    freeKwh: initialData?.priceForm?.freeKwh || '',
-  })
+    pricePerKwh: initialData?.priceForm?.pricePerKwh || "",
+    pricePerKwhMinute: initialData?.priceForm?.pricePerKwhMinute || "",
+    price_per_minute: initialData?.priceForm?.price_per_minute || "",
+    onPeakPrice: initialData?.priceForm?.onPeakPrice || "",
+    offPeakPrice: initialData?.priceForm?.offPeakPrice || "",
+    freeKw: initialData?.priceForm?.freeKw || "",
+    freeKwh: initialData?.priceForm?.freeKwh || "",
+  });
 
   // Fee form state
   const [feeForm, setFeeForm] = useState<FeeFormData>({
-    fee: initialData?.feeForm?.fee || '',
-    startingFeeDescription: initialData?.feeForm?.startingFeeDescription || '',
-    chargingFeeDescription: initialData?.feeForm?.chargingFeeDescription || '',
-    feePrice: initialData?.feeForm?.feePrice || '',
-    applyAfterMinute: initialData?.feeForm?.applyAfterMinute || '',
-    minuteFeeDescription: initialData?.feeForm?.minuteFeeDescription || '',
-    feePerMin: initialData?.feeForm?.feePerMin || '',
-    applyFeeAfterMinute: initialData?.feeForm?.applyFeeAfterMinute || '',
-    feeStopsAfterMinute: initialData?.feeForm?.feeStopsAfterMinute || '',
-    idleFeeDescription: initialData?.feeForm?.idleFeeDescription || '',
-    feePerMinIdle: initialData?.feeForm?.feePerMinIdle || '',
-    timeBeforeIdleFeeApplied: initialData?.feeForm?.timeBeforeIdleFeeApplied || '',
-    maxTotalIdleFee: initialData?.feeForm?.maxTotalIdleFee || '',
-  })
+    fee: initialData?.feeForm?.fee || "",
+    startingFeeDescription: initialData?.feeForm?.startingFeeDescription || "",
+    chargingFeeDescription: initialData?.feeForm?.chargingFeeDescription || "",
+    feePrice: initialData?.feeForm?.feePrice || "",
+    applyAfterMinute: initialData?.feeForm?.applyAfterMinute || "",
+    minuteFeeDescription: initialData?.feeForm?.minuteFeeDescription || "",
+    feePerMin: initialData?.feeForm?.feePerMin || "",
+    applyFeeAfterMinute: initialData?.feeForm?.applyFeeAfterMinute || "",
+    feeStopsAfterMinute: initialData?.feeForm?.feeStopsAfterMinute || "",
+    idleFeeDescription: initialData?.feeForm?.idleFeeDescription || "",
+    feePerMinIdle: initialData?.feeForm?.feePerMinIdle || "",
+    timeBeforeIdleFeeApplied:
+      initialData?.feeForm?.timeBeforeIdleFeeApplied || "",
+    maxTotalIdleFee: initialData?.feeForm?.maxTotalIdleFee || "",
+  });
 
   // Update form states when initialData changes
   useEffect(() => {
@@ -124,208 +127,222 @@ export default function PriceGroupForm({
         setForm((prevForm) => ({
           ...prevForm,
           ...initialData.form,
-        }))
+        }));
       }
       if (initialData.priceForm) {
         setPriceForm((prevPriceForm) => ({
           ...prevPriceForm,
           ...initialData.priceForm,
-        }))
+        }));
       }
       if (initialData.feeForm) {
         setFeeForm((prevFeeForm) => ({
           ...prevFeeForm,
           ...initialData.feeForm,
-        }))
+        }));
       }
       if (initialData.priceType) {
-        setPriceType(initialData.priceType)
+        setPriceType(initialData.priceType);
       }
     }
-  }, [initialData])
+  }, [initialData]);
 
   // Form validation - แยกการตรวจสอบ teamGroupId ออกจาก isFormValid เพื่อให้ user กรอกข้อมูลได้ก่อน
-  const isFormValid = form.groupName.trim() !== ''
+  const isFormValid = form.groupName.trim() !== "";
 
-  console.log('isFormValid calculation:', {
-    'form.groupName.trim()': form.groupName.trim(),
-    "form.groupName.trim() !== ''": form.groupName.trim() !== '',
+  console.log("isFormValid calculation:", {
+    "form.groupName.trim()": form.groupName.trim(),
+    "form.groupName.trim() !== ''": form.groupName.trim() !== "",
     teamGroupId,
     mode,
     isFormValid,
-  })
+  });
 
   // Format number to 2 decimal places
   const formatDecimal = (value: string) => {
-    let val = value.replace(/[^\d.]/g, '')
-    const parts = val.split('.')
+    let val = value.replace(/[^\d.]/g, "");
+    const parts = val.split(".");
     if (parts.length > 2) {
-      val = parts[0] + '.' + parts.slice(1).join('')
+      val = parts[0] + "." + parts.slice(1).join("");
     }
-    if (val.includes('.')) {
-      const [intPart, decPart] = val.split('.')
-      val = intPart + '.' + decPart.slice(0, 2)
+    if (val.includes(".")) {
+      const [intPart, decPart] = val.split(".");
+      val = intPart + "." + decPart.slice(0, 2);
     }
-    return val
-  }
+    return val;
+  };
 
   // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.id]: e.target.value })
-  }
+    setForm({ ...form, [e.target.id]: e.target.value });
+  };
 
   const handlePriceInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = formatDecimal(e.target.value)
-    setPriceForm({ ...priceForm, [e.target.id]: value })
-  }
+    const value = formatDecimal(e.target.value);
+    setPriceForm({ ...priceForm, [e.target.id]: value });
+  };
 
-  const handleFeeDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFeeForm({ ...feeForm, [e.target.id]: e.target.value })
-  }
+  const handleFeeDescriptionChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setFeeForm({ ...feeForm, [e.target.id]: e.target.value });
+  };
 
   const handleFeeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isDescriptionField = e.target.id.toLowerCase().includes('description')
-    const value = isDescriptionField ? e.target.value : formatDecimal(e.target.value)
-    setFeeForm({ ...feeForm, [e.target.id]: value })
-  }
+    const isDescriptionField = e.target.id
+      .toLowerCase()
+      .includes("description");
+    const value = isDescriptionField
+      ? e.target.value
+      : formatDecimal(e.target.value);
+    setFeeForm({ ...feeForm, [e.target.id]: value });
+  };
 
   const handleStatusChange = (value: string) => {
-    setForm({ ...form, status: value })
-  }
+    setForm({ ...form, status: value });
+  };
 
   const handlePriceTypeChange = (value: string) => {
-    const newPriceType = value as PriceType
-    setPriceType(newPriceType)
+    const newPriceType = value as PriceType;
+    setPriceType(newPriceType);
 
     // Reset price form values when switching price types
     setPriceForm({
-      pricePerKwh: '',
-      pricePerKwhMinute: '',
-      price_per_minute: '',
-      onPeakPrice: '',
-      offPeakPrice: '',
-      freeKw: '',
-      freeKwh: '',
-    })
-  }
+      pricePerKwh: "",
+      pricePerKwhMinute: "",
+      price_per_minute: "",
+      onPeakPrice: "",
+      offPeakPrice: "",
+      freeKw: "",
+      freeKwh: "",
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('=== PriceGroupForm handleSubmit called ===')
-    console.log('Form values:', { form, priceForm, feeForm, priceType })
-    console.log('Validation states:', {
+    e.preventDefault();
+    console.log("=== PriceGroupForm handleSubmit called ===");
+    console.log("Form values:", { form, priceForm, feeForm, priceType });
+    console.log("Validation states:", {
       isFormValid,
       teamGroupId,
       mode,
-    })
+    });
 
     if (!isFormValid) {
-      console.log('❌ Form validation failed: isFormValid =', isFormValid)
+      console.log("❌ Form validation failed: isFormValid =", isFormValid);
       toast({
-        title: 'Error',
-        description: 'Please fill in all required fields.',
-        variant: 'destructive',
-      })
-      return
+        title: "Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
     }
 
     // ตรวจสอบ teamGroupId สำหรับ mode add
-    if (mode === 'add') {
-      console.log('🔍 Checking team data for add mode...')
+    if (mode === "add") {
+      console.log("🔍 Checking team data for add mode...");
       if (!teamGroupId) {
-        console.log('❌ Team group ID not available:', teamGroupId)
+        console.log("❌ Team group ID not available:", teamGroupId);
         toast({
-          title: 'Error',
-          description: 'Team information not loaded. Please try again.',
-          variant: 'destructive',
-        })
-        return
+          title: "Error",
+          description: "Team information not loaded. Please try again.",
+          variant: "destructive",
+        });
+        return;
       }
-      console.log('✅ Team data validation passed')
+      console.log("✅ Team data validation passed");
     }
 
     // Validate price type specific fields
-    console.log('🔍 Validating price type specific fields for:', priceType)
-    const missingFields: string[] = []
+    console.log("🔍 Validating price type specific fields for:", priceType);
+    const missingFields: string[] = [];
 
-    if (priceType === 'PER_KWH') {
+    if (priceType === "PER_KWH") {
       if (!priceForm.pricePerKwh.trim()) {
-        missingFields.push('บาท/kWh')
+        missingFields.push("บาท/kWh");
       }
-    } else if (priceType === 'PER_MINUTE') {
+    } else if (priceType === "PER_MINUTE") {
       if (!priceForm.pricePerKwhMinute.trim()) {
-        missingFields.push('บาท/kWh')
+        missingFields.push("บาท/kWh");
       }
       if (!priceForm.price_per_minute.trim()) {
-        missingFields.push('/ชั่วโมง')
+        missingFields.push("/ชั่วโมง");
       }
-    } else if (priceType === 'PEAK') {
+    } else if (priceType === "PEAK") {
       if (!priceForm.onPeakPrice.trim()) {
-        missingFields.push('On Peak บาท/kWh')
+        missingFields.push("On Peak บาท/kWh");
       }
       if (!priceForm.offPeakPrice.trim()) {
-        missingFields.push('Off Peak บาท/kWh')
+        missingFields.push("Off Peak บาท/kWh");
       }
-    } else if (priceType === 'free') {
+    } else if (priceType === "free") {
       if (!priceForm.freeKw.trim()) {
-        missingFields.push('Free kW')
+        missingFields.push("Free kW");
       }
       if (!priceForm.freeKwh.trim()) {
-        missingFields.push('หลังจากชาร์จฟรี บาท/kWh')
+        missingFields.push("หลังจากชาร์จฟรี บาท/kWh");
       }
     }
 
     if (missingFields.length > 0) {
-      console.log('❌ Missing required price fields:', missingFields)
+      console.log("❌ Missing required price fields:", missingFields);
       toast({
-        title: 'Error',
-        description: `กรุณากรอกข้อมูลให้ครบถ้วน: ${missingFields.join(', ')}`,
-        variant: 'destructive',
-      })
-      return
+        title: "Error",
+        description: `กรุณากรอกข้อมูลให้ครบถ้วน: ${missingFields.join(", ")}`,
+        variant: "destructive",
+      });
+      return;
     }
 
-    console.log('✅ All validations passed, calling onSubmit...')
+    console.log("✅ All validations passed, calling onSubmit...");
     try {
       await onSubmit({
         form,
         priceForm,
         feeForm,
         priceType,
-      })
-      console.log('✅ onSubmit completed successfully')
+      });
+      console.log("✅ onSubmit completed successfully");
     } catch (error) {
-      console.error('❌ Form submission error:', error)
+      console.error("❌ Form submission error:", error);
     }
-  }
+  };
 
   const getTitle = () => {
-    if (mode === 'add') {
-      return statusType === 'MEMBER' ? 'Add Member Price Group' : 'Add Price Group'
+    if (mode === "add") {
+      return statusType === "MEMBER"
+        ? "Add Member Price Group"
+        : "Add Price Group";
     }
-    return statusType === 'MEMBER' ? 'Edit Member Price Group' : 'Edit Price Group'
-  }
+    return statusType === "MEMBER"
+      ? "Edit Member Price Group"
+      : "Edit Price Group";
+  };
 
   const getFormId = () => {
-    if (mode === 'add') {
-      return statusType === 'MEMBER' ? 'add-member-price-group-form' : 'add-price-group-form'
+    if (mode === "add") {
+      return statusType === "MEMBER"
+        ? "add-member-price-group-form"
+        : "add-price-group-form";
     }
-    return statusType === 'MEMBER' ? 'edit-member-price-group-form' : 'edit-price-group-form'
-  }
+    return statusType === "MEMBER"
+      ? "edit-member-price-group-form"
+      : "edit-price-group-form";
+  };
 
   const getButtonText = () => {
-    return mode === 'add' ? 'submit' : 'Update'
-  }
+    return mode === "add" ? "submit" : "Update";
+  };
 
   const getLoadingText = () => {
-    return mode === 'add' ? 'Submitting...' : 'Updating...'
-  }
+    return mode === "add" ? "Submitting..." : "Updating...";
+  };
 
   const getLabelText = () => {
-    return statusType === 'MEMBER'
-      ? `ชื่อ ${statusType === 'MEMBER' ? 'Member ' : ''}Price Group`
-      : 'ชื่อ Price Group'
-  }
+    return statusType === "MEMBER"
+      ? `ชื่อ ${statusType === "MEMBER" ? "Member " : ""}Price Group`
+      : "ชื่อ Price Group";
+  };
 
   return (
     <div className="p-3 md:p-6">
@@ -341,13 +358,15 @@ export default function PriceGroupForm({
             >
               <ChevronLeft className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <h1 className="text-title text-xl font-medium md:text-2xl">{getTitle()}</h1>
+            <h1 className="text-title text-xl font-medium md:text-2xl">
+              {getTitle()}
+            </h1>
           </div>
           {/* Submit Button */}
           <Button
             type="submit"
             form={getFormId()}
-            variant={'success'}
+            variant={"success"}
             size="sm"
             disabled={isLoading || !isFormValid}
             className={`w-40 disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100`}
@@ -355,7 +374,9 @@ export default function PriceGroupForm({
             {isLoading ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm font-light uppercase">{getLoadingText()}</span>
+                <span className="text-sm font-light uppercase">
+                  {getLoadingText()}
+                </span>
               </div>
             ) : (
               <p className="text-sm font-medium uppercase">{getButtonText()}</p>
@@ -371,11 +392,15 @@ export default function PriceGroupForm({
                 {/* Left Column - Form inputs */}
                 <div
                   className="flex flex-1 flex-col gap-6 border-b pb-6 pt-6 md:pb-0 md:pt-8 lg:w-1/4 lg:flex-none lg:border-b-0 lg:border-r lg:pr-8"
-                  style={{ minHeight: 'max(300px, 100%)' }}
+                  style={{ minHeight: "max(300px, 100%)" }}
                 >
                   <div>
-                    <Label htmlFor="groupName" className="text-title text-sm font-semibold">
-                      {getLabelText()} <span className="text-destructive">*</span>
+                    <Label
+                      htmlFor="groupName"
+                      className="text-title text-sm font-semibold"
+                    >
+                      {getLabelText()}{" "}
+                      <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="groupName"
@@ -386,7 +411,10 @@ export default function PriceGroupForm({
                     />
                   </div>
                   <div>
-                    <Label htmlFor="status" className="text-title text-sm font-semibold">
+                    <Label
+                      htmlFor="status"
+                      className="text-title text-sm font-semibold"
+                    >
                       Status <span className="text-destructive">*</span>
                     </Label>
                     <Select
@@ -396,7 +424,7 @@ export default function PriceGroupForm({
                     >
                       <SelectTrigger
                         className={`mt-2 border-none bg-[#F2F2F2] ${
-                          form.status ? 'text-[#CACACA]' : 'text-title'
+                          form.status ? "text-[#CACACA]" : "text-title"
                         }`}
                       >
                         <SelectValue placeholder="Publish" />
@@ -414,7 +442,8 @@ export default function PriceGroupForm({
                   {/* Price Type Selection */}
                   <div>
                     <Label className="text-title text-base font-semibold">
-                      การตั้งรูปแบบราคา <span className="text-destructive">*</span>
+                      การตั้งรูปแบบราคา{" "}
+                      <span className="text-destructive">*</span>
                     </Label>
                     <div className="mt-3 flex flex-wrap gap-3 rounded-lg bg-[#355FF5] p-4">
                       <RadioGroup
@@ -424,23 +453,25 @@ export default function PriceGroupForm({
                       >
                         <div
                           className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'PER_KWH'
-                              ? 'bg-white/20 text-white'
-                              : 'bg-[#2B58F7] text-white'
+                            priceType === "PER_KWH"
+                              ? "bg-white/20 text-white"
+                              : "bg-[#2B58F7] text-white"
                           }`}
                         >
                           <RadioGroupItem
                             value="PER_KWH"
                             id="radio-kwh"
                             className={`${
-                              priceType === 'PER_KWH'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
+                              priceType === "PER_KWH"
+                                ? "border-2 border-white text-white"
+                                : "border-2 border-white/20"
                             }`}
                           />
                           <Label
                             className={`cursor-pointer ${
-                              priceType === 'PER_KWH' ? 'text-card' : 'text-white'
+                              priceType === "PER_KWH"
+                                ? "text-card"
+                                : "text-white"
                             }`}
                           >
                             บาท/kWh
@@ -448,24 +479,26 @@ export default function PriceGroupForm({
                         </div>
                         <div
                           className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'PER_MINUTE'
-                              ? 'bg-white/20 text-white'
-                              : 'bg-[#2B58F7] text-white'
+                            priceType === "PER_MINUTE"
+                              ? "bg-white/20 text-white"
+                              : "bg-[#2B58F7] text-white"
                           }`}
                         >
                           <RadioGroupItem
                             value="PER_MINUTE"
                             id="radio-hrs"
                             className={`${
-                              priceType === 'PER_MINUTE'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
+                              priceType === "PER_MINUTE"
+                                ? "border-2 border-white text-white"
+                                : "border-2 border-white/20"
                             }`}
                           />
                           <Label
                             htmlFor="radio-hrs"
                             className={`cursor-pointer ${
-                              priceType === 'PER_MINUTE' ? 'text-white' : 'text-white'
+                              priceType === "PER_MINUTE"
+                                ? "text-white"
+                                : "text-white"
                             }`}
                           >
                             ฿/Hrs.
@@ -473,24 +506,24 @@ export default function PriceGroupForm({
                         </div>
                         <div
                           className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'PEAK'
-                              ? 'bg-white/20 font-semibold text-white'
-                              : 'bg-[#2B58F7] text-white'
+                            priceType === "PEAK"
+                              ? "bg-white/20 font-semibold text-white"
+                              : "bg-[#2B58F7] text-white"
                           }`}
                         >
                           <RadioGroupItem
                             value="PEAK"
                             id="radio-onpeak"
                             className={`${
-                              priceType === 'PEAK'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
+                              priceType === "PEAK"
+                                ? "border-2 border-white text-white"
+                                : "border-2 border-white/20"
                             }`}
                           />
                           <Label
                             htmlFor="radio-onpeak"
                             className={`cursor-pointer ${
-                              priceType === 'PEAK' ? 'text-white' : 'text-white'
+                              priceType === "PEAK" ? "text-white" : "text-white"
                             }`}
                           >
                             On Peak Off Peak
@@ -498,24 +531,24 @@ export default function PriceGroupForm({
                         </div>
                         <div
                           className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'free'
-                              ? 'bg-white/20 text-[#4361ee]'
-                              : 'bg-[#2B58F7] text-white'
+                            priceType === "free"
+                              ? "bg-white/20 text-[#4361ee]"
+                              : "bg-[#2B58F7] text-white"
                           }`}
                         >
                           <RadioGroupItem
                             value="free"
                             id="radio-free"
                             className={`${
-                              priceType === 'free'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
+                              priceType === "free"
+                                ? "border-2 border-white text-white"
+                                : "border-2 border-white/20"
                             }`}
                           />
                           <Label
                             htmlFor="radio-free"
                             className={`cursor-pointer ${
-                              priceType === 'free' ? 'text-white' : 'text-white'
+                              priceType === "free" ? "text-white" : "text-white"
                             }`}
                           >
                             Free Charge Promotion
@@ -526,7 +559,7 @@ export default function PriceGroupForm({
                   </div>
 
                   {/* Price Input Sections */}
-                  {priceType === 'PER_KWH' && (
+                  {priceType === "PER_KWH" && (
                     <div className="mt-4 rounded-xl border p-6">
                       <Label htmlFor="price" className="text-title font-medium">
                         บาท/kWh <span className="text-destructive">*</span>
@@ -550,10 +583,13 @@ export default function PriceGroupForm({
                     </div>
                   )}
 
-                  {priceType === 'PER_MINUTE' && (
+                  {priceType === "PER_MINUTE" && (
                     <div className="mt-4 grid grid-cols-2 gap-4 rounded-xl border p-6">
                       <div>
-                        <Label htmlFor="price-kwh" className="text-title font-medium">
+                        <Label
+                          htmlFor="price-kwh"
+                          className="text-title font-medium"
+                        >
                           บาท/kWh <span className="text-destructive">*</span>
                         </Label>
                         <div className="relative mt-2">
@@ -574,7 +610,10 @@ export default function PriceGroupForm({
                         </div>
                       </div>
                       <div>
-                        <Label htmlFor="price_per_minute" className="text-title font-medium">
+                        <Label
+                          htmlFor="price_per_minute"
+                          className="text-title font-medium"
+                        >
                           /ชั่วโมง <span className="text-destructive">*</span>
                         </Label>
                         <div className="relative mt-2">
@@ -597,24 +636,32 @@ export default function PriceGroupForm({
                     </div>
                   )}
 
-                  {priceType === 'PEAK' && (
+                  {priceType === "PEAK" && (
                     <div className="mt-4 flex flex-col gap-4">
                       <div className="grid grid-cols-1 overflow-hidden rounded-xl border md:grid-cols-10 md:divide-x">
                         {/* Left Labels */}
                         <div className="flex flex-col divide-y md:col-span-2 md:justify-center">
                           <div className="flex h-28 items-center justify-center px-4">
-                            <span className="text-title font-semibold">On Peak</span>
+                            <span className="text-title font-semibold">
+                              On Peak
+                            </span>
                           </div>
                           <div className="flex h-28 items-center justify-center px-4">
-                            <span className="text-title font-semibold">Off Peak</span>
+                            <span className="text-title font-semibold">
+                              Off Peak
+                            </span>
                           </div>
                         </div>
 
                         {/* Price Inputs */}
                         <div className="flex flex-col divide-y md:col-span-4">
                           <div className="px-4 py-6">
-                            <Label htmlFor="onPeakPrice" className="text-title font-medium">
-                              บาท/kWh <span className="text-destructive">*</span>
+                            <Label
+                              htmlFor="onPeakPrice"
+                              className="text-title font-medium"
+                            >
+                              บาท/kWh{" "}
+                              <span className="text-destructive">*</span>
                             </Label>
                             <div className="relative mt-2">
                               <Input
@@ -634,8 +681,12 @@ export default function PriceGroupForm({
                             </div>
                           </div>
                           <div className="px-4 py-6">
-                            <Label htmlFor="offPeakPrice" className="text-title font-medium">
-                              บาท/kWh <span className="text-destructive">*</span>
+                            <Label
+                              htmlFor="offPeakPrice"
+                              className="text-title font-medium"
+                            >
+                              บาท/kWh{" "}
+                              <span className="text-destructive">*</span>
                             </Label>
                             <div className="relative mt-2">
                               <Input
@@ -677,8 +728,10 @@ export default function PriceGroupForm({
                             </div>
                             <div className="leading-tight">
                               <p className="mb-1">
-                                อัตราค่าไฟฟ้า TOU ปัจจุบัน คือ อัตราการจัดเก็บค่าไฟฟ้า
-                                ที่ขึ้นอยู่กับช่วงเวลาการใช้ โดยแบ่งออกเป็น 2 ช่วง คือ
+                                อัตราค่าไฟฟ้า TOU ปัจจุบัน คือ
+                                อัตราการจัดเก็บค่าไฟฟ้า
+                                ที่ขึ้นอยู่กับช่วงเวลาการใช้ โดยแบ่งออกเป็น 2
+                                ช่วง คือ
                               </p>
                               <div className="grid grid-cols-1 gap-x-3 gap-y-0.5">
                                 <div className="flex items-baseline gap-1">
@@ -704,14 +757,17 @@ export default function PriceGroupForm({
                     </div>
                   )}
 
-                  {priceType === 'free' && (
+                  {priceType === "free" && (
                     <div className="mt-4 overflow-hidden rounded-xl border">
                       <div className="grid grid-cols-5 border-b">
                         <div className="col-span-1 flex items-center justify-center border-r p-4">
                           <span className="text-title font-medium">Free</span>
                         </div>
                         <div className="col-span-4 p-4">
-                          <Label htmlFor="freeKw" className="text-title mb-2 block font-medium">
+                          <Label
+                            htmlFor="freeKw"
+                            className="text-title mb-2 block font-medium"
+                          >
                             kW <span className="text-destructive">*</span>
                           </Label>
                           <div className="relative mt-2">
@@ -732,10 +788,15 @@ export default function PriceGroupForm({
                       </div>
                       <div className="grid grid-cols-5">
                         <div className="col-span-1 flex items-center justify-center border-r p-4">
-                          <span className="text-title text-base font-medium">หลังจากชาร์จฟรี</span>
+                          <span className="text-title text-base font-medium">
+                            หลังจากชาร์จฟรี
+                          </span>
                         </div>
                         <div className="col-span-4 p-4">
-                          <Label htmlFor="freeKwh" className="text-title mb-2 block font-medium">
+                          <Label
+                            htmlFor="freeKwh"
+                            className="text-title mb-2 block font-medium"
+                          >
                             บาท/kWh <span className="text-destructive">*</span>
                           </Label>
                           <div className="relative mt-2">
@@ -762,17 +823,25 @@ export default function PriceGroupForm({
                   {/* Additional Fee Section */}
                   {false && (
                     <div>
-                      <div className="text-title mb-2 text-base font-semibold">Additional Fee</div>
+                      <div className="text-title mb-2 text-base font-semibold">
+                        Additional Fee
+                      </div>
 
                       {/* Starting Fee */}
                       <div className="mb-6 rounded-xl border bg-white p-6">
-                        <div className="text-title font-medium">Starting fee</div>
+                        <div className="text-title font-medium">
+                          Starting fee
+                        </div>
                         <div className="mb-2 text-xs text-[#8a94a6]">
-                          A one-time fee will be applied when starting the charge session.
+                          A one-time fee will be applied when starting the
+                          charge session.
                         </div>
                         <div className="flex gap-4">
                           <div className="flex-1">
-                            <Label htmlFor="startingFeeDescription" className="text-title text-xs">
+                            <Label
+                              htmlFor="startingFeeDescription"
+                              className="text-title text-xs"
+                            >
                               Description
                             </Label>
                             <Input
@@ -809,13 +878,19 @@ export default function PriceGroupForm({
 
                       {/* Charging Fee */}
                       <div className="rounded-xl border bg-card p-6">
-                        <div className="text-title font-medium">Charging fee</div>
+                        <div className="text-title font-medium">
+                          Charging fee
+                        </div>
                         <div className="mb-2 text-xs text-[#8a94a6]">
-                          A one-time fee to be applied after a specified time of charging.
+                          A one-time fee to be applied after a specified time of
+                          charging.
                         </div>
                         <div className="flex gap-4">
                           <div className="flex-1">
-                            <Label htmlFor="chargingFeeDescription" className="text-title text-xs">
+                            <Label
+                              htmlFor="chargingFeeDescription"
+                              className="text-title text-xs"
+                            >
                               Description
                             </Label>
                             <Input
@@ -827,7 +902,10 @@ export default function PriceGroupForm({
                             />
                           </div>
                           <div className="flex-1">
-                            <Label htmlFor="feePrice" className="text-title text-xs">
+                            <Label
+                              htmlFor="feePrice"
+                              className="text-title text-xs"
+                            >
                               Fee price
                             </Label>
                             <div className="relative">
@@ -850,7 +928,10 @@ export default function PriceGroupForm({
                         </div>
                         <div className="mt-2 flex gap-4">
                           <div className="flex-1">
-                            <Label htmlFor="applyAfterMinute" className="text-title text-xs">
+                            <Label
+                              htmlFor="applyAfterMinute"
+                              className="text-title text-xs"
+                            >
                               Apply fee after
                             </Label>
                             <div className="relative">
@@ -876,11 +957,15 @@ export default function PriceGroupForm({
                       <div className="my-6 rounded-xl border bg-card p-6">
                         <div className="text-title font-medium">Minute fee</div>
                         <div className="mb-2 text-xs text-[#8a94a6]">
-                          A minute fee too be applied after a specified time of charging.
+                          A minute fee too be applied after a specified time of
+                          charging.
                         </div>
                         <div className="flex gap-4">
                           <div className="flex-1">
-                            <Label htmlFor="minuteFeeDescription" className="text-title text-xs">
+                            <Label
+                              htmlFor="minuteFeeDescription"
+                              className="text-title text-xs"
+                            >
                               Description
                             </Label>
                             <Input
@@ -892,7 +977,10 @@ export default function PriceGroupForm({
                             />
                           </div>
                           <div className="flex-1">
-                            <Label htmlFor="feePerMin" className="text-title text-xs">
+                            <Label
+                              htmlFor="feePerMin"
+                              className="text-title text-xs"
+                            >
                               Fee per min
                             </Label>
                             <div className="relative">
@@ -915,7 +1003,10 @@ export default function PriceGroupForm({
                         </div>
                         <div className="mt-2 flex gap-4">
                           <div className="flex-1">
-                            <Label htmlFor="applyFeeAfterMinute" className="text-title text-xs">
+                            <Label
+                              htmlFor="applyFeeAfterMinute"
+                              className="text-title text-xs"
+                            >
                               Apply fee after
                             </Label>
                             <div className="relative">
@@ -934,7 +1025,10 @@ export default function PriceGroupForm({
                             </div>
                           </div>
                           <div className="flex-1">
-                            <Label htmlFor="feeStopsAfterMinute" className="text-title text-xs">
+                            <Label
+                              htmlFor="feeStopsAfterMinute"
+                              className="text-title text-xs"
+                            >
                               Fee Stops after
                             </Label>
                             <div className="relative">
@@ -959,11 +1053,15 @@ export default function PriceGroupForm({
                       <div className="my-6 rounded-xl border bg-card p-6">
                         <div className="text-title font-medium">Idle fee</div>
                         <div className="mb-2 text-xs text-[#8a94a6]">
-                          Will be applied after charging if car remains connected to charger.
+                          Will be applied after charging if car remains
+                          connected to charger.
                         </div>
                         <div className="flex gap-4">
                           <div className="flex-1">
-                            <Label htmlFor="idleFeeDescription" className="text-title text-xs">
+                            <Label
+                              htmlFor="idleFeeDescription"
+                              className="text-title text-xs"
+                            >
                               Description
                             </Label>
                             <Input
@@ -975,7 +1073,10 @@ export default function PriceGroupForm({
                             />
                           </div>
                           <div className="flex-1">
-                            <Label htmlFor="feePerMinIdle" className="text-title text-xs">
+                            <Label
+                              htmlFor="feePerMinIdle"
+                              className="text-title text-xs"
+                            >
                               Fee per min
                             </Label>
                             <div className="relative">
@@ -1020,7 +1121,10 @@ export default function PriceGroupForm({
                             </div>
                           </div>
                           <div className="flex-1">
-                            <Label htmlFor="maxTotalIdleFee" className="text-title text-xs">
+                            <Label
+                              htmlFor="maxTotalIdleFee"
+                              className="text-title text-xs"
+                            >
                               Maximum total idle fee
                             </Label>
                             <div className="relative">
@@ -1051,5 +1155,5 @@ export default function PriceGroupForm({
         </form>
       </div>
     </div>
-  )
+  );
 }

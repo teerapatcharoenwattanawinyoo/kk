@@ -1,74 +1,74 @@
-'use client'
+"use client";
 
-import DeleteConfirmDialog from '@/components/notifications/delete-confirm-dialog'
+import DeleteConfirmDialog from "@/components/notifications/delete-confirm-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { useDeleteBankAccount, useUpdateBankAccount } from '@/hooks/use-bank'
-import { Button, Card, CardContent, Switch } from '@/ui'
-import { Edit, MoreHorizontal, Trash2 } from 'lucide-react'
-import Image from 'next/image'
-import { memo, useCallback, useState } from 'react'
-import type { BankAccount } from './bank-account-item'
+} from "@/components/ui/dropdown-menu";
+import { useDeleteBankAccount, useUpdateBankAccount } from "@/hooks/use-bank";
+import { Button, Card, CardContent, Switch } from "@/ui";
+import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { memo, useCallback, useState } from "react";
+import type { BankAccount } from "./bank-account-item";
 
 interface BankAccountCardProps {
-  account: BankAccount
-  isSelected: boolean
-  onToggle: (accountId: number, isEnabled: boolean) => void
-  onEdit: (accountId: number) => void
-  onDelete: (accountId: number) => void
+  account: BankAccount;
+  isSelected: boolean;
+  onToggle: (accountId: number, isEnabled: boolean) => void;
+  onEdit: (accountId: number) => void;
+  onDelete: (accountId: number) => void;
 }
 
 // Status badge component
 const StatusBadge = memo(({ status }: { status: string }) => {
   const getStatusConfig = (status: string) => {
     switch (status) {
-      case 'approve':
+      case "approve":
         return {
-          text: 'Approved',
-          className: 'bg-green-100 text-green-800',
-        }
-      case 'waiting':
+          text: "Approved",
+          className: "bg-green-100 text-green-800",
+        };
+      case "waiting":
         return {
-          text: 'Waiting Approve',
-          className: 'bg-orange-100 text-orange-800',
-        }
-      case 'unapprove':
+          text: "Waiting Approve",
+          className: "bg-orange-100 text-orange-800",
+        };
+      case "unapprove":
         return {
-          text: 'Unapprove',
-          className: 'bg-gray-100 text-gray-800',
-        }
+          text: "Unapprove",
+          className: "bg-gray-100 text-gray-800",
+        };
       default:
         return {
           text: status,
-          className: 'bg-gray-100 text-gray-800',
-        }
+          className: "bg-gray-100 text-gray-800",
+        };
     }
-  }
+  };
 
-  const { text, className } = getStatusConfig(status)
+  const { text, className } = getStatusConfig(status);
 
   return (
     <span
       className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${className}`}
     >
       <div
-        className={`mr-1 h-1.5 w-1.5 rounded-full ${status === 'approve' ? 'bg-green-500' : status === 'waiting' ? 'bg-orange-500' : 'bg-gray-400'}`}
+        className={`mr-1 h-1.5 w-1.5 rounded-full ${status === "approve" ? "bg-green-500" : status === "waiting" ? "bg-orange-500" : "bg-gray-400"}`}
       />
       {text}
     </span>
-  )
-})
-StatusBadge.displayName = 'StatusBadge'
+  );
+});
+StatusBadge.displayName = "StatusBadge";
 
 export const BankAccountCard = memo(
   ({ account, onToggle, onEdit, onDelete }: BankAccountCardProps) => {
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-    const updateBankAccountMutation = useUpdateBankAccount()
-    const deleteBankAccountMutation = useDeleteBankAccount()
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const updateBankAccountMutation = useUpdateBankAccount();
+    const deleteBankAccountMutation = useDeleteBankAccount();
 
     const handleToggle = useCallback(
       (checked: boolean) => {
@@ -77,29 +77,29 @@ export const BankAccountCard = memo(
           data: {
             is_primary: checked,
           },
-        })
+        });
 
-        onToggle(account.id, checked)
+        onToggle(account.id, checked);
       },
       [account.id, onToggle, updateBankAccountMutation],
-    )
+    );
 
     const handleEdit = useCallback(() => {
-      onEdit(account.id)
-    }, [account.id, onEdit])
+      onEdit(account.id);
+    }, [account.id, onEdit]);
 
     const handleDeleteClick = useCallback(() => {
-      setShowDeleteDialog(true)
-    }, [])
+      setShowDeleteDialog(true);
+    }, []);
 
     const handleDeleteConfirm = useCallback(() => {
       deleteBankAccountMutation.mutate(account.id, {
         onSuccess: () => {
-          setShowDeleteDialog(false)
-          onDelete(account.id)
+          setShowDeleteDialog(false);
+          onDelete(account.id);
         },
-      })
-    }, [account.id, deleteBankAccountMutation, onDelete])
+      });
+    }, [account.id, deleteBankAccountMutation, onDelete]);
 
     return (
       <Card className="relative transition-all duration-200 hover:shadow-md">
@@ -112,7 +112,7 @@ export const BankAccountCard = memo(
                 {account?.bank_logo && (
                   <Image
                     src={account.bank_logo}
-                    alt={account.bank_name || 'Bank logo'}
+                    alt={account.bank_name || "Bank logo"}
                     width={32}
                     height={32}
                     className="object-contain"
@@ -123,9 +123,11 @@ export const BankAccountCard = memo(
               {/* Bank Details */}
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900">
-                  {account.bank_name || 'Unknown Bank'}
+                  {account.bank_name || "Unknown Bank"}
                 </h3>
-                <p className="text-sm text-gray-600">{account.account_number}</p>
+                <p className="text-sm text-gray-600">
+                  {account.account_number}
+                </p>
               </div>
             </div>
 
@@ -141,7 +143,7 @@ export const BankAccountCard = memo(
                   <Edit className="mr-2 h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
-                {account.status !== 'approve' && (
+                {account.status !== "approve" && (
                   <DropdownMenuItem
                     onClick={handleDeleteClick}
                     className="text-red-600 focus:text-red-600"
@@ -197,8 +199,8 @@ export const BankAccountCard = memo(
           isLoading={deleteBankAccountMutation.isPending}
         />
       </Card>
-    )
+    );
   },
-)
+);
 
-BankAccountCard.displayName = 'BankAccountCard'
+BankAccountCard.displayName = "BankAccountCard";

@@ -1,26 +1,34 @@
-'use client'
+"use client";
 
-import { ChevronLeftIcon } from '@/components/icons/ChevronLeftIcon'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import { Charger as APICharger, getConnectorList } from '@/lib/api/team-group/connectors'
-import { QUERY_KEYS } from '@/lib/constants'
-import { useTeam } from '@/modules/teams/hooks/use-teams'
-import { useQuery } from '@tanstack/react-query'
-import { Loader2, Search } from 'lucide-react'
-import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { ChevronLeftIcon } from "@/components/icons/ChevronLeftIcon";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { useTeam } from "@/hooks/use-teams";
+import {
+  Charger as APICharger,
+  getConnectorList,
+} from "@/lib/api/team-group/connectors";
+import { QUERY_KEYS } from "@/lib/constants";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2, Search } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface SelectConnectorDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onConfirm?: (selectedConnectors: APICharger[]) => void
-  onBack?: () => void
-  selectedPriceGroup?: { id: number; name: string } | null
-  connectorInfo?: { name: string; serial_number: string } | null
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm?: (selectedConnectors: APICharger[]) => void;
+  onBack?: () => void;
+  selectedPriceGroup?: { id: number; name: string } | null;
+  connectorInfo?: { name: string; serial_number: string } | null;
 }
 
 export default function SelectConnectorDialog({
@@ -30,49 +38,56 @@ export default function SelectConnectorDialog({
   onBack,
   selectedPriceGroup,
 }: SelectConnectorDialogProps) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
-  const [selectedConnectors, setSelectedConnectors] = useState<number[]>([])
-  const [selectAll, setSelectAll] = useState(false)
-  const [previousParentId, setPreviousParentId] = useState<number | null>(null)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [selectedConnectors, setSelectedConnectors] = useState<number[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [previousParentId, setPreviousParentId] = useState<number | null>(null);
 
-  const params = useParams()
-  const teamId = params.id as string
-  const { data: teamData } = useTeam(teamId)
-  const teamGroupId = teamData?.team_group_id
+  const params = useParams();
+  const teamId = params.id as string;
+  const { data: teamData } = useTeam(teamId);
+  const teamGroupId = teamData?.team_group_id;
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm)
-    }, 500)
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
 
-    return () => clearTimeout(timer)
-  }, [searchTerm])
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Track parent_id changes
   useEffect(() => {
-    const currentParentId = selectedPriceGroup?.id || null
+    const currentParentId = selectedPriceGroup?.id || null;
 
     if (previousParentId !== null && currentParentId !== previousParentId) {
-      console.log('🔄 Parent ID changed:', {
+      console.log("🔄 Parent ID changed:", {
         previousParentId,
         newParentId: currentParentId,
         previousPriceGroup: previousParentId,
         newPriceGroup: selectedPriceGroup,
         message: `Price group changed from ID ${previousParentId} to ID ${currentParentId}`,
         connectorSelectionWillReset: selectedConnectors.length > 0,
-      })
+      });
 
       // Reset connector selection when parent_id changes
       if (selectedConnectors.length > 0) {
-        console.log('🔄 Resetting connector selection due to price group change')
-        setSelectedConnectors([])
-        setSelectAll(false)
+        console.log(
+          "🔄 Resetting connector selection due to price group change",
+        );
+        setSelectedConnectors([]);
+        setSelectAll(false);
       }
     }
 
-    setPreviousParentId(currentParentId)
-  }, [selectedPriceGroup?.id, selectedPriceGroup, previousParentId, selectedConnectors.length])
+    setPreviousParentId(currentParentId);
+  }, [
+    selectedPriceGroup?.id,
+    selectedPriceGroup,
+    previousParentId,
+    selectedConnectors.length,
+  ]);
 
   const {
     data: connectorResponse,
@@ -82,81 +97,85 @@ export default function SelectConnectorDialog({
     queryKey: [...QUERY_KEYS.CONNECTOR, teamGroupId, debouncedSearchTerm],
     queryFn: () => {
       if (!teamGroupId) {
-        throw new Error('Team group ID is required')
+        throw new Error("Team group ID is required");
       }
-      return getConnectorList(teamGroupId, debouncedSearchTerm || undefined)
+      return getConnectorList(teamGroupId, debouncedSearchTerm || undefined);
     },
     enabled: !!teamGroupId && open,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-  })
+  });
 
   // Get connector data from API
-  const connectors = connectorResponse?.data?.data || []
+  const connectors = connectorResponse?.data?.data || [];
 
-  const filteredConnectors = connectors
+  const filteredConnectors = connectors;
 
   useEffect(() => {
     if (!open) {
-      setSearchTerm('')
-      setSelectedConnectors([])
-      setSelectAll(false)
+      setSearchTerm("");
+      setSelectedConnectors([]);
+      setSelectAll(false);
     }
-  }, [open])
+  }, [open]);
   useEffect(() => {
     if (selectAll) {
-      setSelectedConnectors(filteredConnectors.map((c) => c.id))
+      setSelectedConnectors(filteredConnectors.map((c) => c.id));
     } else if (
       selectedConnectors.length === filteredConnectors.length &&
       filteredConnectors.length > 0
     ) {
       // Only clear if we're explicitly deselecting all, not on initial load
       if (filteredConnectors.length > 0) {
-        setSelectedConnectors([])
+        setSelectedConnectors([]);
       }
     }
-  }, [selectAll, filteredConnectors, selectedConnectors.length])
+  }, [selectAll, filteredConnectors, selectedConnectors.length]);
 
   // Update select all state based on individual selections
   useEffect(() => {
     if (filteredConnectors.length > 0) {
-      const allSelected = filteredConnectors.every((c) => selectedConnectors.includes(c.id))
-      setSelectAll(allSelected)
+      const allSelected = filteredConnectors.every((c) =>
+        selectedConnectors.includes(c.id),
+      );
+      setSelectAll(allSelected);
     }
-  }, [selectedConnectors, filteredConnectors, selectedConnectors.length])
+  }, [selectedConnectors, filteredConnectors, selectedConnectors.length]);
 
   const handleConnectorToggle = (connectorId: number) => {
     setSelectedConnectors((prev) => {
       if (prev.includes(connectorId)) {
-        return prev.filter((id) => id !== connectorId)
+        return prev.filter((id) => id !== connectorId);
       } else {
-        return [...prev, connectorId]
+        return [...prev, connectorId];
       }
-    })
-  }
+    });
+  };
 
   const handleSelectAllToggle = () => {
-    setSelectAll(!selectAll)
-  }
+    setSelectAll(!selectAll);
+  };
 
   const handleApplyPrice = () => {
     if (onConfirm) {
-      const selected = connectors.filter((c) => selectedConnectors.includes(c.id))
+      const selected = connectors.filter((c) =>
+        selectedConnectors.includes(c.id),
+      );
 
-      onConfirm(selected)
+      onConfirm(selected);
     }
-    onOpenChange(false)
-  }
+    onOpenChange(false);
+  };
 
   const handleCancel = () => {
-    onOpenChange(false)
-  }
+    onOpenChange(false);
+  };
 
   const handleBack = () => {
     if (onBack) {
-      onBack()
+      onBack();
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -164,7 +183,12 @@ export default function SelectConnectorDialog({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#E0E0E0] px-6 py-3">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleBack}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={handleBack}
+            >
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
             <DialogTitle className="text-xl font-semibold text-[#355FF5]">
@@ -213,11 +237,15 @@ export default function SelectConnectorDialog({
             {isLoading ? (
               <div className="py-8 text-center">
                 <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin text-[#355FF5]" />
-                <div className="text-sm text-gray-500">Loading connectors...</div>
+                <div className="text-sm text-gray-500">
+                  Loading connectors...
+                </div>
               </div>
             ) : error ? (
               <div className="py-8 text-center">
-                <div className="text-sm text-red-500">Error loading connectors</div>
+                <div className="text-sm text-red-500">
+                  Error loading connectors
+                </div>
               </div>
             ) : filteredConnectors.length === 0 ? (
               <div className="py-8 text-center">
@@ -225,7 +253,7 @@ export default function SelectConnectorDialog({
               </div>
             ) : (
               filteredConnectors.map((connector) => {
-                const isSelected = selectedConnectors.includes(connector.id)
+                const isSelected = selectedConnectors.includes(connector.id);
 
                 return (
                   <div
@@ -235,7 +263,9 @@ export default function SelectConnectorDialog({
                   >
                     <Checkbox
                       checked={isSelected}
-                      onCheckedChange={() => handleConnectorToggle(connector.id)}
+                      onCheckedChange={() =>
+                        handleConnectorToggle(connector.id)
+                      }
                       className="h-[15px] w-[15px] rounded-sm border-[#D5D5D5] data-[state=checked]:border-[#009032] data-[state=checked]:bg-[#3ABA66]"
                     />
 
@@ -261,7 +291,7 @@ export default function SelectConnectorDialog({
                       </p>
                     </div>
                   </div>
-                )
+                );
               })
             )}
           </div>
@@ -288,5 +318,5 @@ export default function SelectConnectorDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

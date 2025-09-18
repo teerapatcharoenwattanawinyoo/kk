@@ -1,49 +1,49 @@
-'use client'
+"use client";
 
-import MemberGroupForm from '@/components/back-office/team/form/member-group/member-form'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
-import SuccessDialog from '@/components/notifications/success-dialog'
-import { Button } from '@/components/ui/button'
-import { ChevronLeft } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { use, useState } from 'react'
+import MemberGroupForm from "@/components/back-office/team/form/member-group/member-form";
+import { TeamGuard } from "@/components/back-office/team/team-guard";
+import SuccessDialog from "@/components/notifications/success-dialog";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { use, useState } from "react";
 
 interface AddMemberGroupPageProps {
-  params: Promise<{ locale: string; teamId: string }>
+  params: Promise<{ locale: string; teamId: string }>;
 }
 
 export default function AddMemberGroup({ params }: AddMemberGroupPageProps) {
-  const router = useRouter()
-  const { teamId, locale } = use(params)
+  const router = useRouter();
+  const { teamId, locale } = use(params);
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [openSuccess, setOpenSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false);
 
   const handleSubmit = async () => {
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
       // Call create member group API
       const res = await fetch(`/api/teams/${teamId}/member-groups`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         // NOTE: The form is currently self-contained; send minimal payload.
         body: JSON.stringify({}),
-        cache: 'no-store',
-      })
+        cache: "no-store",
+      });
 
       if (!res.ok) {
-        throw new Error('Failed to create member group')
+        throw new Error("Failed to create member group");
       }
 
-      setOpenSuccess(true)
+      setOpenSuccess(true);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleBack = () => {
-    router.back()
-  }
+    router.back();
+  };
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
@@ -54,25 +54,27 @@ export default function AddMemberGroup({ params }: AddMemberGroupPageProps) {
             <div className="flex items-center gap-4">
               <Button
                 onClick={handleBack}
-                variant={'secondary'}
-                size={'icon'}
+                variant={"secondary"}
+                size={"icon"}
                 className="h-7 w-7 rounded-full"
               >
                 <ChevronLeft className="h-5 w-5 text-muted-foreground" />
               </Button>
-              <h1 className="text-title text-xl font-semibold">Add Member Group</h1>
+              <h1 className="text-title text-xl font-semibold">
+                Add Member Group
+              </h1>
             </div>
 
             {/* Submit Button */}
             <Button
               type="button"
-              size={'sm'}
+              size={"sm"}
               className="w-40 text-primary-foreground"
-              variant={'success'}
+              variant={"success"}
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+              {isSubmitting ? "Submitting..." : "Submit"}
             </Button>
           </div>
 
@@ -91,5 +93,5 @@ export default function AddMemberGroup({ params }: AddMemberGroupPageProps) {
         onButtonClick={() => router.push(`/${locale}/team/${teamId}/members`)}
       />
     </TeamGuard>
-  )
+  );
 }

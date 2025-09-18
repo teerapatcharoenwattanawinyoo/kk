@@ -1,15 +1,18 @@
-import React from 'react'
+import React from "react";
 
 export interface TopUpCardIconProps
-  extends Omit<React.SVGProps<SVGSVGElement>, 'width' | 'height' | 'color'> {
-  width?: number
-  height?: number
-  fill?: string // default: currentColor
-  title?: string
+  extends Omit<React.SVGProps<SVGSVGElement>, "width" | "height" | "color"> {
+  width?: number;
+  height?: number;
+  fill?: string; // default: currentColor
+  title?: string;
 }
 
 const TopUpCardIcon = React.forwardRef<SVGSVGElement, TopUpCardIconProps>(
-  ({ width, height, fill = 'currentColor', className, title, ...rest }, ref) => (
+  (
+    { width, height, fill = "currentColor", className, title, ...rest },
+    ref,
+  ) => (
     <svg
       ref={ref}
       width={width}
@@ -19,7 +22,7 @@ const TopUpCardIcon = React.forwardRef<SVGSVGElement, TopUpCardIconProps>(
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-hidden={title ? undefined : true}
-      role={title ? 'img' : 'presentation'}
+      role={title ? "img" : "presentation"}
       {...rest}
     >
       {title ? <title>{title}</title> : null}
@@ -31,8 +34,8 @@ const TopUpCardIcon = React.forwardRef<SVGSVGElement, TopUpCardIconProps>(
       />
     </svg>
   ),
-)
+);
 
-TopUpCardIcon.displayName = 'TopUpCardIcon'
+TopUpCardIcon.displayName = "TopUpCardIcon";
 
-export default TopUpCardIcon
+export default TopUpCardIcon;

@@ -1,15 +1,20 @@
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import Image from 'next/image'
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import Image from "next/image";
 
 interface ChargerAddedDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  title: string
-  description: string
-  cancelText?: string
-  confirmText?: string
-  onConfirm: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description: string;
+  cancelText?: string;
+  confirmText?: string;
+  onConfirm: () => void;
 }
 
 export default function ChargerAddedDialog({
@@ -17,8 +22,8 @@ export default function ChargerAddedDialog({
   onOpenChange,
   title,
   description,
-  cancelText = 'Not now (later)',
-  confirmText = 'Continue',
+  cancelText = "Not now (later)",
+  confirmText = "Continue",
   onConfirm,
 }: ChargerAddedDialogProps) {
   return (
@@ -60,5 +65,5 @@ export default function ChargerAddedDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

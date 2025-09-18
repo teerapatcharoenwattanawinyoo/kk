@@ -1,9 +1,13 @@
-'use client'
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import React, { useState } from 'react'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React, { useState } from "react";
 
-export default function ReactQueryProvider({ children }: { children: React.ReactNode }) {
+export default function ReactQueryProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -12,19 +16,22 @@ export default function ReactQueryProvider({ children }: { children: React.React
             staleTime: 5 * 60 * 1000, // 5 minutes
             retry: (failureCount, error) => {
               if (
-                typeof error === 'object' &&
+                typeof error === "object" &&
                 error !== null &&
-                'status' in error &&
+                "status" in error &&
                 (error.status === 401 || error.status === 403)
               ) {
-                return false
+                return false;
               }
 
-              if (error instanceof Error && error.message.includes('Session expired')) {
-                return false
+              if (
+                error instanceof Error &&
+                error.message.includes("Session expired")
+              ) {
+                return false;
               }
 
-              return failureCount < 2
+              return failureCount < 2;
             },
             refetchOnWindowFocus: false,
             refetchOnReconnect: true,
@@ -32,15 +39,20 @@ export default function ReactQueryProvider({ children }: { children: React.React
           },
           mutations: {
             retry: (failureCount, error) => {
-              if (error instanceof Error && error.message.includes('Session expired')) {
-                return false
+              if (
+                error instanceof Error &&
+                error.message.includes("Session expired")
+              ) {
+                return false;
               }
-              return failureCount < 1
+              return failureCount < 1;
             },
           },
         },
       }),
-  )
+  );
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
 }

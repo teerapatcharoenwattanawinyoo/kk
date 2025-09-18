@@ -1,44 +1,51 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { ChevronLeft } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { cn } from '@/lib/utils'
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface SettingsLayoutProps {
-  children: React.ReactNode
-  teamId: string
-  locale: string
-  title: string
+  children: React.ReactNode;
+  teamId: string;
+  locale: string;
+  title: string;
 }
 
 const settingsMenuItems = [
-  { id: 'general', label: 'General Setting', path: 'general' },
-  { id: 'tax', label: 'Tax Setting', path: 'tax' },
-  { id: 'permission', label: 'Team Permission', path: 'permission' },
-  { id: 'upgrade', label: 'Plan Upgrade', path: 'upgrade' },
-  { id: 'team', label: 'Team Setting', path: 'team' },
-]
+  { id: "general", label: "General Setting", path: "general" },
+  { id: "tax", label: "Tax Setting", path: "tax" },
+  { id: "permission", label: "Team Permission", path: "permission" },
+  { id: "upgrade", label: "Plan Upgrade", path: "upgrade" },
+  { id: "team", label: "Team Setting", path: "team" },
+];
 
-export const SettingsLayout = ({ children, teamId, locale, title }: SettingsLayoutProps) => {
-  const router = useRouter()
-  const pathname = usePathname()
+export const SettingsLayout = ({
+  children,
+  teamId,
+  locale,
+  title,
+}: SettingsLayoutProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleSettingsCancel = () => {
     // Go back to team overview
-    router.push(`/${locale}/team/${teamId}/overview`)
-  }
+    router.push(`/${locale}/team/${teamId}/overview`);
+  };
 
   const handleMenuItemClick = (path: string) => {
-    router.push(`/${locale}/team/${teamId}/settings/${path}`)
-  }
+    router.push(`/${locale}/team/${teamId}/settings/${path}`);
+  };
 
   const getActiveMenuItem = () => {
-    const currentPath = pathname.split('/').pop()
-    return settingsMenuItems.find((item) => item.path === currentPath)?.id || ''
-  }
+    const currentPath = pathname.split("/").pop();
+    return (
+      settingsMenuItems.find((item) => item.path === currentPath)?.id || ""
+    );
+  };
 
   return (
     <div className="m-5 space-y-4 rounded-lg bg-card px-4 py-4 sm:px-6 sm:py-4">
@@ -48,12 +55,14 @@ export const SettingsLayout = ({ children, teamId, locale, title }: SettingsLayo
           <Button
             onClick={handleSettingsCancel}
             className="h-8 w-8 rounded-full bg-muted lg:h-9 lg:w-9"
-            variant={'ghost'}
-            size={'icon'}
+            variant={"ghost"}
+            size={"icon"}
           >
             <ChevronLeft className="size-4" />
           </Button>
-          <h1 className="text-lg font-semibold text-foreground lg:text-xl">{title}</h1>
+          <h1 className="text-lg font-semibold text-foreground lg:text-xl">
+            {title}
+          </h1>
         </div>
       </div>
 
@@ -65,19 +74,22 @@ export const SettingsLayout = ({ children, teamId, locale, title }: SettingsLayo
             <ScrollArea className="w-full">
               <div className="flex space-x-2 pb-2">
                 {settingsMenuItems.map((item) => {
-                  const isActive = getActiveMenuItem() === item.id
+                  const isActive = getActiveMenuItem() === item.id;
                   return (
                     <Button
                       key={item.id}
                       onClick={() => handleMenuItemClick(item.path)}
-                      variant={isActive ? 'default' : 'ghost'}
+                      variant={isActive ? "default" : "ghost"}
                       size="sm"
-                      className={cn('whitespace-nowrap', !isActive && 'text-foreground/80')}
-                      aria-current={isActive ? 'page' : undefined}
+                      className={cn(
+                        "whitespace-nowrap",
+                        !isActive && "text-foreground/80",
+                      )}
+                      aria-current={isActive ? "page" : undefined}
                     >
                       {item.label}
                     </Button>
-                  )
+                  );
                 })}
               </div>
             </ScrollArea>
@@ -88,18 +100,21 @@ export const SettingsLayout = ({ children, teamId, locale, title }: SettingsLayo
             <ScrollArea className="h-[calc(100vh-9rem)] pr-2">
               <div className="space-y-1.5">
                 {settingsMenuItems.map((item) => {
-                  const isActive = getActiveMenuItem() === item.id
+                  const isActive = getActiveMenuItem() === item.id;
                   return (
                     <Button
                       key={item.id}
                       onClick={() => handleMenuItemClick(item.path)}
-                      variant={isActive ? 'default' : 'ghost'}
-                      className={cn('w-full justify-start', !isActive && 'text-foreground/80')}
-                      aria-current={isActive ? 'page' : undefined}
+                      variant={isActive ? "default" : "ghost"}
+                      className={cn(
+                        "w-full justify-start",
+                        !isActive && "text-foreground/80",
+                      )}
+                      aria-current={isActive ? "page" : undefined}
                     >
                       {item.label}
                     </Button>
-                  )
+                  );
                 })}
               </div>
             </ScrollArea>
@@ -110,5 +125,5 @@ export const SettingsLayout = ({ children, teamId, locale, title }: SettingsLayo
         <div className="flex-1 overflow-hidden">{children}</div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,16 +1,16 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
-  currentPage: number
-  totalItems: number
-  itemsPerPage: number
-  onPageChange: (page: number) => void
-  onItemsPerPageChange: (itemsPerPage: number) => void
-  showItemsPerPageSelector?: boolean
-  className?: string
+  currentPage: number;
+  totalItems: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+  onItemsPerPageChange: (itemsPerPage: number) => void;
+  showItemsPerPageSelector?: boolean;
+  className?: string;
 }
 
 export function Pagination({
@@ -20,44 +20,44 @@ export function Pagination({
   onPageChange,
   onItemsPerPageChange,
   showItemsPerPageSelector = true,
-  className = '',
+  className = "",
 }: PaginationProps) {
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
-  const startItem = (currentPage - 1) * itemsPerPage + 1
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems)
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   // Generate page numbers to show
   const getPageNumbers = () => {
-    const delta = 2 // Number of pages to show on each side of current page
-    const range = []
-    const rangeWithDots = []
+    const delta = 2; // Number of pages to show on each side of current page
+    const range = [];
+    const rangeWithDots = [];
 
     for (
       let i = Math.max(2, currentPage - delta);
       i <= Math.min(totalPages - 1, currentPage + delta);
       i++
     ) {
-      range.push(i)
+      range.push(i);
     }
 
     if (currentPage - delta > 2) {
-      rangeWithDots.push(1, '...')
+      rangeWithDots.push(1, "...");
     } else {
-      rangeWithDots.push(1)
+      rangeWithDots.push(1);
     }
 
-    rangeWithDots.push(...range)
+    rangeWithDots.push(...range);
 
     if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push('...', totalPages)
+      rangeWithDots.push("...", totalPages);
     } else if (totalPages > 1) {
-      rangeWithDots.push(totalPages)
+      rangeWithDots.push(totalPages);
     }
 
-    return rangeWithDots
-  }
+    return rangeWithDots;
+  };
 
-  const pageNumbers = getPageNumbers()
+  const pageNumbers = getPageNumbers();
 
   return (
     <div className={`px-4 py-4 md:px-6 ${className}`}>
@@ -102,32 +102,35 @@ export function Pagination({
             {/* Page numbers */}
             <div className="flex items-center space-x-1">
               {pageNumbers.map((pageNumber, index) => {
-                if (pageNumber === '...') {
+                if (pageNumber === "...") {
                   return (
-                    <span key={`dots-${index}`} className="px-2 py-1 text-sm text-muted-foreground">
+                    <span
+                      key={`dots-${index}`}
+                      className="px-2 py-1 text-sm text-muted-foreground"
+                    >
                       ...
                     </span>
-                  )
+                  );
                 }
 
-                const page = pageNumber as number
+                const page = pageNumber as number;
                 return (
                   <Button
                     key={page}
-                    variant={currentPage === page ? 'default' : 'ghost'}
+                    variant={currentPage === page ? "default" : "ghost"}
                     size="icon"
                     className={`h-8 w-8 md:h-9 md:w-9 ${
                       currentPage === page
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                     onClick={() => onPageChange(page)}
                     aria-label={`Go to page ${page}`}
-                    aria-current={currentPage === page ? 'page' : undefined}
+                    aria-current={currentPage === page ? "page" : undefined}
                   >
                     {page}
                   </Button>
-                )
+                );
               })}
             </div>
 
@@ -136,7 +139,9 @@ export function Pagination({
               size="icon"
               className="h-8 w-8 md:h-9 md:w-9"
               disabled={currentPage >= totalPages}
-              onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+              onClick={() =>
+                onPageChange(Math.min(totalPages, currentPage + 1))
+              }
               aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />
@@ -145,5 +150,5 @@ export function Pagination({
         )}
       </div>
     </div>
-  )
+  );
 }

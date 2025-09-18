@@ -1,17 +1,17 @@
-import React from 'react'
+import React from "react";
 
 interface DeleteIconProps {
-  width?: number
-  height?: number
-  className?: string
-  fill?: string
+  width?: number;
+  height?: number;
+  className?: string;
+  fill?: string;
 }
 
 export const DeleteIcon: React.FC<DeleteIconProps> = ({
   width = 16,
   height = 16,
-  className = '',
-  fill = '#6b7280',
+  className = "",
+  fill = "#6b7280",
 }) => {
   return (
     <svg
@@ -30,5 +30,5 @@ export const DeleteIcon: React.FC<DeleteIconProps> = ({
         strokeLinejoin="round"
       />
     </svg>
-  )
-}
+  );
+};

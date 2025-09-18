@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 export async function upgradePlanAction(teamId: string, planId: string) {
   // TODO: Implement plan upgrade logic

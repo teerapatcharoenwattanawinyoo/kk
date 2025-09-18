@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 export function EditPenIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -17,7 +17,7 @@ export function EditPenIcon(props: React.SVGProps<SVGSVGElement>) {
         fill="#818894"
       />
     </svg>
-  )
+  );
 }
 
-export default EditPenIcon
+export default EditPenIcon;

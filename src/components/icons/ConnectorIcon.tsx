@@ -1,9 +1,9 @@
-import React from 'react'
+import React from "react";
 
 export const ConnectorIcon: React.FC<{
-  width?: number
-  height?: number
-  className?: string
+  width?: number;
+  height?: number;
+  className?: string;
 }> = ({ width = 8, height = 12, className }) => (
   <svg
     width={width}
@@ -18,4 +18,4 @@ export const ConnectorIcon: React.FC<{
       fill="#798BFF"
     />
   </svg>
-)
+);

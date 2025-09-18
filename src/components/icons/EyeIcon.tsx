@@ -1,17 +1,17 @@
-import React from 'react'
+import React from "react";
 
 interface EyeIconProps {
-  width?: number
-  height?: number
-  className?: string
-  fill?: string
+  width?: number;
+  height?: number;
+  className?: string;
+  fill?: string;
 }
 
 export const EyeIcon: React.FC<EyeIconProps> = ({
   width = 14,
   height = 10,
-  className = '',
-  fill = 'white',
+  className = "",
+  fill = "white",
 }) => {
   return (
     <svg
@@ -29,5 +29,5 @@ export const EyeIcon: React.FC<EyeIconProps> = ({
         fill={fill}
       />
     </svg>
-  )
-}
+  );
+};

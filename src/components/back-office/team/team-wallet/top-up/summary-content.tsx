@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import { OrderSummary } from '@/components/back-office/team/team-wallet/top-up/order-summary'
-import { useRouter } from 'next/navigation'
+import { OrderSummary } from "@/components/back-office/team/team-wallet/top-up/order-summary";
+import { useRouter } from "next/navigation";
 
 interface SummaryContentProps {
-  amount: string
-  paymentMethod: string
-  paymentMethodData?: any
-  teamId: string
-  locale: string
+  amount: string;
+  paymentMethod: string;
+  paymentMethodData?: any;
+  teamId: string;
+  locale: string;
 }
 
 export function SummaryContent({
@@ -18,24 +18,24 @@ export function SummaryContent({
   teamId,
   locale,
 }: SummaryContentProps) {
-  const router = useRouter()
+  const router = useRouter();
 
   // Generate order ID in format YYYYMMDDHHmmss (local time)
-  const now = new Date()
+  const now = new Date();
   // YYYYMMDDHHmmss (local time)
   const orderId =
-    `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}` +
-    `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`
+    `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}` +
+    `${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
 
   const handleConfirm = () => {
     // Navigate to final payment processing
     const methodParams = paymentMethodData
       ? encodeURIComponent(JSON.stringify(paymentMethodData))
-      : ''
+      : "";
     router.push(
       `/${locale}/team/${teamId}/team-wallet/top-up/checkout/process?amount=${amount}&method=${paymentMethod}&orderId=${orderId}&methodData=${methodParams}`,
-    )
-  }
+    );
+  };
 
   return (
     <div className="mx-auto max-w-md">
@@ -50,5 +50,5 @@ export function SummaryContent({
         onConfirm={handleConfirm}
       />
     </div>
-  )
+  );
 }

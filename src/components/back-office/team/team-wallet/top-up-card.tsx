@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import { TopUpCardIcon } from '@/components/icons'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { TopUpCardIcon } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 interface TopUpCardProps {
-  teamId?: string
+  teamId?: string;
 }
 
 export function TopUpCard({ teamId }: TopUpCardProps = {}) {
-  const params = useParams()
-  const currentTeamId = teamId || params.teamId
+  const params = useParams();
+  const currentTeamId = teamId || params.teamId;
 
   return (
     <Link href={`/${params.locale}/team/${currentTeamId}/team-wallet/top-up`}>
@@ -26,5 +26,5 @@ export function TopUpCard({ teamId }: TopUpCardProps = {}) {
         Top Up
       </Button>
     </Link>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-export { AddBankAccountForm } from './add-bank-account-form'
-export { BankAccountCard } from './bank-account-card'
-export { BankAccountItem } from './bank-account-item'
-export type { BankAccount, BankAccountItemProps } from './bank-account-item'
-export { EditBankAccountForm } from './edit-bank-account-form'
-export { ManageBankAccountPage } from './manage-bank-account-page'
+export { AddBankAccountForm } from "./add-bank-account-form";
+export { BankAccountCard } from "./bank-account-card";
+export { BankAccountItem } from "./bank-account-item";
+export type { BankAccount, BankAccountItemProps } from "./bank-account-item";
+export { EditBankAccountForm } from "./edit-bank-account-form";
+export { ManageBankAccountPage } from "./manage-bank-account-page";

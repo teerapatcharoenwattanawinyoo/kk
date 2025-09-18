@@ -1,18 +1,18 @@
-'use client'
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Card, CardTitle } from '@/components/ui/card'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Separator } from '@/components/ui/separator'
-import { cn } from '@/lib/utils'
-import { useMemo, useState } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardTitle } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { useMemo, useState } from "react";
 
 interface PaymentMethod {
-  id: string
-  name: string
-  icon: string
-  description: string
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
 }
 
 const PAYMENT_METHODS: PaymentMethod[] = [
@@ -23,10 +23,10 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   //   description: "ออนไลน์แบงกิ้ง",
   // },
   {
-    id: 'promptpay',
-    name: 'พร้อมเพย์',
-    icon: '/assets/images/payment/prompPay.png',
-    description: '(จ่ายได้ทุกธนาคาร)',
+    id: "promptpay",
+    name: "พร้อมเพย์",
+    icon: "/assets/images/payment/prompPay.png",
+    description: "(จ่ายได้ทุกธนาคาร)",
   },
   // {
   //   id: "kbank_line",
@@ -40,42 +40,46 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   //   icon: "/assets/icons/iconOnecharge.png",
   //   description: "",
   // },
-]
+];
 
 interface PaymentMethodSelectorProps {
-  amount: string
-  onPaymentSelect: (methodId: string, methodData: PaymentMethod) => void
+  amount: string;
+  onPaymentSelect: (methodId: string, methodData: PaymentMethod) => void;
 }
 
-export function PaymentMethodSelector({ amount, onPaymentSelect }: PaymentMethodSelectorProps) {
-  const [selectedMethod, setSelectedMethod] = useState<string>('')
+export function PaymentMethodSelector({
+  amount,
+  onPaymentSelect,
+}: PaymentMethodSelectorProps) {
+  const [selectedMethod, setSelectedMethod] = useState<string>("");
 
   const THB = useMemo(
-    () => new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
+    () =>
+      new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }),
     [],
-  )
+  );
 
   const selectedMethodName = useMemo(
-    () => PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.name ?? '-',
+    () => PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.name ?? "-",
     [selectedMethod],
-  )
+  );
 
   const handleMethodSelect = (methodId: string) => {
-    setSelectedMethod(methodId)
-  }
+    setSelectedMethod(methodId);
+  };
 
   const handleProceed = () => {
     if (selectedMethod) {
-      const methodData = PAYMENT_METHODS.find((m) => m.id === selectedMethod)
+      const methodData = PAYMENT_METHODS.find((m) => m.id === selectedMethod);
       if (methodData) {
-        onPaymentSelect(selectedMethod, methodData)
+        onPaymentSelect(selectedMethod, methodData);
       }
     }
-  }
+  };
 
-  const amountNum = Number(amount) || 0
-  const fee = 30 // ค่าธรรมเนียม
-  const total = amountNum + fee
+  const amountNum = Number(amount) || 0;
+  const fee = 30; // ค่าธรรมเนียม
+  const total = amountNum + fee;
 
   return (
     <div className="space-y-10">
@@ -98,10 +102,10 @@ export function PaymentMethodSelector({ amount, onPaymentSelect }: PaymentMethod
                 key={method.id}
                 htmlFor={`pm-${method.id}`}
                 className={cn(
-                  'relative block cursor-pointer rounded-2xl border bg-background p-6 shadow-sm transition-colors',
+                  "relative block cursor-pointer rounded-2xl border bg-background p-6 shadow-sm transition-colors",
                   selectedMethod === method.id
-                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
-                    : 'border-input hover:bg-accent/50',
+                    ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                    : "border-input hover:bg-accent/50",
                 )}
               >
                 <RadioGroupItem
@@ -111,15 +115,21 @@ export function PaymentMethodSelector({ amount, onPaymentSelect }: PaymentMethod
                 />
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="mb-4 h-16 w-16 bg-muted">
-                    <AvatarImage src={method.icon} alt={method.name} className="object-cover" />
+                    <AvatarImage
+                      src={method.icon}
+                      alt={method.name}
+                      className="object-cover"
+                    />
                     <AvatarFallback className="text-xs font-medium">
-                      {method.name?.[0] ?? '?'}
+                      {method.name?.[0] ?? "?"}
                     </AvatarFallback>
                   </Avatar>
                   <div
                     className={cn(
-                      'text-base font-semibold',
-                      selectedMethod === method.id ? 'text-primary' : 'text-foreground',
+                      "text-base font-semibold",
+                      selectedMethod === method.id
+                        ? "text-primary"
+                        : "text-foreground",
                     )}
                   >
                     {method.name}
@@ -127,8 +137,10 @@ export function PaymentMethodSelector({ amount, onPaymentSelect }: PaymentMethod
                   {method.description && (
                     <div
                       className={cn(
-                        'mt-1 text-sm',
-                        selectedMethod === method.id ? 'text-primary' : 'text-muted-foreground',
+                        "mt-1 text-sm",
+                        selectedMethod === method.id
+                          ? "text-primary"
+                          : "text-muted-foreground",
                       )}
                     >
                       {method.description}
@@ -150,7 +162,9 @@ export function PaymentMethodSelector({ amount, onPaymentSelect }: PaymentMethod
               </div>
               <div className="flex justify-between font-light">
                 <span>ช่องทางการเติมเงิน:</span>
-                <span className="truncate text-right">{selectedMethodName}</span>
+                <span className="truncate text-right">
+                  {selectedMethodName}
+                </span>
               </div>
               <div className="flex justify-between font-light">
                 <span>ค่าธรรมเนียม: (3%)</span>
@@ -167,9 +181,13 @@ export function PaymentMethodSelector({ amount, onPaymentSelect }: PaymentMethod
       </Card>
 
       {/* Proceed Button - Outside the card */}
-      <Button className="h-12 w-full" disabled={!selectedMethod} onClick={handleProceed}>
+      <Button
+        className="h-12 w-full"
+        disabled={!selectedMethod}
+        onClick={handleProceed}
+      >
         Continue
       </Button>
     </div>
-  )
+  );
 }

@@ -1,17 +1,17 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/ui/atoms/avatar'
-import type { Meta, StoryObj } from '@storybook/react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/ui/atoms/avatar";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof Avatar> = {
-  title: 'Atoms/Avatar',
+  title: "Atoms/Avatar",
   component: Avatar,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
-}
+  tags: ["autodocs"],
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -20,7 +20,7 @@ export const Default: Story = {
       <AvatarFallback>CN</AvatarFallback>
     </Avatar>
   ),
-}
+};
 
 export const Fallback: Story = {
   render: () => (
@@ -29,7 +29,7 @@ export const Fallback: Story = {
       <AvatarFallback>JD</AvatarFallback>
     </Avatar>
   ),
-}
+};
 
 export const Sizes: Story = {
   render: () => (
@@ -52,7 +52,7 @@ export const Sizes: Story = {
       </Avatar>
     </div>
   ),
-}
+};
 
 export const UserProfile: Story = {
   render: () => (
@@ -67,7 +67,7 @@ export const UserProfile: Story = {
       </div>
     </div>
   ),
-}
+};
 
 export const AvatarGroup: Story = {
   render: () => (
@@ -95,7 +95,7 @@ export const AvatarGroup: Story = {
       </Avatar>
     </div>
   ),
-}
+};
 
 export const WithStatusIndicator: Story = {
   render: () => (
@@ -107,7 +107,7 @@ export const WithStatusIndicator: Story = {
       <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></div>
     </div>
   ),
-}
+};
 
 export const ColorfulFallbacks: Story = {
   render: () => (
@@ -126,4 +126,4 @@ export const ColorfulFallbacks: Story = {
       </Avatar>
     </div>
   ),
-}
+};

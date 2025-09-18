@@ -1,37 +1,37 @@
-'use client'
+"use client";
 
-import { TaxInformationForm } from '@/components/back-office/team/settings/tab/tax-information-form'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
-import { useTaxInformation } from '@/hooks/use-tax'
-import { useRouter } from 'next/navigation'
-import { use } from 'react'
+import { TaxInformationForm } from "@/components/back-office/team/settings/tab/tax-information-form";
+import { TeamGuard } from "@/components/back-office/team/team-guard";
+import { useTaxInformation } from "@/hooks/use-tax";
+import { useRouter } from "next/navigation";
+import { use } from "react";
 
 interface TaxInformationEditPageProps {
   params: Promise<{
-    locale: string
-    teamId: string
-    taxId: string
-  }>
+    locale: string;
+    teamId: string;
+    taxId: string;
+  }>;
 }
 
 const TaxInformationEditPage = ({ params }: TaxInformationEditPageProps) => {
-  const { locale, teamId } = use(params)
-  const router = useRouter()
+  const { locale, teamId } = use(params);
+  const router = useRouter();
 
   // ดึงข้อมูลภาษีปัจจุบัน
-  const { data: taxData, isLoading, error } = useTaxInformation(teamId)
+  const { data: taxData, isLoading, error } = useTaxInformation(teamId);
 
   const handleBack = () => {
-    router.push(`/${locale}/team/${teamId}/settings/tax`)
-  }
+    router.push(`/${locale}/team/${teamId}/settings/tax`);
+  };
 
   const handleSave = () => {
-    router.push(`/${locale}/team/${teamId}/settings/tax`)
-  }
+    router.push(`/${locale}/team/${teamId}/settings/tax`);
+  };
 
   const handleCancel = () => {
-    router.push(`/${locale}/team/${teamId}/settings/tax`)
-  }
+    router.push(`/${locale}/team/${teamId}/settings/tax`);
+  };
 
   // Loading state
   if (isLoading) {
@@ -42,7 +42,7 @@ const TaxInformationEditPage = ({ params }: TaxInformationEditPageProps) => {
           <p className="mt-2 text-sm text-gray-600">กำลังโหลดข้อมูล...</p>
         </div>
       </div>
-    )
+    );
   }
 
   // Error state
@@ -59,7 +59,7 @@ const TaxInformationEditPage = ({ params }: TaxInformationEditPageProps) => {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -72,7 +72,12 @@ const TaxInformationEditPage = ({ params }: TaxInformationEditPageProps) => {
               onClick={handleBack}
               className="flex items-center text-gray-600 hover:text-gray-800"
             >
-              <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="mr-2 h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -81,7 +86,9 @@ const TaxInformationEditPage = ({ params }: TaxInformationEditPageProps) => {
                 />
               </svg>
             </button>
-            <h1 className="text-xl font-semibold text-gray-900">แก้ไขข้อมูลภาษี</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              แก้ไขข้อมูลภาษี
+            </h1>
           </div>
         </div>
 
@@ -97,7 +104,7 @@ const TaxInformationEditPage = ({ params }: TaxInformationEditPageProps) => {
         </div>
       </div>
     </TeamGuard>
-  )
-}
+  );
+};
 
-export default TaxInformationEditPage
+export default TaxInformationEditPage;

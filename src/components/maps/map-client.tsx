@@ -1,94 +1,104 @@
-'use client'
+"use client";
 
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useI18n } from '@/lib/i18n'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-import { Info, Loader2 } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useI18n } from "@/lib/i18n";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { Info, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface MapClientProps {
-  width?: string
-  height?: string
-  onCoordinatesChange?: (lat: number, lng: number) => void
-  onAddressChange?: (address: string) => void
-  initialCoordinates?: { lat: number; lng: number }
-  initialAddress?: string
+  width?: string;
+  height?: string;
+  onCoordinatesChange?: (lat: number, lng: number) => void;
+  onAddressChange?: (address: string) => void;
+  initialCoordinates?: { lat: number; lng: number };
+  initialAddress?: string;
 }
 
 const defaultIcon = L.icon({
-  iconUrl: '/assets/images/icons/pinmaps.svg',
-  iconRetinaUrl: '/assets/images/icons/pinmaps.svg',
-  shadowUrl: '/assets/images/marker-shadow.png',
-})
+  iconUrl: "/assets/images/icons/pinmaps.svg",
+  iconRetinaUrl: "/assets/images/icons/pinmaps.svg",
+  shadowUrl: "/assets/images/marker-shadow.png",
+});
 
 export default function MapClient({
-  width = 'w-full',
-  height = 'h-[400px]',
+  width = "w-full",
+  height = "h-[400px]",
   onCoordinatesChange,
   onAddressChange,
   initialCoordinates,
   initialAddress,
 }: MapClientProps) {
-  const { t } = useI18n()
+  const { t } = useI18n();
   // Refs
-  const mapRef = useRef<HTMLDivElement>(null)
-  const mapInstanceRef = useRef<L.Map | null>(null)
-  const markerRef = useRef<L.Marker | null>(null)
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const searchContainerRef = useRef<HTMLDivElement>(null)
-  const isCleaningUpRef = useRef(false)
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markerRef = useRef<L.Marker | null>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const isCleaningUpRef = useRef(false);
 
   // State
-  const [latitude, setLatitude] = useState<number | null>(initialCoordinates?.lat ?? null)
-  const [longitude, setLongitude] = useState<number | null>(initialCoordinates?.lng ?? null)
-  const [address, setAddress] = useState<string>(initialAddress ?? '')
-  const [currentLocationName, setCurrentLocationName] = useState<string>('ตำแหน่งปัจจุบัน')
-  const [isLoadingLocation, setIsLoadingLocation] = useState(true)
-  const [isGeocodingLoading, setIsGeocodingLoading] = useState(false)
+  const [latitude, setLatitude] = useState<number | null>(
+    initialCoordinates?.lat ?? null,
+  );
+  const [longitude, setLongitude] = useState<number | null>(
+    initialCoordinates?.lng ?? null,
+  );
+  const [address, setAddress] = useState<string>(initialAddress ?? "");
+  const [currentLocationName, setCurrentLocationName] =
+    useState<string>("ตำแหน่งปัจจุบัน");
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  const [isGeocodingLoading, setIsGeocodingLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<
     Array<{
-      display_name: string
-      lat: number
-      lon: number
-      type?: string
-      importance?: number
-      place_id?: string
-      addresstype?: string
-      class?: string
-      boundingbox?: string[]
+      display_name: string;
+      lat: number;
+      lon: number;
+      type?: string;
+      importance?: number;
+      place_id?: string;
+      addresstype?: string;
+      class?: string;
+      boundingbox?: string[];
     }>
-  >([])
-  const [showSuggestions, setShowSuggestions] = useState(false)
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
-  const [isPinMode, setIsPinMode] = useState(false)
+  >([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const [isPinMode, setIsPinMode] = useState(false);
 
   // Safe cleanup function
   const cleanupMap = useCallback(() => {
-    if (isCleaningUpRef.current) return
-    isCleaningUpRef.current = true
+    if (isCleaningUpRef.current) return;
+    isCleaningUpRef.current = true;
 
     try {
       if (markerRef.current) {
-        markerRef.current = null
+        markerRef.current = null;
       }
 
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.off()
-        mapInstanceRef.current.remove()
-        mapInstanceRef.current = null
+        mapInstanceRef.current.off();
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
       }
     } catch (error) {
-      console.error('Error during map cleanup:', error)
+      console.error("Error during map cleanup:", error);
     } finally {
-      isCleaningUpRef.current = false
+      isCleaningUpRef.current = false;
     }
-  }, [])
+  }, []);
 
   // Reverse geocode when coordinates change manually
   const handleCoordinateChange = useCallback(
@@ -96,15 +106,18 @@ export default function MapClient({
       try {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,
-        )
-        const data = await response.json()
+        );
+        const data = await response.json();
         if (data && data.display_name) {
-          setCurrentLocationName(data.display_name)
-          setAddress(data.display_name)
+          setCurrentLocationName(data.display_name);
+          setAddress(data.display_name);
 
           // Call callbacks if provided
-          onCoordinatesChange?.(parseFloat(lat.toFixed(4)), parseFloat(lng.toFixed(4)))
-          onAddressChange?.(data.display_name)
+          onCoordinatesChange?.(
+            parseFloat(lat.toFixed(4)),
+            parseFloat(lng.toFixed(4)),
+          );
+          onAddressChange?.(data.display_name);
 
           // Update marker popup if exists
           if (
@@ -112,217 +125,240 @@ export default function MapClient({
             mapInstanceRef.current &&
             mapInstanceRef.current.hasLayer(markerRef.current)
           ) {
-            markerRef.current.bindPopup(data.display_name).openPopup()
+            markerRef.current.bindPopup(data.display_name).openPopup();
           }
         } else {
-          const fallbackName = 'ตำแหน่งที่ระบุ'
-          setCurrentLocationName(fallbackName)
-          setAddress(fallbackName)
+          const fallbackName = "ตำแหน่งที่ระบุ";
+          setCurrentLocationName(fallbackName);
+          setAddress(fallbackName);
 
           // Call callbacks if provided
-          onCoordinatesChange?.(parseFloat(lat.toFixed(4)), parseFloat(lng.toFixed(4)))
-          onAddressChange?.(fallbackName)
+          onCoordinatesChange?.(
+            parseFloat(lat.toFixed(4)),
+            parseFloat(lng.toFixed(4)),
+          );
+          onAddressChange?.(fallbackName);
 
           if (
             markerRef.current &&
             mapInstanceRef.current &&
             mapInstanceRef.current.hasLayer(markerRef.current)
           ) {
-            markerRef.current.bindPopup(fallbackName).openPopup()
+            markerRef.current.bindPopup(fallbackName).openPopup();
           }
         }
       } catch (error) {
-        console.error('Reverse geocoding error:', error)
-        const fallbackName = 'ตำแหน่งที่ระบุ'
-        setCurrentLocationName(fallbackName)
-        setAddress(fallbackName)
+        console.error("Reverse geocoding error:", error);
+        const fallbackName = "ตำแหน่งที่ระบุ";
+        setCurrentLocationName(fallbackName);
+        setAddress(fallbackName);
 
         // Call callbacks if provided
-        onCoordinatesChange?.(lat, lng)
-        onAddressChange?.(fallbackName)
+        onCoordinatesChange?.(lat, lng);
+        onAddressChange?.(fallbackName);
 
         if (
           markerRef.current &&
           mapInstanceRef.current &&
           mapInstanceRef.current.hasLayer(markerRef.current)
         ) {
-          markerRef.current.bindPopup(fallbackName).openPopup()
+          markerRef.current.bindPopup(fallbackName).openPopup();
         }
       }
     },
     [onCoordinatesChange, onAddressChange],
-  )
+  );
 
   // Get current location on component mount
   useEffect(() => {
     // If initial coordinates provided, use them instead of geolocation
-    if (initialCoordinates && initialCoordinates.lat !== 0 && initialCoordinates.lng !== 0) {
-      setLatitude(initialCoordinates.lat)
-      setLongitude(initialCoordinates.lng)
+    if (
+      initialCoordinates &&
+      initialCoordinates.lat !== 0 &&
+      initialCoordinates.lng !== 0
+    ) {
+      setLatitude(initialCoordinates.lat);
+      setLongitude(initialCoordinates.lng);
       if (initialAddress) {
-        setAddress(initialAddress)
-        setCurrentLocationName(initialAddress)
+        setAddress(initialAddress);
+        setCurrentLocationName(initialAddress);
       }
-      setIsLoadingLocation(false)
-      return
+      setIsLoadingLocation(false);
+      return;
     }
 
     if (!navigator.geolocation) {
-      console.error('Geolocation is not supported by this browser.')
+      console.error("Geolocation is not supported by this browser.");
       // Fallback to Bangkok coordinates
-      const fallbackLat = 14.036819554634077
-      const fallbackLng = 100.72799595062057
-      const fallbackAddress = 'กรุงเทพมหานคร (ตำแหน่งเริ่มต้น)'
+      const fallbackLat = 14.036819554634077;
+      const fallbackLng = 100.72799595062057;
+      const fallbackAddress = "กรุงเทพมหานคร (ตำแหน่งเริ่มต้น)";
 
-      setLatitude(fallbackLat)
-      setLongitude(fallbackLng)
-      setCurrentLocationName(fallbackAddress)
-      setAddress(fallbackAddress)
-      setIsLoadingLocation(false)
+      setLatitude(fallbackLat);
+      setLongitude(fallbackLng);
+      setCurrentLocationName(fallbackAddress);
+      setAddress(fallbackAddress);
+      setIsLoadingLocation(false);
 
       // Call callbacks with fallback coordinates
-      onCoordinatesChange?.(parseFloat(fallbackLat.toFixed(4)), parseFloat(fallbackLng.toFixed(4)))
-      onAddressChange?.(fallbackAddress)
-      return
+      onCoordinatesChange?.(
+        parseFloat(fallbackLat.toFixed(4)),
+        parseFloat(fallbackLng.toFixed(4)),
+      );
+      onAddressChange?.(fallbackAddress);
+      return;
     }
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const { latitude: currentLat, longitude: currentLng } = position.coords
-        setLatitude(currentLat)
-        setLongitude(currentLng)
+        const { latitude: currentLat, longitude: currentLng } = position.coords;
+        setLatitude(currentLat);
+        setLongitude(currentLng);
 
         // Get location name from coordinates
         try {
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${currentLat}&lon=${currentLng}&zoom=14&addressdetails=1`,
-          )
-          const data = await response.json()
+          );
+          const data = await response.json();
           if (data && data.display_name) {
-            setCurrentLocationName(data.display_name)
-            setAddress(data.display_name)
-            onAddressChange?.(data.display_name)
+            setCurrentLocationName(data.display_name);
+            setAddress(data.display_name);
+            onAddressChange?.(data.display_name);
           } else {
-            const fallbackName = 'ตำแหน่งปัจจุบัน'
-            setCurrentLocationName(fallbackName)
-            setAddress(fallbackName)
-            onAddressChange?.(fallbackName)
+            const fallbackName = "ตำแหน่งปัจจุบัน";
+            setCurrentLocationName(fallbackName);
+            setAddress(fallbackName);
+            onAddressChange?.(fallbackName);
           }
         } catch (error) {
-          console.error('Reverse geocoding error:', error)
-          const fallbackName = 'ตำแหน่งปัจจุบัน'
-          setCurrentLocationName(fallbackName)
-          setAddress(fallbackName)
-          onAddressChange?.(fallbackName)
+          console.error("Reverse geocoding error:", error);
+          const fallbackName = "ตำแหน่งปัจจุบัน";
+          setCurrentLocationName(fallbackName);
+          setAddress(fallbackName);
+          onAddressChange?.(fallbackName);
         }
 
         // Call coordinates callback
-        onCoordinatesChange?.(parseFloat(currentLat.toFixed(4)), parseFloat(currentLng.toFixed(4)))
-        setIsLoadingLocation(false)
+        onCoordinatesChange?.(
+          parseFloat(currentLat.toFixed(4)),
+          parseFloat(currentLng.toFixed(4)),
+        );
+        setIsLoadingLocation(false);
       },
       (error) => {
-        console.error('Error getting location:', error)
+        console.error("Error getting location:", error);
         // Fallback to Bangkok coordinates if location access fails
-        const fallbackLat = 14.036819554634077
-        const fallbackLng = 100.72799595062057
-        const fallbackAddress = 'กรุงเทพมหานคร (ตำแหน่งเริ่มต้น)'
+        const fallbackLat = 14.036819554634077;
+        const fallbackLng = 100.72799595062057;
+        const fallbackAddress = "กรุงเทพมหานคร (ตำแหน่งเริ่มต้น)";
 
-        setLatitude(fallbackLat)
-        setLongitude(fallbackLng)
-        setCurrentLocationName(fallbackAddress)
-        setAddress(fallbackAddress)
-        setIsLoadingLocation(false)
+        setLatitude(fallbackLat);
+        setLongitude(fallbackLng);
+        setCurrentLocationName(fallbackAddress);
+        setAddress(fallbackAddress);
+        setIsLoadingLocation(false);
 
         // Call callbacks with fallback coordinates
         onCoordinatesChange?.(
           parseFloat(fallbackLat.toFixed(4)),
           parseFloat(fallbackLng.toFixed(4)),
-        )
-        onAddressChange?.(fallbackAddress)
+        );
+        onAddressChange?.(fallbackAddress);
       },
       {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 60000,
       },
-    )
-  }, [initialCoordinates, initialAddress, onCoordinatesChange, onAddressChange])
+    );
+  }, [
+    initialCoordinates,
+    initialAddress,
+    onCoordinatesChange,
+    onAddressChange,
+  ]);
 
   // Initialize map and handle location
   useEffect(() => {
-    if (!mapRef.current || latitude === null || longitude === null) return
+    if (!mapRef.current || latitude === null || longitude === null) return;
 
     // Cleanup any existing map first
-    cleanupMap()
+    cleanupMap();
 
     // Add small delay to ensure DOM is ready
     const timeoutId = setTimeout(() => {
-      if (!mapRef.current || isCleaningUpRef.current) return
+      if (!mapRef.current || isCleaningUpRef.current) return;
 
       try {
         // Create map instance
-        const map = L.map(mapRef.current).setView([latitude, longitude], 13)
-        mapInstanceRef.current = map
+        const map = L.map(mapRef.current).setView([latitude, longitude], 13);
+        mapInstanceRef.current = map;
 
         // Add tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution:
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map)
+        }).addTo(map);
 
         // Set default cursor
-        map.getContainer().style.cursor = 'grab'
+        map.getContainer().style.cursor = "grab";
 
         // Add marker
         const marker = L.marker([latitude, longitude], {
           icon: defaultIcon,
-        }).addTo(map)
-        markerRef.current = marker
+        }).addTo(map);
+        markerRef.current = marker;
 
         // Bind popup
-        const popupContent = address || currentLocationName
-        marker.bindPopup(popupContent).openPopup()
+        const popupContent = address || currentLocationName;
+        marker.bindPopup(popupContent).openPopup();
 
         // Handle map clicks for pin mode
-        map.on('click', async (e: L.LeafletMouseEvent) => {
-          if (!isPinMode) return
+        map.on("click", async (e: L.LeafletMouseEvent) => {
+          if (!isPinMode) return;
 
-          const { lat, lng } = e.latlng
+          const { lat, lng } = e.latlng;
 
           // Remove existing marker
           if (markerRef.current && map.hasLayer(markerRef.current)) {
-            map.removeLayer(markerRef.current)
+            map.removeLayer(markerRef.current);
           }
 
           // Add new marker
-          const newMarker = L.marker([lat, lng], { icon: defaultIcon }).addTo(map)
-          markerRef.current = newMarker
-          newMarker.bindPopup('กำลังค้นหาที่อยู่...').openPopup()
+          const newMarker = L.marker([lat, lng], { icon: defaultIcon }).addTo(
+            map,
+          );
+          markerRef.current = newMarker;
+          newMarker.bindPopup("กำลังค้นหาที่อยู่...").openPopup();
 
           // Update coordinates and address
-          setLatitude(parseFloat(lat.toFixed(4)))
-          setLongitude(parseFloat(lng.toFixed(4)))
-          await handleCoordinateChange(parseFloat(lat.toFixed(4)), parseFloat(lng.toFixed(4)))
+          setLatitude(parseFloat(lat.toFixed(4)));
+          setLongitude(parseFloat(lng.toFixed(4)));
+          await handleCoordinateChange(
+            parseFloat(lat.toFixed(4)),
+            parseFloat(lng.toFixed(4)),
+          );
 
           // Exit pin mode
-          setIsPinMode(false)
-          map.getContainer().style.cursor = 'grab'
-        })
+          setIsPinMode(false);
+          map.getContainer().style.cursor = "grab";
+        });
 
         setTimeout(() => {
           if (mapInstanceRef.current) {
-            mapInstanceRef.current.invalidateSize()
+            mapInstanceRef.current.invalidateSize();
           }
-        }, 100)
+        }, 100);
       } catch (error) {
-        console.error('Error initializing map:', error)
+        console.error("Error initializing map:", error);
       }
-    }, 50)
+    }, 50);
 
     return () => {
-      clearTimeout(timeoutId)
-      cleanupMap()
-    }
+      clearTimeout(timeoutId);
+      cleanupMap();
+    };
   }, [
     latitude,
     longitude,
@@ -331,23 +367,23 @@ export default function MapClient({
     isPinMode,
     handleCoordinateChange,
     cleanupMap,
-  ])
+  ]);
 
   useEffect(() => {
-    L.Marker.prototype.options.icon = defaultIcon
-  }, [])
+    L.Marker.prototype.options.icon = defaultIcon;
+  }, []);
 
   // Cleanup on component unmount
   useEffect(() => {
     return () => {
       // Clear any pending search timeouts
       if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current)
+        clearTimeout(searchTimeoutRef.current);
       }
 
-      cleanupMap()
-    }
-  }, [cleanupMap])
+      cleanupMap();
+    };
+  }, [cleanupMap]);
 
   // Handle click outside to close suggestions
   useEffect(() => {
@@ -356,45 +392,45 @@ export default function MapClient({
         searchContainerRef.current &&
         !searchContainerRef.current.contains(event.target as Node)
       ) {
-        setShowSuggestions(false)
+        setShowSuggestions(false);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Search addresses function for live suggestions
   const searchAddresses = async (addressText: string) => {
     if (!addressText.trim() || addressText.length < 2) {
-      setSearchResults([])
-      setShowSuggestions(false)
-      return
+      setSearchResults([]);
+      setShowSuggestions(false);
+      return;
     }
 
-    setIsGeocodingLoading(true)
+    setIsGeocodingLoading(true);
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
           addressText,
         )}&limit=5&addressdetails=1`,
-      )
-      const data = await response.json()
+      );
+      const data = await response.json();
 
       if (data && data.length > 0) {
         const results = data.map(
           (result: {
-            lat: string
-            lon: string
-            display_name: string
-            type?: string
-            importance?: number
-            place_id?: string
-            addresstype?: string
-            class?: string
-            boundingbox?: string[]
+            lat: string;
+            lon: string;
+            display_name: string;
+            type?: string;
+            importance?: number;
+            place_id?: string;
+            addresstype?: string;
+            class?: string;
+            boundingbox?: string[];
           }) => {
             const {
               lat,
@@ -406,7 +442,7 @@ export default function MapClient({
               addresstype,
               class: placeClass,
               boundingbox,
-            } = result
+            } = result;
 
             return {
               display_name,
@@ -418,46 +454,46 @@ export default function MapClient({
               addresstype,
               class: placeClass,
               boundingbox,
-            }
+            };
           },
-        )
-        setSearchResults(results)
-        setShowSuggestions(true)
-        setSelectedSuggestionIndex(-1)
+        );
+        setSearchResults(results);
+        setShowSuggestions(true);
+        setSelectedSuggestionIndex(-1);
       } else {
-        setSearchResults([])
-        setShowSuggestions(false)
-        setSelectedSuggestionIndex(-1)
+        setSearchResults([]);
+        setShowSuggestions(false);
+        setSelectedSuggestionIndex(-1);
       }
     } catch (error) {
-      console.error('Search error:', error)
-      setSearchResults([])
-      setShowSuggestions(false)
-      setSelectedSuggestionIndex(-1)
+      console.error("Search error:", error);
+      setSearchResults([]);
+      setShowSuggestions(false);
+      setSelectedSuggestionIndex(-1);
     } finally {
-      setIsGeocodingLoading(false)
+      setIsGeocodingLoading(false);
     }
-  }
+  };
 
   // Select a search result
   const selectSearchResult = (result: (typeof searchResults)[0]) => {
-    const roundedLat = parseFloat(result.lat.toFixed(4))
-    const roundedLng = parseFloat(result.lon.toFixed(4))
+    const roundedLat = parseFloat(result.lat.toFixed(4));
+    const roundedLng = parseFloat(result.lon.toFixed(4));
 
-    setLatitude(roundedLat)
-    setLongitude(roundedLng)
-    setAddress(result.display_name)
-    setCurrentLocationName(result.display_name) // Update current location name
-    setShowSuggestions(false)
-    setSelectedSuggestionIndex(-1)
+    setLatitude(roundedLat);
+    setLongitude(roundedLng);
+    setAddress(result.display_name);
+    setCurrentLocationName(result.display_name); // Update current location name
+    setShowSuggestions(false);
+    setSelectedSuggestionIndex(-1);
 
     // Call callbacks if provided
-    onCoordinatesChange?.(roundedLat, roundedLng)
-    onAddressChange?.(result.display_name)
+    onCoordinatesChange?.(roundedLat, roundedLng);
+    onAddressChange?.(result.display_name);
 
     // Update map view and marker
     if (mapInstanceRef.current) {
-      mapInstanceRef.current.setView([roundedLat, roundedLng], 15)
+      mapInstanceRef.current.setView([roundedLat, roundedLng], 15);
 
       // Remove existing marker
       if (
@@ -465,33 +501,33 @@ export default function MapClient({
         mapInstanceRef.current &&
         mapInstanceRef.current.hasLayer(markerRef.current)
       ) {
-        mapInstanceRef.current.removeLayer(markerRef.current)
+        mapInstanceRef.current.removeLayer(markerRef.current);
       }
 
       // Add new marker
       const newMarker = L.marker([roundedLat, roundedLng], {
         icon: defaultIcon,
-      }).addTo(mapInstanceRef.current)
+      }).addTo(mapInstanceRef.current);
 
-      markerRef.current = newMarker
-      newMarker.bindPopup(result.display_name).openPopup()
+      markerRef.current = newMarker;
+      newMarker.bindPopup(result.display_name).openPopup();
     }
-  }
+  };
 
   // Geocoding function to convert address to coordinates
   const geocodeAddress = async (addressText: string) => {
-    if (!addressText.trim()) return
+    if (!addressText.trim()) return;
 
-    setIsGeocodingLoading(true)
+    setIsGeocodingLoading(true);
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
           addressText,
         )}&limit=1`,
-      )
-      const data = await response.json()
+      );
+      const data = await response.json();
       if (data && data.length > 0) {
-        const result = data[0]
+        const result = data[0];
         selectSearchResult({
           display_name: result.display_name,
           lat: parseFloat(result.lat),
@@ -502,69 +538,76 @@ export default function MapClient({
           addresstype: result.addresstype,
           class: result.class,
           boundingbox: result.boundingbox,
-        })
+        });
       } else {
-        alert('ไม่พบที่อยู่ที่ระบุ กรุณาลองใหม่อีกครั้ง')
+        alert("ไม่พบที่อยู่ที่ระบุ กรุณาลองใหม่อีกครั้ง");
       }
     } catch (error) {
-      console.error('Geocoding error:', error)
-      alert('เกิดข้อผิดพลาดในการค้นหาที่อยู่')
+      console.error("Geocoding error:", error);
+      alert("เกิดข้อผิดพลาดในการค้นหาที่อยู่");
     } finally {
-      setIsGeocodingLoading(false)
+      setIsGeocodingLoading(false);
     }
-  }
+  };
 
   // Handle address search with keyboard navigation
   const handleAddressSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      if (selectedSuggestionIndex >= 0 && searchResults[selectedSuggestionIndex]) {
-        selectSearchResult(searchResults[selectedSuggestionIndex])
+    if (e.key === "Enter") {
+      if (
+        selectedSuggestionIndex >= 0 &&
+        searchResults[selectedSuggestionIndex]
+      ) {
+        selectSearchResult(searchResults[selectedSuggestionIndex]);
       } else {
-        geocodeAddress(address)
+        geocodeAddress(address);
       }
-      setShowSuggestions(false)
-      setSelectedSuggestionIndex(-1)
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault()
+      setShowSuggestions(false);
+      setSelectedSuggestionIndex(-1);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
       if (showSuggestions && searchResults.length > 0) {
-        setSelectedSuggestionIndex((prev) => (prev < searchResults.length - 1 ? prev + 1 : 0))
+        setSelectedSuggestionIndex((prev) =>
+          prev < searchResults.length - 1 ? prev + 1 : 0,
+        );
       }
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
       if (showSuggestions && searchResults.length > 0) {
-        setSelectedSuggestionIndex((prev) => (prev > 0 ? prev - 1 : searchResults.length - 1))
+        setSelectedSuggestionIndex((prev) =>
+          prev > 0 ? prev - 1 : searchResults.length - 1,
+        );
       }
-    } else if (e.key === 'Escape') {
-      setShowSuggestions(false)
-      setSelectedSuggestionIndex(-1)
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+      setSelectedSuggestionIndex(-1);
     }
-  }
+  };
 
   // Handle address input change with longer debounce
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setAddress(value)
+    const value = e.target.value;
+    setAddress(value);
 
     // Clear previous timeout
     if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
+      clearTimeout(searchTimeoutRef.current);
     }
 
     // Clear suggestions immediately if input is too short
     if (value.length < 3) {
-      setSearchResults([])
-      setShowSuggestions(false)
-      setSelectedSuggestionIndex(-1)
-      return
+      setSearchResults([]);
+      setShowSuggestions(false);
+      setSelectedSuggestionIndex(-1);
+      return;
     }
 
     // Set longer timeout for search to allow more typing
     searchTimeoutRef.current = setTimeout(() => {
       if (value.trim()) {
-        searchAddresses(value)
+        searchAddresses(value);
       }
-    }, 800) // 800ms debounce - longer delay for more typing freedom
-  }
+    }, 800); // 800ms debounce - longer delay for more typing freedom
+  };
 
   return (
     <div className="space-y-6">
@@ -573,7 +616,7 @@ export default function MapClient({
       <div className="relative space-y-4">
         <div className="space-y-2">
           <Label htmlFor="address" className="text-sm font-medium">
-            {t('charging-stations.address')}
+            {t("charging-stations.address")}
           </Label>
           <div className="relative" ref={searchContainerRef}>
             <Input
@@ -584,10 +627,10 @@ export default function MapClient({
               onKeyDown={handleAddressSearch}
               onFocus={() => {
                 if (searchResults.length > 0) {
-                  setShowSuggestions(true)
+                  setShowSuggestions(true);
                 }
               }}
-              placeholder={t('charging-stations.address_placeholder')}
+              placeholder={t("charging-stations.address_placeholder")}
               disabled={isGeocodingLoading}
               className="h-10 w-full border-none bg-[#f2f2f2] sm:h-11"
             />
@@ -600,14 +643,14 @@ export default function MapClient({
                     <div
                       key={result.place_id || index}
                       className={`cursor-pointer border-b border-border px-4 py-3 transition-colors last:border-b-0 hover:bg-accent ${
-                        selectedSuggestionIndex === index ? 'bg-accent' : ''
+                        selectedSuggestionIndex === index ? "bg-accent" : ""
                       }`}
                       onClick={() => selectSearchResult(result)}
                     >
                       <div className="flex items-start justify-between">
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-medium">
-                            {result.display_name.split(',')[0]}
+                            {result.display_name.split(",")[0]}
                           </p>
                           <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                             {result.display_name}
@@ -628,7 +671,9 @@ export default function MapClient({
         </div>
 
         {/* Spacer to prevent overlap when dropdown is open */}
-        {showSuggestions && searchResults.length > 0 && <div className="h-20"></div>}
+        {showSuggestions && searchResults.length > 0 && (
+          <div className="h-20"></div>
+        )}
       </div>
 
       {/* Map container */}
@@ -639,7 +684,9 @@ export default function MapClient({
               <Card className="p-6">
                 <CardContent className="flex flex-col items-center space-y-4 p-0">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  <p className="text-center text-muted-foreground">กำลังค้นหาตำแหน่งปัจจุบัน...</p>
+                  <p className="text-center text-muted-foreground">
+                    กำลังค้นหาตำแหน่งปัจจุบัน...
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -654,33 +701,35 @@ export default function MapClient({
                 <TooltipTrigger asChild>
                   <Button
                     onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
+                      e.preventDefault();
+                      e.stopPropagation();
 
-                      const newPinMode = !isPinMode
-                      setIsPinMode(newPinMode)
+                      const newPinMode = !isPinMode;
+                      setIsPinMode(newPinMode);
 
                       if (mapInstanceRef.current) {
-                        const container = mapInstanceRef.current.getContainer()
-                        container.style.cursor = newPinMode ? 'crosshair' : 'grab'
+                        const container = mapInstanceRef.current.getContainer();
+                        container.style.cursor = newPinMode
+                          ? "crosshair"
+                          : "grab";
                       }
                     }}
-                    variant={isPinMode ? 'default' : 'secondary'}
+                    variant={isPinMode ? "default" : "secondary"}
                     size="sm"
                     className={`rounded-xl transition-all duration-200 ${
                       isPinMode
-                        ? 'bg-green-600 text-white hover:bg-green-700'
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                        ? "bg-green-600 text-white hover:bg-green-700"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
                     }`}
                   >
-                    {isPinMode ? 'Pin Mode ON' : 'Pin on map'}
+                    {isPinMode ? "Pin Mode ON" : "Pin on map"}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>
                     {isPinMode
-                      ? 'โหมดวางหมุดเปิดอยู่ - คลิกที่แผนที่เพื่อวางหมุด'
-                      : 'เปิดโหมดวางหมุด'}
+                      ? "โหมดวางหมุดเปิดอยู่ - คลิกที่แผนที่เพื่อวางหมุด"
+                      : "เปิดโหมดวางหมุด"}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -705,47 +754,49 @@ export default function MapClient({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="latitude" className="text-sm font-medium">
-            {t('charging-stations.latitude')}
+            {t("charging-stations.latitude")}
           </Label>
           <Input
             id="latitude"
             type="number"
             step="any"
-            value={latitude ? latitude.toFixed(4) : ''}
+            value={latitude ? latitude.toFixed(4) : ""}
             onChange={(e) => {
-              const newLat = parseFloat(parseFloat(e.target.value).toFixed(4)) || 0
-              setLatitude(newLat)
+              const newLat =
+                parseFloat(parseFloat(e.target.value).toFixed(4)) || 0;
+              setLatitude(newLat);
               if (longitude) {
-                handleCoordinateChange(newLat, longitude)
+                handleCoordinateChange(newLat, longitude);
               }
             }}
-            placeholder={t('charging-stations.latitude_placeholder')}
+            placeholder={t("charging-stations.latitude_placeholder")}
             disabled={isLoadingLocation}
             className="h-10 border-0 bg-[#f2f2f2] sm:h-11"
           />
         </div>
         <div className="space-y-2">
           <Label htmlFor="longitude" className="text-sm font-medium">
-            {t('charging-stations.longitude')}
+            {t("charging-stations.longitude")}
           </Label>
           <Input
             id="longitude"
             type="number"
             step="any"
-            value={longitude ? longitude.toFixed(4) : ''}
+            value={longitude ? longitude.toFixed(4) : ""}
             onChange={(e) => {
-              const newLng = parseFloat(parseFloat(e.target.value).toFixed(4)) || 0
-              setLongitude(newLng)
+              const newLng =
+                parseFloat(parseFloat(e.target.value).toFixed(4)) || 0;
+              setLongitude(newLng);
               if (latitude) {
-                handleCoordinateChange(latitude, newLng)
+                handleCoordinateChange(latitude, newLng);
               }
             }}
-            placeholder={t('charging-stations.longitude_placeholder')}
+            placeholder={t("charging-stations.longitude_placeholder")}
             disabled={isLoadingLocation}
             className="h-10 border-0 bg-[#f2f2f2] sm:h-11"
           />
         </div>
       </div>
     </div>
-  )
+  );
 }

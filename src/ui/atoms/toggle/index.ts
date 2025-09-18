@@ -1,1 +1,1 @@
-export { Toggle, toggleVariants } from './Toggle'
+export { Toggle, toggleVariants } from "./Toggle";

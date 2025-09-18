@@ -1,71 +1,71 @@
-import { Toggle } from '@/ui/atoms/toggle'
-import type { Meta, StoryObj } from '@storybook/react'
-import { Bold, Italic, Underline } from 'lucide-react'
+import { Toggle } from "@/ui/atoms/toggle";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Bold, Italic, Underline } from "lucide-react";
 
 const meta = {
-  title: 'Atoms/Toggle',
+  title: "Atoms/Toggle",
   component: Toggle,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: { type: 'select' },
-      options: ['default', 'outline'],
+      control: { type: "select" },
+      options: ["default", "outline"],
     },
     size: {
-      control: { type: 'select' },
-      options: ['default', 'sm', 'lg'],
+      control: { type: "select" },
+      options: ["default", "sm", "lg"],
     },
     disabled: {
-      control: { type: 'boolean' },
+      control: { type: "boolean" },
     },
   },
-} satisfies Meta<typeof Toggle>
+} satisfies Meta<typeof Toggle>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    children: 'Toggle',
+    children: "Toggle",
   },
-}
+};
 
 export const WithIcon: Story = {
   args: {
     children: <Bold className="h-4 w-4" />,
-    'aria-label': 'Toggle bold',
+    "aria-label": "Toggle bold",
   },
-}
+};
 
 export const Outline: Story = {
   args: {
-    variant: 'outline',
+    variant: "outline",
     children: <Italic className="h-4 w-4" />,
-    'aria-label': 'Toggle italic',
+    "aria-label": "Toggle italic",
   },
-}
+};
 
 export const Small: Story = {
   args: {
-    size: 'sm',
+    size: "sm",
     children: <Underline className="h-4 w-4" />,
-    'aria-label': 'Toggle underline',
+    "aria-label": "Toggle underline",
   },
-}
+};
 
 export const Large: Story = {
   args: {
-    size: 'lg',
-    children: 'Large Toggle',
+    size: "lg",
+    children: "Large Toggle",
   },
-}
+};
 
 export const Disabled: Story = {
   args: {
     disabled: true,
-    children: 'Disabled',
+    children: "Disabled",
   },
-}
+};

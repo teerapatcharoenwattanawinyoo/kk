@@ -1,5 +1,5 @@
-'use client'
-import { SimpleMap } from '@/components/back-office/dashboard/simple-map'
+"use client";
+import { SimpleMap } from "@/components/back-office/dashboard/simple-map";
 
 export function StationMap() {
   return (
@@ -47,5 +47,5 @@ export function StationMap() {
 
       <SimpleMap />
     </div>
-  )
+  );
 }

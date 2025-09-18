@@ -1,4 +1,4 @@
-import { colors } from './colors'
+import { colors } from "./colors";
 
 export const teamCardTheme = {
   // Container styles
@@ -6,19 +6,19 @@ export const teamCardTheme = {
     backgroundColor: colors.teamCard.background,
     borderColor: colors.teamCard.border,
     boxShadow: `0 1px 3px 0 ${colors.teamCard.shadow}`,
-    borderRadius: '0.5rem',
+    borderRadius: "0.5rem",
   },
 
   // Header styles
   header: {
     title: {
       color: colors.teamCard.header.title,
-      fontSize: '1.125rem',
-      fontWeight: '600',
+      fontSize: "1.125rem",
+      fontWeight: "600",
     },
     subtitle: {
       color: colors.teamCard.header.subtitle,
-      fontSize: '0.875rem',
+      fontSize: "0.875rem",
     },
   },
 
@@ -26,11 +26,11 @@ export const teamCardTheme = {
   wallet: {
     label: {
       color: colors.wallet.label,
-      fontSize: '0.75rem',
+      fontSize: "0.75rem",
     },
     amount: {
       color: colors.wallet.amount,
-      fontWeight: '600',
+      fontWeight: "600",
       backgroundColor: colors.wallet.background,
     },
   },
@@ -39,11 +39,11 @@ export const teamCardTheme = {
   stats: {
     label: {
       color: colors.stats.label,
-      fontSize: '0.875rem',
+      fontSize: "0.875rem",
     },
     value: {
       color: colors.stats.value,
-      fontWeight: '600',
+      fontWeight: "600",
     },
   },
 
@@ -65,12 +65,12 @@ export const teamCardTheme = {
       },
     },
   },
-} as const
+} as const;
 
 // Helper function to apply theme styles
-export const getTeamCardStyles = () => teamCardTheme
+export const getTeamCardStyles = () => teamCardTheme;
 
 // CSS-in-JS style helper
 export const createTeamCardStyle = (element: keyof typeof teamCardTheme) => {
-  return teamCardTheme[element]
-}
+  return teamCardTheme[element];
+};

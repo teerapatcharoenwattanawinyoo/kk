@@ -1,55 +1,60 @@
-import { colors } from '@/lib/utils/colors'
+import { colors } from "@/lib/utils/colors";
 
 export interface ChartDataPoint {
-  label: string
-  value: number
+  label: string;
+  value: number;
 }
 
 export interface LineChartProps {
-  data: ChartDataPoint[]
-  title?: string
-  height?: number
-  className?: string
-  showGrid?: boolean
-  showTooltip?: boolean
+  data: ChartDataPoint[];
+  title?: string;
+  height?: number;
+  className?: string;
+  showGrid?: boolean;
+  showTooltip?: boolean;
 }
 
 export const LineChart = ({
   data,
   title,
   height = 300,
-  className = '',
+  className = "",
   showGrid = true,
   showTooltip = true,
 }: LineChartProps) => {
-  const maxValue = Math.max(...data.map((d) => d.value))
-  const minValue = Math.min(...data.map((d) => d.value))
-  const range = maxValue - minValue || 1
+  const maxValue = Math.max(...data.map((d) => d.value));
+  const minValue = Math.min(...data.map((d) => d.value));
+  const range = maxValue - minValue || 1;
 
-  const chartWidth = 800
-  const chartHeight = height - 100 // Leave space for labels
-  const padding = 60
+  const chartWidth = 800;
+  const chartHeight = height - 100; // Leave space for labels
+  const padding = 60;
 
   // Calculate points for the line
   const points = data.map((point, index) => {
-    const x = padding + (index * (chartWidth - 2 * padding)) / (data.length - 1)
+    const x =
+      padding + (index * (chartWidth - 2 * padding)) / (data.length - 1);
     const y =
-      chartHeight - padding - ((point.value - minValue) / range) * (chartHeight - 2 * padding)
-    return { x, y, ...point }
-  })
+      chartHeight -
+      padding -
+      ((point.value - minValue) / range) * (chartHeight - 2 * padding);
+    return { x, y, ...point };
+  });
 
   // Generate path for the line
   const pathData = points.reduce((path, point, index) => {
-    const command = index === 0 ? 'M' : 'L'
-    return `${path} ${command} ${point.x} ${point.y}`
-  }, '')
+    const command = index === 0 ? "M" : "L";
+    return `${path} ${command} ${point.x} ${point.y}`;
+  }, "");
 
   // Generate area path (fill under the line)
-  const areaPath = `${pathData} L ${points[points.length - 1].x} ${chartHeight - padding} L ${padding} ${chartHeight - padding} Z`
+  const areaPath = `${pathData} L ${points[points.length - 1].x} ${chartHeight - padding} L ${padding} ${chartHeight - padding} Z`;
 
   return (
     <div className={`w-full ${className}`}>
-      {title && <h3 className="mb-4 text-lg font-semibold text-gray-900">{title}</h3>}
+      {title && (
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">{title}</h3>
+      )}
       <div className="relative">
         <svg
           width="100%"
@@ -60,8 +65,14 @@ export const LineChart = ({
           {/* Define gradients */}
           <defs>
             <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style={{ stopColor: colors.primary[500], stopOpacity: 0.3 }} />
-              <stop offset="100%" style={{ stopColor: colors.primary[500], stopOpacity: 0.05 }} />
+              <stop
+                offset="0%"
+                style={{ stopColor: colors.primary[500], stopOpacity: 0.3 }}
+              />
+              <stop
+                offset="100%"
+                style={{ stopColor: colors.primary[500], stopOpacity: 0.05 }}
+              />
             </linearGradient>
             <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" style={{ stopColor: colors.primary[400] }} />
@@ -75,7 +86,8 @@ export const LineChart = ({
             <g>
               {/* Horizontal grid lines */}
               {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio, index) => {
-                const y = chartHeight - padding - ratio * (chartHeight - 2 * padding)
+                const y =
+                  chartHeight - padding - ratio * (chartHeight - 2 * padding);
                 return (
                   <line
                     key={index}
@@ -86,7 +98,7 @@ export const LineChart = ({
                     stroke={colors.neutral[200]}
                     strokeWidth="1"
                   />
-                )
+                );
               })}
               {/* Vertical grid lines */}
               {points.map((point, index) => (
@@ -128,7 +140,7 @@ export const LineChart = ({
                 stroke="white"
                 strokeWidth="2"
                 className="cursor-pointer transition-all hover:scale-125"
-                style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+                style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))" }}
               />
               {/* Highlight for max value */}
               {point.value === maxValue && showTooltip && (
@@ -143,7 +155,7 @@ export const LineChart = ({
                     fill={colors.primary[500]}
                     className="animate-pulse"
                     style={{
-                      filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))',
+                      filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.15))",
                     }}
                   />
                   {/* Tooltip arrow */}
@@ -158,7 +170,7 @@ export const LineChart = ({
                     textAnchor="middle"
                     className="fill-white text-xs font-bold"
                   >
-                    {point.value.toLocaleString('en-US', {
+                    {point.value.toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
@@ -183,8 +195,9 @@ export const LineChart = ({
 
           {/* Y-axis labels */}
           {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio, index) => {
-            const y = chartHeight - padding - ratio * (chartHeight - 2 * padding)
-            const percentage = Math.round(ratio * 100)
+            const y =
+              chartHeight - padding - ratio * (chartHeight - 2 * padding);
+            const percentage = Math.round(ratio * 100);
             return (
               <text
                 key={index}
@@ -195,10 +208,10 @@ export const LineChart = ({
               >
                 {percentage}%
               </text>
-            )
+            );
           })}
         </svg>
       </div>
     </div>
-  )
-}
+  );
+};

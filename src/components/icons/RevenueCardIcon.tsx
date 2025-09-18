@@ -1,10 +1,12 @@
-import React from 'react'
+import React from "react";
 
 interface RevenueCardIconProps {
-  className?: string
+  className?: string;
 }
 
-export const RevenueCardIcon: React.FC<RevenueCardIconProps> = ({ className = '' }) => {
+export const RevenueCardIcon: React.FC<RevenueCardIconProps> = ({
+  className = "",
+}) => {
   return (
     <svg
       width="24"
@@ -27,5 +29,5 @@ export const RevenueCardIcon: React.FC<RevenueCardIconProps> = ({ className = ''
         fill="#B5C4FA"
       />
     </svg>
-  )
-}
+  );
+};

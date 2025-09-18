@@ -1,10 +1,12 @@
-import React from 'react'
+import React from "react";
 
 interface ClockIconProps {
-  className?: string
+  className?: string;
 }
 
-export const ClockIcon: React.FC<ClockIconProps> = ({ className = 'shrink-0' }) => {
+export const ClockIcon: React.FC<ClockIconProps> = ({
+  className = "shrink-0",
+}) => {
   return (
     <svg
       width="10"
@@ -21,5 +23,5 @@ export const ClockIcon: React.FC<ClockIconProps> = ({ className = 'shrink-0' }) 
         fill="#708CF2"
       />
     </svg>
-  )
-}
+  );
+};

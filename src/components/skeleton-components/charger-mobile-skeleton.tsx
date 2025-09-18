@@ -1,10 +1,12 @@
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ChargerMobileSkeletonProps {
-  count?: number
+  count?: number;
 }
 
-export function ChargerMobileSkeleton({ count = 5 }: ChargerMobileSkeletonProps) {
+export function ChargerMobileSkeleton({
+  count = 5,
+}: ChargerMobileSkeletonProps) {
   return (
     <div className="space-y-4">
       {Array.from({ length: count }).map((_, idx) => (
@@ -44,5 +46,5 @@ export function ChargerMobileSkeleton({ count = 5 }: ChargerMobileSkeletonProps)
         </div>
       ))}
     </div>
-  )
+  );
 }

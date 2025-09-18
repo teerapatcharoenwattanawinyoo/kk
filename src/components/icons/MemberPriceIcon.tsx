@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 export function MemberPriceIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -42,8 +42,15 @@ export function MemberPriceIcon(props: React.SVGProps<SVGSVGElement>) {
           <feOffset />
           <feGaussianBlur stdDeviation="4" />
           <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.7 0" />
-          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_20023_11751" />
+          <feColorMatrix
+            type="matrix"
+            values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.7 0"
+          />
+          <feBlend
+            mode="normal"
+            in2="BackgroundImageFix"
+            result="effect1_dropShadow_20023_11751"
+          />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -53,5 +60,5 @@ export function MemberPriceIcon(props: React.SVGProps<SVGSVGElement>) {
         </filter>
       </defs>
     </svg>
-  )
+  );
 }

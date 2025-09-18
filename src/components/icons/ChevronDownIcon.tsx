@@ -1,11 +1,11 @@
-import React from 'react'
+import React from "react";
 
 interface ChevronDownIconProps {
-  className?: string
+  className?: string;
 }
 
 export const ChevronDownIcon: React.FC<ChevronDownIconProps> = ({
-  className = 'h-4 w-4 text-[#A1B1D1]',
+  className = "h-4 w-4 text-[#A1B1D1]",
 }) => {
   return (
     <svg
@@ -22,5 +22,5 @@ export const ChevronDownIcon: React.FC<ChevronDownIconProps> = ({
     >
       <path d="m6 9 6 6 6-6" />
     </svg>
-  )
-}
+  );
+};

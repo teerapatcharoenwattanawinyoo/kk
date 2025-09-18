@@ -1,4 +1,4 @@
-export { default as PriceGroupForm } from './price-group-form'
+export { default as PriceGroupForm } from "./price-group-form";
 export type {
   FeeFormData,
   FormData,
@@ -7,4 +7,4 @@ export type {
   PriceGroupFormProps,
   PriceType,
   StatusType,
-} from './price-group-form'
+} from "./price-group-form";

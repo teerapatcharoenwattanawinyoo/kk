@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils'
-import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area'
-import * as React from 'react'
+import { cn } from "@/lib/utils";
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
+import * as React from "react";
 
 const CustomScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
@@ -8,12 +8,12 @@ const CustomScrollArea = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <ScrollAreaPrimitive.Root
     ref={ref}
-    className={cn('relative overflow-hidden', className)}
+    className={cn("relative overflow-hidden", className)}
     {...props}
   >
     <ScrollAreaPrimitive.Viewport
       className="smooth-scroll h-full w-full rounded-[inherit]"
-      style={{ scrollBehavior: 'smooth' }}
+      style={{ scrollBehavior: "smooth" }}
     >
       {children}
     </ScrollAreaPrimitive.Viewport>
@@ -37,7 +37,7 @@ const CustomScrollArea = React.forwardRef<
       }
     `}</style>
   </ScrollAreaPrimitive.Root>
-))
-CustomScrollArea.displayName = ScrollAreaPrimitive.Root.displayName
+));
+CustomScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
-export { CustomScrollArea }
+export { CustomScrollArea };

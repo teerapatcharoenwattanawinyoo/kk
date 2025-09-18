@@ -1,54 +1,54 @@
-import { Textarea } from '@/ui/atoms/textarea'
+import { Textarea } from "@/ui/atoms/textarea";
 
 const meta = {
-  title: 'Atoms/Textarea',
+  title: "Atoms/Textarea",
   component: Textarea,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     disabled: {
-      control: { type: 'boolean' },
+      control: { type: "boolean" },
     },
   },
-}
+};
 
-export default meta
+export default meta;
 
 export const Default = {
   args: {
-    placeholder: 'Type your message here...',
+    placeholder: "Type your message here...",
   },
-}
+};
 
 export const WithValue = {
   args: {
-    value: 'This is some example text in the textarea.',
-    placeholder: 'Type your message here...',
+    value: "This is some example text in the textarea.",
+    placeholder: "Type your message here...",
   },
-}
+};
 
 export const Disabled = {
   args: {
-    placeholder: 'This textarea is disabled',
+    placeholder: "This textarea is disabled",
     disabled: true,
   },
-}
+};
 
 export const WithRows = {
   args: {
-    placeholder: 'This textarea has 6 rows',
+    placeholder: "This textarea has 6 rows",
     rows: 6,
   },
-}
+};
 
 export const Required = {
   args: {
-    placeholder: 'This field is required',
+    placeholder: "This field is required",
     required: true,
   },
-}
+};
 
 export const WithLabel = {
   render: () => (
@@ -59,7 +59,7 @@ export const WithLabel = {
       <Textarea id="bio" placeholder="Tell us about yourself..." />
     </div>
   ),
-}
+};
 
 export const WithError = {
   render: () => (
@@ -75,4 +75,4 @@ export const WithError = {
       <p className="text-sm text-destructive">This field is required.</p>
     </div>
   ),
-}
+};

@@ -1,18 +1,18 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface TableHeaderProps {
-  searchQuery: string
-  onSearchChange: (value: string) => void
-  searchPlaceholder?: string
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
+  searchPlaceholder?: string;
 }
 
 export function TableHeader({
   searchQuery,
   onSearchChange,
-  searchPlaceholder = 'Search by ID Announcement',
+  searchPlaceholder = "Search by ID Announcement",
 }: TableHeaderProps) {
   return (
     <div className="mt-4 flex flex-col justify-between gap-3 sm:flex-row">
@@ -64,5 +64,5 @@ export function TableHeader({
         </Button>
       </div>
     </div>
-  )
+  );
 }

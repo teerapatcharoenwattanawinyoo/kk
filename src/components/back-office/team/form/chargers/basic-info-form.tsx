@@ -1,34 +1,44 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { ChargerBrand, ChargerType, ChargingStation } from '@/lib/api/team-group/charger'
-import { TeamHostData } from '@/modules/teams/schemas/team.schema'
-import { UseFormReturn } from 'react-hook-form'
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import {
+  ChargerBrand,
+  ChargerType,
+  ChargingStation,
+} from "@/lib/api/team-group/charger";
+import { TeamHostData } from "@/lib/schemas/team";
+import { UseFormReturn } from "react-hook-form";
 
 interface BasicInfoFormProps {
-  form: UseFormReturn<any>
-  chargerBrands: ChargerBrand[]
-  chargerTypes: ChargerType[]
-  chargingStations: ChargingStation[]
-  teamOptions: TeamHostData[]
-  selectedBrand: string
-  selectedModel: string
-  mode?: 'add' | 'edit'
-  onChargerNameChange: (value: string) => void
-  onChargerAccessChange: (value: string) => void
-  onBrandChange: (value: string) => void
-  onModelChange: (value: string) => void
-  onTypeConnectorChange: (value: string) => void
-  onChargingStationChange: (value: string) => void
-  getModelsForBrand: (brandId: string) => any[]
-  getPowerLevelsForModel: (modelId: string) => string[]
+  form: UseFormReturn<any>;
+  chargerBrands: ChargerBrand[];
+  chargerTypes: ChargerType[];
+  chargingStations: ChargingStation[];
+  teamOptions: TeamHostData[];
+  selectedBrand: string;
+  selectedModel: string;
+  mode?: "add" | "edit";
+  onChargerNameChange: (value: string) => void;
+  onChargerAccessChange: (value: string) => void;
+  onBrandChange: (value: string) => void;
+  onModelChange: (value: string) => void;
+  onTypeConnectorChange: (value: string) => void;
+  onChargingStationChange: (value: string) => void;
+  getModelsForBrand: (brandId: string) => any[];
+  getPowerLevelsForModel: (modelId: string) => string[];
 }
 
 export function BasicInfoForm({
@@ -39,7 +49,7 @@ export function BasicInfoForm({
   teamOptions,
   selectedBrand,
   selectedModel,
-  mode = 'add',
+  mode = "add",
   onChargerNameChange,
   onChargerAccessChange,
   onBrandChange,
@@ -65,8 +75,8 @@ export function BasicInfoForm({
                 placeholder="Specify"
                 className="h-12! py-3! sm:h-[52px]! border-none bg-[#f2f2f2] text-sm placeholder:text-[#CACACA]"
                 onChange={(e) => {
-                  field.onChange(e)
-                  onChargerNameChange(e.target.value)
+                  field.onChange(e);
+                  onChargerNameChange(e.target.value);
                 }}
               />
             </FormControl>
@@ -86,14 +96,14 @@ export function BasicInfoForm({
             <FormControl>
               <Select
                 onValueChange={(value) => {
-                  field.onChange(value)
-                  onChargerAccessChange(value)
+                  field.onChange(value);
+                  onChargerAccessChange(value);
                 }}
                 value={field.value}
               >
                 <SelectTrigger
                   className={`h-12! min-h-12! py-3! sm:h-[52px]! w-full border-none bg-[#f2f2f2] text-sm ${
-                    field.value ? 'text-zinc-900' : 'text-[#CACACA]'
+                    field.value ? "text-zinc-900" : "text-[#CACACA]"
                   }`}
                 >
                   <SelectValue placeholder="Please select accessibility" />
@@ -120,23 +130,29 @@ export function BasicInfoForm({
               <FormControl>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value)
-                    onBrandChange(value)
+                    field.onChange(value);
+                    onBrandChange(value);
                   }}
                   value={field.value}
                 >
                   <SelectTrigger
                     className={`h-12! min-h-12! py-3! sm:h-[52px]! w-full border-none bg-[#f2f2f2] text-sm ${
-                      field.value ? 'text-zinc-900' : 'text-[#CACACA]'
+                      field.value ? "text-zinc-900" : "text-[#CACACA]"
                     }`}
                   >
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
                     {chargerBrands
-                      .filter((brand) => brand.id && brand.id.toString().trim() !== '')
+                      .filter(
+                        (brand) =>
+                          brand.id && brand.id.toString().trim() !== "",
+                      )
                       .map((brand) => (
-                        <SelectItem key={brand.id} value={brand.id.toString().trim()}>
+                        <SelectItem
+                          key={brand.id}
+                          value={brand.id.toString().trim()}
+                        >
                           {brand.brand_name}
                         </SelectItem>
                       ))}
@@ -157,24 +173,30 @@ export function BasicInfoForm({
               <FormControl>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value)
-                    onModelChange(value)
+                    field.onChange(value);
+                    onModelChange(value);
                   }}
                   value={field.value}
                   disabled={!selectedBrand}
                 >
                   <SelectTrigger
                     className={`h-12! min-h-12! py-3! sm:h-[52px]! w-full border-none bg-[#f2f2f2] text-sm ${
-                      field.value ? 'text-zinc-900' : 'text-[#CACACA]'
+                      field.value ? "text-zinc-900" : "text-[#CACACA]"
                     }`}
                   >
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
                     {getModelsForBrand(selectedBrand)
-                      .filter((model) => model.id && model.id.toString().trim() !== '')
+                      .filter(
+                        (model) =>
+                          model.id && model.id.toString().trim() !== "",
+                      )
                       .map((model) => (
-                        <SelectItem key={model.id} value={model.id.toString().trim()}>
+                        <SelectItem
+                          key={model.id}
+                          value={model.id.toString().trim()}
+                        >
                           {model.model_name}
                         </SelectItem>
                       ))}
@@ -197,14 +219,14 @@ export function BasicInfoForm({
               <FormControl>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value)
-                    onTypeConnectorChange(value)
+                    field.onChange(value);
+                    onTypeConnectorChange(value);
                   }}
                   value={field.value}
                 >
                   <SelectTrigger
                     className={`h-12! min-h-12! py-3! sm:h-[52px]! w-full border-none bg-[#f2f2f2] text-sm ${
-                      field.value ? 'text-zinc-900' : 'text-[#CACACA]'
+                      field.value ? "text-zinc-900" : "text-[#CACACA]"
                     }`}
                   >
                     <SelectValue placeholder="Select" />
@@ -239,21 +261,21 @@ export function BasicInfoForm({
               <FormControl>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value)
+                    field.onChange(value);
                   }}
                   value={field.value}
                   disabled={!selectedModel}
                 >
                   <SelectTrigger
                     className={`h-12! min-h-12! py-3! sm:h-[52px]! w-full border-none bg-[#f2f2f2] text-sm ${
-                      field.value ? 'text-zinc-900' : 'text-[#CACACA]'
+                      field.value ? "text-zinc-900" : "text-[#CACACA]"
                     }`}
                   >
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
                     {getPowerLevelsForModel(selectedModel)
-                      .filter((level) => level && level.trim() !== '')
+                      .filter((level) => level && level.trim() !== "")
                       .map((level) => (
                         <SelectItem key={level} value={level.trim()}>
                           {level}
@@ -283,14 +305,17 @@ export function BasicInfoForm({
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger
                     className={`h-12! min-h-12! py-3! sm:h-[52px]! w-full border-none bg-[#f2f2f2] text-sm ${
-                      field.value ? 'text-zinc-900' : 'text-[#CACACA]'
+                      field.value ? "text-zinc-900" : "text-[#CACACA]"
                     }`}
                   >
                     <SelectValue placeholder="Select team" />
                   </SelectTrigger>
                   <SelectContent>
                     {teamOptions.map((team) => (
-                      <SelectItem key={team.team_group_id} value={team.team_group_id.toString()}>
+                      <SelectItem
+                        key={team.team_group_id}
+                        value={team.team_group_id.toString()}
+                      >
                         {team.team_name}
                       </SelectItem>
                     ))}
@@ -313,14 +338,14 @@ export function BasicInfoForm({
               <FormControl>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value)
-                    onChargingStationChange(value)
+                    field.onChange(value);
+                    onChargingStationChange(value);
                   }}
                   value={field.value}
                 >
                   <SelectTrigger
                     className={`h-12! min-h-12! py-3! sm:h-[52px]! w-full border-none bg-[#f2f2f2] text-sm ${
-                      field.value ? 'text-zinc-900' : 'text-[#CACACA]'
+                      field.value ? "text-zinc-900" : "text-[#CACACA]"
                     }`}
                   >
                     <SelectValue placeholder="Select" />
@@ -328,14 +353,22 @@ export function BasicInfoForm({
                   <SelectContent>
                     {chargingStations && chargingStations.length > 0 ? (
                       chargingStations
-                        .filter((station) => station.id && station.id.toString().trim() !== '')
+                        .filter(
+                          (station) =>
+                            station.id && station.id.toString().trim() !== "",
+                        )
                         .map((station) => (
-                          <SelectItem key={station.id} value={station.id.toString().trim()}>
+                          <SelectItem
+                            key={station.id}
+                            value={station.id.toString().trim()}
+                          >
                             {station.station_name}
                           </SelectItem>
                         ))
                     ) : (
-                      <p className="p-4 text-sm text-muted-foreground">No stations available.</p>
+                      <p className="p-4 text-sm text-muted-foreground">
+                        No stations available.
+                      </p>
                     )}
                   </SelectContent>
                 </Select>
@@ -346,5 +379,5 @@ export function BasicInfoForm({
         />
       </div>
     </>
-  )
+  );
 }

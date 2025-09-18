@@ -1,10 +1,10 @@
-import { AuthLayout } from '@modules/auth/components'
-import type React from 'react'
+import { AuthLayout } from "@/components/auth-components/layouts/auth-layout";
+import type React from "react";
 
 export default function AuthPageLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-  return <AuthLayout>{children}</AuthLayout>
+  return <AuthLayout>{children}</AuthLayout>;
 }

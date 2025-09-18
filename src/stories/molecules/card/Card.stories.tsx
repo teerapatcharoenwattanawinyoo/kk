@@ -1,4 +1,4 @@
-import { Button } from '@/ui/atoms/button'
+import { Button } from "@/ui/atoms/button";
 import {
   Card,
   CardContent,
@@ -6,20 +6,20 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/ui/molecules/card'
-import type { Meta, StoryObj } from '@storybook/react'
+} from "@/ui/molecules/card";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof Card> = {
-  title: 'Molecules/Card',
+  title: "Molecules/Card",
   component: Card,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
-}
+  tags: ["autodocs"],
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -33,7 +33,7 @@ export const Default: Story = {
       </CardContent>
     </Card>
   ),
-}
+};
 
 export const WithFooter: Story = {
   render: () => (
@@ -50,7 +50,7 @@ export const WithFooter: Story = {
       </CardFooter>
     </Card>
   ),
-}
+};
 
 export const Simple: Story = {
   render: () => (
@@ -60,7 +60,7 @@ export const Simple: Story = {
       </CardContent>
     </Card>
   ),
-}
+};
 
 export const WithActions: Story = {
   render: () => (
@@ -84,4 +84,4 @@ export const WithActions: Story = {
       </CardFooter>
     </Card>
   ),
-}
+};

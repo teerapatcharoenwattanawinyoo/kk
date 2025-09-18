@@ -1,21 +1,21 @@
-'use client'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
-import { Button } from '@/components/ui/button'
-import { ChevronLeft } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { use } from 'react'
+"use client";
+import { TeamGuard } from "@/components/back-office/team/team-guard";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { use } from "react";
 
 interface EditMemberGroupPageProps {
-  params: Promise<{ locale: string; teamId: string }>
+  params: Promise<{ locale: string; teamId: string }>;
 }
 
 export default function EditMemberGroup({ params }: EditMemberGroupPageProps) {
-  const router = useRouter()
-  const { teamId, locale } = use(params)
+  const router = useRouter();
+  const { teamId, locale } = use(params);
 
   const handleBack = () => {
-    router.back()
-  }
+    router.back();
+  };
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
@@ -26,21 +26,23 @@ export default function EditMemberGroup({ params }: EditMemberGroupPageProps) {
             <div className="flex items-center gap-4">
               <Button
                 onClick={handleBack}
-                variant={'secondary'}
-                size={'icon'}
+                variant={"secondary"}
+                size={"icon"}
                 className="h-7 w-7 rounded-full"
               >
                 <ChevronLeft className="h-5 w-5 text-muted-foreground" />
               </Button>
-              <h1 className="text-title text-xl font-semibold">Edit Member Group</h1>
+              <h1 className="text-title text-xl font-semibold">
+                Edit Member Group
+              </h1>
             </div>
 
             {/* Submit Button */}
             <Button
               type="submit"
-              size={'sm'}
+              size={"sm"}
               className="w-40 text-primary-foreground"
-              variant={'success'}
+              variant={"success"}
             >
               Update
             </Button>
@@ -52,5 +54,5 @@ export default function EditMemberGroup({ params }: EditMemberGroupPageProps) {
         </div>
       </div>
     </TeamGuard>
-  )
+  );
 }

@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 
 interface PaginationProps {
-  currentPage?: number
-  totalResults?: number
-  resultsPerPage?: number
-  onPageChange?: (page: number) => void
-  onPageSizeChange?: (size: number) => void
+  currentPage?: number;
+  totalResults?: number;
+  resultsPerPage?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
 }
 
 export function Pagination({
@@ -17,8 +17,8 @@ export function Pagination({
   onPageChange,
   onPageSizeChange,
 }: PaginationProps) {
-  const startResult = (currentPage - 1) * resultsPerPage + 1
-  const endResult = Math.min(currentPage * resultsPerPage, totalResults)
+  const startResult = (currentPage - 1) * resultsPerPage + 1;
+  const endResult = Math.min(currentPage * resultsPerPage, totalResults);
 
   return (
     <div className="my-4 border-gray-200 bg-card px-4 py-4 md:px-6">
@@ -89,5 +89,5 @@ export function Pagination({
         </div>
       </div>
     </div>
-  )
+  );
 }

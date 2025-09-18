@@ -1,16 +1,16 @@
-import React from 'react'
+import React from "react";
 
 export interface OneChargeLogoSecondaryProps {
-  width?: number
-  height?: number
-  className?: string
-  style?: React.CSSProperties
+  width?: number;
+  height?: number;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 export const OneChargeLogoSecondary: React.FC<OneChargeLogoSecondaryProps> = ({
   width = 94,
   height = 75,
-  className = '',
+  className = "",
   style,
   ...props
 }) => (
@@ -104,4 +104,4 @@ export const OneChargeLogoSecondary: React.FC<OneChargeLogoSecondaryProps> = ({
       </linearGradient>
     </defs>
   </svg>
-)
+);

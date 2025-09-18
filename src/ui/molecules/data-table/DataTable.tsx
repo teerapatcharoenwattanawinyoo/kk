@@ -1,24 +1,24 @@
-import { colors } from '@/lib/utils/colors'
-import React from 'react'
+import { colors } from "@/lib/utils/colors";
+import React from "react";
 
 export interface TableColumn<T = Record<string, unknown>> {
-  key: string
-  header: string
-  width?: string
-  align?: 'left' | 'center' | 'right'
-  render?: (value: string, row: T) => React.ReactNode
+  key: string;
+  header: string;
+  width?: string;
+  align?: "left" | "center" | "right";
+  render?: (value: string, row: T) => React.ReactNode;
 }
 
 export interface DataTableProps<T = Record<string, unknown>> {
-  columns: TableColumn<T>[]
-  data: T[]
-  className?: string
+  columns: TableColumn<T>[];
+  data: T[];
+  className?: string;
 }
 
 export const DataTable = <T extends Record<string, unknown>>({
   columns,
   data,
-  className = '',
+  className = "",
 }: DataTableProps<T>) => {
   return (
     <div
@@ -34,8 +34,8 @@ export const DataTable = <T extends Record<string, unknown>>({
                   key={`header-${columnIndex}-${column.key}`}
                   className="whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white"
                   style={{
-                    width: column.width || 'auto',
-                    textAlign: column.align || 'left',
+                    width: column.width || "auto",
+                    textAlign: column.align || "left",
                   }}
                 >
                   {column.header}
@@ -49,14 +49,14 @@ export const DataTable = <T extends Record<string, unknown>>({
                 key={`row-${index}`}
                 className="whitespace-nowrap transition-colors hover:bg-gray-50"
                 style={{
-                  backgroundColor: index % 2 === 0 ? '#ffffff' : '#f9fafb',
+                  backgroundColor: index % 2 === 0 ? "#ffffff" : "#f9fafb",
                 }}
               >
                 {columns.map((column) => (
                   <td
                     key={`${index}-${column.key}`}
                     className="px-4 py-3 text-sm"
-                    style={{ textAlign: column.align || 'left' }}
+                    style={{ textAlign: column.align || "left" }}
                   >
                     {column.render
                       ? column.render(row[column.key] as string, row)
@@ -69,5 +69,5 @@ export const DataTable = <T extends Record<string, unknown>>({
         </table>
       </div>
     </div>
-  )
-}
+  );
+};

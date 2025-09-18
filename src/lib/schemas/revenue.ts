@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 // Revenue Balance Response Schema (จาก API response)
 export const revenueBalanceResponseSchema = z.object({
@@ -10,9 +10,11 @@ export const revenueBalanceResponseSchema = z.object({
   bank_name: z.string().nullable(),
   bank_account: z.string().nullable(),
   bank_account_name: z.string().nullable(),
-})
+});
 
 // ==========================
 // TYPESCRIPT TYPES
 // ==========================
-export type RevenueBalanceResponse = z.infer<typeof revenueBalanceResponseSchema>
+export type RevenueBalanceResponse = z.infer<
+  typeof revenueBalanceResponseSchema
+>;

@@ -1,5 +1,5 @@
-import { VerifyEmail } from '@/modules/auth/components/'
+import VerifyEmail from "@/components/auth-components/verify-email";
 
 export default function VerifyByEmailPage() {
-  return <VerifyEmail />
+  return <VerifyEmail />;
 }

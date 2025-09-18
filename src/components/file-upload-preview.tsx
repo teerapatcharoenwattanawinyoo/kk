@@ -1,33 +1,37 @@
-'use client'
+"use client";
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { FileText, Image as ImageIcon, X } from 'lucide-react'
-import Image from 'next/image'
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileText, Image as ImageIcon, X } from "lucide-react";
+import Image from "next/image";
 
 interface FileUploadPreviewProps {
-  file: File
-  previewUrl: string | null
-  onRemove: () => void
+  file: File;
+  previewUrl: string | null;
+  onRemove: () => void;
 }
 
-export function FileUploadPreview({ file, previewUrl, onRemove }: FileUploadPreviewProps) {
+export function FileUploadPreview({
+  file,
+  previewUrl,
+  onRemove,
+}: FileUploadPreviewProps) {
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
 
   const getFileType = (file: File) => {
-    if (file.type.startsWith('image/')) return 'image'
-    if (file.type === 'application/pdf') return 'pdf'
-    return 'other'
-  }
+    if (file.type.startsWith("image/")) return "image";
+    if (file.type === "application/pdf") return "pdf";
+    return "other";
+  };
 
-  const fileType = getFileType(file)
+  const fileType = getFileType(file);
 
   return (
     <Card className="w-full max-w-sm">
@@ -47,7 +51,7 @@ export function FileUploadPreview({ file, previewUrl, onRemove }: FileUploadPrev
       <CardContent className="space-y-3">
         {/* Preview */}
         <div className="aspect-square w-full overflow-hidden rounded-lg border bg-gray-50">
-          {previewUrl && fileType === 'image' ? (
+          {previewUrl && fileType === "image" ? (
             <Image
               src={previewUrl}
               alt="File preview"
@@ -58,7 +62,7 @@ export function FileUploadPreview({ file, previewUrl, onRemove }: FileUploadPrev
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              {fileType === 'pdf' ? (
+              {fileType === "pdf" ? (
                 <FileText className="h-16 w-16 text-red-500" />
               ) : (
                 <ImageIcon className="h-16 w-16 text-gray-400" />
@@ -70,7 +74,9 @@ export function FileUploadPreview({ file, previewUrl, onRemove }: FileUploadPrev
         {/* File Info */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="mr-2 flex-1 truncate text-sm font-medium">{file.name}</span>
+            <span className="mr-2 flex-1 truncate text-sm font-medium">
+              {file.name}
+            </span>
             <Badge variant="outline" className="text-xs">
               {fileType.toUpperCase()}
             </Badge>
@@ -83,5 +89,5 @@ export function FileUploadPreview({ file, previewUrl, onRemove }: FileUploadPrev
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -8,7 +8,9 @@ interface ManageBankAccountPageProps {
   }>
 }
 
-export default async function TeamManageBankAccountPage(props: ManageBankAccountPageProps) {
+export default async function TeamManageBankAccountPage(
+  props: ManageBankAccountPageProps,
+) {
   const params = await props.params
   return (
     <TeamGuard teamId={params.teamId} locale={params.locale}>

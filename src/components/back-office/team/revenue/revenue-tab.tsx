@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { TeamTabMenu } from '@/components/back-office/team/settings/TeamTabMenu'
-import { CardIcon, WarningIcon } from '@/components/icons'
-import { useRevenueBalance } from '@/hooks'
-import { useI18n } from '@/lib/i18n'
-import { colors } from '@/lib/utils/colors'
+import { TeamTabMenu } from "@/components/back-office/team/settings/TeamTabMenu";
+import { CardIcon, WarningIcon } from "@/components/icons";
+import { useRevenueBalance } from "@/hooks";
+import { useI18n } from "@/lib/i18n";
+import { colors } from "@/lib/utils/colors";
 import {
   Button,
   Card,
@@ -15,53 +15,58 @@ import {
   Switch,
   type RadioOption,
   type TableColumn,
-} from '@/ui'
-import { Download } from 'lucide-react'
-import Link from 'next/link'
-import { memo, useCallback, useMemo, useState, type MouseEvent } from 'react'
-import { TeamHeader } from '../team-header'
-import { BankAccountItem } from './bank-account/bank-account-item'
-import { WithdrawDialog } from './withdraw-dialog'
+} from "@/ui";
+import { Download } from "lucide-react";
+import Link from "next/link";
+import { memo, useCallback, useMemo, useState, type MouseEvent } from "react";
+import { TeamHeader } from "../team-header";
+import { BankAccountItem } from "./bank-account/bank-account-item";
+import { WithdrawDialog } from "./withdraw-dialog";
 
 interface RevenueTabProps {
-  teamId: string
-  locale: string
+  teamId: string;
+  locale: string;
 }
 
 const tableColumns: TableColumn[] = [
-  { key: 'no', header: 'NO', width: '6%' },
-  { key: 'transaction', header: 'ยอดเงินขาเข้า', width: '25%' },
-  { key: 'amount', header: 'จำนวนเงิน', width: '12%' },
-  { key: 'customer', header: 'ลูกค้า/ลิขทิง', width: '18%' },
-  { key: 'method', header: 'ทำรายการโดย', width: '12%' },
-  { key: 'date', header: 'วันที่ทำรายการ', width: '15%' },
-  { key: 'status', header: 'สถานะ', width: '8%' },
-  { key: 'action', header: 'ACTION', width: '4%' },
-]
+  { key: "no", header: "NO", width: "6%" },
+  { key: "transaction", header: "ยอดเงินขาเข้า", width: "25%" },
+  { key: "amount", header: "จำนวนเงิน", width: "12%" },
+  { key: "customer", header: "ลูกค้า/ลิขทิง", width: "18%" },
+  { key: "method", header: "ทำรายการโดย", width: "12%" },
+  { key: "date", header: "วันที่ทำรายการ", width: "15%" },
+  { key: "status", header: "สถานะ", width: "8%" },
+  { key: "action", header: "ACTION", width: "4%" },
+];
 
 const transactionData = [
   {
-    no: '1',
-    transaction: 'ค่าบริการชาร์จแบตเตอรี่ (OneCharge)',
-    amount: '3,390,000.00 ฿',
-    customer: 'โชวเซกซ์ย้า 339****192**1',
-    method: 'ค่าบริการก่อนนี้',
-    date: '13/02/2024 11:00:00',
-    status: 'สำเร็จ',
+    no: "1",
+    transaction: "ค่าบริการชาร์จแบตเตอรี่ (OneCharge)",
+    amount: "3,390,000.00 ฿",
+    customer: "โชวเซกซ์ย้า 339****192**1",
+    method: "ค่าบริการก่อนนี้",
+    date: "13/02/2024 11:00:00",
+    status: "สำเร็จ",
   },
   {
-    no: '2',
-    transaction: 'ค่าบริการชาร์จแบตเตอรี่ (OneCharge)',
-    amount: '50,000.00 ฿',
-    customer: 'โชวเซกซ์ย้า 338****192**1',
-    method: 'ค่าบริการธนาคาร',
-    date: '13/02/2024 13:00:00',
-    status: 'สำเร็จ',
+    no: "2",
+    transaction: "ค่าบริการชาร์จแบตเตอรี่ (OneCharge)",
+    amount: "50,000.00 ฿",
+    customer: "โชวเซกซ์ย้า 338****192**1",
+    method: "ค่าบริการธนาคาร",
+    date: "13/02/2024 13:00:00",
+    status: "สำเร็จ",
   },
-]
+];
 
 const CalendarIcon = memo(() => (
-  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg
+    className="h-4 w-4 text-gray-400"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -69,146 +74,153 @@ const CalendarIcon = memo(() => (
       d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
     />
   </svg>
-))
-CalendarIcon.displayName = 'CalendarIcon'
+));
+CalendarIcon.displayName = "CalendarIcon";
 
 const StatusBadge = memo(({ value }: { value: string }) => (
   <span
     className="rounded-full px-3 py-1 text-xs font-medium"
     style={{
-      backgroundColor: '#FEF3CD',
-      color: '#F59E0B',
+      backgroundColor: "#FEF3CD",
+      color: "#F59E0B",
     }}
   >
     {value}
   </span>
-))
-StatusBadge.displayName = 'StatusBadge'
+));
+StatusBadge.displayName = "StatusBadge";
 
 const ActionButton = memo(() => (
-  <Button size="sm" variant="ghost" className="h-6 w-6 p-1 text-gray-400 hover:text-gray-600">
+  <Button
+    size="sm"
+    variant="ghost"
+    className="h-6 w-6 p-1 text-gray-400 hover:text-gray-600"
+  >
     <Download className="h-3 w-3" />
   </Button>
-))
-ActionButton.displayName = 'ActionButton'
+));
+ActionButton.displayName = "ActionButton";
 
 export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
-  const { t } = useI18n()
-  const [selectedAccount, setSelectedAccount] = useState('monthly')
-  const [autoWithdraw, setAutoWithdraw] = useState(true)
-  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false)
+  const { t } = useI18n();
+  const [selectedAccount, setSelectedAccount] = useState("monthly");
+  const [autoWithdraw, setAutoWithdraw] = useState(true);
+  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
 
   const {
     data: revenueBalanceResponse,
     isLoading: isRevenueLoading,
     error: revenueError,
-  } = useRevenueBalance(teamId)
+  } = useRevenueBalance(teamId);
 
   const { transferBalance, lastWithdraw, revenueBankAccount } = useMemo(() => {
     // Get revenue balance data
-    const revenueData = revenueBalanceResponse?.data
-    const transferBalance = revenueData?.transfer_balance || 0
-    const lastWithdraw = revenueData?.last_withdraw
+    const revenueData = revenueBalanceResponse?.data;
+    const transferBalance = revenueData?.transfer_balance || 0;
+    const lastWithdraw = revenueData?.last_withdraw;
 
     const revenueBankAccount =
       revenueData?.bank_name && revenueData?.bank_account
         ? {
             id: 1, // Mock ID
             bank_id: 1, // Mock bank ID
-            account_name: revenueData.bank_account_name || '',
+            account_name: revenueData.bank_account_name || "",
             account_number: revenueData.bank_account,
             bank_name: revenueData.bank_name,
-            bank_logo: '', // Optional
+            bank_logo: "", // Optional
           }
-        : null
+        : null;
 
     return {
       transferBalance,
       lastWithdraw,
       revenueBankAccount,
-    }
-  }, [revenueBalanceResponse?.data])
+    };
+  }, [revenueBalanceResponse?.data]);
 
   const accountOptions = useMemo<RadioOption[]>(
     () => [
       {
-        value: 'monthly',
-        label: 'ทุกสิ้นเดือน',
-        description: 'ทุกวันที่ 29 ของเดือน',
+        value: "monthly",
+        label: "ทุกสิ้นเดือน",
+        description: "ทุกวันที่ 29 ของเดือน",
         disabled: false,
       },
       {
-        value: 'specific-date',
-        label: 'ทุกวันที่ ระบุวันที่',
-        description: 'ตั้งค่าวันที่เอง',
+        value: "specific-date",
+        label: "ทุกวันที่ ระบุวันที่",
+        description: "ตั้งค่าวันที่เอง",
         disabled: true,
         icon: <CalendarIcon />,
       },
     ],
     [],
-  )
+  );
 
   const enhancedColumns = useMemo(
     () =>
       tableColumns.map((col) => {
-        if (col.key === 'status') {
+        if (col.key === "status") {
           return {
             ...col,
             render: (value: string) => <StatusBadge value={value} />,
-          }
+          };
         }
-        if (col.key === 'action') {
+        if (col.key === "action") {
           return {
             ...col,
             render: () => <ActionButton />,
-          }
+          };
         }
-        return col
+        return col;
       }),
     [],
-  )
+  );
 
   const handleAccountChange = useCallback((value: string) => {
-    setSelectedAccount(value)
-  }, [])
+    setSelectedAccount(value);
+  }, []);
 
   const handleAutoWithdrawChange = useCallback((checked: boolean) => {
-    setAutoWithdraw(checked)
-  }, [])
+    setAutoWithdraw(checked);
+  }, []);
 
-  const handleWithdrawClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    setShowWithdrawDialog(true)
-  }, [])
+  const handleWithdrawClick = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      setShowWithdrawDialog(true);
+    },
+    [],
+  );
 
   const handleCloseWithdrawDialog = useCallback(() => {
-    setShowWithdrawDialog(false)
-  }, [])
+    setShowWithdrawDialog(false);
+  }, []);
 
   // Format currency
   const formatCurrency = useCallback((amount: number) => {
-    return new Intl.NumberFormat('th-TH', {
-      style: 'currency',
-      currency: 'THB',
+    return new Intl.NumberFormat("th-TH", {
+      style: "currency",
+      currency: "THB",
       minimumFractionDigits: 2,
     })
       .format(amount)
-      .replace('฿', '฿ ')
-  }, [])
+      .replace("฿", "฿ ");
+  }, []);
 
   // Format date
   const formatDate = useCallback((dateString: string | null) => {
-    if (!dateString) return 'ไม่มีข้อมูล'
+    if (!dateString) return "ไม่มีข้อมูล";
 
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('th-TH', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date)
-  }, [])
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("th-TH", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  }, []);
 
   const withdrawButtonStyle = useMemo(
     () => ({
@@ -216,24 +228,24 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
       borderColor: colors.primary[500],
     }),
     [],
-  )
+  );
 
   const withdrawButtonHoverHandlers = useMemo(
     () => ({
       onMouseEnter: (e: MouseEvent<HTMLButtonElement>) => {
-        e.currentTarget.style.backgroundColor = colors.primary[600]
+        e.currentTarget.style.backgroundColor = colors.primary[600];
       },
       onMouseLeave: (e: MouseEvent<HTMLButtonElement>) => {
-        e.currentTarget.style.backgroundColor = colors.primary[500]
+        e.currentTarget.style.backgroundColor = colors.primary[500];
       },
     }),
     [],
-  )
+  );
 
   return (
     <div className="space-y-6 p-4">
       {/* Header with Logo */}
-      <TeamHeader teamId={teamId} pageTitle={t('team_tabs.revenue')} />
+      <TeamHeader teamId={teamId} pageTitle={t("team_tabs.revenue")} />
 
       {/* Common Team Tab Menu */}
       <TeamTabMenu active="revenue" locale={locale} teamId={teamId} />
@@ -242,52 +254,57 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
         {/* Left Column - กระเป๋าเงินบริษัท */}
         <div className="flex h-full flex-col lg:col-span-1">
           <div className="relative flex flex-1 flex-col rounded-lg bg-white p-4 shadow-sm sm:p-6">
-            <h3 className="mb-6 text-base font-medium text-gray-800">กระเป๋าเงินบริษัท</h3>
+            <h3 className="mb-6 text-base font-medium text-gray-800">
+              กระเป๋าเงินบริษัท
+            </h3>
 
             {/* Balance Card */}
             <div
               className="relative z-10 mb-4 overflow-hidden rounded-xl p-6 pb-10 text-white"
               style={{
-                background: 'linear-gradient(135deg, #98AEFF 0%, #98AEFF 100%)',
-                position: 'relative',
-                overflow: 'hidden',
+                background: "linear-gradient(135deg, #98AEFF 0%, #98AEFF 100%)",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
               <div
                 style={{
-                  position: 'absolute',
-                  top: '-90px',
-                  left: '-130px',
-                  width: '540px',
-                  height: '540px',
-                  background: 'radial-gradient(circle at 50% 50%, #A9BCFF 70%, transparent 100%)',
-                  borderRadius: '50%',
+                  position: "absolute",
+                  top: "-90px",
+                  left: "-130px",
+                  width: "540px",
+                  height: "540px",
+                  background:
+                    "radial-gradient(circle at 50% 50%, #A9BCFF 70%, transparent 100%)",
+                  borderRadius: "50%",
                   zIndex: 1,
                   opacity: 0.7,
                 }}
               />
               <div
                 style={{
-                  position: 'absolute',
-                  top: '-60px',
-                  left: '-100px',
-                  width: '420px',
-                  height: '420px',
-                  background: 'radial-gradient(circle at 50% 50%, #6484F5 70%, transparent 100%)',
-                  borderRadius: '50%',
+                  position: "absolute",
+                  top: "-60px",
+                  left: "-100px",
+                  width: "420px",
+                  height: "420px",
+                  background:
+                    "radial-gradient(circle at 50% 50%, #6484F5 70%, transparent 100%)",
+                  borderRadius: "50%",
                   zIndex: 2,
                   opacity: 0.7,
                 }}
               />
               <div
                 style={{
-                  position: 'absolute',
-                  top: '-30px',
-                  left: '-70px',
-                  width: '300px',
-                  height: '300px',
-                  background: 'radial-gradient(circle at 50% 50%, #355FF5 70%, transparent 100%)',
-                  borderRadius: '50%',
+                  position: "absolute",
+                  top: "-30px",
+                  left: "-70px",
+                  width: "300px",
+                  height: "300px",
+                  background:
+                    "radial-gradient(circle at 50% 50%, #355FF5 70%, transparent 100%)",
+                  borderRadius: "50%",
                   zIndex: 4,
                   opacity: 0.4,
                 }}
@@ -330,7 +347,9 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    <span className="text-sm font-light text-[#355FF5]">ถอนครั้งล่าสุด</span>
+                    <span className="text-sm font-light text-[#355FF5]">
+                      ถอนครั้งล่าสุด
+                    </span>
                   </div>
                   <div className="text-xs font-light text-gray-500">
                     {isRevenueLoading ? (
@@ -348,7 +367,10 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
         {/* Middle Column - การถอนเงิน */}
         <div className="flex h-full flex-col lg:col-span-1">
           <div className="flex flex-1 flex-col rounded-lg bg-white p-4 shadow-sm sm:p-6">
-            <h3 className="mb-6 text-base font-medium" style={{ color: colors.neutral[800] }}>
+            <h3
+              className="mb-6 text-base font-medium"
+              style={{ color: colors.neutral[800] }}
+            >
               การถอนเงิน :
             </h3>
 
@@ -362,7 +384,10 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
                     onCheckedChange={handleAutoWithdrawChange}
                     className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-300"
                   />
-                  <span className="text-sm font-medium" style={{ color: colors.neutral[800] }}>
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: colors.neutral[800] }}
+                  >
                     ถอนอัตโนมัติ
                   </span>
                 </div>
@@ -382,9 +407,12 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
 
             {/* Warning Message using CustomAlert */}
             <div className="mb-6 text-sm">
-              <CustomAlert variant="default" className="border-0 bg-[#FFE8D7] text-[#F67416]">
+              <CustomAlert
+                variant="default"
+                className="border-0 bg-[#FFE8D7] text-[#F67416]"
+              >
                 <WarningIcon className="h-5 w-5" />
-                <b>คุณสามารถถอนเงินได้ฟรี 1 ครั้งต่อเดือน</b>{' '}
+                <b>คุณสามารถถอนเงินได้ฟรี 1 ครั้งต่อเดือน</b>{" "}
                 ขยับแพ็คเก็จของคุณเพื่อประโยชน์เพิ่มขึ้น
               </CustomAlert>
             </div>
@@ -408,12 +436,16 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
           <div className="flex flex-1 flex-col rounded-lg bg-white p-4 shadow-sm sm:p-6">
             {/* Header */}
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-800">บัญชีธนาคาร</h3>
-              <Link href={`/${locale}/team/${teamId}/revenue/bank-account/manage`}>
+              <h3 className="text-xl font-semibold text-gray-800">
+                บัญชีธนาคาร
+              </h3>
+              <Link
+                href={`/${locale}/team/${teamId}/revenue/bank-account/manage`}
+              >
                 <Button
                   size="lg"
                   className="w-fit rounded-xl border-none bg-blue-600 px-8 py-2 text-base font-medium text-white hover:bg-blue-700"
-                  style={{ backgroundColor: '#2563EB', color: '#fff' }}
+                  style={{ backgroundColor: "#2563EB", color: "#fff" }}
                 >
                   ตั้งค่า
                 </Button>
@@ -428,7 +460,9 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
               </div>
             ) : revenueError ? (
               <div className="flex items-center justify-center rounded-2xl bg-red-50 p-6">
-                <div className="text-red-600">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>
+                <div className="text-red-600">
+                  เกิดข้อผิดพลาดในการโหลดข้อมูล
+                </div>
               </div>
             ) : revenueBankAccount ? (
               <BankAccountItem account={revenueBankAccount} size="small" />
@@ -453,10 +487,14 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
                     ) : revenueError ? (
                       <span className="text-lg text-red-500">Error</span>
                     ) : (
-                      formatCurrency(revenueBalanceResponse?.data?.available_balance || 0)
+                      formatCurrency(
+                        revenueBalanceResponse?.data?.available_balance || 0,
+                      )
                     )}
                   </div>
-                  <div className="mt-2 text-sm font-light text-[#364A63]">Total Balance</div>
+                  <div className="mt-2 text-sm font-light text-[#364A63]">
+                    Total Balance
+                  </div>
                 </div>
 
                 {/* On Hold */}
@@ -467,10 +505,16 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
                     ) : revenueError ? (
                       <span className="text-lg text-red-500">Error</span>
                     ) : (
-                      formatCurrency(Math.abs(revenueBalanceResponse?.data?.onhold_balance || 0))
+                      formatCurrency(
+                        Math.abs(
+                          revenueBalanceResponse?.data?.onhold_balance || 0,
+                        ),
+                      )
                     )}
                   </div>
-                  <div className="mt-2 text-sm font-light text-[#364A63]">On Hold</div>
+                  <div className="mt-2 text-sm font-light text-[#364A63]">
+                    On Hold
+                  </div>
                 </div>
 
                 {/* Reserve */}
@@ -481,10 +525,14 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
                     ) : revenueError ? (
                       <span className="text-lg text-red-500">Error</span>
                     ) : (
-                      formatCurrency(revenueBalanceResponse?.data?.reserve_balance || 0)
+                      formatCurrency(
+                        revenueBalanceResponse?.data?.reserve_balance || 0,
+                      )
                     )}
                   </div>
-                  <div className="mt-2 text-sm font-light text-[#364A63]">Reserve</div>
+                  <div className="mt-2 text-sm font-light text-[#364A63]">
+                    Reserve
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -567,8 +615,8 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
                         key={page}
                         className={`h-8 w-8 rounded ${
                           page === 1
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                         }`}
                       >
                         {page}
@@ -597,7 +645,7 @@ export const RevenueTab = memo(({ teamId, locale }: RevenueTabProps) => {
         teamId={teamId}
       />
     </div>
-  )
-})
+  );
+});
 
-RevenueTab.displayName = 'RevenueTab'
+RevenueTab.displayName = "RevenueTab";

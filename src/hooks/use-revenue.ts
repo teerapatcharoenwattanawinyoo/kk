@@ -1,8 +1,8 @@
-import { IResponse } from '@/lib/api/config/model'
-import { getRevenueBalanceApi } from '@/lib/api/team-group/revenue'
-import { QUERY_KEYS } from '@/lib/constants'
-import { RevenueBalanceResponse } from '@/lib/schemas/revenue'
-import { useQuery } from '@tanstack/react-query'
+import { IResponse } from "@/lib/api/config/model";
+import { getRevenueBalanceApi } from "@/lib/api/team-group/revenue";
+import { QUERY_KEYS } from "@/lib/constants";
+import { RevenueBalanceResponse } from "@/lib/schemas/revenue";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * Hook สำหรับดึงข้อมูล Revenue Balance
@@ -17,5 +17,5 @@ export const useRevenueBalance = (team_group_id: string | number) => {
     refetchOnMount: true,
     retry: 3, // ลองใหม่ 3 ครั้งถ้าเกิดข้อผิดพลาด
     enabled: !!team_group_id, // Query จะทำงานเมื่อมี team_group_id เท่านั้น
-  })
-}
+  });
+};

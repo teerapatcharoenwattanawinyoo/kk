@@ -1,59 +1,59 @@
-import { SearchInput } from '@/ui/atoms/search-input'
-import type { Meta, StoryObj } from '@storybook/react'
-import React from 'react'
+import { SearchInput } from "@/ui/atoms/search-input";
+import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 
 const meta = {
-  title: 'Atoms/SearchInput',
+  title: "Atoms/SearchInput",
   component: SearchInput,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     placeholder: {
-      control: { type: 'text' },
+      control: { type: "text" },
     },
     disabled: {
-      control: { type: 'boolean' },
+      control: { type: "boolean" },
     },
     value: {
-      control: { type: 'text' },
+      control: { type: "text" },
     },
   },
-} satisfies Meta<typeof SearchInput>
+} satisfies Meta<typeof SearchInput>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    placeholder: 'Search...',
+    placeholder: "Search...",
   },
-}
+};
 
 export const WithValue: Story = {
   args: {
-    placeholder: 'Search...',
-    value: 'React components',
+    placeholder: "Search...",
+    value: "React components",
   },
-}
+};
 
 export const CustomPlaceholder: Story = {
   args: {
-    placeholder: 'Search products...',
+    placeholder: "Search products...",
   },
-}
+};
 
 export const Disabled: Story = {
   args: {
-    placeholder: 'Search...',
+    placeholder: "Search...",
     disabled: true,
   },
-}
+};
 
 export const WithState: Story = {
   render: () => {
-    const [searchValue, setSearchValue] = React.useState('')
+    const [searchValue, setSearchValue] = React.useState("");
 
     return (
       <div className="w-80">
@@ -63,12 +63,14 @@ export const WithState: Story = {
           onChange={setSearchValue}
         />
         {searchValue && (
-          <p className="mt-2 text-sm text-gray-600">Searching for: "{searchValue}"</p>
+          <p className="mt-2 text-sm text-gray-600">
+            Searching for: "{searchValue}"
+          </p>
         )}
       </div>
-    )
+    );
   },
-}
+};
 
 export const Different_Sizes: Story = {
   render: () => (
@@ -84,4 +86,4 @@ export const Different_Sizes: Story = {
       </div>
     </div>
   ),
-}
+};

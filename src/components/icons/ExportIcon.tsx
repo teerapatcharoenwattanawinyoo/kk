@@ -1,10 +1,10 @@
-import React from 'react'
+import React from "react";
 
 interface ExportIconProps {
-  className?: string
+  className?: string;
 }
 
-export const ExportIcon: React.FC<ExportIconProps> = ({ className = '' }) => {
+export const ExportIcon: React.FC<ExportIconProps> = ({ className = "" }) => {
   return (
     <svg
       width="14"
@@ -19,5 +19,5 @@ export const ExportIcon: React.FC<ExportIconProps> = ({ className = '' }) => {
         fill="#818894"
       />
     </svg>
-  )
-}
+  );
+};

@@ -1,1 +1,1 @@
-export { RevenueTab } from './revenue-tab'
+export { RevenueTab } from "./revenue-tab";

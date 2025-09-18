@@ -1,19 +1,19 @@
-'use client'
+"use client";
 
-import FetchLoader from '@/components/FetchLoader'
+import FetchLoader from "@/components/FetchLoader";
 import {
   useCreateTaxInformation,
   useFileUpload,
   useTaxTypes,
   useUpdateTaxInformation,
-} from '@/hooks/use-tax'
-import { toast } from '@/hooks/use-toast'
+} from "@/hooks/use-tax";
+import { toast } from "@/hooks/use-toast";
 import {
   TaxInformationFormData,
   TaxInformationResponse,
   taxInformationSchema,
-} from '@/lib/schemas/tax'
-import { colors } from '@/lib/utils/colors'
+} from "@/lib/schemas/tax";
+import { colors } from "@/lib/utils/colors";
 import {
   Button,
   Input,
@@ -23,18 +23,18 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useCallback, useMemo, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+} from "@/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback, useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 interface TaxInformationFormProps {
-  teamId: string
-  initialData?: TaxInformationResponse
-  isEditMode?: boolean
-  onBack: () => void
-  onSave: () => void
-  onCancel: () => void
+  teamId: string;
+  initialData?: TaxInformationResponse;
+  isEditMode?: boolean;
+  onBack: () => void;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
 export const TaxInformationForm = ({
@@ -44,16 +44,16 @@ export const TaxInformationForm = ({
   onSave,
   onCancel,
 }: TaxInformationFormProps) => {
-  const { data: taxTypesResponse, isLoading: taxTypesLoading } = useTaxTypes()
-  const createTaxMutation = useCreateTaxInformation(teamId)
-  const updateTaxMutation = useUpdateTaxInformation(teamId)
-  const { handleFileSelect } = useFileUpload()
+  const { data: taxTypesResponse, isLoading: taxTypesLoading } = useTaxTypes();
+  const createTaxMutation = useCreateTaxInformation(teamId);
+  const updateTaxMutation = useUpdateTaxInformation(teamId);
+  const { handleFileSelect } = useFileUpload();
 
   const [selectedFiles, setSelectedFiles] = useState({
     file1: null as File | null,
     file2: null as File | null,
     file3: null as File | null,
-  })
+  });
 
   const {
     register,
@@ -70,8 +70,8 @@ export const TaxInformationForm = ({
           selectType: initialData.individual_type_id.toString(),
           name: initialData.name,
           lastname: initialData.last_name,
-          companyName: initialData.company_name || '',
-          branch: initialData.branch || '',
+          companyName: initialData.company_name || "",
+          branch: initialData.branch || "",
           taxId: initialData.tax_id,
           country: initialData.country,
           taxInvoiceAddress: initialData.address,
@@ -86,81 +86,94 @@ export const TaxInformationForm = ({
           },
         }
       : {
-          selectType: '',
-          name: '',
-          lastname: '',
-          companyName: '',
-          branch: '',
-          taxId: '',
-          country: 'thailand',
-          taxInvoiceAddress: '',
-          province: '',
-          district: '',
-          subDistrict: '',
-          postcode: '',
+          selectType: "",
+          name: "",
+          lastname: "",
+          companyName: "",
+          branch: "",
+          taxId: "",
+          country: "thailand",
+          taxInvoiceAddress: "",
+          province: "",
+          district: "",
+          subDistrict: "",
+          postcode: "",
           files: {
             file1: null,
             file2: null,
             file3: null,
           },
         },
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
-  const selectedType = watch('selectType')
+  const selectedType = watch("selectType");
 
   const taxTypes = useMemo(() => {
-    return taxTypesResponse?.data || []
-  }, [taxTypesResponse])
+    return taxTypesResponse?.data || [];
+  }, [taxTypesResponse]);
 
   useMemo(() => {
     if (taxTypes.length > 0 && !selectedType) {
-      setValue('selectType', taxTypes[0].id.toString())
+      setValue("selectType", taxTypes[0].id.toString());
     }
-  }, [taxTypes, selectedType, setValue])
+  }, [taxTypes, selectedType, setValue]);
 
   const requiredFiles = useMemo(() => {
-    const selectedTaxType = taxTypes.find((type) => type.id.toString() === selectedType)
+    const selectedTaxType = taxTypes.find(
+      (type) => type.id.toString() === selectedType,
+    );
 
     if (!selectedTaxType) {
-      return []
+      return [];
     }
 
-    const typeName = selectedTaxType.name.toLowerCase()
+    const typeName = selectedTaxType.name.toLowerCase();
 
-    if (typeName.includes('บุคคลธรรมดา') && typeName.includes('จดภาษี')) {
+    if (typeName.includes("บุคคลธรรมดา") && typeName.includes("จดภาษี")) {
       return [
-        { key: 'file1', label: 'บัตรประชาชน' },
-        { key: 'file2', label: 'กพ 20' },
-      ]
-    } else if (typeName.includes('บุคคลธรรมดา') && typeName.includes('ไม่จดภาษี')) {
-      return [{ key: 'file1', label: 'บัตรประชาชน' }]
-    } else if (typeName.includes('นิติบุคคล') && typeName.includes('จดภาษี')) {
+        { key: "file1", label: "บัตรประชาชน" },
+        { key: "file2", label: "กพ 20" },
+      ];
+    } else if (
+      typeName.includes("บุคคลธรรมดา") &&
+      typeName.includes("ไม่จดภาษี")
+    ) {
+      return [{ key: "file1", label: "บัตรประชาชน" }];
+    } else if (typeName.includes("นิติบุคคล") && typeName.includes("จดภาษี")) {
       return [
-        { key: 'file1', label: 'บัตรประชาชน' },
-        { key: 'file2', label: 'หนังสือรับรองบริษัท' },
-        { key: 'file3', label: 'กพ 20' },
-      ]
-    } else if (typeName.includes('นิติบุคคล') && typeName.includes('ไม่จดภาษี')) {
+        { key: "file1", label: "บัตรประชาชน" },
+        { key: "file2", label: "หนังสือรับรองบริษัท" },
+        { key: "file3", label: "กพ 20" },
+      ];
+    } else if (
+      typeName.includes("นิติบุคคล") &&
+      typeName.includes("ไม่จดภาษี")
+    ) {
       return [
-        { key: 'file1', label: 'หนังสือรับรองบริษัท' },
-        { key: 'file2', label: 'บัตรประชาชนกรรมการ' },
-      ]
+        { key: "file1", label: "หนังสือรับรองบริษัท" },
+        { key: "file2", label: "บัตรประชาชนกรรมการ" },
+      ];
     }
 
-    return []
-  }, [taxTypes, selectedType])
+    return [];
+  }, [taxTypes, selectedType]);
 
   // File handling
   const triggerFileInput = useCallback((fileKey: string) => {
-    const input = document.getElementById(`file-input-${fileKey}`) as HTMLInputElement
-    input?.click()
-  }, [])
+    const input = document.getElementById(
+      `file-input-${fileKey}`,
+    ) as HTMLInputElement;
+    input?.click();
+  }, []);
 
   const handleFileInput = useCallback(
-    (fileKey: 'file1' | 'file2' | 'file3', e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (!file) return
+    (
+      fileKey: "file1" | "file2" | "file3",
+      e: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
       handleFileSelect(
         file,
@@ -168,40 +181,42 @@ export const TaxInformationForm = ({
           setSelectedFiles((prev) => ({
             ...prev,
             [fileKey]: validFile,
-          }))
-          setValue(`files.${fileKey}`, validFile)
+          }));
+          setValue(`files.${fileKey}`, validFile);
           toast({
-            title: 'สำเร็จ',
-            description: 'อัพโหลดไฟล์เรียบร้อย',
-          })
+            title: "สำเร็จ",
+            description: "อัพโหลดไฟล์เรียบร้อย",
+          });
         },
         (errors) => {
           toast({
-            title: 'ข้อผิดพลาด',
-            description: errors.join(', '),
-            variant: 'destructive',
-          })
+            title: "ข้อผิดพลาด",
+            description: errors.join(", "),
+            variant: "destructive",
+          });
         },
-      )
+      );
     },
     [handleFileSelect, setValue],
-  )
+  );
 
   const handleRemoveFile = useCallback(
-    (fileKey: 'file1' | 'file2' | 'file3') => {
+    (fileKey: "file1" | "file2" | "file3") => {
       setSelectedFiles((prev) => ({
         ...prev,
         [fileKey]: null,
-      }))
-      setValue(`files.${fileKey}`, null)
+      }));
+      setValue(`files.${fileKey}`, null);
 
-      const input = document.getElementById(`file-input-${fileKey}`) as HTMLInputElement
+      const input = document.getElementById(
+        `file-input-${fileKey}`,
+      ) as HTMLInputElement;
       if (input) {
-        input.value = ''
+        input.value = "";
       }
     },
     [setValue],
-  )
+  );
 
   // Reset files when type changes
   useMemo(() => {
@@ -210,12 +225,12 @@ export const TaxInformationForm = ({
         file1: null,
         file2: null,
         file3: null,
-      })
-      setValue('files.file1', null)
-      setValue('files.file2', null)
-      setValue('files.file3', null)
+      });
+      setValue("files.file1", null);
+      setValue("files.file2", null);
+      setValue("files.file3", null);
     }
-  }, [selectedType, setValue])
+  }, [selectedType, setValue]);
 
   // Form submission
   const onSubmit = useCallback(
@@ -224,46 +239,48 @@ export const TaxInformationForm = ({
         const updatedData = {
           ...data,
           files: selectedFiles,
-        }
+        };
 
         if (isEditMode) {
-          await updateTaxMutation.mutateAsync(updatedData)
+          await updateTaxMutation.mutateAsync(updatedData);
           toast({
-            title: 'สำเร็จ',
-            description: 'อัปเดตข้อมูลภาษีเรียบร้อย',
-          })
+            title: "สำเร็จ",
+            description: "อัปเดตข้อมูลภาษีเรียบร้อย",
+          });
         } else {
-          await createTaxMutation.mutateAsync(updatedData)
+          await createTaxMutation.mutateAsync(updatedData);
           toast({
-            title: 'สำเร็จ',
-            description: 'บันทึกข้อมูลภาษีเรียบร้อย',
-          })
+            title: "สำเร็จ",
+            description: "บันทึกข้อมูลภาษีเรียบร้อย",
+          });
         }
 
-        onSave()
+        onSave();
       } catch {
         toast({
-          title: 'ข้อผิดพลาด',
-          description: isEditMode ? 'ไม่สามารถอัปเดตข้อมูลได้' : 'ไม่สามารถบันทึกข้อมูลได้',
-          variant: 'destructive',
-        })
+          title: "ข้อผิดพลาด",
+          description: isEditMode
+            ? "ไม่สามารถอัปเดตข้อมูลได้"
+            : "ไม่สามารถบันทึกข้อมูลได้",
+          variant: "destructive",
+        });
       }
     },
     [selectedFiles, isEditMode, createTaxMutation, updateTaxMutation, onSave],
-  )
+  );
 
   const handleCancel = useCallback(() => {
-    reset()
+    reset();
     setSelectedFiles({
       file1: null,
       file2: null,
       file3: null,
-    })
-    onCancel()
-  }, [reset, onCancel])
+    });
+    onCancel();
+  }, [reset, onCancel]);
 
   if (taxTypesLoading) {
-    return <FetchLoader />
+    return <FetchLoader />;
   }
 
   return (
@@ -271,14 +288,19 @@ export const TaxInformationForm = ({
       <form onSubmit={handleSubmit(onSubmit)} className="rounded-lg bg-white">
         <div className="mb-6">
           <h2 className="text-title mb-2 text-lg font-medium">Create Tax</h2>
-          <p className="text-muted-blue text-sm">Configure tax invoice settings</p>
+          <p className="text-muted-blue text-sm">
+            Configure tax invoice settings
+          </p>
         </div>
 
         <div className="flex gap-6 border-t">
           {/* Left Section - Select Type */}
           <div className="w-1/4">
             <div className="space-y-2 border-b py-8">
-              <Label htmlFor="selectType" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="selectType"
+                className="text-sm font-medium text-gray-700"
+              >
                 Select Type
               </Label>
               <Controller
@@ -293,10 +315,14 @@ export const TaxInformationForm = ({
                     <SelectTrigger
                       className="w-full"
                       style={{
-                        backgroundColor: colors.input?.background || '#f9fafb',
+                        backgroundColor: colors.input?.background || "#f9fafb",
                       }}
                     >
-                      <SelectValue placeholder={taxTypesLoading ? 'Loading...' : 'Select Type'} />
+                      <SelectValue
+                        placeholder={
+                          taxTypesLoading ? "Loading..." : "Select Type"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {taxTypes.map((type) => (
@@ -309,7 +335,9 @@ export const TaxInformationForm = ({
                 )}
               />
               {errors.selectType && (
-                <p className="text-sm text-red-600">{errors.selectType.message}</p>
+                <p className="text-sm text-red-600">
+                  {errors.selectType.message}
+                </p>
               )}
             </div>
           </div>
@@ -327,14 +355,18 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <Input
                   id="name"
-                  {...register('name')}
+                  {...register("name")}
                   placeholder="Specify"
                   className="w-full"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
-                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -349,15 +381,17 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <Input
                   id="lastname"
-                  {...register('lastname')}
+                  {...register("lastname")}
                   placeholder="Specify"
                   className="w-full"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
                 {errors.lastname && (
-                  <p className="mt-1 text-sm text-red-600">{errors.lastname.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.lastname.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -373,15 +407,17 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <Input
                   id="companyName"
-                  {...register('companyName')}
+                  {...register("companyName")}
                   placeholder="Specify"
                   className="w-full"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
                 {errors.companyName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.companyName.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.companyName.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -397,15 +433,17 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <Input
                   id="branch"
-                  {...register('branch')}
+                  {...register("branch")}
                   placeholder="Specify"
                   className="w-full"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
                 {errors.branch && (
-                  <p className="mt-1 text-sm text-red-600">{errors.branch.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.branch.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -421,15 +459,17 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <Input
                   id="taxId"
-                  {...register('taxId')}
+                  {...register("taxId")}
                   placeholder="Specify"
                   className="w-full"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
                 {errors.taxId && (
-                  <p className="mt-1 text-sm text-red-600">{errors.taxId.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.taxId.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -451,7 +491,8 @@ export const TaxInformationForm = ({
                       <SelectTrigger
                         className="w-full"
                         style={{
-                          backgroundColor: colors.input?.background || '#f9fafb',
+                          backgroundColor:
+                            colors.input?.background || "#f9fafb",
                         }}
                       >
                         <SelectValue placeholder="Specify" />
@@ -465,7 +506,9 @@ export const TaxInformationForm = ({
                   )}
                 />
                 {errors.country && (
-                  <p className="mt-1 text-sm text-red-600">{errors.country.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.country.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -481,16 +524,18 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <textarea
                   id="taxInvoiceAddress"
-                  {...register('taxInvoiceAddress')}
+                  {...register("taxInvoiceAddress")}
                   placeholder="Specify"
                   rows={3}
                   className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
                 {errors.taxInvoiceAddress && (
-                  <p className="mt-1 text-sm text-red-600">{errors.taxInvoiceAddress.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.taxInvoiceAddress.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -506,15 +551,17 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <Input
                   id="province"
-                  {...register('province')}
+                  {...register("province")}
                   placeholder="Specify"
                   className="w-full"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
                 {errors.province && (
-                  <p className="mt-1 text-sm text-red-600">{errors.province.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.province.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -530,15 +577,17 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <Input
                   id="district"
-                  {...register('district')}
+                  {...register("district")}
                   placeholder="Specify"
                   className="w-full"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
                 {errors.district && (
-                  <p className="mt-1 text-sm text-red-600">{errors.district.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.district.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -554,15 +603,17 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <Input
                   id="subDistrict"
-                  {...register('subDistrict')}
+                  {...register("subDistrict")}
                   placeholder="Specify"
                   className="w-full"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
                 {errors.subDistrict && (
-                  <p className="mt-1 text-sm text-red-600">{errors.subDistrict.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.subDistrict.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -578,15 +629,17 @@ export const TaxInformationForm = ({
               <div className="flex-1">
                 <Input
                   id="postcode"
-                  {...register('postcode')}
+                  {...register("postcode")}
                   placeholder="Specify"
                   className="w-full"
                   style={{
-                    backgroundColor: colors.input?.background || '#f9fafb',
+                    backgroundColor: colors.input?.background || "#f9fafb",
                   }}
                 />
                 {errors.postcode && (
-                  <p className="mt-1 text-sm text-red-600">{errors.postcode.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.postcode.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -595,75 +648,97 @@ export const TaxInformationForm = ({
             {selectedType && requiredFiles.length > 0 && (
               <div className="space-y-4 rounded-lg border border-gray-200 p-6">
                 <div className="flex">
-                  <h3 className="w-32 text-sm font-medium text-gray-700">Upload File</h3>
+                  <h3 className="w-32 text-sm font-medium text-gray-700">
+                    Upload File
+                  </h3>
                   <div className="w-full space-y-4">
-                    {requiredFiles.map((fileItem: { key: string; label: string }) => (
-                      <div key={fileItem.key} className="flex w-full items-center gap-4">
-                        <div className="flex items-center gap-3">
-                          <input
-                            id={`file-input-${fileItem.key}`}
-                            type="file"
-                            accept=".pdf,.png,.jpg,.jpeg"
-                            onChange={(e) =>
-                              handleFileInput(fileItem.key as 'file1' | 'file2' | 'file3', e)
-                            }
-                            className="hidden"
-                          />
-
-                          {selectedFiles[fileItem.key as keyof typeof selectedFiles] ? (
-                            // Uploaded state
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex w-32 items-center justify-center gap-1 bg-white px-4 py-1 text-xs text-[#0D8A72]"
-                            >
-                              Uploaded
-                            </Button>
-                          ) : (
-                            // Choose File state
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => triggerFileInput(fileItem.key)}
-                              className="flex w-32 items-center justify-center gap-1 bg-black px-4 py-1 text-xs text-white hover:bg-gray-800"
-                            >
-                              Choose File
-                            </Button>
-                          )}
-                        </div>
+                    {requiredFiles.map(
+                      (fileItem: { key: string; label: string }) => (
                         <div
-                          className="flex w-full items-center justify-between rounded-lg border p-3"
-                          style={{
-                            backgroundColor: selectedFiles[
-                              fileItem.key as keyof typeof selectedFiles
-                            ]
-                              ? colors.primary[500]
-                              : 'transparent',
-                            color: selectedFiles[fileItem.key as keyof typeof selectedFiles]
-                              ? 'white'
-                              : 'gray',
-                          }}
+                          key={fileItem.key}
+                          className="flex w-full items-center gap-4"
                         >
-                          <span className="text-sm">
-                            {selectedFiles[fileItem.key as keyof typeof selectedFiles]
-                              ? selectedFiles[fileItem.key as keyof typeof selectedFiles]?.name
-                              : fileItem.label}
-                          </span>
-                          {selectedFiles[fileItem.key as keyof typeof selectedFiles] && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() =>
-                                handleRemoveFile(fileItem.key as 'file1' | 'file2' | 'file3')
+                          <div className="flex items-center gap-3">
+                            <input
+                              id={`file-input-${fileItem.key}`}
+                              type="file"
+                              accept=".pdf,.png,.jpg,.jpeg"
+                              onChange={(e) =>
+                                handleFileInput(
+                                  fileItem.key as "file1" | "file2" | "file3",
+                                  e,
+                                )
                               }
-                              className="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
-                            >
-                              ×
-                            </Button>
-                          )}
+                              className="hidden"
+                            />
+
+                            {selectedFiles[
+                              fileItem.key as keyof typeof selectedFiles
+                            ] ? (
+                              // Uploaded state
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex w-32 items-center justify-center gap-1 bg-white px-4 py-1 text-xs text-[#0D8A72]"
+                              >
+                                Uploaded
+                              </Button>
+                            ) : (
+                              // Choose File state
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => triggerFileInput(fileItem.key)}
+                                className="flex w-32 items-center justify-center gap-1 bg-black px-4 py-1 text-xs text-white hover:bg-gray-800"
+                              >
+                                Choose File
+                              </Button>
+                            )}
+                          </div>
+                          <div
+                            className="flex w-full items-center justify-between rounded-lg border p-3"
+                            style={{
+                              backgroundColor: selectedFiles[
+                                fileItem.key as keyof typeof selectedFiles
+                              ]
+                                ? colors.primary[500]
+                                : "transparent",
+                              color: selectedFiles[
+                                fileItem.key as keyof typeof selectedFiles
+                              ]
+                                ? "white"
+                                : "gray",
+                            }}
+                          >
+                            <span className="text-sm">
+                              {selectedFiles[
+                                fileItem.key as keyof typeof selectedFiles
+                              ]
+                                ? selectedFiles[
+                                    fileItem.key as keyof typeof selectedFiles
+                                  ]?.name
+                                : fileItem.label}
+                            </span>
+                            {selectedFiles[
+                              fileItem.key as keyof typeof selectedFiles
+                            ] && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  handleRemoveFile(
+                                    fileItem.key as "file1" | "file2" | "file3",
+                                  )
+                                }
+                                className="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                              >
+                                ×
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </div>
                 </div>
               </div>
@@ -678,7 +753,11 @@ export const TaxInformationForm = ({
             variant="outline"
             onClick={handleCancel}
             className="px-6 py-2"
-            disabled={isSubmitting || createTaxMutation.isPending || updateTaxMutation.isPending}
+            disabled={
+              isSubmitting ||
+              createTaxMutation.isPending ||
+              updateTaxMutation.isPending
+            }
           >
             CANCEL
           </Button>
@@ -687,29 +766,34 @@ export const TaxInformationForm = ({
             className="px-6 py-2 text-white"
             style={{ backgroundColor: colors.primary[500] }}
             disabled={
-              !isValid || isSubmitting || createTaxMutation.isPending || updateTaxMutation.isPending
+              !isValid ||
+              isSubmitting ||
+              createTaxMutation.isPending ||
+              updateTaxMutation.isPending
             }
             onMouseEnter={(e) => {
               if (!e.currentTarget.disabled) {
-                e.currentTarget.style.backgroundColor = colors.primary[600]
+                e.currentTarget.style.backgroundColor = colors.primary[600];
               }
             }}
             onMouseLeave={(e) => {
               if (!e.currentTarget.disabled) {
-                e.currentTarget.style.backgroundColor = colors.primary[500]
+                e.currentTarget.style.backgroundColor = colors.primary[500];
               }
             }}
           >
-            {isSubmitting || createTaxMutation.isPending || updateTaxMutation.isPending
+            {isSubmitting ||
+            createTaxMutation.isPending ||
+            updateTaxMutation.isPending
               ? isEditMode
-                ? 'กำลังอัปเดต...'
-                : 'กำลังบันทึก...'
+                ? "กำลังอัปเดต..."
+                : "กำลังบันทึก..."
               : isEditMode
-                ? 'UPDATE'
-                : 'SAVE'}
+                ? "UPDATE"
+                : "SAVE"}
           </Button>
         </div>
       </form>
     </div>
-  )
-}
+  );
+};

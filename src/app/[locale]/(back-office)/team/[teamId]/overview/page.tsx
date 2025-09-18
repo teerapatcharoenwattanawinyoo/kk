@@ -1,21 +1,21 @@
-import { TeamOverview } from '@/components/back-office/team/overview/team-overview'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamOverview } from "@/components/back-office/team/overview/team-overview";
+import { TeamGuard } from "@/components/back-office/team/team-guard";
 
 interface TeamOverviewPageProps {
   params: Promise<{
-    locale: string
-    teamId: string
-  }>
+    locale: string;
+    teamId: string;
+  }>;
 }
 
 const TeamOverviewPage = async ({ params }: TeamOverviewPageProps) => {
-  const { teamId, locale } = await params
+  const { teamId, locale } = await params;
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
       <TeamOverview teamId={teamId} />
     </TeamGuard>
-  )
-}
+  );
+};
 
-export default TeamOverviewPage
+export default TeamOverviewPage;

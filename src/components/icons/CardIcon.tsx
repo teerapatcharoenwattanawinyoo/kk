@@ -1,13 +1,13 @@
-import React from 'react'
+import React from "react";
 
 interface CardIconProps {
-  className?: string
-  width?: number
-  height?: number
+  className?: string;
+  width?: number;
+  height?: number;
 }
 
 export const CardIcon: React.FC<CardIconProps> = ({
-  className = 'w-5 h-5',
+  className = "w-5 h-5",
   width = 24,
   height = 19,
 }) => {
@@ -33,5 +33,5 @@ export const CardIcon: React.FC<CardIconProps> = ({
         fill="#B5C4FA"
       />
     </svg>
-  )
-}
+  );
+};

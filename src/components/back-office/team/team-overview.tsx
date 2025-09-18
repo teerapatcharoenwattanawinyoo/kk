@@ -1,33 +1,39 @@
-'use client'
+"use client";
 
-import { TeamHeader } from '@/components/back-office/team/team-header'
-import { TeamTabs } from '@/components/back-office/team/team-tabs'
-import { LineChart } from '@/components/line-chart'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { ArrowUpDown, ChartBar, ChartLine, ChevronDown, Pencil } from 'lucide-react'
-import { useState } from 'react'
+import { TeamHeader } from "@/components/back-office/team/team-header";
+import { TeamTabs } from "@/components/back-office/team/team-tabs";
+import { LineChart } from "@/components/line-chart";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  ArrowUpDown,
+  ChartBar,
+  ChartLine,
+  ChevronDown,
+  Pencil,
+} from "lucide-react";
+import { useState } from "react";
 
 interface TeamOverviewProps {
-  teamId: string
+  teamId: string;
 }
 
 export function TeamOverview({ teamId }: TeamOverviewProps) {
-  const [month] = useState('October')
+  const [month] = useState("October");
 
   // Mock data for the team based on teamId
   const teamData = {
     id: teamId,
     name:
-      teamId === 'onecharge-gang'
-        ? 'OneCharge Gang'
-        : teamId === 'one-co-ltd'
-          ? 'One Co.ltd'
-          : teamId === 'sitt-group'
-            ? 'SITT Group'
-            : 'Delept Tech',
-    teamId: 'ID Team : ONE678-18907',
+      teamId === "onecharge-gang"
+        ? "OneCharge Gang"
+        : teamId === "one-co-ltd"
+          ? "One Co.ltd"
+          : teamId === "sitt-group"
+            ? "SITT Group"
+            : "Delept Tech",
+    teamId: "ID Team : ONE678-18907",
     revenue: 40689,
     serviceFee: 10293,
     kWh: 8900,
@@ -36,107 +42,107 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
     serviceFeeChange: 3.5,
     kWhChange: -4.3,
     chargesChange: 1.6,
-  }
+  };
 
   // Mock data for charge sessions
   const chargeSessions = [
     {
-      orderNumber: 'CP00378503-379',
-      station: 'OneCharge Charging Station',
-      charger: 'Phev Charger 1',
-      rate: '80.0/kWh',
-      startCharge: '9/7/2023 5:10 PM',
-      stopCharge: '9/7/2023 6:10 PM',
-      time: '1 hr',
-      kWh: '10 kWh',
-      revenue: '฿899.0',
-      status: 'Completed',
+      orderNumber: "CP00378503-379",
+      station: "OneCharge Charging Station",
+      charger: "Phev Charger 1",
+      rate: "80.0/kWh",
+      startCharge: "9/7/2023 5:10 PM",
+      stopCharge: "9/7/2023 6:10 PM",
+      time: "1 hr",
+      kWh: "10 kWh",
+      revenue: "฿899.0",
+      status: "Completed",
     },
     {
-      orderNumber: 'CP00378503-378',
-      station: 'OneCharge Charging Station',
-      charger: 'Phev Charger 1',
-      rate: '80.0/kWh',
-      startCharge: '9/7/2023 5:10 PM',
-      stopCharge: '9/7/2023 6:10 PM',
-      time: '1 hr',
-      kWh: '10 kWh',
-      revenue: '฿899.0',
-      status: 'Completed',
+      orderNumber: "CP00378503-378",
+      station: "OneCharge Charging Station",
+      charger: "Phev Charger 1",
+      rate: "80.0/kWh",
+      startCharge: "9/7/2023 5:10 PM",
+      stopCharge: "9/7/2023 6:10 PM",
+      time: "1 hr",
+      kWh: "10 kWh",
+      revenue: "฿899.0",
+      status: "Completed",
     },
     {
-      orderNumber: 'CP00378503-377',
-      station: 'OneCharge Charging Station',
-      charger: 'Phev Charger 1',
-      rate: '80.0/kWh',
-      startCharge: '9/7/2023 5:10 PM',
-      stopCharge: '9/7/2023 6:10 PM',
-      time: '1 hr',
-      kWh: '10 kWh',
-      revenue: '฿899.0',
-      status: 'Completed',
+      orderNumber: "CP00378503-377",
+      station: "OneCharge Charging Station",
+      charger: "Phev Charger 1",
+      rate: "80.0/kWh",
+      startCharge: "9/7/2023 5:10 PM",
+      stopCharge: "9/7/2023 6:10 PM",
+      time: "1 hr",
+      kWh: "10 kWh",
+      revenue: "฿899.0",
+      status: "Completed",
     },
     {
-      orderNumber: 'CP00378503-376',
-      station: 'OneCharge Charging Station',
-      charger: 'Phev Charger 1',
-      rate: '80.0/kWh',
-      startCharge: '9/7/2023 5:10 PM',
-      stopCharge: '9/7/2023 6:10 PM',
-      time: '1 hr',
-      kWh: '10 kWh',
-      revenue: '฿899.0',
-      status: 'Completed',
+      orderNumber: "CP00378503-376",
+      station: "OneCharge Charging Station",
+      charger: "Phev Charger 1",
+      rate: "80.0/kWh",
+      startCharge: "9/7/2023 5:10 PM",
+      stopCharge: "9/7/2023 6:10 PM",
+      time: "1 hr",
+      kWh: "10 kWh",
+      revenue: "฿899.0",
+      status: "Completed",
     },
     {
-      orderNumber: 'CP00378503-375',
-      station: 'OneCharge Charging Station',
-      charger: 'Phev Charger 1',
-      rate: '80.0/kWh',
-      startCharge: '9/7/2023 5:10 PM',
-      stopCharge: '9/7/2023 6:10 PM',
-      time: '1 hr',
-      kWh: '10 kWh',
-      revenue: '฿899.0',
-      status: 'Completed',
+      orderNumber: "CP00378503-375",
+      station: "OneCharge Charging Station",
+      charger: "Phev Charger 1",
+      rate: "80.0/kWh",
+      startCharge: "9/7/2023 5:10 PM",
+      stopCharge: "9/7/2023 6:10 PM",
+      time: "1 hr",
+      kWh: "10 kWh",
+      revenue: "฿899.0",
+      status: "Completed",
     },
     {
-      orderNumber: 'CP00378503-374',
-      station: 'OneCharge Charging Station',
-      charger: 'Phev Charger 1',
-      rate: '80.0/kWh',
-      startCharge: '9/7/2023 5:10 PM',
-      stopCharge: '9/7/2023 6:10 PM',
-      time: '1 hr',
-      kWh: '10 kWh',
-      revenue: '฿899.0',
-      status: 'Completed',
+      orderNumber: "CP00378503-374",
+      station: "OneCharge Charging Station",
+      charger: "Phev Charger 1",
+      rate: "80.0/kWh",
+      startCharge: "9/7/2023 5:10 PM",
+      stopCharge: "9/7/2023 6:10 PM",
+      time: "1 hr",
+      kWh: "10 kWh",
+      revenue: "฿899.0",
+      status: "Completed",
     },
     {
-      orderNumber: 'CP00378503-373',
-      station: 'OneCharge Charging Station',
-      charger: 'Phev Charger 1',
-      rate: '80.0/kWh',
-      startCharge: '9/7/2023 5:10 PM',
-      stopCharge: '9/7/2023 6:10 PM',
-      time: '1 hr',
-      kWh: '10 kWh',
-      revenue: '฿899.0',
-      status: 'Completed',
+      orderNumber: "CP00378503-373",
+      station: "OneCharge Charging Station",
+      charger: "Phev Charger 1",
+      rate: "80.0/kWh",
+      startCharge: "9/7/2023 5:10 PM",
+      stopCharge: "9/7/2023 6:10 PM",
+      time: "1 hr",
+      kWh: "10 kWh",
+      revenue: "฿899.0",
+      status: "Completed",
     },
     {
-      orderNumber: 'CP00378503-372',
-      station: 'OneCharge Charging Station',
-      charger: 'Phev Charger 1',
-      rate: '80.0/kWh',
-      startCharge: '9/7/2023 5:10 PM',
-      stopCharge: '9/7/2023 6:10 PM',
-      time: '1 hr',
-      kWh: '10 kWh',
-      revenue: '฿899.0',
-      status: 'Completed',
+      orderNumber: "CP00378503-372",
+      station: "OneCharge Charging Station",
+      charger: "Phev Charger 1",
+      rate: "80.0/kWh",
+      startCharge: "9/7/2023 5:10 PM",
+      stopCharge: "9/7/2023 6:10 PM",
+      time: "1 hr",
+      kWh: "10 kWh",
+      revenue: "฿899.0",
+      status: "Completed",
     },
-  ]
+  ];
 
   return (
     <div className="flex flex-col gap-3 p-2 md:p-6">
@@ -145,9 +151,9 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
         className="-mx-2 -mt-2 rounded-2xl px-3 py-8 text-white md:-mx-3 md:-mt-3 md:px-4 md:py-8"
         style={{
           backgroundImage: "url('/assets/images/bgHero1.svg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       >
         <TeamHeader teamId={teamId} pageTitle="" variant="hero" />
@@ -164,11 +170,15 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
             </div>
           </CardHeader>
           <CardContent className="px-8 pb-4 pt-0">
-            <div className="text-xl font-medium">฿{teamData.revenue.toLocaleString()}</div>
+            <div className="text-xl font-medium">
+              ฿{teamData.revenue.toLocaleString()}
+            </div>
             <div className="mt-2 flex items-center text-xs">
               <div
                 className={`flex items-center ${
-                  teamData.revenueChange >= 0 ? 'text-[#00B69B]' : 'text-[#F93C65]'
+                  teamData.revenueChange >= 0
+                    ? "text-[#00B69B]"
+                    : "text-[#F93C65]"
                 }`}
               >
                 {teamData.revenueChange >= 0 ? (
@@ -198,7 +208,9 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
                     />
                   </svg>
                 )}
-                <span className="ml-1">{Math.abs(teamData.revenueChange)}% up</span>
+                <span className="ml-1">
+                  {Math.abs(teamData.revenueChange)}% up
+                </span>
               </div>
               <span className="ml-1 text-muted-foreground">from yesterday</span>
             </div>
@@ -239,11 +251,15 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
             </div>
           </CardHeader>
           <CardContent className="px-8 pb-4 pt-0">
-            <div className="text-xl font-medium">฿{teamData.serviceFee.toLocaleString()}</div>
+            <div className="text-xl font-medium">
+              ฿{teamData.serviceFee.toLocaleString()}
+            </div>
             <div className="mt-2 flex items-center text-xs">
               <div
                 className={`flex items-center ${
-                  teamData.serviceFeeChange >= 0 ? 'text-[#00B69B]' : 'text-[#F93C65]'
+                  teamData.serviceFeeChange >= 0
+                    ? "text-[#00B69B]"
+                    : "text-[#F93C65]"
                 }`}
               >
                 {teamData.serviceFeeChange >= 0 ? (
@@ -273,7 +289,9 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
                     />
                   </svg>
                 )}
-                <span className="ml-1">{Math.abs(teamData.serviceFeeChange)}% up</span>
+                <span className="ml-1">
+                  {Math.abs(teamData.serviceFeeChange)}% up
+                </span>
               </div>
               <span className="ml-1 text-muted-foreground">from past week</span>
             </div>
@@ -281,17 +299,21 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
         </Card>
         <Card className="shadow-xs">
           <CardHeader className="flex flex-row items-center justify-between px-8 pb-2 pt-4">
-            <CardTitle className="text-sm font-light text-muted-foreground">Total kWh</CardTitle>
+            <CardTitle className="text-sm font-light text-muted-foreground">
+              Total kWh
+            </CardTitle>
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FEC53D]/20">
               <ChartBar className="h-4 w-4 text-[#FEC53D]" />
             </div>
           </CardHeader>
           <CardContent className="px-8 pb-4 pt-0">
-            <div className="text-xl font-medium">{teamData.kWh.toLocaleString()} kWh</div>
+            <div className="text-xl font-medium">
+              {teamData.kWh.toLocaleString()} kWh
+            </div>
             <div className="mt-2 flex items-center text-xs">
               <div
                 className={`flex items-center ${
-                  teamData.kWhChange >= 0 ? 'text-[#00B69B]' : 'text-[#F93C65]'
+                  teamData.kWhChange >= 0 ? "text-[#00B69B]" : "text-[#F93C65]"
                 }`}
               >
                 {teamData.kWhChange >= 0 ? (
@@ -321,7 +343,9 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
                     />
                   </svg>
                 )}
-                <span className="ml-1">{Math.abs(teamData.kWhChange)}% down</span>
+                <span className="ml-1">
+                  {Math.abs(teamData.kWhChange)}% down
+                </span>
               </div>
               <span className="ml-1 text-muted-foreground">from yesterday</span>
             </div>
@@ -337,11 +361,15 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
             </div>
           </CardHeader>
           <CardContent className="px-8 pb-4 pt-0">
-            <div className="text-xl font-medium">{teamData.charges.toLocaleString()}</div>
+            <div className="text-xl font-medium">
+              {teamData.charges.toLocaleString()}
+            </div>
             <div className="mt-2 flex items-center text-xs">
               <div
                 className={`flex items-center ${
-                  teamData.chargesChange >= 0 ? 'text-[#00B69B]' : 'text-[#F93C65]'
+                  teamData.chargesChange >= 0
+                    ? "text-[#00B69B]"
+                    : "text-[#F93C65]"
                 }`}
               >
                 {teamData.chargesChange >= 0 ? (
@@ -371,7 +399,9 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
                     />
                   </svg>
                 )}
-                <span className="ml-1">{Math.abs(teamData.chargesChange)}% up</span>
+                <span className="ml-1">
+                  {Math.abs(teamData.chargesChange)}% up
+                </span>
               </div>
               <span className="ml-1 text-muted-foreground">from yesterday</span>
             </div>
@@ -386,7 +416,9 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
 
       <Card className="shadow-xs border-0">
         <CardHeader className="flex flex-row items-center justify-between px-3 pb-1 pt-3">
-          <CardTitle className="p-2 text-lg font-medium">Charge Sessions</CardTitle>
+          <CardTitle className="p-2 text-lg font-medium">
+            Charge Sessions
+          </CardTitle>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="h-8 gap-1">
               <span>{month}</span>
@@ -405,7 +437,9 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
 
       <div className="shadow-xs flex flex-col gap-3 rounded-lg bg-card p-3">
         <div className="flex items-center justify-between border-b px-2 pb-2">
-          <h2 className="text-lg font-medium text-[#364A63]">Charge sessions</h2>
+          <h2 className="text-lg font-medium text-[#364A63]">
+            Charge sessions
+          </h2>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -431,7 +465,11 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
               </svg>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="h-9 gap-1 whitespace-nowrap bg-[#ECF2F8]">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1 whitespace-nowrap bg-[#ECF2F8]"
+          >
             <span className="font-light text-[#A1B1D1]">Filter by Status</span>
             <ChevronDown className="h-4 w-4 text-[#A1B1D1]" />
           </Button>
@@ -511,7 +549,10 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
             </thead>
             <tbody>
               {chargeSessions.map((session, index) => (
-                <tr key={index} className="shadow-xs rounded-lg bg-card hover:bg-gray-50">
+                <tr
+                  key={index}
+                  className="shadow-xs rounded-lg bg-card hover:bg-gray-50"
+                >
                   <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-900">
                     {session.orderNumber}
                   </td>
@@ -630,5 +671,5 @@ export function TeamOverview({ teamId }: TeamOverviewProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

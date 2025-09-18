@@ -1,74 +1,83 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   BANK_QUERY_KEYS,
   useBankAccountById,
   useBankLists,
   useUpdateBankAccount,
-} from '@/hooks/use-bank'
-import { useToast } from '@/hooks/use-toast'
-import type { IBankListItem } from '@/lib/schemas/bank'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQueryClient } from '@tanstack/react-query'
-import { ChevronLeft } from 'lucide-react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { z } from 'zod'
+} from "@/hooks/use-bank";
+import { useToast } from "@/hooks/use-toast";
+import type { IBankListItem } from "@/lib/schemas/bank";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { ChevronLeft } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 
 const bankAccountSchema = z.object({
-  bank_id: z.string().min(1, 'กรุณาเลือกธนาคาร'),
-  account_name: z.string().min(1, 'กรุณาระบุชื่อบัญชี'),
-  account_number: z.string().min(10, 'กรุณาระบุเลขบัญชีให้ถูกต้อง'),
+  bank_id: z.string().min(1, "กรุณาเลือกธนาคาร"),
+  account_name: z.string().min(1, "กรุณาระบุชื่อบัญชี"),
+  account_number: z.string().min(10, "กรุณาระบุเลขบัญชีให้ถูกต้อง"),
   is_primary: z.boolean().default(false),
-})
+});
 
-type BankAccountFormData = z.infer<typeof bankAccountSchema>
+type BankAccountFormData = z.infer<typeof bankAccountSchema>;
 
 interface EditBankAccountFormProps {
-  teamId: string
-  locale: string
-  accountId: number
+  teamId: string;
+  locale: string;
+  accountId: number;
 }
 
-export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccountFormProps) => {
-  const router = useRouter()
-  const { toast } = useToast()
-  const queryClient = useQueryClient()
-  const { data: bankListsResponse, isLoading: bankListsLoading } = useBankLists()
-  const { data: bankAccountResponse, isLoading: isLoadingAccount } = useBankAccountById(accountId)
-  const updateBankAccountMutation = useUpdateBankAccount()
+export const EditBankAccountForm = ({
+  teamId,
+  locale,
+  accountId,
+}: EditBankAccountFormProps) => {
+  const router = useRouter();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { data: bankListsResponse, isLoading: bankListsLoading } =
+    useBankLists();
+  const { data: bankAccountResponse, isLoading: isLoadingAccount } =
+    useBankAccountById(accountId);
+  const updateBankAccountMutation = useUpdateBankAccount();
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [hasNewFile, setHasNewFile] = useState(false)
-  const isSubmittingRef = useRef(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [hasNewFile, setHasNewFile] = useState(false);
+  const isSubmittingRef = useRef(false);
 
-  const bankAccount = bankAccountResponse?.data
-  const bankLists = React.useMemo(() => bankListsResponse?.data || [], [bankListsResponse?.data])
+  const bankAccount = bankAccountResponse?.data;
+  const bankLists = React.useMemo(
+    () => bankListsResponse?.data || [],
+    [bankListsResponse?.data],
+  );
 
-  const [formInitialized, setFormInitialized] = React.useState(false)
+  const [formInitialized, setFormInitialized] = React.useState(false);
 
   const defaultValues = React.useMemo(() => {
     return {
-      bank_id: '',
-      account_name: '',
-      account_number: '',
+      bank_id: "",
+      account_name: "",
+      account_number: "",
       is_primary: false,
-    }
-  }, [])
+    };
+  }, []);
 
   const {
     register,
@@ -78,113 +87,127 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
     reset,
   } = useForm<BankAccountFormData>({
     resolver: zodResolver(bankAccountSchema),
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues,
-  })
+  });
 
   useEffect(() => {
     if (bankAccount && !formInitialized && bankLists.length > 0) {
-      console.log('🔍 bankAccount.is_primary:', bankAccount.is_primary)
-      console.log('🔍 bankAccount:', bankAccount)
+      console.log("🔍 bankAccount.is_primary:", bankAccount.is_primary);
+      console.log("🔍 bankAccount:", bankAccount);
 
       const initData = {
-        bank_id: bankAccount.bank_id?.toString() || '',
-        account_name: bankAccount.account_name || '',
-        account_number: bankAccount.account_number || '',
+        bank_id: bankAccount.bank_id?.toString() || "",
+        account_name: bankAccount.account_name || "",
+        account_number: bankAccount.account_number || "",
         is_primary: bankAccount.is_primary ?? false, // ใช้ nullish coalescing แทน
-      }
+      };
 
-      console.log('🔍 initData.is_primary:', initData.is_primary)
+      console.log("🔍 initData.is_primary:", initData.is_primary);
 
-      const bankExists = bankLists.find((bank) => bank.id.toString() === initData.bank_id)
+      const bankExists = bankLists.find(
+        (bank) => bank.id.toString() === initData.bank_id,
+      );
 
       if (bankExists) {
-        reset(initData)
-        setFormInitialized(true)
+        reset(initData);
+        setFormInitialized(true);
       }
     }
-  }, [bankAccount, formInitialized, reset, bankLists])
+  }, [bankAccount, formInitialized, reset, bankLists]);
 
   useEffect(() => {
     if (bankAccount?.file_name) {
-      const fileName = bankAccount.file_name.split('/').pop() || 'existing-file'
-      setSelectedFile(new File([], fileName, { type: 'application/octet-stream' }))
-      setHasNewFile(false)
+      const fileName =
+        bankAccount.file_name.split("/").pop() || "existing-file";
+      setSelectedFile(
+        new File([], fileName, { type: "application/octet-stream" }),
+      );
+      setHasNewFile(false);
     }
-  }, [bankAccount])
+  }, [bankAccount]);
 
   const handleBack = useCallback(() => {
-    router.push(`/${locale}/team/${teamId}/revenue/bank-account/manage`)
-  }, [router, locale, teamId])
+    router.push(`/${locale}/team/${teamId}/revenue/bank-account/manage`);
+  }, [router, locale, teamId]);
 
   // File handling
   const triggerFileInput = useCallback(() => {
-    const input = document.getElementById('bank-file-input') as HTMLInputElement
-    input?.click()
-  }, [])
+    const input = document.getElementById(
+      "bank-file-input",
+    ) as HTMLInputElement;
+    input?.click();
+  }, []);
 
   const handleFileInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (!file) return
+      const file = e.target.files?.[0];
+      if (!file) return;
 
       // Simple file validation
-      const maxSize = 5 * 1024 * 1024 // 5MB
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "application/pdf",
+      ];
 
       if (file.size > maxSize) {
         toast({
-          title: 'ข้อผิดพลาด',
-          description: 'ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง',
-          variant: 'destructive',
-        })
-        return
+          title: "ข้อผิดพลาด",
+          description: "ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง",
+          variant: "destructive",
+        });
+        return;
       }
 
       if (!allowedTypes.includes(file.type)) {
         toast({
-          title: 'ข้อผิดพลาด',
-          description: 'รองรับเฉพาะไฟล์ JPG, PNG และ PDF เท่านั้น',
-          variant: 'destructive',
-        })
-        return
+          title: "ข้อผิดพลาด",
+          description: "รองรับเฉพาะไฟล์ JPG, PNG และ PDF เท่านั้น",
+          variant: "destructive",
+        });
+        return;
       }
 
-      setSelectedFile(file)
-      setHasNewFile(true) // เป็นไฟล์ใหม่
+      setSelectedFile(file);
+      setHasNewFile(true); // เป็นไฟล์ใหม่
       toast({
-        title: 'สำเร็จ',
-        description: 'อัพโหลดไฟล์เรียบร้อย',
-      })
+        title: "สำเร็จ",
+        description: "อัพโหลดไฟล์เรียบร้อย",
+      });
     },
     [toast],
-  )
+  );
 
   const handleRemoveFile = useCallback(() => {
-    setSelectedFile(null)
-    setHasNewFile(false)
-    const input = document.getElementById('bank-file-input') as HTMLInputElement
+    setSelectedFile(null);
+    setHasNewFile(false);
+    const input = document.getElementById(
+      "bank-file-input",
+    ) as HTMLInputElement;
     if (input) {
-      input.value = ''
+      input.value = "";
     }
-  }, [])
+  }, []);
 
   const onSubmit = useCallback(
     async (data: BankAccountFormData) => {
       if (updateBankAccountMutation.isPending || isSubmittingRef.current) {
-        return
+        return;
       }
 
       if (selectedFile && selectedFile.size > 5 * 1024 * 1024) {
         toast({
-          title: 'ข้อผิดพลาด',
-          description: 'ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง',
-          variant: 'destructive',
-        })
-        return
+          title: "ข้อผิดพลาด",
+          description: "ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง",
+          variant: "destructive",
+        });
+        return;
       }
 
-      isSubmittingRef.current = true
+      isSubmittingRef.current = true;
 
       const formData = {
         account_name: data.account_name,
@@ -193,7 +216,7 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
         bank_id: parseInt(data.bank_id),
         // ส่ง file เฉพาะเมื่อมีการอัพโหลดไฟล์ใหม่
         ...(hasNewFile && selectedFile && { file: selectedFile }),
-      }
+      };
 
       updateBankAccountMutation.mutate(
         {
@@ -202,22 +225,24 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
         },
         {
           onSuccess: () => {
-            router.push(`/${locale}/team/${teamId}/revenue/bank-account/manage`)
+            router.push(
+              `/${locale}/team/${teamId}/revenue/bank-account/manage`,
+            );
 
             setTimeout(() => {
               queryClient.refetchQueries({
                 queryKey: BANK_QUERY_KEYS.BANK_ACCOUNTS,
-              })
-            }, 100)
+              });
+            }, 100);
 
-            isSubmittingRef.current = false
+            isSubmittingRef.current = false;
           },
           onError: (error: Error) => {
-            console.error('Bank account update error:', error)
-            isSubmittingRef.current = false
+            console.error("Bank account update error:", error);
+            isSubmittingRef.current = false;
           },
         },
-      )
+      );
     },
     [
       selectedFile,
@@ -229,17 +254,24 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
       teamId,
       accountId,
     ],
-  )
+  );
 
   if (bankListsLoading || isLoadingAccount) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="border-b bg-white px-6 py-4">
           <div className="flex items-center space-x-4">
-            <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+            >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">Edit Receivable Account</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Edit Receivable Account
+            </h1>
           </div>
         </div>
         <div className="flex items-center justify-center p-8">
@@ -248,7 +280,7 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!bankAccount) {
@@ -256,10 +288,17 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
       <div className="min-h-screen bg-gray-50">
         <div className="border-b bg-white px-6 py-4">
           <div className="flex items-center space-x-4">
-            <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+            >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">Edit Receivable Account</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Edit Receivable Account
+            </h1>
           </div>
         </div>
         <div className="flex items-center justify-center p-8">
@@ -268,7 +307,7 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -277,10 +316,17 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
       <div className="border-b bg-white px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+            >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">Edit Receivable Account</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Edit Receivable Account
+            </h1>
           </div>
           <Button
             type="submit"
@@ -294,8 +340,8 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
             className="bg-green-500 text-white hover:bg-green-600"
           >
             {updateBankAccountMutation.isPending || isSubmittingRef.current
-              ? 'กำลังบันทึก...'
-              : 'SUBMIT'}
+              ? "กำลังบันทึก..."
+              : "SUBMIT"}
           </Button>
         </div>
       </div>
@@ -305,10 +351,17 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
         <div className="mx-auto max-w-2xl">
           <Card className="bg-white">
             <CardContent className="p-6">
-              <form id="bank-account-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                id="bank-account-form"
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 {/* ธนาคาร */}
                 <div className="space-y-2">
-                  <Label htmlFor="bank_id" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="bank_id"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     ธนาคาร <span className="text-red-500">*</span>
                   </Label>
                   <Controller
@@ -318,8 +371,12 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
                       <Select
                         value={field.value}
                         onValueChange={(value) => {
-                          if (value !== undefined && value !== null && value !== '') {
-                            field.onChange(value)
+                          if (
+                            value !== undefined &&
+                            value !== null &&
+                            value !== ""
+                          ) {
+                            field.onChange(value);
                           }
                         }}
                       >
@@ -328,7 +385,10 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
                         </SelectTrigger>
                         <SelectContent>
                           {bankLists.map((bank: IBankListItem) => (
-                            <SelectItem key={bank.id} value={bank.id.toString()}>
+                            <SelectItem
+                              key={bank.id}
+                              value={bank.id.toString()}
+                            >
                               <div className="flex items-center space-x-3">
                                 <div className="relative h-6 w-6 overflow-hidden rounded">
                                   {bank.logo ? (
@@ -341,7 +401,9 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
                                     />
                                   ) : (
                                     <div className="flex h-6 w-6 items-center justify-center rounded bg-gray-200">
-                                      <span className="text-xs text-gray-500">🏦</span>
+                                      <span className="text-xs text-gray-500">
+                                        🏦
+                                      </span>
                                     </div>
                                   )}
                                 </div>
@@ -354,39 +416,51 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
                     )}
                   />
                   {errors.bank_id && (
-                    <p className="text-sm text-red-500">{errors.bank_id.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.bank_id.message}
+                    </p>
                   )}
                 </div>
 
                 {/* ชื่อบัญชี */}
                 <div className="space-y-2">
-                  <Label htmlFor="account_name" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="account_name"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     ชื่อบัญชี <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="account_name"
-                    {...register('account_name')}
+                    {...register("account_name")}
                     placeholder="ชื่อบัญชี"
                     className="w-full"
                   />
                   {errors.account_name && (
-                    <p className="text-sm text-red-500">{errors.account_name.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.account_name.message}
+                    </p>
                   )}
                 </div>
 
                 {/* เลขบัญชี */}
                 <div className="space-y-2">
-                  <Label htmlFor="account_number" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="account_number"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     เลขบัญชี <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="account_number"
-                    {...register('account_number')}
+                    {...register("account_number")}
                     placeholder="เลขบัญชี"
                     className="w-full"
                   />
                   {errors.account_number && (
-                    <p className="text-sm text-red-500">{errors.account_number.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.account_number.message}
+                    </p>
                   )}
                 </div>
 
@@ -403,7 +477,10 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
                       />
                     )}
                   />
-                  <Label htmlFor="is_primary" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="is_primary"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     ตั้งเป็นบัญชีหลัก <span className="text-red-500">*</span>
                   </Label>
                 </div>
@@ -448,12 +525,16 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
                         <div
                           className="flex w-full items-center justify-between rounded-lg border p-3"
                           style={{
-                            backgroundColor: selectedFile ? '#2563EB' : 'transparent',
-                            color: selectedFile ? 'white' : 'gray',
+                            backgroundColor: selectedFile
+                              ? "#2563EB"
+                              : "transparent",
+                            color: selectedFile ? "white" : "gray",
                           }}
                         >
                           <span className="text-sm">
-                            {selectedFile ? selectedFile.name : 'อัปโหลดสมุดบัญชีที่นี่'}
+                            {selectedFile
+                              ? selectedFile.name
+                              : "อัปโหลดสมุดบัญชีที่นี่"}
                           </span>
                           {selectedFile && (
                             <Button
@@ -477,5 +558,5 @@ export const EditBankAccountForm = ({ teamId, locale, accountId }: EditBankAccou
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

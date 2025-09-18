@@ -1,74 +1,77 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { useTeamById, useUpdateTeam } from '@/modules/teams/hooks/use-teams'
-import { AlertTriangle, Loader2, X } from 'lucide-react'
-import Image from 'next/image'
-import { useCallback, useEffect, useState } from 'react'
-import { toast } from 'sonner'
+} from "@/components/ui/select";
+import { useTeamById, useUpdateTeam } from "@/hooks/use-teams";
+import { AlertTriangle, Loader2, X } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface GeneralSettingProps {
-  teamId: string
-  onCancel: () => void
+  teamId: string;
+  onCancel: () => void;
 }
 
-export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const [teamNameError, setTeamNameError] = useState('')
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('th')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export const GeneralSettingTab = ({
+  teamId,
+  onCancel,
+}: GeneralSettingProps) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [teamNameError, setTeamNameError] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("th");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form states for change detection
   const [formData, setFormData] = useState({
-    team_name: '',
-    team_email: '',
-    team_phone: '',
-    team_status: '',
-  })
+    team_name: "",
+    team_email: "",
+    team_phone: "",
+    team_status: "",
+  });
   const [originalData, setOriginalData] = useState<{
-    team_name: string
-    team_email: string
-    team_phone: string
-    team_status: string
-  } | null>(null)
-  const [hasChanges, setHasChanges] = useState(false)
+    team_name: string;
+    team_email: string;
+    team_phone: string;
+    team_status: string;
+  } | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   // ดึงข้อมูลทีมจาก hook
-  const { team: teamData, isLoading, error } = useTeamById(teamId)
-  const updateTeamMutation = useUpdateTeam()
+  const { team: teamData, isLoading, error } = useTeamById(teamId);
+  const updateTeamMutation = useUpdateTeam();
 
   // Load existing data into form
   useEffect(() => {
     if (teamData) {
       const data = {
-        team_name: teamData.team_name || '',
-        team_email: teamData.team_email || '',
-        team_phone: teamData.team_phone || '',
-        team_status: teamData.team_status || '',
-      }
-      setFormData(data)
-      setOriginalData(data)
-      setSelectedLanguage('th') // Default language
-      setHasChanges(false)
+        team_name: teamData.team_name || "",
+        team_email: teamData.team_email || "",
+        team_phone: teamData.team_phone || "",
+        team_status: teamData.team_status || "",
+      };
+      setFormData(data);
+      setOriginalData(data);
+      setSelectedLanguage("th"); // Default language
+      setHasChanges(false);
 
       // แสดงรูปภาพที่มีอยู่แล้ว (ถ้ามี)
       if (teamData.team_icon_group) {
-        setPreviewUrl(teamData.team_icon_group)
+        setPreviewUrl(teamData.team_icon_group);
       }
     }
-  }, [teamData])
+  }, [teamData]);
 
   // Check for changes
   useEffect(() => {
@@ -79,122 +82,143 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
         formData.team_phone !== originalData.team_phone ||
         formData.team_status !== originalData.team_status ||
         selectedFile !== null || // File changes also count
-        (Boolean(teamData?.team_icon_group) && !previewUrl) // Or removing existing image
-      setHasChanges(dataChanged)
+        (Boolean(teamData?.team_icon_group) && !previewUrl); // Or removing existing image
+      setHasChanges(dataChanged);
     }
-  }, [formData, originalData, selectedFile, teamData?.team_icon_group, previewUrl])
+  }, [
+    formData,
+    originalData,
+    selectedFile,
+    teamData?.team_icon_group,
+    previewUrl,
+  ]);
 
   const handleFileSelect = useCallback((file: File) => {
     // Validate file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
+    const validTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "application/pdf",
+    ];
     if (!validTypes.includes(file.type)) {
-      toast.error('ประเภทไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ PDF, PNG, JPG หรือ JPEG')
-      return
+      toast.error(
+        "ประเภทไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ PDF, PNG, JPG หรือ JPEG",
+      );
+      return;
     }
 
     // Validate file size (10MB limit)
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('ไฟล์มีขนาดใหญ่เกินไป กรุณาเลือกไฟล์ที่มีขนาดไม่เกิน 10MB')
-      return
+      toast.error("ไฟล์มีขนาดใหญ่เกินไป กรุณาเลือกไฟล์ที่มีขนาดไม่เกิน 10MB");
+      return;
     }
 
-    setSelectedFile(file)
+    setSelectedFile(file);
 
     // Create preview URL for images
-    if (file.type.startsWith('image/')) {
-      const url = URL.createObjectURL(file)
-      setPreviewUrl(url)
+    if (file.type.startsWith("image/")) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
     } else {
-      setPreviewUrl(null)
+      setPreviewUrl(null);
     }
-  }, [])
+  }, []);
 
   const handleFileInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
+      const file = e.target.files?.[0];
       if (file) {
-        handleFileSelect(file)
+        handleFileSelect(file);
       }
     },
     [handleFileSelect],
-  )
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }, [])
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }, [])
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault()
-      setIsDragging(false)
+      e.preventDefault();
+      setIsDragging(false);
 
-      const file = e.dataTransfer.files[0]
+      const file = e.dataTransfer.files[0];
       if (file) {
-        handleFileSelect(file)
+        handleFileSelect(file);
       }
     },
     [handleFileSelect],
-  )
+  );
 
   const handleRemoveFile = useCallback(() => {
-    setSelectedFile(null)
+    setSelectedFile(null);
     if (previewUrl) {
       // ถ้าเป็น object URL ที่สร้างขึ้นใหม่ ให้ revoke
-      if (previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl)
+      if (previewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl);
       }
-      setPreviewUrl(null)
+      setPreviewUrl(null);
     }
-  }, [previewUrl])
+  }, [previewUrl]);
 
   const triggerFileInput = useCallback(() => {
-    const input = document.getElementById('settings-file-input') as HTMLInputElement
-    input?.click()
-  }, [])
+    const input = document.getElementById(
+      "settings-file-input",
+    ) as HTMLInputElement;
+    input?.click();
+  }, []);
 
   const handleTeamNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value
-      setFormData((prev) => ({ ...prev, team_name: value }))
-      if (teamNameError && value.trim() !== '') {
-        setTeamNameError('')
+      const value = e.target.value;
+      setFormData((prev) => ({ ...prev, team_name: value }));
+      if (teamNameError && value.trim() !== "") {
+        setTeamNameError("");
       }
     },
     [teamNameError],
-  )
+  );
 
-  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, team_email: e.target.value }))
-  }, [])
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData((prev) => ({ ...prev, team_email: e.target.value }));
+    },
+    [],
+  );
 
-  const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, team_phone: e.target.value }))
-  }, [])
+  const handlePhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData((prev) => ({ ...prev, team_phone: e.target.value }));
+    },
+    [],
+  );
 
   const handleStatusChange = useCallback((value: string) => {
     if (value) {
-      setFormData((prev) => ({ ...prev, team_status: value }))
+      setFormData((prev) => ({ ...prev, team_status: value }));
     }
-  }, [])
+  }, []);
 
   const handleLanguageChange = useCallback((language: string) => {
-    setSelectedLanguage(language)
-  }, [])
+    setSelectedLanguage(language);
+  }, []);
 
   // Cleanup object URLs on unmount
   useEffect(() => {
     return () => {
       if (previewUrl) {
-        URL.revokeObjectURL(previewUrl)
+        URL.revokeObjectURL(previewUrl);
       }
-    }
-  }, [previewUrl])
+    };
+  }, [previewUrl]);
 
   // Loading state
   if (isLoading) {
@@ -202,10 +226,12 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
       <div className="flex items-center justify-center py-8">
         <div className="text-center">
           <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-          <p className="mt-2 text-sm text-muted-foreground">กำลังโหลดข้อมูล...</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            กำลังโหลดข้อมูล...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   // Error or team not found
@@ -216,62 +242,67 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
             <AlertTriangle className="h-8 w-8 text-destructive" />
           </div>
-          <p className="text-sm text-muted-foreground">ไม่สามารถโหลดข้อมูลทีมได้</p>
+          <p className="text-sm text-muted-foreground">
+            ไม่สามารถโหลดข้อมูลทีมได้
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setTeamNameError('')
+    e.preventDefault();
+    setIsSubmitting(true);
+    setTeamNameError("");
 
-    const form = e.target as HTMLFormElement
-    const formDataObj = new FormData(form)
-    const teamName = formDataObj.get('name') as string
+    const form = e.target as HTMLFormElement;
+    const formDataObj = new FormData(form);
+    const teamName = formDataObj.get("name") as string;
 
-    if (!teamName || teamName.trim() === '') {
-      setTeamNameError('Team name is required')
-      setIsSubmitting(false)
-      return
+    if (!teamName || teamName.trim() === "") {
+      setTeamNameError("Team name is required");
+      setIsSubmitting(false);
+      return;
     }
 
     try {
       const updateData = {
         id: teamId,
         team_name: teamName,
-        team_email: formDataObj.get('email') as string,
-        team_phone: formDataObj.get('phone') as string,
-        team_status: formDataObj.get('status') as 'publish' | 'draft' | 'inactive',
+        team_email: formDataObj.get("email") as string,
+        team_phone: formDataObj.get("phone") as string,
+        team_status: formDataObj.get("status") as
+          | "publish"
+          | "draft"
+          | "inactive",
         file: selectedFile || undefined,
         team_img: selectedFile || undefined,
-      }
+      };
 
-      await updateTeamMutation.mutateAsync(updateData)
+      await updateTeamMutation.mutateAsync(updateData);
 
       // แสดง success toast หลังจาก render cycle เสร็จ
       setTimeout(() => {
-        toast.success('อัปเดตข้อมูลทีมเรียบร้อยแล้ว')
-      }, 100)
+        toast.success("อัปเดตข้อมูลทีมเรียบร้อยแล้ว");
+      }, 100);
 
-      setHasChanges(false)
-      setSelectedFile(null)
+      setHasChanges(false);
+      setSelectedFile(null);
       if (previewUrl) {
-        URL.revokeObjectURL(previewUrl)
-        setPreviewUrl(null)
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
       }
     } catch (error) {
-      console.error('Error updating team:', error)
+      console.error("Error updating team:", error);
 
       // แสดง error toast หลังจาก render cycle เสร็จ
       setTimeout(() => {
-        toast.error('เกิดข้อผิดพลาดในการอัปเดตข้อมูล กรุณาลองอีกครั้ง')
-      }, 100)
+        toast.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล กรุณาลองอีกครั้ง");
+      }, 100);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -281,7 +312,8 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
           <div className="flex items-center">
             <AlertTriangle className="mr-2 h-5 w-5 text-yellow-600" />
             <span className="text-sm text-yellow-800">
-              มีการเปลี่ยนแปลงข้อมูล กรุณากดปุ่ม UPDATE เพื่อบันทึกการเปลี่ยนแปลง
+              มีการเปลี่ยนแปลงข้อมูล กรุณากดปุ่ม UPDATE
+              เพื่อบันทึกการเปลี่ยนแปลง
             </span>
           </div>
         </div>
@@ -289,8 +321,12 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
 
       {/* General Setting Header */}
       <div className="mb-6">
-        <h2 className="text-title mb-2 text-lg font-semibold">General Setting</h2>
-        <p className="text-sm text-muted-foreground">Update your profile team here</p>
+        <h2 className="mb-2 text-lg font-semibold text-foreground">
+          General Setting
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Update your profile team here
+        </p>
       </div>
 
       {/* Form */}
@@ -301,11 +337,11 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
               {/* Left Column - File Upload */}
               <div
                 className="flex flex-1 items-start justify-center border-b pb-6 pt-2 md:pb-0 md:pt-4 lg:border-b-0 lg:border-r lg:pr-8"
-                style={{ minHeight: 'max(300px, 100%)' }}
+                style={{ minHeight: "max(300px, 100%)" }}
               >
                 <div className="mt-0 w-[181px]">
                   {/* Hidden file input */}
-                  <Input
+                  <input
                     id="settings-file-input"
                     type="file"
                     accept=".pdf,.png,.jpg,.jpeg"
@@ -317,10 +353,10 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
                   <div
                     className={`flex h-[181px] w-[181px] cursor-pointer flex-col items-center justify-center space-y-4 rounded-lg border-2 border-dashed transition-all ${
                       isDragging
-                        ? 'border-primary bg-primary/5'
+                        ? "border-primary bg-primary/5"
                         : selectedFile
-                          ? 'border-emerald-300 bg-emerald-50'
-                          : 'border-muted bg-muted/30'
+                          ? "border-emerald-300 bg-emerald-50"
+                          : "border-muted bg-muted/30"
                     }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -341,8 +377,8 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
                         <Button
                           type="button"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            handleRemoveFile()
+                            e.stopPropagation();
+                            handleRemoveFile();
                           }}
                           size="sm"
                           variant="outline"
@@ -369,7 +405,9 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
                             />
                           </svg>
                         </div>
-                        <p className="text-sm font-medium text-green-700">{selectedFile.name}</p>
+                        <p className="text-sm font-medium text-green-700">
+                          {selectedFile.name}
+                        </p>
                         <p className="text-xs text-green-600">
                           {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                         </p>
@@ -378,8 +416,8 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
                           variant="ghost"
                           size="sm"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            handleRemoveFile()
+                            e.stopPropagation();
+                            handleRemoveFile();
                           }}
                           className="text-xs text-destructive hover:text-destructive/90"
                         >
@@ -420,10 +458,12 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
                     name="name"
                     placeholder="Enter team name"
                     value={formData.team_name}
-                    className={`${teamNameError ? 'border-destructive' : ''}`}
+                    className={`${teamNameError ? "border-destructive" : ""}`}
                     onChange={handleTeamNameChange}
                   />
-                  {teamNameError && <p className="text-sm text-destructive">{teamNameError}</p>}
+                  {teamNameError && (
+                    <p className="text-sm text-destructive">{teamNameError}</p>
+                  )}
                 </div>
 
                 {/* Email */}
@@ -478,20 +518,29 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
 
         {/* Action Buttons */}
         <div className="mt-6 flex items-center justify-end space-x-3 border-t border-muted pt-6">
-          <Button type="button" variant="outline" onClick={onCancel} className="px-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="px-6"
+          >
             CANCEL
           </Button>
           <Button
             form="settings-form"
             type="submit"
-            variant={'success'}
-            disabled={!hasChanges || isSubmitting || updateTeamMutation.isPending}
+            variant={"success"}
+            disabled={
+              !hasChanges || isSubmitting || updateTeamMutation.isPending
+            }
             className="px-6"
           >
-            {isSubmitting || updateTeamMutation.isPending ? 'กำลังอัปเดต...' : 'UPDATE'}
+            {isSubmitting || updateTeamMutation.isPending
+              ? "กำลังอัปเดต..."
+              : "UPDATE"}
           </Button>
         </div>
       </form>
     </div>
-  )
-}
+  );
+};

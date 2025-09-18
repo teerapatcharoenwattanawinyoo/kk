@@ -1,32 +1,37 @@
-import { TeamGuard } from '@/components/back-office/team/team-guard'
-import { SummaryContent } from '@/components/back-office/team/team-wallet/top-up/summary-content'
-import { Button } from '@/components/ui/button'
-import { ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
+import { TeamGuard } from "@/components/back-office/team/team-guard";
+import { SummaryContent } from "@/components/back-office/team/team-wallet/top-up/summary-content";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
 
 interface SummaryPageProps {
   params: Promise<{
-    locale: string
-    teamId: string
-  }>
+    locale: string;
+    teamId: string;
+  }>;
   searchParams: Promise<{
-    amount?: string
-    method?: string
-    methodData?: string
-  }>
+    amount?: string;
+    method?: string;
+    methodData?: string;
+  }>;
 }
 
-export default async function SummaryPage({ params, searchParams }: SummaryPageProps) {
-  const { teamId, locale } = await params
-  const { amount, method, methodData } = await searchParams
+export default async function SummaryPage({
+  params,
+  searchParams,
+}: SummaryPageProps) {
+  const { teamId, locale } = await params;
+  const { amount, method, methodData } = await searchParams;
 
   // Parse method data if available
-  let parsedMethodData
+  let parsedMethodData;
   try {
-    parsedMethodData = methodData ? JSON.parse(decodeURIComponent(methodData)) : undefined
+    parsedMethodData = methodData
+      ? JSON.parse(decodeURIComponent(methodData))
+      : undefined;
   } catch (error) {
-    console.error('Error parsing methodData:', error)
-    parsedMethodData = undefined
+    console.error("Error parsing methodData:", error);
+    parsedMethodData = undefined;
   }
 
   return (
@@ -41,8 +46,8 @@ export default async function SummaryPage({ params, searchParams }: SummaryPageP
                 >
                   <Button
                     className="h-8 w-8 rounded-full bg-muted lg:h-9 lg:w-9"
-                    variant={'ghost'}
-                    size={'icon'}
+                    variant={"ghost"}
+                    size={"icon"}
                   >
                     <ChevronLeft className="size-4" />
                   </Button>
@@ -53,8 +58,8 @@ export default async function SummaryPage({ params, searchParams }: SummaryPageP
 
             <div className="p-6">
               <SummaryContent
-                amount={amount || '0'}
-                paymentMethod={method || ''}
+                amount={amount || "0"}
+                paymentMethod={method || ""}
                 paymentMethodData={parsedMethodData}
                 teamId={teamId}
                 locale={locale}
@@ -64,5 +69,5 @@ export default async function SummaryPage({ params, searchParams }: SummaryPageP
         </div>
       </div>
     </TeamGuard>
-  )
+  );
 }

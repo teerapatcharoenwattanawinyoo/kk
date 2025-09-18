@@ -1,37 +1,45 @@
-'use client'
+"use client";
 
-import { MemberGroupsTab, MembersTable, Pagination } from '@/components/back-office/team/members'
-import { TeamTabMenu } from '@/components/back-office/team/settings/TeamTabMenu'
-import { TeamHeader } from '@/components/back-office/team/team-header'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useI18n } from '@/lib/i18n'
-import { Plus } from 'lucide-react'
-import Link from 'next/link'
-import { useParams } from 'next/navigation'
-import { useState } from 'react'
+import {
+  MemberGroupsTab,
+  MembersTable,
+  Pagination,
+} from "@/components/back-office/team/members";
+import { TeamTabMenu } from "@/components/back-office/team/settings/TeamTabMenu";
+import { TeamHeader } from "@/components/back-office/team/team-header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useI18n } from "@/lib/i18n";
+import { Plus } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 
 interface MembersPageProps {
-  teamId: string
+  teamId: string;
 }
 
 export function MembersPage({ teamId }: MembersPageProps) {
-  const { t } = useI18n()
-  const params = useParams()
+  const { t } = useI18n();
+  const params = useParams();
 
-  const [activeSubTab, setActiveSubTab] = useState('members')
-  const [activeTeamTab, setActiveTeamTab] = useState('team-members')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [activeSubTab, setActiveSubTab] = useState("members");
+  const [activeTeamTab, setActiveTeamTab] = useState("team-members");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   return (
     <div className="flex w-full flex-col">
       {/* Header Section */}
-      <TeamHeader teamId={teamId} pageTitle={t('team_tabs.members')} />
+      <TeamHeader teamId={teamId} pageTitle={t("team_tabs.members")} />
 
       {/* Navigation Tabs Section */}
       <div className="px-4 md:px-6">
-        <TeamTabMenu active="members" locale={String(params.locale)} teamId={teamId} />
+        <TeamTabMenu
+          active="members"
+          locale={String(params.locale)}
+          teamId={teamId}
+        />
       </div>
 
       {/* Main Content Section */}
@@ -43,22 +51,22 @@ export function MembersPage({ teamId }: MembersPageProps) {
               {/* Left Side - Sub Tabs */}
               <div className="flex items-center gap-6">
                 <button
-                  onClick={() => setActiveSubTab('members')}
+                  onClick={() => setActiveSubTab("members")}
                   className={`pb-2 text-2xl font-medium tracking-[-0.84px] ${
-                    activeSubTab === 'members'
-                      ? 'text-title border-b-2 border-primary py-1 font-medium'
-                      : 'text-muted-blue py-1'
+                    activeSubTab === "members"
+                      ? "text-title border-b-2 border-primary py-1 font-medium"
+                      : "text-muted-blue py-1"
                   }`}
                 >
                   Members
                 </button>
                 <div className="h-8 w-px bg-[#CDD5DE]" />
                 <button
-                  onClick={() => setActiveSubTab('member-groups')}
+                  onClick={() => setActiveSubTab("member-groups")}
                   className={`pb-2 text-2xl font-medium tracking-[-0.84px] ${
-                    activeSubTab === 'member-groups'
-                      ? 'text-title border-b-2 border-primary py-1 font-medium'
-                      : 'text-muted-blue py-1'
+                    activeSubTab === "member-groups"
+                      ? "text-title border-b-2 border-primary py-1 font-medium"
+                      : "text-muted-blue py-1"
                   }`}
                 >
                   Member Groups
@@ -68,7 +76,7 @@ export function MembersPage({ teamId }: MembersPageProps) {
               {/* Right Side - Controls */}
               <div className="flex items-center gap-4">
                 {/* Members Tab Controls */}
-                {activeSubTab === 'members' && (
+                {activeSubTab === "members" && (
                   <>
                     {/* Search Box */}
                     <Input
@@ -80,31 +88,31 @@ export function MembersPage({ teamId }: MembersPageProps) {
                     {/* Team Tab Selector */}
                     <div className="flex overflow-hidden rounded-lg border bg-background px-1.5 py-1.5">
                       <button
-                        onClick={() => setActiveTeamTab('team-members')}
+                        onClick={() => setActiveTeamTab("team-members")}
                         className={`rounded-lg px-3 py-2 text-xs font-medium leading-[16px] tracking-[0.43px] transition-colors sm:px-4 sm:text-sm ${
-                          activeTeamTab === 'team-members'
-                            ? 'bg-[#051039] text-primary-foreground'
-                            : 'text-muted-blue hover:text-title bg-transparent'
+                          activeTeamTab === "team-members"
+                            ? "bg-[#051039] text-primary-foreground"
+                            : "text-muted-blue hover:text-title bg-transparent"
                         }`}
                       >
                         Team members
                       </button>
                       <button
-                        onClick={() => setActiveTeamTab('guested-teams')}
+                        onClick={() => setActiveTeamTab("guested-teams")}
                         className={`rounded-lg px-3 py-2 text-xs font-medium leading-[16px] tracking-[0.43px] transition-colors sm:px-4 sm:text-sm ${
-                          activeTeamTab === 'guested-teams'
-                            ? 'bg-[#051039] text-primary-foreground'
-                            : 'text-muted-blue hover:text-title bg-transparent'
+                          activeTeamTab === "guested-teams"
+                            ? "bg-[#051039] text-primary-foreground"
+                            : "text-muted-blue hover:text-title bg-transparent"
                         }`}
                       >
                         Guested Teams
                       </button>
                       <button
-                        onClick={() => setActiveTeamTab('host-teams')}
+                        onClick={() => setActiveTeamTab("host-teams")}
                         className={`rounded-lg px-3 py-2 text-xs font-medium leading-[16px] tracking-[0.43px] transition-colors sm:px-4 sm:text-sm ${
-                          activeTeamTab === 'host-teams'
-                            ? 'bg-[#051039] text-primary-foreground'
-                            : 'text-muted-blue hover:text-title bg-transparent'
+                          activeTeamTab === "host-teams"
+                            ? "bg-[#051039] text-primary-foreground"
+                            : "text-muted-blue hover:text-title bg-transparent"
                         }`}
                       >
                         Host Teams
@@ -120,7 +128,7 @@ export function MembersPage({ teamId }: MembersPageProps) {
                 )}
 
                 {/* Member Groups Controls */}
-                {activeSubTab === 'member-groups' && (
+                {activeSubTab === "member-groups" && (
                   <>
                     {/* Search Member Groups */}
                     <Input
@@ -129,7 +137,9 @@ export function MembersPage({ teamId }: MembersPageProps) {
                       className="font-public-sans h-9 w-64 bg-primary-foreground text-[13px] leading-[21px]"
                     />
                     {/* Add Member Group Button */}
-                    <Link href={`/${params.locale}/team/${teamId}/members/add-member-group`}>
+                    <Link
+                      href={`/${params.locale}/team/${teamId}/members/add-member-group`}
+                    >
                       <Button className="flex h-9 items-center gap-[11.59px]">
                         <Plus />
                         Add Member Group
@@ -141,7 +151,7 @@ export function MembersPage({ teamId }: MembersPageProps) {
             </div>
           </div>
 
-          {activeSubTab === 'member-groups' ? (
+          {activeSubTab === "member-groups" ? (
             <MemberGroupsTab teamId={teamId} />
           ) : (
             <MembersTable />
@@ -155,8 +165,8 @@ export function MembersPage({ teamId }: MembersPageProps) {
               itemsPerPage={itemsPerPage}
               onPageChange={setCurrentPage}
               onItemsPerPageChange={(newItemsPerPage) => {
-                setItemsPerPage(newItemsPerPage)
-                setCurrentPage(1)
+                setItemsPerPage(newItemsPerPage);
+                setCurrentPage(1);
               }}
               showItemsPerPageSelector={true}
             />
@@ -164,5 +174,5 @@ export function MembersPage({ teamId }: MembersPageProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

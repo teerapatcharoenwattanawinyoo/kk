@@ -19,7 +19,7 @@ import {
   type GetChargingStationDetailResponse,
   type PartnerStationGalleryDetail,
   type StationCategory,
-  type UpdateChargingStationRequest,
+  type ExtendedUpdateChargingStationRequest,
   type UpdateChargingStationResponse,
 } from '@/modules/charging-stations/schemas/charging-stations.schema'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -114,7 +114,7 @@ export function useUpdateChargingStation() {
     {
       stationId: string | number
       team_group_id: number
-      data: UpdateChargingStationRequest
+      data: ExtendedUpdateChargingStationRequest
     }
   >({
     mutationFn: async ({ stationId, team_group_id, data }) => {

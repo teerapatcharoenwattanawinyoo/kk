@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+
+set -e
+TASK=$1
+ARGS=${@:2}
+
+PWD=$(pwd)
+
+STDIN=992382615596.dkr.ecr.ap-southeast-7.amazonaws.com
+REGION=ap-southeast-7
+VERSION=latest
+
+ECR_REPOSITORY_URL_DEV=$STDIN/web-partner-dev
+ECR_REPOSITORY_URL_PROD=$STDIN/web-partner-prod
+
+help__awsDockerLogin="aws login ecr"
+task_awsDockerLogin() {
+  echo "Aws Docker Login ..."
+  aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $STDIN
+}
+
+task_initRepositoryUrl() {
+  VERSION=1.0.$GO_PIPELINE_COUNTER
+
+  if [ "$1" = "prod" ]; then
+    REPOSITORY_URI_LATEST=$ECR_REPOSITORY_URL_PROD:latest
+    REPOSITORY_URI_TAG=$ECR_REPOSITORY_URL_PROD:$VERSION
+  else
+    REPOSITORY_URI_LATEST=$ECR_REPOSITORY_URL_DEV:latest
+    REPOSITORY_URI_TAG=$ECR_REPOSITORY_URL_DEV:$VERSION
+  fi
+}
+
+help__dockerBuild="docker build image"
+task_dockerBuild() {
+  echo Building the Docker image...
+  task_initRepositoryUrl $1
+
+  export DOCKER_BUILDKIT=0
+  docker build -t $REPOSITORY_URI_LATEST -f Dockerfile .
+  
+  task_dockerRemoveNone
+}
+
+help__dockerTag="push image to ecr"
+task_dockerTag() {
+  echo Tagging the Docker image ...
+  task_initRepositoryUrl $1
+
+  echo "tagging -> $REPOSITORY_URI_TAG"
+  echo "tagging -> $REPOSITORY_URI_LATEST"
+  docker tag $REPOSITORY_URI_LATEST $REPOSITORY_URI_TAG
+}
+
+help__dockerPush="push image to ecr"
+task_dockerPush() {
+  task_awsDockerLogin
+  task_initRepositoryUrl $1
+
+  echo "Pushing the Docker images..."
+
+  echo "push -> $REPOSITORY_URI_TAG"
+  docker push $REPOSITORY_URI_TAG
+
+  echo "push -> $REPOSITORY_URI_LATEST"
+  docker push $REPOSITORY_URI_LATEST
+}
+
+help__dockerRemoveNone="docker remove none image"
+task_dockerRemoveNone() {
+  ## remove none image
+  docker image prune -f
+  docker images
+}
+
+help__dockerDeploy="docker deploy api to ec2"
+task_dockerDeploy() {
+  env=$1
+  echo "Deploy Api: $env"
+  git clone -b main https://developer:glpat-z4jzg9Ldf4a2Yr3PadfheG86MQp1OmRyd28zCw.01.120ik7320@gitlab.com/developer1061/devops-infrastructure.git
+  cd devops-infrastructure/deploy/web-partner/
+  
+  if [[ $env == "prod" ]]; then
+    cd prod
+    ./deploy
+  else
+    cd dev
+    ./deploy
+  fi
+
+  cd ../../../..
+  rm -rf devops-infrastructure
+}
+
+help__install="install dev dependencies"
+task_install() {
+  # npm install --only=dev
+  echo "skip install"
+}
+
+help__formatCheck="formatCheck"
+task_formatCheck() {
+  # npm run format:check
+  echo "skip format check"
+}
+
+help__lintCheck="lintCheck"
+task_lintCheck() {
+  # npm run lint:check
+  echo "skip lint check"
+}
+
+help__removeImage="remove image"
+task_removeImage() {
+  docker images -aq | while read img; do
+    docker rmi -f "$img" || echo "Failed to remove $img"
+  done
+}
+
+# help__gocdPipelineVersion="gocd pipeline version"
+# task_gocdPipelineVersion() {
+#   echo "Pipeline Name: $GO_PIPELINE_NAME"
+#   echo "Pipeline Counter: $GO_PIPELINE_COUNTER"
+#   echo "Stage Name: $GO_STAGE_NAME"
+#   echo "Stage Counter: $GO_STAGE_COUNTER"
+#   echo "Job Name: $GO_JOB_NAME"
+#   echo "GoCD Server URL: $GO_SERVER_URL"
+# }
+
+help__integrationTest="integrationTest"
+task_integrationTest() {
+  # or Install newman by npm
+  # npm install -g newman
+  # newman run newman/one-charge-api-test.postman_collection.json
+  echo "skip integation test"
+}
+
+## main
+list_all_helps() {
+  compgen -v | egrep "^help__.*"
+}
+
+NEW_LINE=$'\n'
+if type -t "task_$TASK" &>/dev/null; then
+  task_${TASK} ${ARGS}
+else
+  echo "usage: $0 <task> [<..args>]"
+  echo "task:"
+
+  HELPS=""
+  for help in $(list_all_helps); do
+
+    HELPS="$HELPS    ${help/help__/} |-- ${!help}$NEW_LINE"
+  done
+
+  echo "$HELPS" | column -t -s "|"
+  exit 1
+fi

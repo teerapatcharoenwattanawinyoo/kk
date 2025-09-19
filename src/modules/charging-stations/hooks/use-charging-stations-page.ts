@@ -1,12 +1,20 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
-import { getPartnerIdFromStorage } from '@/lib/utils/user-storage'
-import { getChargingStationDetail } from '@/modules/charging-stations/api'
-import { formatStationDateTime, convertStationDetailToFormData } from '@/modules/charging-stations/services'
+import {
+  buildChargingStationsQueryParams,
+  createStationRecord,
+  deleteStationRecord,
+  fetchStationFormData,
+  formatStationDateTime,
+  PartnerIdNotFoundError,
+  parsePaginationState,
+  syncPaginationWithRouter,
+  updateStationRecord,
+} from '@/modules/charging-stations/services'
 import {
   type ChargingStation,
   type ChargingStationFormSubmission,
@@ -66,65 +74,51 @@ export function useChargingStationsPageController({
   teamId,
 }: UseChargingStationsPageControllerOptions): UseChargingStationsPageControllerReturn {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [currentPage, setCurrentPage] = useState(() => {
-    const pageParam = searchParams.get('page')
-    return pageParam ? Number.parseInt(pageParam, 10) : 1
-  })
-  const [pageSize, setPageSize] = useState(() => {
-    const pageSizeParam = searchParams.get('pageSize')
-    return pageSizeParam ? Number.parseInt(pageSizeParam, 10) : 10
-  })
-  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') || '')
+  const initialPagination = useMemo(() => parsePaginationState(searchParams), [searchParams])
+
+  const [currentPage, setCurrentPage] = useState(initialPagination.page)
+  const [pageSize, setPageSize] = useState(initialPagination.pageSize)
+  const [searchQuery, setSearchQuery] = useState(initialPagination.searchQuery)
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [selectedStation, setSelectedStation] = useState<ChargingStationFormWithGallery | null>(null)
-  const [selectedStationId, setSelectedStationId] = useState<string | number | null>(null)
+  const [selectedStationId, setSelectedStationId] = useState<number | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [stationToDelete, setStationToDelete] = useState<ChargingStation | null>(null)
   const [showEditSuccessDialog, setShowEditSuccessDialog] = useState(false)
 
   const teamGroupId = Number.parseInt(teamId, 10)
 
-  const createStationMutation = useCreateChargingStation()
-  const deleteMutation = useDeleteChargingStation()
-  const updateStationMutation = useUpdateChargingStation()
+  const { mutateAsync: createStationAsync } = useCreateChargingStation()
+  const { mutateAsync: deleteStationAsync, status: deleteStatus } = useDeleteChargingStation()
+  const { mutateAsync: updateStationAsync } = useUpdateChargingStation()
 
-  const updateURL = useCallback(
+  const syncPagination = useCallback(
     (page: number, size: number, search: string) => {
-      if (typeof window === 'undefined') {
-        return
-      }
-
-      const params = new URLSearchParams()
-      params.set('page', page.toString())
-      params.set('pageSize', size.toString())
-      if (search.trim()) {
-        params.set('search', search)
-      }
-
-      const currentPath = window.location.pathname
-      const newUrl = `${currentPath}?${params.toString()}`
-
-      window.history.replaceState({}, '', newUrl)
-      router.replace(newUrl, { scroll: false })
+      syncPaginationWithRouter(router, pathname, {
+        page,
+        pageSize: size,
+        searchQuery: search,
+      })
     },
-    [router],
+    [pathname, router],
   )
 
   useEffect(() => {
-    updateURL(currentPage, pageSize, searchQuery)
-  }, [currentPage, pageSize, searchQuery, updateURL])
+    syncPagination(currentPage, pageSize, searchQuery)
+  }, [currentPage, pageSize, searchQuery, syncPagination])
 
   const queryParams = useMemo<ChargingStationsParams>(
-    () => ({
-      team_group_id: teamGroupId,
-      page: currentPage,
-      pageSize,
-      search: searchQuery || undefined,
-    }),
+    () =>
+      buildChargingStationsQueryParams(teamGroupId, {
+        page: currentPage,
+        pageSize,
+        searchQuery,
+      }),
     [teamGroupId, currentPage, pageSize, searchQuery],
   )
 
@@ -142,42 +136,32 @@ export function useChargingStationsPageController({
 
   const handleAddStation = useCallback(
     async (data: CreateChargingStationRequest) => {
-      const partnerId = getPartnerIdFromStorage()
-
-      if (!partnerId) {
-        const error = new Error('Partner ID not found. Please log in again.')
-        toast.error(error.message)
-        throw error
-      }
-
       try {
-        await createStationMutation.mutateAsync(data)
+        await createStationRecord(data, createStationAsync)
         setIsCreateDialogOpen(false)
       } catch (error) {
-        toast.error('Error creating charging station. Please try again.')
+        if (error instanceof PartnerIdNotFoundError) {
+          toast.error(error.message)
+        } else {
+          toast.error('Error creating charging station. Please try again.')
+        }
         throw error
       }
     },
-    [createStationMutation],
+    [createStationAsync],
   )
 
-  const handleEditStation = useCallback(
-    async (station: ChargingStation) => {
-      try {
-        const response = await getChargingStationDetail(station.id)
-        const apiData = Array.isArray(response.data) ? response.data[0] : response.data
-
-        const convertedData = convertStationDetailToFormData(apiData)
-
-        setSelectedStation(convertedData)
-        setSelectedStationId(apiData.id)
-        setIsEditDialogOpen(true)
-      } catch (error) {
-        toast.error('Error loading charging station detail. Please try again.')
-      }
-    },
-    [],
-  )
+  const handleEditStation = useCallback(async (station: ChargingStation) => {
+    try {
+      const { id, formData } = await fetchStationFormData(station.id)
+      setSelectedStation(formData)
+      setSelectedStationId(id)
+      setIsEditDialogOpen(true)
+    } catch (error) {
+      console.error('Failed to load charging station detail', error)
+      toast.error('Error loading charging station detail. Please try again.')
+    }
+  }, [])
 
   const handleUpdateStation = useCallback(
     async (data: ChargingStationFormSubmission) => {
@@ -185,58 +169,22 @@ export function useChargingStationsPageController({
         throw new Error('No charging station selected for update')
       }
 
-      return new Promise<void>((resolve, reject) => {
-        const partnerId = getPartnerIdFromStorage()
-
-        if (!partnerId) {
-          const error = new Error('Partner ID not found. Please log in again.')
+      try {
+        await updateStationRecord(selectedStationId, teamGroupId, data, updateStationAsync)
+        setSelectedStation(null)
+        setSelectedStationId(null)
+        setIsEditDialogOpen(false)
+        toast.success('Charging station updated successfully')
+      } catch (error) {
+        if (error instanceof PartnerIdNotFoundError) {
           toast.error(error.message)
-          reject(error)
-          return
+        } else {
+          toast.error('Error updating charging station. Please try again.')
         }
-
-        const work = data.work ?? []
-
-        updateStationMutation.mutate(
-          {
-            stationId: selectedStationId,
-            team_group_id: teamGroupId,
-            data: {
-              station_type_id: data.station_type_id,
-              latitude: data.coordinates.lat.toString(),
-              longtitude: data.coordinates.lng.toString(),
-              station_name: data.station_name,
-              station_name_th: data.station_name_th,
-              station_name_lao: data.station_name_lao,
-              station_detail: data.station_detail,
-              station_detail_th: data.station_detail_th,
-              station_detail_lao: data.station_detail_lao,
-              status: data.status,
-              show_on_map: data.show_on_map,
-              address: data.address,
-              contact: data.contact,
-              work,
-              image: data.images,
-              deletedImageIds: data.deletedImageIds,
-            },
-          },
-          {
-            onSuccess: () => {
-              setSelectedStation(null)
-              setSelectedStationId(null)
-              setIsEditDialogOpen(false)
-              toast.success('Charging station updated successfully')
-              resolve()
-            },
-            onError: (error) => {
-              toast.error('Error updating charging station. Please try again.')
-              reject(error)
-            },
-          },
-        )
-      })
+        throw error
+      }
     },
-    [selectedStationId, teamGroupId, updateStationMutation],
+    [selectedStationId, teamGroupId, updateStationAsync],
   )
 
   const handleShowEditSuccessDialog = useCallback(() => {
@@ -259,39 +207,40 @@ export function useChargingStationsPageController({
     if (!stationToDelete) return
 
     try {
-      await deleteMutation.mutateAsync(stationToDelete.id)
+      await deleteStationRecord(stationToDelete.id, deleteStationAsync)
       setDeleteDialogOpen(false)
       setStationToDelete(null)
       toast.success('Charging station deleted successfully')
     } catch (error) {
+      console.error('Failed to delete charging station', error)
       toast.error('Error deleting charging station. Please try again.')
     }
-  }, [deleteMutation, stationToDelete])
+  }, [deleteStationAsync, stationToDelete])
 
   const handlePageSizeChange = useCallback(
     (newPageSize: number) => {
       setPageSize(newPageSize)
       setCurrentPage(1)
-      updateURL(1, newPageSize, searchQuery)
+      syncPagination(1, newPageSize, searchQuery)
     },
-    [searchQuery, updateURL],
+    [searchQuery, syncPagination],
   )
 
   const handlePageChange = useCallback(
     (newPage: number) => {
       setCurrentPage(newPage)
-      updateURL(newPage, pageSize, searchQuery)
+      syncPagination(newPage, pageSize, searchQuery)
     },
-    [pageSize, searchQuery, updateURL],
+    [pageSize, searchQuery, syncPagination],
   )
 
   const handleSearchChange = useCallback(
     (newSearch: string) => {
       setSearchQuery(newSearch)
       setCurrentPage(1)
-      updateURL(1, pageSize, newSearch)
+      syncPagination(1, pageSize, newSearch)
     },
-    [pageSize, updateURL],
+    [pageSize, syncPagination],
   )
 
   const openCreateDialog = useCallback(() => setIsCreateDialogOpen(true), [])
@@ -339,7 +288,7 @@ export function useChargingStationsPageController({
     showEditSuccessDialog,
     selectedStation,
     stationToDelete,
-    isDeleting: deleteMutation.status === 'pending',
+    isDeleting: deleteStatus === 'pending',
     formatDateTime: formatStationDateTime,
     openCreateDialog,
     closeCreateDialog,

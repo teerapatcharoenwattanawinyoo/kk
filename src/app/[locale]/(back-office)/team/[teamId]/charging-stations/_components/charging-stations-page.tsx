@@ -6,17 +6,15 @@ import {
   EditsChargingStationDialog,
   type ChargingStation,
 } from '@/app/[locale]/(back-office)/team/[teamId]/charging-stations'
+import { useChargingStationsPage } from '@/app/[locale]/(back-office)/team/[teamId]/charging-stations/_hooks'
+import { type CreateChargingStationRequest } from '@/app/[locale]/(back-office)/team/[teamId]/charging-stations/_schemas'
+import { type ChargingStationFormWithWork } from '@/app/[locale]/(back-office)/team/[teamId]/charging-stations/_services'
 import { TeamHeader } from '@/app/[locale]/(back-office)/team/_components/team-header'
 import { TeamTabMenu } from '@/app/[locale]/(back-office)/team/_components/team-tab-menu'
 import { DeleteConfirmDialog, SuccessDialog } from '@/components/notifications'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { useChargingStationsPage } from '@/app/[locale]/(back-office)/team/[teamId]/charging-stations/_hooks'
-import { type ChargingStationFormWithWork } from '@/app/[locale]/(back-office)/team/[teamId]/charging-stations/_services'
-import {
-  type CreateChargingStationRequest,
-} from '@/app/[locale]/(back-office)/team/[teamId]/charging-stations/_schemas'
 import { useI18n } from '@/lib/i18n'
 import { ChevronDown, Plus, Search } from 'lucide-react'
 import { useParams } from 'next/navigation'
@@ -31,8 +29,9 @@ export function ChargingStationsPage({ teamId }: ChargingStationsPageProps) {
   const params = useParams()
   const teamGroupId = Number.parseInt(teamId, 10)
 
-  const { pagination, search, dialogs, selection, data, status, actions } =
-    useChargingStationsPage({ teamId })
+  const { pagination, search, dialogs, selection, data, status, actions } = useChargingStationsPage(
+    { teamId },
+  )
 
   const tableError = data.error instanceof Error ? data.error : null
 
@@ -82,11 +81,7 @@ export function ChargingStationsPage({ teamId }: ChargingStationsPageProps) {
       <TeamHeader teamId={teamId} pageTitle={t('team_tabs.charging_stations')} />
 
       <div className="">
-        <TeamTabMenu
-          active="charging-stations"
-          locale={String(params.locale)}
-          teamId={teamId}
-        />
+        <TeamTabMenu active="charging-stations" locale={String(params.locale)} teamId={teamId} />
       </div>
 
       <div className="flex-1">
@@ -110,16 +105,11 @@ export function ChargingStationsPage({ teamId }: ChargingStationsPageProps) {
                   size="sm"
                   className="h-9 gap-1 whitespace-nowrap border-0 bg-[#ECF2F8] text-xs sm:h-10 sm:text-sm"
                 >
-                  <span className="text-[#A1B1D1]">
-                    {t('charging-stations.filter_by_status')}
-                  </span>
+                  <span className="text-[#A1B1D1]">{t('charging-stations.filter_by_status')}</span>
                   <ChevronDown className="h-4 w-4 text-[#A1B1D1]" />
                 </Button>
               </div>
-              <Button
-                className="h-10 w-full sm:w-auto sm:text-sm"
-                onClick={dialogs.add.open}
-              >
+              <Button className="h-10 w-full sm:w-auto sm:text-sm" onClick={dialogs.add.open}>
                 <Plus className="size-4" />
                 {t('buttons.add')}
               </Button>
@@ -137,12 +127,13 @@ export function ChargingStationsPage({ teamId }: ChargingStationsPageProps) {
             formatDateTime={actions.formatDateTime}
           />
 
-          <div className="my-4 bg-card px-3 py-3 md:px-5 md:py-4 lg:px-6">
+          <div className="my-4 bg-transparent px-3 py-3 md:px-5 md:py-4 lg:px-6">
             <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-2">
               <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
                 <div className="text-sm font-light text-foreground">
                   {t('pagination.showing')} {(pagination.currentPage - 1) * pagination.pageSize + 1}{' '}
-                  {t('pagination.to')} {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)}{' '}
+                  {t('pagination.to')}{' '}
+                  {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)}{' '}
                   {t('pagination.of')} {pagination.totalItems} {t('pagination.result')}
                 </div>
                 <div className="flex items-center">
@@ -189,10 +180,7 @@ export function ChargingStationsPage({ teamId }: ChargingStationsPageProps) {
                     1,
                     pagination.currentPage - Math.floor(maxVisiblePages / 2),
                   )
-                  const endPage = Math.min(
-                    pagination.totalPages,
-                    startPage + maxVisiblePages - 1,
-                  )
+                  const endPage = Math.min(pagination.totalPages, startPage + maxVisiblePages - 1)
 
                   if (endPage - startPage < maxVisiblePages - 1) {
                     startPage = Math.max(1, endPage - maxVisiblePages + 1)
@@ -279,9 +267,7 @@ export function ChargingStationsPage({ teamId }: ChargingStationsPageProps) {
                       <Button
                         key={pagination.totalPages}
                         variant={
-                          pagination.currentPage === pagination.totalPages
-                            ? 'default'
-                            : 'ghost'
+                          pagination.currentPage === pagination.totalPages ? 'default' : 'ghost'
                         }
                         size="icon"
                         className={`h-8 w-8 font-normal sm:h-9 sm:w-9 ${

@@ -6,7 +6,7 @@ import {
   getPriceSet,
 } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_servers/price-groups'
 import { useTeamHostId } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
-import { LocationPinIcon } from '@/components/icons/location-pin-icon'
+import { LocationPinIcon } from '@/components/icons/LocationPinIcon'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

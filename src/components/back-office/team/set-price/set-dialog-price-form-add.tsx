@@ -1,7 +1,7 @@
 'use client'
 import { usePriceSet } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks/use-price-group'
 import { PriceGroup } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_servers/price-groups'
-import { LocationPinIcon } from '@/components/icons/location-pin-icon'
+import { LocationPinIcon } from '@/components/icons/LocationPinIcon'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

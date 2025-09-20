@@ -109,8 +109,15 @@ export function mapUpdatePayload(
   data: ExtendedUpdateChargingStationRequest
 } {
   const work: WorkTime[] = data.work ?? []
+  const numericStationId =
+    typeof stationId === 'string' ? Number(stationId) : stationId
+
+  if (Number.isNaN(numericStationId)) {
+    throw new Error('Invalid station ID provided for update')
+  }
 
   const payload: ExtendedUpdateChargingStationRequest = {
+    id: numericStationId,
     station_type_id: data.station_type_id,
     latitude: data.coordinates.lat.toString(),
     longtitude: data.coordinates.lng.toString(),
@@ -136,7 +143,7 @@ export function mapUpdatePayload(
   }
 }
 
-export function ensurePartnerId(): string {
+export function ensurePartnerId(): number {
   const partnerId = getPartnerIdFromStorage()
 
   if (!partnerId) {

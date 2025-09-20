@@ -147,8 +147,19 @@ export function buildUpdateStationRequest(
   submission: ChargingStationFormSubmission,
   stationId: string | number,
 ): ExtendedUpdateChargingStationRequest {
-  return {
-    id: normalizeStationId(stationId),
+  const normalizedStationId = normalizeStationId(stationId)
+  const workSchedule = submission.work ?? []
+  const stationTypeIdValue =
+    typeof submission.station_type_id === 'string'
+      ? Number.parseInt(submission.station_type_id, 10)
+      : submission.station_type_id
+
+  if (Number.isNaN(stationTypeIdValue)) {
+    throw new Error('Invalid station type id')
+  }
+
+  const request: ExtendedUpdateChargingStationRequest = {
+    id: normalizedStationId,
     latitude: submission.coordinates.lat.toString(),
     longtitude: submission.coordinates.lng.toString(),
     station_name: submission.station_name,
@@ -157,15 +168,17 @@ export function buildUpdateStationRequest(
     station_detail: submission.station_detail,
     station_detail_th: submission.station_detail_th,
     station_detail_lao: submission.station_detail_lao,
-    station_type_id: submission.station_type_id,
+    station_type_id: stationTypeIdValue,
     address: submission.address,
     status: submission.status,
     show_on_map: submission.show_on_map,
-    work: submission.work ?? [],
+    work: workSchedule,
     contact: submission.contact ?? '',
     image: submission.images,
     deletedImageIds: submission.deletedImageIds,
   }
+
+  return request
 }
 
 export async function createStationRecord(

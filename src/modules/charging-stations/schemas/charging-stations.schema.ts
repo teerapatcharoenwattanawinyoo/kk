@@ -83,7 +83,7 @@ export const CreateChargingStationRequestSchema = z.object({
   station_detail: z.string().min(1),
   station_detail_th: z.string().optional(),
   station_detail_lao: z.string().optional(),
-  station_type_id: z.number().min(1),
+  station_type_id: z.union([z.number().min(1), z.string().min(1)]),
   address: z.string().min(1),
   status: z.number().min(1).max(6),
   show_on_map: z.boolean(),

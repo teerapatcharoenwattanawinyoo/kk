@@ -6,8 +6,8 @@ import { Progress } from '@/components/ui/progress'
 import { Database } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
-import { BillingInformation, type BillingData } from './billing-information'
 import { pricingPlanSchema, type PricingPlan } from '../../_schemas/plans.schema'
+import { BillingInformation, type BillingData } from './billing-information'
 import { PricingPackages } from './pricing-packages'
 
 const defaultPricingPlans = pricingPlanSchema.array().parse([

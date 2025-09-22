@@ -34,8 +34,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ChargerFormData, ChargerFormSchema } from '../../_schemas/chargers.schema'
 import { useCreateCharger, useUpdateSerialNumber } from '../../_hooks/use-chargers'
+import { ChargerFormData, ChargerFormSchema } from '../../_schemas/chargers.schema'
 
 interface AddChargerDialogProps {
   open?: boolean
@@ -705,7 +705,6 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
             </Button>
           </div>
         </DialogContent>
-
       </Dialog>
 
       <ChargerAddedDialog

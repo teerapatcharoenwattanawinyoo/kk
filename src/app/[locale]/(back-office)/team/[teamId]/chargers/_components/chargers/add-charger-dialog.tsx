@@ -56,6 +56,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   const ocppUrlInputRef = useRef<HTMLInputElement>(null)
   const closeReasonRef = useRef<'success' | null>(null)
   const preserveStateForStepTwoRef = useRef(false)
+  const resumeStepRef = useRef<number | null>(null)
 
   // Initialize form
   const form = useForm<ChargerFormData>({
@@ -95,6 +96,11 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
   const dialogOpen = isControlled ? open : internalOpen
   const setDialogOpen = isControlled ? onOpenChange : setInternalOpen
+  const setDialogOpenRef = useRef<typeof setDialogOpen>(setDialogOpen)
+
+  useEffect(() => {
+    setDialogOpenRef.current = setDialogOpen
+  }, [setDialogOpen])
 
   const createChargerMutation = useCreateCharger(teamGroupId)
   const updateSerialNumberMutation = useUpdateSerialNumber()
@@ -142,9 +148,21 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   }
 
   useEffect(() => {
-    if (!confirmDialogOpen && closeReasonRef.current === 'success' && !preserveStateForStepTwoRef.current) {
-      resetForm()
-      closeReasonRef.current = null
+    if (!confirmDialogOpen) {
+      if (resumeStepRef.current !== null) {
+        const nextStep = resumeStepRef.current
+        resumeStepRef.current = null
+        setCurrentStep(nextStep)
+        preserveStateForStepTwoRef.current = false
+        closeReasonRef.current = null
+        setDialogOpenRef.current?.(true)
+        return
+      }
+
+      if (closeReasonRef.current === 'success' && !preserveStateForStepTwoRef.current) {
+        resetForm()
+        closeReasonRef.current = null
+      }
     }
   }, [confirmDialogOpen])
 
@@ -344,13 +362,76 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
         const response = await createChargerMutation.mutateAsync(chargerData)
 
+        const parseNumericStatus = (value: unknown): number | undefined => {
+          if (typeof value === 'number' && Number.isFinite(value)) {
+            return value
+          }
+
+          if (typeof value === 'string') {
+            const parsed = Number(value)
+            if (Number.isFinite(parsed)) {
+              return parsed
+            }
+          }
+
+          return undefined
+        }
+
+        const responseWithUnknownStatus = response as unknown as {
+          statusCode?: unknown
+          status?: unknown
+          data?: {
+            statusCode?: unknown
+            status?: unknown
+            message?: unknown
+            data?: unknown
+          }
+          message?: unknown
+        }
+
         const normalizedStatus =
-          typeof response.statusCode === 'number'
-            ? response.statusCode
-            : (response as { status?: number }).status
+          parseNumericStatus(responseWithUnknownStatus.statusCode) ??
+          parseNumericStatus(responseWithUnknownStatus.status) ??
+          parseNumericStatus(responseWithUnknownStatus.data?.statusCode) ??
+          parseNumericStatus(responseWithUnknownStatus.data?.status)
+
+        const hasSuccessMessage = (() => {
+          const messageCandidates: unknown[] = [
+            responseWithUnknownStatus.message,
+            responseWithUnknownStatus.data?.message,
+          ]
+
+          if (
+            responseWithUnknownStatus.data &&
+            typeof responseWithUnknownStatus.data.data === 'object' &&
+            responseWithUnknownStatus.data.data !== null
+          ) {
+            const nestedData = responseWithUnknownStatus.data.data as {
+              message?: unknown
+            }
+            messageCandidates.push(nestedData.message)
+          }
+
+          return messageCandidates.some((candidate) => {
+            if (typeof candidate !== 'string') {
+              return false
+            }
+
+            const normalizedMessage = candidate.trim().toLowerCase()
+            return (
+              normalizedMessage === 'success' ||
+              normalizedMessage.includes('success') ||
+              normalizedMessage.includes('created')
+            )
+          })
+        })()
+
         const isSuccessfulResponse =
-          (typeof normalizedStatus === 'number' && normalizedStatus >= 200 && normalizedStatus < 300) ||
-          response.message?.toLowerCase() === 'success'
+          (typeof normalizedStatus === 'number' &&
+            !Number.isNaN(normalizedStatus) &&
+            normalizedStatus >= 200 &&
+            normalizedStatus < 300) ||
+          hasSuccessMessage
 
         if (isSuccessfulResponse) {
           // Try multiple possible response structures
@@ -447,11 +528,8 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
   const handleConfirmNext = () => {
     preserveStateForStepTwoRef.current = true
+    resumeStepRef.current = 2
     setConfirmDialogOpen(false)
-    // เปิด dialog อีกครั้งด้วย step 2
-    setCurrentStep(2)
-    closeReasonRef.current = null
-    setDialogOpen?.(true)
   }
 
   const handleBack = () => {

@@ -344,13 +344,41 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
         const response = await createChargerMutation.mutateAsync(chargerData)
 
-        const normalizedStatus =
-          typeof response.statusCode === 'number'
-            ? response.statusCode
-            : (response as { status?: number }).status
+        const normalizedStatus = (() => {
+          if (typeof response.statusCode === 'number') {
+            return response.statusCode
+          }
+
+          if (typeof (response as { statusCode?: string }).statusCode === 'string') {
+            const parsed = Number((response as { statusCode?: string }).statusCode)
+            if (!Number.isNaN(parsed)) {
+              return parsed
+            }
+          }
+
+          const fallbackStatus = (response as { status?: number | string }).status
+
+          if (typeof fallbackStatus === 'number') {
+            return fallbackStatus
+          }
+
+          if (typeof fallbackStatus === 'string') {
+            const parsed = Number(fallbackStatus)
+            if (!Number.isNaN(parsed)) {
+              return parsed
+            }
+          }
+
+          return undefined
+        })()
+
         const isSuccessfulResponse =
-          (typeof normalizedStatus === 'number' && normalizedStatus >= 200 && normalizedStatus < 300) ||
-          response.message?.toLowerCase() === 'success'
+          (typeof normalizedStatus === 'number' &&
+            !Number.isNaN(normalizedStatus) &&
+            normalizedStatus >= 200 &&
+            normalizedStatus < 300) ||
+          response.message?.toLowerCase() === 'success' ||
+          response.data?.message?.toLowerCase() === 'success'
 
         if (isSuccessfulResponse) {
           // Try multiple possible response structures

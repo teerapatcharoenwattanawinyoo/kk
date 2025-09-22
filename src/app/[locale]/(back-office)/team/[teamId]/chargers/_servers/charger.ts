@@ -56,6 +56,239 @@ const toString = (value: unknown): string | undefined => {
   return undefined
 }
 
+const toBoolean = (value: unknown): boolean | undefined => {
+  if (typeof value === 'boolean') {
+    return value
+  }
+
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      return undefined
+    }
+
+    if (value === 1) return true
+    if (value === 0) return false
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+
+    if (!normalized) {
+      return undefined
+    }
+
+    const truthyValues = [
+      'true',
+      '1',
+      'yes',
+      'y',
+      'connected',
+      'success',
+      'succeeded',
+      'online',
+      'paired',
+      'pairing success',
+    ]
+
+    if (truthyValues.includes(normalized)) {
+      return true
+    }
+
+    const falsyValues = [
+      'false',
+      '0',
+      'no',
+      'n',
+      'disconnected',
+      'failed',
+      'failure',
+      'offline',
+      'pairing failed',
+      'pairing failure',
+    ]
+
+    if (falsyValues.includes(normalized)) {
+      return false
+    }
+  }
+
+  return undefined
+}
+
+const normalizeCheckConnectionResponse = (
+  rawResponse: unknown,
+  parseError: z.ZodError<CheckConnectionResponse>,
+): CheckConnectionResponse => {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('checkConnection response did not match schema', {
+      issues: parseError.issues,
+      rawResponse,
+    })
+  }
+
+  const responseLike = rawResponse as {
+    statusCode?: unknown
+    status?: unknown
+    status_code?: unknown
+    code?: unknown
+    httpStatus?: unknown
+    http_code?: unknown
+    message?: unknown
+    statusMessage?: unknown
+    data?: unknown
+  }
+
+  const statusCodeCandidates: unknown[] = [
+    responseLike.statusCode,
+    responseLike.status,
+    responseLike.status_code,
+    responseLike.code,
+    responseLike.httpStatus,
+    responseLike.http_code,
+  ]
+
+  let resolvedStatusCode = 200
+
+  for (const candidate of statusCodeCandidates) {
+    const parsed = toNumber(candidate)
+    if (typeof parsed === 'number') {
+      resolvedStatusCode = parsed
+      break
+    }
+  }
+
+  const messageCandidates: unknown[] = [
+    responseLike.message,
+    responseLike.statusMessage,
+    responseLike.status,
+  ]
+
+  let resolvedMessage = ''
+  for (const candidate of messageCandidates) {
+    const parsed = toString(candidate)
+    if (parsed) {
+      resolvedMessage = parsed
+      break
+    }
+  }
+
+  const dataLike = responseLike.data
+
+  let resolvedStatus = ''
+  let resolvedConnected: boolean | undefined
+
+  const applyStatus = (candidate: unknown) => {
+    if (resolvedStatus) {
+      return
+    }
+
+    const parsed = toString(candidate)
+    if (parsed) {
+      resolvedStatus = parsed
+    }
+  }
+
+  const applyConnected = (candidate: unknown) => {
+    if (typeof resolvedConnected === 'boolean') {
+      return
+    }
+
+    const parsed = toBoolean(candidate)
+    if (typeof parsed === 'boolean') {
+      resolvedConnected = parsed
+    }
+  }
+
+  if (typeof dataLike === 'string') {
+    applyStatus(dataLike)
+    applyConnected(dataLike)
+  } else if (Array.isArray(dataLike)) {
+    for (const entry of dataLike) {
+      if (typeof entry === 'object' && entry !== null) {
+        applyStatus((entry as { status?: unknown }).status)
+        applyStatus((entry as { detail?: unknown }).detail)
+        applyStatus((entry as { message?: unknown }).message)
+        applyConnected((entry as { connected?: unknown }).connected)
+        applyConnected((entry as { online?: unknown }).online)
+        applyConnected((entry as { isConnected?: unknown }).isConnected)
+        applyConnected((entry as { is_online?: unknown }).is_online)
+      } else {
+        applyStatus(entry)
+        applyConnected(entry)
+      }
+
+      if (resolvedStatus && typeof resolvedConnected === 'boolean') {
+        break
+      }
+    }
+  } else if (typeof dataLike === 'object' && dataLike !== null) {
+    const dataObject = dataLike as {
+      status?: unknown
+      detail?: unknown
+      message?: unknown
+      description?: unknown
+      connected?: unknown
+      isConnected?: unknown
+      is_connected?: unknown
+      online?: unknown
+      isOnline?: unknown
+      result?: unknown
+    }
+
+    applyStatus(dataObject.status)
+    applyStatus(dataObject.detail)
+    applyStatus(dataObject.message)
+    applyStatus(dataObject.description)
+    applyStatus(dataObject.result)
+
+    applyConnected(dataObject.connected)
+    applyConnected(dataObject.isConnected)
+    applyConnected(dataObject.is_connected)
+    applyConnected(dataObject.online)
+    applyConnected(dataObject.isOnline)
+
+    if (
+      typeof dataObject.result === 'object' &&
+      dataObject.result !== null &&
+      'status' in (dataObject.result as Record<string, unknown>)
+    ) {
+      const nested = dataObject.result as {
+        status?: unknown
+        connected?: unknown
+        online?: unknown
+      }
+
+      applyStatus(nested.status)
+      applyConnected(nested.connected)
+      applyConnected(nested.online)
+    }
+  } else {
+    applyStatus(dataLike)
+    applyConnected(dataLike)
+  }
+
+  if (!resolvedStatus) {
+    resolvedStatus = resolvedMessage || 'Unknown'
+  }
+
+  if (typeof resolvedConnected !== 'boolean') {
+    resolvedConnected = toBoolean(resolvedStatus) ?? toBoolean(resolvedMessage) ?? false
+  }
+
+  if (!resolvedMessage) {
+    resolvedMessage = resolvedStatus
+  }
+
+  return {
+    statusCode: resolvedStatusCode,
+    message: resolvedMessage,
+    data: {
+      status: resolvedStatus,
+      connected: resolvedConnected,
+    },
+  }
+}
+
 const normalizeCreateChargerResponse = (
   rawResponse: unknown,
   parseError: z.ZodError<CreateChargerResponse>,
@@ -240,7 +473,13 @@ export const getChargersList = async (
 export const checkConnection = async (chargerCode: string): Promise<CheckConnectionResponse> => {
   const url = `${API_ENDPOINTS.CHARGER.CHECK_CONNECTION}/${chargerCode}`
   const response = await api.get(url)
-  return CheckConnectionResponseSchema.parse(response)
+  const parsedResponse = CheckConnectionResponseSchema.safeParse(response)
+
+  if (parsedResponse.success) {
+    return parsedResponse.data
+  }
+
+  return normalizeCheckConnectionResponse(response, parsedResponse.error)
 }
 
 export const createCharger = async (

@@ -56,6 +56,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   const ocppUrlInputRef = useRef<HTMLInputElement>(null)
   const closeReasonRef = useRef<'success' | null>(null)
   const preserveStateForStepTwoRef = useRef(false)
+  const resumeStepRef = useRef<number | null>(null)
 
   // Initialize form
   const form = useForm<ChargerFormData>({
@@ -95,6 +96,11 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
   const dialogOpen = isControlled ? open : internalOpen
   const setDialogOpen = isControlled ? onOpenChange : setInternalOpen
+  const setDialogOpenRef = useRef<typeof setDialogOpen>(setDialogOpen)
+
+  useEffect(() => {
+    setDialogOpenRef.current = setDialogOpen
+  }, [setDialogOpen])
 
   const createChargerMutation = useCreateCharger(teamGroupId)
   const updateSerialNumberMutation = useUpdateSerialNumber()
@@ -142,9 +148,21 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   }
 
   useEffect(() => {
-    if (!confirmDialogOpen && closeReasonRef.current === 'success' && !preserveStateForStepTwoRef.current) {
-      resetForm()
-      closeReasonRef.current = null
+    if (!confirmDialogOpen) {
+      if (resumeStepRef.current !== null) {
+        const nextStep = resumeStepRef.current
+        resumeStepRef.current = null
+        setCurrentStep(nextStep)
+        preserveStateForStepTwoRef.current = false
+        closeReasonRef.current = null
+        setDialogOpenRef.current?.(true)
+        return
+      }
+
+      if (closeReasonRef.current === 'success' && !preserveStateForStepTwoRef.current) {
+        resetForm()
+        closeReasonRef.current = null
+      }
     }
   }, [confirmDialogOpen])
 
@@ -475,11 +493,8 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
   const handleConfirmNext = () => {
     preserveStateForStepTwoRef.current = true
+    resumeStepRef.current = 2
     setConfirmDialogOpen(false)
-    // เปิด dialog อีกครั้งด้วย step 2
-    setCurrentStep(2)
-    closeReasonRef.current = null
-    setDialogOpen?.(true)
   }
 
   const handleBack = () => {

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { CheckIcon, Crown, Star, Zap } from 'lucide-react'
 
-import { type PricingPlan } from './plans.schema'
+import { type PricingPlan } from '../../_schemas/plans.schema'
 
 export interface PricingPackagesProps {
   plans: PricingPlan[]

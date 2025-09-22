@@ -6,18 +6,18 @@ import { Progress } from '@/components/ui/progress'
 import { Database } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
-import { pricingPlanSchema, type PricingPlan } from './'
+import { pricingPlanSchema, type PricingPlan } from '../../_schemas/plans.schema'
 import { BillingInformation, type BillingData } from './billing-information'
 import { PricingPackages } from './pricing-packages'
 
 const defaultPricingPlans = pricingPlanSchema.array().parse([
   {
-    id: 'professional',
-    icon_package_path: 'lucide:crown',
-    package_name: 'Professional',
+    id: '24',
+    icon_package_path: 'https://example.com/icon-package.png',
+    package_name: 'Pro',
     type_of_prices: 'month',
-    description: 'Best for growing businesses',
-    price: '329',
+    description: '2',
+    price: '150.00',
     detail: [
       'Up to 25 charging stations',
       'Advanced analytics & reporting',
@@ -27,6 +27,8 @@ const defaultPricingPlans = pricingPlanSchema.array().parse([
       'Custom branding',
       'Multi-location support',
     ],
+    discount: '20.00',
+    commission: '2.00',
     is_default: true,
   },
 ])

@@ -33,6 +33,78 @@ import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
+type UnknownRecord = Record<string, unknown>
+
+const toRecord = (value: unknown): UnknownRecord | null => {
+  if (typeof value === 'object' && value !== null) {
+    return value as UnknownRecord
+  }
+
+  return null
+}
+
+const parseNumeric = (value: unknown): number | undefined => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number.parseInt(value, 10)
+    if (!Number.isNaN(parsed)) {
+      return parsed
+    }
+  }
+
+  return undefined
+}
+
+const extractStatusCode = (value: unknown): number | undefined => {
+  const record = toRecord(value)
+  if (!record) {
+    return undefined
+  }
+
+  const candidates = [record.statusCode, record.status, record.code]
+
+  for (const candidate of candidates) {
+    const parsed = parseNumeric(candidate)
+    if (parsed !== undefined) {
+      return parsed
+    }
+  }
+
+  return undefined
+}
+
+const extractChargerId = (value: unknown): number | undefined => {
+  const record = toRecord(value)
+  if (!record) {
+    return undefined
+  }
+
+  const topLevel = parseNumeric(record.charger_id) ?? parseNumeric(record.id)
+  if (topLevel !== undefined) {
+    return topLevel
+  }
+
+  const dataRecord = toRecord(record.data)
+  if (!dataRecord) {
+    return undefined
+  }
+
+  const dataLevel = parseNumeric(dataRecord.charger_id) ?? parseNumeric(dataRecord.id)
+  if (dataLevel !== undefined) {
+    return dataLevel
+  }
+
+  const nestedDataRecord = toRecord(dataRecord.data)
+  if (!nestedDataRecord) {
+    return undefined
+  }
+
+  return parseNumeric(nestedDataRecord.charger_id) ?? parseNumeric(nestedDataRecord.id)
+}
+
 interface AddChargerDialogProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
@@ -323,46 +395,20 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         // Create the charger
         const response = await createCharger(teamGroupId!, chargerData)
 
-        const normalizedStatusCode = Number(response.statusCode)
+        const normalizedStatusCode = extractStatusCode(response)
         const isSuccessfulStatus =
-          !Number.isNaN(normalizedStatusCode) &&
+          normalizedStatusCode !== undefined &&
           normalizedStatusCode >= 200 &&
           normalizedStatusCode < 300
 
         if (isSuccessfulStatus) {
           console.log('Charger created successfully, response:', response)
           console.log('Response data structure:', response.data)
-          // Try multiple possible response structures
-          let chargerId = null
+          const chargerId = extractChargerId(response)
 
-          // Check for response.data.data.charger_id (actual backend structure)
-          if (response.data?.data?.charger_id) {
-            chargerId = response.data.data.charger_id
-          }
-          // Check for deeply nested structure: response.data.data.id
-          else if (response.data?.data?.id) {
-            chargerId = response.data.data.id
-          }
-          // Check for response.data.charger_id (interface expectation)
-          else if (response.data?.charger_id) {
-            chargerId = response.data.charger_id
-          }
-          // Check for response.data.id
-          else if (response.data?.id) {
-            chargerId = response.data.id
-          }
-          // Check for response.charger_id
-          else if ((response as unknown as Record<string, unknown>).charger_id) {
-            chargerId = (response as unknown as Record<string, unknown>).charger_id as number
-          }
-          // Check for response.id
-          else if ((response as unknown as Record<string, unknown>).id) {
-            chargerId = (response as unknown as Record<string, unknown>).id as number
-          }
-
-          if (chargerId) {
+          if (typeof chargerId === 'number') {
             console.log('Setting charger ID and moving to next step:', chargerId)
-            setCreatedChargerId(Number(chargerId))
+            setCreatedChargerId(chargerId)
 
             // Refetch chargers list immediately to show the newly created charger
             if (teamGroupId) {

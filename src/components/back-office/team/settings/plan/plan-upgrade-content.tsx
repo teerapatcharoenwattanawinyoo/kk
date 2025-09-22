@@ -3,11 +3,11 @@
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { Crown, Database, Star, Zap } from 'lucide-react'
+import { Database } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { BillingInformation, type BillingData } from './billing-information'
-import { PricingPackages, type PricingPlan } from './pricing-packages'
+import { PricingPackages, type PricingPlan, pricingPlanSchema } from './pricing-packages'
 
 export interface UsageData {
   stations: { used: number; limit: number }
@@ -28,8 +28,8 @@ export interface PlanUpgradeContentProps {
 
 export function PlanUpgradeContent({
   usage,
-  currentPlan = 'Professional',
-  currentPlanId = 'professional',
+  currentPlan,
+  currentPlanId,
   upgradePlanAction,
   teamId,
   billingData,
@@ -42,32 +42,15 @@ export function PlanUpgradeContent({
   const stationsPct = Math.round((usage.stations.used / usage.stations.limit) * 100)
   const membersPct = Math.round((usage.members.used / usage.members.limit) * 100)
 
-  // Mock pricing plans data (ตาม design ที่แนบมา)
-  const pricingPlans: PricingPlan[] = [
+  const pricingPlans: PricingPlan[] = pricingPlanSchema.array().parse([
     {
-      id: 'starter',
-      name: 'Starter',
-      price: 129,
-      period: 'month',
-      description: 'Perfect for small teams getting started',
-      icon: <Zap className="h-8 w-8 text-primary" />,
-      features: [
-        'Up to 5 charging stations',
-        'Basic analytics',
-        'Email support',
-        '5GB storage',
-        'Standard integrations',
-      ],
-    },
-    {
-      id: 'professional',
-      name: 'Professional',
-      price: 329,
-      period: 'month',
-      description: 'Best for growing businesses',
-      icon: <Crown className="h-8 w-8 text-primary" />,
-      isPopular: true,
-      features: [
+      id: '24',
+      icon_package_path: 'https://example.com/icons/pro.svg',
+      package_name: 'Pro',
+      type_of_prices: 'month',
+      description: '2',
+      price: '150.00',
+      detail: [
         'Up to 25 charging stations',
         'Advanced analytics & reporting',
         'Priority support',
@@ -76,26 +59,17 @@ export function PlanUpgradeContent({
         'Custom branding',
         'Multi-location support',
       ],
+      discount: '20.00',
+      commission: '2.00',
+      is_default: true,
     },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: 999,
-      period: 'month',
-      description: 'For large scale operations',
-      icon: <Star className="h-8 w-8 text-primary" />,
-      features: [
-        'Unlimited charging stations',
-        'Real-time monitoring',
-        '24/7 phone support',
-        'Unlimited storage',
-        'Custom integrations',
-        'White-label solution',
-        'Dedicated account manager',
-        'SLA guarantee',
-      ],
-    },
-  ]
+  ])
+
+  const resolvedCurrentPlan =
+    pricingPlans.find((plan) => plan.id === currentPlanId) ??
+    pricingPlans.find((plan) => plan.is_default)
+  const resolvedCurrentPlanId = resolvedCurrentPlan?.id ?? pricingPlans[0]?.id
+  const resolvedCurrentPlanName = currentPlan ?? resolvedCurrentPlan?.package_name ?? 'Current Plan'
 
   const handleUpgrade = (planId: string) => {
     startTransition(async () => {
@@ -127,7 +101,7 @@ export function PlanUpgradeContent({
               <span>Current Usage</span>
             </CardTitle>
             <p className="mt-1 text-xs text-muted-foreground">
-              You are currently on the {currentPlan} plan.
+              You are currently on the {resolvedCurrentPlanName} plan.
             </p>
 
             <div className="mt-4 grid gap-6 md:grid-cols-2">
@@ -162,7 +136,7 @@ export function PlanUpgradeContent({
       {/* Pricing Packages Section */}
       <PricingPackages
         plans={pricingPlans}
-        currentPlanId={currentPlanId}
+        currentPlanId={resolvedCurrentPlanId}
         onUpgrade={handleUpgrade}
         isLoading={isPending}
       />

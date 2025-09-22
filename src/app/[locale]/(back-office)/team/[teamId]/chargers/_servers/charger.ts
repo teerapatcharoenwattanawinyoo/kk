@@ -29,6 +29,162 @@ import {
   UpdateSerialNumberRequestSchema,
   UpdateSerialNumberResponseSchema,
 } from '../_schemas/chargers.schema'
+import type { z } from 'zod'
+
+const toNumber = (value: unknown): number | undefined => {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : undefined
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : undefined
+  }
+
+  return undefined
+}
+
+const toString = (value: unknown): string | undefined => {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value)
+  }
+
+  return undefined
+}
+
+const normalizeCreateChargerResponse = (
+  rawResponse: unknown,
+  parseError: z.ZodError<CreateChargerResponse>,
+): CreateChargerResponse => {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('createCharger response did not match schema', {
+      issues: parseError.issues,
+      rawResponse,
+    })
+  }
+
+  const responseLike = rawResponse as {
+    statusCode?: unknown
+    status?: unknown
+    status_code?: unknown
+    code?: unknown
+    httpStatus?: unknown
+    http_code?: unknown
+    message?: unknown
+    statusMessage?: unknown
+    data?: {
+      message?: unknown
+      status?: unknown
+      data?: {
+        id?: unknown
+        charger_id?: unknown
+        chargerId?: unknown
+      }
+      charger_id?: unknown
+      chargerId?: unknown
+      id?: unknown
+    }
+    charger_id?: unknown
+    chargerId?: unknown
+    id?: unknown
+  }
+
+  const statusCandidates: unknown[] = [
+    responseLike.statusCode,
+    responseLike.status,
+    responseLike.status_code,
+    responseLike.code,
+    responseLike.httpStatus,
+    responseLike.http_code,
+  ]
+
+  const messageCandidates: unknown[] = [
+    responseLike.message,
+    responseLike.statusMessage,
+    responseLike.status,
+    responseLike.data?.message,
+    responseLike.data?.status,
+  ]
+
+  const idCandidates: unknown[] = [
+    responseLike.data?.data?.id,
+    responseLike.data?.data?.charger_id,
+    responseLike.data?.data?.chargerId,
+    responseLike.data?.charger_id,
+    responseLike.data?.chargerId,
+    responseLike.data?.id,
+    responseLike.charger_id,
+    responseLike.chargerId,
+    responseLike.id,
+  ]
+
+  let resolvedId: number | undefined
+  let rawIdCandidate: unknown
+
+  for (const candidate of idCandidates) {
+    if (candidate === undefined || candidate === null) continue
+
+    if (rawIdCandidate === undefined) {
+      rawIdCandidate = candidate
+    }
+
+    const numericCandidate = toNumber(candidate)
+    if (numericCandidate !== undefined) {
+      resolvedId = numericCandidate
+      break
+    }
+  }
+
+  let normalizedStatus: number | undefined
+  for (const candidate of statusCandidates) {
+    const parsed = toNumber(candidate)
+    if (parsed !== undefined) {
+      normalizedStatus = parsed
+      break
+    }
+  }
+
+  let normalizedMessage: string | undefined
+  for (const candidate of messageCandidates) {
+    const parsed = toString(candidate)
+    if (parsed !== undefined && parsed.trim() !== '') {
+      normalizedMessage = parsed
+      break
+    }
+  }
+
+  const normalizedResponse: {
+    statusCode: number
+    message: string
+    data: {
+      data: { id: number; charger_id?: unknown }
+      message?: string
+    }
+  } = {
+    statusCode: normalizedStatus ?? 200,
+    message: normalizedMessage ?? '',
+    data: {
+      data: {
+        id: resolvedId ?? 0,
+      },
+    },
+  }
+
+  const nestedMessage = toString(responseLike.data?.message)
+  if (nestedMessage) {
+    normalizedResponse.data.message = nestedMessage
+  }
+
+  if (resolvedId === undefined && rawIdCandidate !== undefined) {
+    normalizedResponse.data.data.charger_id = rawIdCandidate
+  }
+
+  return normalizedResponse as CreateChargerResponse
+}
 
 export const getChargerBrands = async (): Promise<ChargerBrandsResponse> => {
   try {
@@ -94,7 +250,13 @@ export const createCharger = async (
   const url = `${API_ENDPOINTS.CHARGER.CREATE}?team_group_id=${teamGroupId}`
   const payload = CreateChargerRequestSchema.parse(chargerData)
   const response = await api.post(url, payload)
-  return CreateChargerResponseSchema.parse(response)
+  const parsedResponse = CreateChargerResponseSchema.safeParse(response)
+
+  if (parsedResponse.success) {
+    return parsedResponse.data
+  }
+
+  return normalizeCreateChargerResponse(response, parsedResponse.error)
 }
 
 export const updateCharger = async (

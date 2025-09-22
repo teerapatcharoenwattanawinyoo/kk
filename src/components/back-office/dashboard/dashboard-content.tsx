@@ -4,13 +4,7 @@ import { StationMap } from '@/components/back-office/dashboard/station-map'
 import { RevenueHeaderIcon } from '@/components/icons'
 import { LineChart } from '@/components/line-chart'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Calendar, ChevronRight, Clock, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
@@ -25,9 +19,7 @@ export function DashboardContent() {
   return (
     <div className="flex flex-col gap-4 p-3 md:gap-6 md:p-4 lg:p-6">
       <header className="mb-2 flex flex-col gap-3 rounded-lg border bg-card p-4 md:mb-4 md:flex-row md:items-center md:gap-6 md:p-6">
-        <h1 className="text-xl font-semibold text-primary md:text-2xl lg:text-3xl">
-          Overview
-        </h1>
+        <h1 className="text-xl font-semibold text-primary md:text-2xl lg:text-3xl">Overview</h1>
         <div className="hidden h-6 w-px bg-border md:block"></div>
         <div className="flex flex-wrap items-center gap-4 text-muted-foreground md:gap-6">
           <div className="flex items-center gap-2">
@@ -68,9 +60,7 @@ export function DashboardContent() {
         <Card className="shadow-xs transition-shadow hover:shadow-md">
           <CardContent className="p-4 text-center sm:p-6">
             <div className="text-2xl font-bold sm:text-3xl">8</div>
-            <div className="mt-2 text-xs text-primary sm:text-sm">
-              Connector
-            </div>
+            <div className="mt-2 text-xs text-primary sm:text-sm">Connector</div>
             <span className="text-xs text-muted-foreground">connect</span>
           </CardContent>
         </Card>
@@ -78,18 +68,14 @@ export function DashboardContent() {
         <Card className="shadow-xs transition-shadow hover:shadow-md">
           <CardContent className="p-4 text-center sm:p-6">
             <div className="text-2xl font-bold sm:text-3xl">202</div>
-            <div className="mt-2 text-xs text-[#4AF3DB] sm:text-sm">
-              Number Of Charging
-            </div>
+            <div className="mt-2 text-xs text-[#4AF3DB] sm:text-sm">Number Of Charging</div>
             <span className="text-xs text-muted-foreground">Transaction</span>
           </CardContent>
         </Card>
         <Card className="shadow-none">
           <CardContent className="p-4 text-center sm:p-6">
             <div className="text-2xl font-bold sm:text-3xl">฿39,580.30</div>
-            <div className="text-success-dark mt-2 text-xs sm:text-sm">
-              Revenue
-            </div>
+            <div className="text-success-dark mt-2 text-xs sm:text-sm">Revenue</div>
             <span className="text-xs text-muted-foreground">Charging Fee</span>
           </CardContent>
         </Card>
@@ -104,9 +90,7 @@ export function DashboardContent() {
                 <CardTitle className="text-oc-title text-base font-medium sm:text-lg">
                   Total Charge Session
                 </CardTitle>
-                <p className="text-xs text-muted-foreground sm:text-sm">
-                  All Station
-                </p>
+                <p className="text-xs text-muted-foreground sm:text-sm">All Station</p>
               </div>
 
               {/* Tabs + Date Selector */}
@@ -119,11 +103,7 @@ export function DashboardContent() {
                   </TabsList>
                 </Tabs>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 gap-1 text-xs sm:h-8 sm:text-sm"
-                >
+                <Button variant="outline" size="sm" className="h-7 gap-1 text-xs sm:h-8 sm:text-sm">
                   <span>{dateRange}</span>
                   <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
@@ -145,9 +125,7 @@ export function DashboardContent() {
                 <div className="mt-4 flex flex-col gap-3 px-4 pb-4 sm:mt-6 sm:flex-row sm:items-center sm:justify-center sm:gap-6 xl:mt-4 xl:flex-col xl:gap-3">
                   <div className="flex items-center justify-center gap-2">
                     <span className="h-1.5 w-4 rounded-full bg-primary sm:w-6" />
-                    <span className="text-xs text-muted-foreground sm:text-sm">
-                      Total Charge
-                    </span>
+                    <span className="text-xs text-muted-foreground sm:text-sm">Total Charge</span>
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <span className="h-1.5 w-4 rounded-full border border-dashed border-primary sm:w-6" />
@@ -176,9 +154,7 @@ export function DashboardContent() {
           <CardFooter className="flex w-full justify-end border-t p-4 sm:p-6">
             <Link href={'/#'} className="text-primary hover:underline">
               <div className="flex items-center gap-1">
-                <p className="text-xs text-primary sm:text-sm">
-                  View Station map
-                </p>
+                <p className="text-xs text-primary sm:text-sm">View Station map</p>
                 <div className="flex size-6 items-center justify-center rounded-full bg-muted">
                   <ChevronRight className="text-oc-neutral size-4 rounded-full" />
                 </div>
@@ -209,9 +185,7 @@ export function DashboardContent() {
             </div>
           </CardHeader>
           <CardContent className="flex h-fit min-h-0 grow flex-col justify-center p-4 text-left">
-            <div className="text-2xl font-bold sm:text-3xl xl:text-2xl">
-              ฿39,580.30
-            </div>
+            <div className="text-2xl font-bold sm:text-3xl xl:text-2xl">฿39,580.30</div>
             <div className="mt-1 flex flex-col gap-1 sm:mt-2 xl:flex-col xl:gap-1">
               <span className="text-xs text-muted-foreground sm:text-sm">
                 ยอดรายได้เพิ่มขึ้นจากเดือนก่อนแล้ว
@@ -241,9 +215,7 @@ export function DashboardContent() {
           <CardFooter className="mt-auto flex h-fit min-h-0 w-full justify-end border-t p-4">
             <Link href={'/#'} className="text-primary hover:underline">
               <div className="flex items-center gap-1">
-                <p className="text-xs text-primary sm:text-sm">
-                  View Station Statistic
-                </p>
+                <p className="text-xs text-primary sm:text-sm">View Station Statistic</p>
                 <div className="flex size-6 items-center justify-center rounded-full bg-muted">
                   {' '}
                   <ChevronRight className="text-oc-neutral size-4 rounded" />
@@ -317,27 +289,18 @@ export function DashboardContent() {
                             </div>
                             <div className="flex items-center gap-1">
                               <span className="text-text-mist">Type:</span>
-                              <span className="font-medium text-primary">
-                                {station.type}
-                              </span>
+                              <span className="font-medium text-primary">{station.type}</span>
                             </div>
                             <div className="flex items-center gap-1">
                               <span className="text-text-mist">Charge:</span>
-                              <span className="font-medium text-primary">
-                                {station.charge}
-                              </span>
+                              <span className="font-medium text-primary">{station.charge}</span>
                             </div>
                           </div>
                         </div>
 
                         <div className="flex flex-col items-start gap-2 sm:items-end">
-                          <Badge
-                            variant="outline"
-                            className="bg-green-500 hover:bg-green-600"
-                          >
-                            <span className="font-light text-white">
-                              online
-                            </span>
+                          <Badge variant="outline" className="bg-green-500 hover:bg-green-600">
+                            <span className="font-light text-white">online</span>
                           </Badge>
                         </div>
                       </div>
@@ -370,13 +333,7 @@ export function DashboardContent() {
                               fill="none"
                               fillRule="evenodd"
                             >
-                              <rect
-                                id="Rectangle"
-                                x="0"
-                                y="0"
-                                width="24"
-                                height="24"
-                              ></rect>
+                              <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
                               <path
                                 d="M12,15 C13.657,15 15,13.657 15,12 C15,10.343 13.657,9 12,9 C10.343,9 9,10.343 9,12 C9,13.657 10.343,15 12,15 Z"
                                 id="Path"
@@ -408,11 +365,7 @@ export function DashboardContent() {
               <Separator className="my-4" />
             </div>
             <div className="mt-3 flex justify-end">
-              <Button
-                variant="link"
-                size="sm"
-                className="gap-1 text-blue-500 hover:text-blue-600"
-              >
+              <Button variant="link" size="sm" className="gap-1 text-blue-500 hover:text-blue-600">
                 <span className="text-xs sm:text-sm">View Station</span>
                 <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>

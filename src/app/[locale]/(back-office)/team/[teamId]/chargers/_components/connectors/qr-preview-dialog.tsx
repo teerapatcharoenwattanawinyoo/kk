@@ -78,8 +78,7 @@ export function QrPreviewDialog({
                   {connectorName}
                 </p>
                 <p className="px-1 text-xs font-semibold text-zinc-800">
-                  Connector ID:{' '}
-                  <span className="font-medium">{connectorId}</span>
+                  Connector ID: <span className="font-medium">{connectorId}</span>
                 </p>
               </div>
               <Button

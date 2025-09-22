@@ -88,12 +88,8 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
           {/* Company Info */}
           <div className="mb-4 grid grid-cols-3 gap-4">
             <div className="col-span-2">
-              <p className="mb-1 text-xs font-light">
-                {receiptData.companyInfo.name}
-              </p>
-              <p className="mb-1 text-xs font-light">
-                {receiptData.companyInfo.address}
-              </p>
+              <p className="mb-1 text-xs font-light">{receiptData.companyInfo.name}</p>
+              <p className="mb-1 text-xs font-light">{receiptData.companyInfo.address}</p>
               <p className="mb-3 text-xs font-light">
                 เลขประจำตัวผู้เสียภาษี : {receiptData.companyInfo.taxId}
               </p>
@@ -101,15 +97,11 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
                 <span className="font-light">เลขที่</span>
-                <span className="text-right font-light">
-                  {receiptData.receiptInfo.receiptId}
-                </span>
+                <span className="text-right font-light">{receiptData.receiptInfo.receiptId}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="font-light">วันที่</span>
-                <span className="text-right font-light">
-                  {receiptData.receiptInfo.date}
-                </span>
+                <span className="text-right font-light">{receiptData.receiptInfo.date}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="font-light">Transaction Id</span>
@@ -136,9 +128,7 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
                     เลขประจำตัวผู้เสียภาษี : {receiptData.customer.taxId}
                   </p>
                   <p className="mb-1 text-xs">{receiptData.customer.address}</p>
-                  <p className="mb-1 text-xs">
-                    สำนักงาน/สาขา : {receiptData.customer.branch}
-                  </p>
+                  <p className="mb-1 text-xs">สำนักงาน/สาขา : {receiptData.customer.branch}</p>
                 </>
               )}
               <div className="absolute right-0 top-0 h-[124px] border-r border-gray-300"></div>
@@ -146,28 +136,20 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
 
             <div className="relative">
               <p className="mb-2 text-xs">จุดบริการ</p>
-              <p className="mb-1 text-sm font-semibold">
-                {receiptData.station.name}
-              </p>
+              <p className="mb-1 text-sm font-semibold">{receiptData.station.name}</p>
               <div className="absolute right-0 top-0 h-[124px] border-r border-gray-300"></div>
             </div>
 
             <div>
-              <p className="mb-3 text-xs font-semibold text-blue-600">
-                การชำระเงิน
-              </p>
+              <p className="mb-3 text-xs font-semibold text-blue-600">การชำระเงิน</p>
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span>ช่องทาง</span>
-                  <span className="font-semibold">
-                    {receiptData.payment.method}
-                  </span>
+                  <span className="font-semibold">{receiptData.payment.method}</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span>วัน/เวลาที่ชำระ</span>
-                  <span className="font-semibold">
-                    {receiptData.payment.date}
-                  </span>
+                  <span className="font-semibold">{receiptData.payment.date}</span>
                 </div>
               </div>
             </div>
@@ -202,9 +184,7 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
                 {receiptData.items.map((item, index) => (
                   <>
                     <tr key={index}>
-                      <td className="px-4 py-3 text-center text-xs text-gray-600">
-                        {index + 1}.
-                      </td>
+                      <td className="px-4 py-3 text-center text-xs text-gray-600">{index + 1}.</td>
                       <td className="px-4 py-3 text-xs font-semibold text-black">
                         {item.description}
                       </td>
@@ -214,9 +194,7 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
                       <td className="px-4 py-3 text-center text-xs text-gray-600">
                         {item.unitPrice}
                       </td>
-                      <td className="px-4 py-3 text-center text-xs text-gray-600">
-                        {item.total}
-                      </td>
+                      <td className="px-4 py-3 text-center text-xs text-gray-600">{item.total}</td>
                     </tr>
                     {item.details && (
                       <tr>
@@ -224,35 +202,26 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
                         <td className="px-4 py-0">
                           <div className="mb-1 space-y-1">
                             <div className="flex justify-between text-xs">
-                              <span className="w-1/3 text-gray-500">
-                                เวลาเริ่มต้น:
-                              </span>
+                              <span className="w-1/3 text-gray-500">เวลาเริ่มต้น:</span>
                               <span className="flex-1 text-right font-semibold text-gray-600">
                                 {item.details.startTime}
                               </span>
                             </div>
                             <div className="flex justify-between text-xs">
-                              <span className="w-1/3 text-gray-500">
-                                เวลาสิ้นสุด:
-                              </span>
+                              <span className="w-1/3 text-gray-500">เวลาสิ้นสุด:</span>
                               <span className="flex-1 text-right font-semibold text-gray-600">
                                 {item.details.endTime}
                               </span>
                             </div>
                             <div className="flex justify-between text-xs">
-                              <span className="w-1/3 text-gray-500">
-                                ระยะเวลาชาร์จ:
-                              </span>
+                              <span className="w-1/3 text-gray-500">ระยะเวลาชาร์จ:</span>
                               <span className="flex-1 text-right font-semibold text-gray-600">
                                 {item.details.duration}
                               </span>
                             </div>
                           </div>
                         </td>
-                        <td
-                          colSpan={3}
-                          className="border-l border-gray-300"
-                        ></td>
+                        <td colSpan={3} className="border-l border-gray-300"></td>
                       </tr>
                     )}
                   </>
@@ -272,33 +241,23 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
             <div className="col-span-2 space-y-1">
               <div className="flex justify-between text-xs">
                 <span className="font-semibold text-black">รวมเป็นเงิน</span>
-                <span className="font-semibold text-black">
-                  {receiptData.summary.subtotal} บาท
-                </span>
+                <span className="font-semibold text-black">{receiptData.summary.subtotal} บาท</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span></span>
-                <span className="text-gray-500">
-                  ({receiptData.summary.totalText})
-                </span>
+                <span className="text-gray-500">({receiptData.summary.totalText})</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-right">ภาษีมูลค่าเพิ่ม 7%</span>
-                <span className="text-gray-500">
-                  {receiptData.summary.vat} บาท
-                </span>
+                <span className="text-gray-500">{receiptData.summary.vat} บาท</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-right">ราคาไม่รวมภาษีมูลค่าเพิ่ม</span>
-                <span className="text-gray-500">
-                  {receiptData.summary.beforeVat} บาท
-                </span>
+                <span className="text-gray-500">{receiptData.summary.beforeVat} บาท</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-right">จำนวนเงินรวมทั้งสิ้น</span>
-                <span className="text-gray-500">
-                  {receiptData.summary.total} บาท
-                </span>
+                <span className="text-gray-500">{receiptData.summary.total} บาท</span>
               </div>
             </div>
           </div>
@@ -319,9 +278,7 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
                   className="mx-auto mb-4 mt-4"
                 />
               )}
-              <p className="mb-1 text-xs font-semibold">
-                {receiptData.signature?.name}
-              </p>
+              <p className="mb-1 text-xs font-semibold">{receiptData.signature?.name}</p>
               <p className="mb-0 text-xs">{receiptData.signature?.position}</p>
               <div className="my-4 border-t border-gray-300"></div>
               <p className="mb-4 text-xs">ผู้รับเงิน</p>
@@ -333,8 +290,7 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
         <div className="mt-5 rounded-[20px] border-0 bg-white p-4">
           <p className="text-[10px] font-light text-black">
             * เป็นการยกเลิกใบกำกับภาษี / ใบเสร็จรับเงินอย่างย่อเลขที่ [{' '}
-            {receiptData.receiptInfo.receiptId} ] และ ออกใบกำกับภาษี /
-            ใบเสร็จรับเงินแบบเต็มแทน
+            {receiptData.receiptInfo.receiptId} ] และ ออกใบกำกับภาษี / ใบเสร็จรับเงินแบบเต็มแทน
           </p>
         </div>
       </div>

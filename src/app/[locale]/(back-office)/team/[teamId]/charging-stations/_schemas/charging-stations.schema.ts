@@ -16,12 +16,8 @@ export const DayOfWeekSchema = z.enum([
 
 export const OpenCloseTimeSchema = z.object({
   enabled: z.boolean(),
-  open: z
-    .string()
-    .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
-  close: z
-    .string()
-    .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
+  open: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
+  close: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
 })
 
 export const OpenCloseFormStateSchema = z.object({
@@ -66,7 +62,7 @@ export const ChargingStationFormSchema = z.object({
   // Images for upload
   // images: z.array(z.instanceof(File)).optional(),
   //refactor
-  images: z.array(z.any()).optional()
+  images: z.array(z.any()).optional(),
 })
 
 // ============================
@@ -97,19 +93,19 @@ export const CreateChargingStationRequestSchema = z.object({
   team_group_id: z.number().min(1),
   contact: z.string().optional(),
   //refactor
-  images: z.array(z.any()).optional()
+  images: z.array(z.any()).optional(),
 })
 
-export const UpdateChargingStationRequestSchema =
-  CreateChargingStationRequestSchema.extend({
-    id: z.number().min(1),
-  }).omit({ team_group_id: true })
+export const UpdateChargingStationRequestSchema = CreateChargingStationRequestSchema.extend({
+  id: z.number().min(1),
+}).omit({ team_group_id: true })
 
 // Extended UpdateChargingStationRequest with deletedImageIds for UI
-export const ExtendedUpdateChargingStationRequestSchema =
-  UpdateChargingStationRequestSchema.extend({
+export const ExtendedUpdateChargingStationRequestSchema = UpdateChargingStationRequestSchema.extend(
+  {
     deletedImageIds: z.array(z.number()).optional(),
-  })
+  },
+)
 
 // ============================
 // API Response Schemas (จำเป็นสำหรับ API)
@@ -189,12 +185,7 @@ export const ChargingStationsParamsSchema = z
     search: z.string().optional(),
     status: z.string().optional(),
   })
-  .and(
-    z.record(
-      z.string(),
-      z.union([z.string(), z.number(), z.boolean()]).optional(),
-    ),
-  )
+  .and(z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).optional()))
 
 export const StationCategorySchema = z.object({
   id: z.number(),
@@ -250,13 +241,9 @@ export const ChargingStationDetailSchema = z.object({
   station_type_id: z.union([z.string(), z.number()]),
   contact: z.string().optional(),
   partner_station_work: z.array(PartnerStationWorkSchema).optional(),
-  partner_station_description: z
-    .array(PartnerStationDescriptionSchema)
-    .optional(),
+  partner_station_description: z.array(PartnerStationDescriptionSchema).optional(),
   station_type: StationTypeSchema.optional(),
-  partner_station_gallery: z
-    .array(PartnerStationGalleryDetailSchema)
-    .optional(),
+  partner_station_gallery: z.array(PartnerStationGalleryDetailSchema).optional(),
 })
 
 export const GetChargingStationDetailResponseSchema = z.object({
@@ -338,17 +325,13 @@ export const validateMultiLanguageForm = (
 /**
  * Validates open/close form state
  */
-export const validateOpenCloseForm = (
-  openCloseForm: z.infer<typeof OpenCloseFormStateSchema>,
-) => {
+export const validateOpenCloseForm = (openCloseForm: z.infer<typeof OpenCloseFormStateSchema>) => {
   try {
     OpenCloseFormStateSchema.parse(openCloseForm)
 
     // Additional business logic validation
     if (!openCloseForm.open24hrs && !openCloseForm.sameEveryday) {
-      const enabledDays = Object.values(openCloseForm.days).filter(
-        (day) => day.enabled,
-      )
+      const enabledDays = Object.values(openCloseForm.days).filter((day) => day.enabled)
       if (enabledDays.length === 0) {
         return {
           isValid: false,
@@ -385,45 +368,25 @@ export type OpenCloseFormState = z.infer<typeof OpenCloseFormStateSchema>
 export type Coordinates = z.infer<typeof CoordinatesSchema>
 export type ChargingStationFormData = z.infer<typeof ChargingStationFormSchema>
 export type WorkTime = z.infer<typeof WorkTimeSchema>
-export type CreateChargingStationRequest = z.infer<
-  typeof CreateChargingStationRequestSchema
->
-export type UpdateChargingStationRequest = z.infer<
-  typeof UpdateChargingStationRequestSchema
->
+export type CreateChargingStationRequest = z.infer<typeof CreateChargingStationRequestSchema>
+export type UpdateChargingStationRequest = z.infer<typeof UpdateChargingStationRequestSchema>
 
 // Response types (จำเป็นสำหรับ API)
 export type PartnerStationWork = z.infer<typeof PartnerStationWorkSchema>
-export type PartnerStationDescription = z.infer<
-  typeof PartnerStationDescriptionSchema
->
-export type StationTypeDescription = z.infer<
-  typeof StationTypeDescriptionSchema
->
+export type PartnerStationDescription = z.infer<typeof PartnerStationDescriptionSchema>
+export type StationTypeDescription = z.infer<typeof StationTypeDescriptionSchema>
 export type StationType = z.infer<typeof StationTypeSchema>
-export type PartnerStationGalleryDetail = z.infer<
-  typeof PartnerStationGalleryDetailSchema
->
+export type PartnerStationGalleryDetail = z.infer<typeof PartnerStationGalleryDetailSchema>
 export type ChargingStation = z.infer<typeof ChargingStationSchema>
-export type ChargingStationsResponse = z.infer<
-  typeof ChargingStationsResponseSchema
->
-export type ChargingStationsParams = z.infer<
-  typeof ChargingStationsParamsSchema
->
+export type ChargingStationsResponse = z.infer<typeof ChargingStationsResponseSchema>
+export type ChargingStationsParams = z.infer<typeof ChargingStationsParamsSchema>
 export type StationCategory = z.infer<typeof StationCategorySchema>
-export type StationCategoriesResponse = z.infer<
-  typeof StationCategoriesResponseSchema
->
+export type StationCategoriesResponse = z.infer<typeof StationCategoriesResponseSchema>
 export type CreateChargingStationResponseData = z.infer<
   typeof CreateChargingStationResponseDataSchema
 >
-export type CreateChargingStationResponse = z.infer<
-  typeof CreateChargingStationResponseSchema
->
-export type UpdateChargingStationResponse = z.infer<
-  typeof UpdateChargingStationResponseSchema
->
+export type CreateChargingStationResponse = z.infer<typeof CreateChargingStationResponseSchema>
+export type UpdateChargingStationResponse = z.infer<typeof UpdateChargingStationResponseSchema>
 export type ChargingStationDetail = z.infer<typeof ChargingStationDetailSchema>
 export type GetChargingStationDetailResponse = z.infer<
   typeof GetChargingStationDetailResponseSchema

@@ -18,16 +18,13 @@ interface PaymentPageProps {
   locale: string
 }
 
-const PRESET_AMOUNTS = [
-  300, 500, 700, 3000, 5000, 7000, 30000, 50000, 70000,
-] as const
+const PRESET_AMOUNTS = [300, 500, 700, 3000, 5000, 7000, 30000, 50000, 70000] as const
 
 export function TopUpPage({ teamId, locale }: PaymentPageProps) {
   const router = useRouter()
   const [amount, setAmount] = useState<number>(300)
   const THB = useMemo(
-    () =>
-      new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
+    () => new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
     [],
   )
 
@@ -49,9 +46,7 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
 
   const handleContinue = () => {
     // Navigate to payment method selection page with amount
-    router.push(
-      `/${locale}/team/${teamId}/team-wallet/top-up/checkout?amount=${amount}`,
-    )
+    router.push(`/${locale}/team/${teamId}/team-wallet/top-up/checkout?amount=${amount}`)
   }
 
   const txGroups = [
@@ -106,9 +101,7 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
                   </Button>
                 </Link>
 
-                <h2 className="text-oc-title-secondary text-2xl font-semibold">
-                  Top-Up
-                </h2>
+                <h2 className="text-oc-title-secondary text-2xl font-semibold">Top-Up</h2>
               </div>
             </div>
             <div className="container mx-auto grid gap-6 px-4 py-6 lg:grid-cols-12">
@@ -118,10 +111,7 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
                     <CardTitle className="text-lg">ช่องทางเติมเงิน</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <RadioGroup
-                      defaultValue="online"
-                      className="grid gap-3 sm:grid-cols-2"
-                    >
+                    <RadioGroup defaultValue="online" className="grid gap-3 sm:grid-cols-2">
                       <label
                         className="flex w-full cursor-pointer items-start gap-4 rounded-xl p-4"
                         htmlFor="m-online"
@@ -134,9 +124,7 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
                         <div className="flex items-start gap-4">
                           <Smartphone className="h-10 w-10" />
                           <div className="leading-tight">
-                            <div className="text-base font-semibold">
-                              ออนไลน์
-                            </div>
+                            <div className="text-base font-semibold">ออนไลน์</div>
                             <div className="text-xs text-primary-foreground/80 sm:text-sm/5">
                               รองรับบัตรเครดิต/เดบิต, โอน และ QR PromptPay
                             </div>
@@ -154,9 +142,7 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
                     <div className="space-y-6">
                       {txGroups.map((group) => (
                         <div key={group.date} className="space-y-3">
-                          <div className="px-1 text-xs text-muted-foreground">
-                            {group.date}
-                          </div>
+                          <div className="px-1 text-xs text-muted-foreground">{group.date}</div>
                           <div className="space-y-3">
                             {group.items.map((tx) => (
                               <div
@@ -168,18 +154,12 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
                                     <CoinSolid className="size-4" />
                                   </div>
                                   <div>
-                                    <div className="font-medium">
-                                      {tx.title}
-                                    </div>
+                                    <div className="font-medium">{tx.title}</div>
                                     <div className="mt-8 flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
                                       <span>{tx.datetime}</span>
-                                      <span className="hidden sm:inline">
-                                        |
-                                      </span>
+                                      <span className="hidden sm:inline">|</span>
                                       <span>ID: {tx.id}</span>
-                                      <span className="hidden sm:inline">
-                                        |
-                                      </span>
+                                      <span className="hidden sm:inline">|</span>
                                       <span>{tx.channel}</span>
                                     </div>
                                   </div>
@@ -224,9 +204,7 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
                           value={amount ? amount.toString() : ''}
                           placeholder="0"
                           onChange={(e) => {
-                            const n = Number(
-                              e.target.value.replace(/[^0-9]/g, ''),
-                            )
+                            const n = Number(e.target.value.replace(/[^0-9]/g, ''))
                             setAmount(Number.isFinite(n) ? n : 0)
                           }}
                           className="h-14 bg-muted text-center text-2xl font-semibold"

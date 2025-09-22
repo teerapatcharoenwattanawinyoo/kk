@@ -34,10 +34,7 @@ const getTeamListApi = async (params?: TeamListParams) => {
 }
 
 const createTeamApi = async (formData: FormData) => {
-  return api.post(
-    API_ENDPOINTS.TEAM_GROUPS.TEAMS.CREATE,
-    formData,
-  ) as Promise<IResponse>
+  return api.post(API_ENDPOINTS.TEAM_GROUPS.TEAMS.CREATE, formData) as Promise<IResponse>
 }
 
 const updateTeam = async (id: string, formData: FormData) => {
@@ -58,9 +55,7 @@ export async function getTeamList(): Promise<TeamListResponse> {
   return await api.get<TeamListResponse>(API_ENDPOINTS.AUTH.TEAM)
 }
 
-export async function getTeamHostList(
-  params?: TeamHostListParams,
-): Promise<TeamHostListResponse> {
+export async function getTeamHostList(params?: TeamHostListParams): Promise<TeamHostListResponse> {
   const searchParams = new URLSearchParams()
 
   if (params?.page) {

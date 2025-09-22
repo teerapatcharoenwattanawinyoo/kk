@@ -5,12 +5,7 @@ import { useTeam } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
 import { ChevronLeftIcon } from '@/components/icons/ChevronLeftIcon'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { QUERY_KEYS } from '@/lib/constants'
@@ -67,12 +62,7 @@ export default function SelectConnectorDialog({
     }
 
     setPreviousParentId(currentParentId)
-  }, [
-    selectedPriceGroup?.id,
-    selectedPriceGroup,
-    previousParentId,
-    selectedConnectors.length,
-  ])
+  }, [selectedPriceGroup?.id, selectedPriceGroup, previousParentId, selectedConnectors.length])
 
   const {
     data: connectorResponse,
@@ -120,9 +110,7 @@ export default function SelectConnectorDialog({
   // Update select all state based on individual selections
   useEffect(() => {
     if (filteredConnectors.length > 0) {
-      const allSelected = filteredConnectors.every((c) =>
-        selectedConnectors.includes(c.id),
-      )
+      const allSelected = filteredConnectors.every((c) => selectedConnectors.includes(c.id))
       setSelectAll(allSelected)
     }
   }, [selectedConnectors, filteredConnectors, selectedConnectors.length])
@@ -143,9 +131,7 @@ export default function SelectConnectorDialog({
 
   const handleApplyPrice = () => {
     if (onConfirm) {
-      const selected = connectors.filter((c) =>
-        selectedConnectors.includes(c.id),
-      )
+      const selected = connectors.filter((c) => selectedConnectors.includes(c.id))
 
       onConfirm(selected)
     }
@@ -168,12 +154,7 @@ export default function SelectConnectorDialog({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#E0E0E0] px-6 py-3">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={handleBack}
-            >
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleBack}>
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
             <DialogTitle className="text-xl font-semibold text-[#355FF5]">
@@ -222,15 +203,11 @@ export default function SelectConnectorDialog({
             {isLoading ? (
               <div className="py-8 text-center">
                 <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin text-[#355FF5]" />
-                <div className="text-sm text-gray-500">
-                  Loading connectors...
-                </div>
+                <div className="text-sm text-gray-500">Loading connectors...</div>
               </div>
             ) : error ? (
               <div className="py-8 text-center">
-                <div className="text-sm text-red-500">
-                  Error loading connectors
-                </div>
+                <div className="text-sm text-red-500">Error loading connectors</div>
               </div>
             ) : filteredConnectors.length === 0 ? (
               <div className="py-8 text-center">
@@ -248,9 +225,7 @@ export default function SelectConnectorDialog({
                   >
                     <Checkbox
                       checked={isSelected}
-                      onCheckedChange={() =>
-                        handleConnectorToggle(connector.id)
-                      }
+                      onCheckedChange={() => handleConnectorToggle(connector.id)}
                       className="h-[15px] w-[15px] rounded-sm border-[#D5D5D5] data-[state=checked]:border-[#009032] data-[state=checked]:bg-[#3ABA66]"
                     />
 

@@ -14,20 +14,11 @@ interface BankAccountManagePageProps {
   locale: string
 }
 
-export const BankAccountManagePage = ({
-  teamId,
-  locale,
-}: BankAccountManagePageProps) => {
+export const BankAccountManagePage = ({ teamId, locale }: BankAccountManagePageProps) => {
   const router = useRouter()
-  const {
-    data: bankAccountsResponse,
-    isLoading,
-    error,
-  } = useBankAccounts(teamId)
+  const { data: bankAccountsResponse, isLoading, error } = useBankAccounts(teamId)
   const deleteBankAccountMutation = useDeleteBankAccount()
-  const [selectedAccounts, setSelectedAccounts] = useState<Set<number>>(
-    new Set(),
-  )
+  const [selectedAccounts, setSelectedAccounts] = useState<Set<number>>(new Set())
 
   const bankAccounts = bankAccountsResponse?.data || []
 
@@ -39,26 +30,21 @@ export const BankAccountManagePage = ({
     router.push(`/${locale}/team/${teamId}/revenue/bank-account/add`)
   }, [router, locale, teamId])
 
-  const handleToggleAccount = useCallback(
-    (accountId: number, isEnabled: boolean) => {
-      if (isEnabled) {
-        setSelectedAccounts((prev) => new Set([...prev, accountId]))
-      } else {
-        setSelectedAccounts((prev) => {
-          const newSet = new Set(prev)
-          newSet.delete(accountId)
-          return newSet
-        })
-      }
-    },
-    [],
-  )
+  const handleToggleAccount = useCallback((accountId: number, isEnabled: boolean) => {
+    if (isEnabled) {
+      setSelectedAccounts((prev) => new Set([...prev, accountId]))
+    } else {
+      setSelectedAccounts((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(accountId)
+        return newSet
+      })
+    }
+  }, [])
 
   const handleEditAccount = useCallback(
     (accountId: number) => {
-      router.push(
-        `/${locale}/team/${teamId}/revenue/bank-account/edit/${accountId}`,
-      )
+      router.push(`/${locale}/team/${teamId}/revenue/bank-account/edit/${accountId}`)
     },
     [router, locale, teamId],
   )
@@ -90,9 +76,7 @@ export const BankAccountManagePage = ({
             <Button variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Manage Bank Account
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Manage Bank Account</h1>
           </div>
         </div>
         <div className="flex items-center justify-center p-8">
@@ -112,17 +96,13 @@ export const BankAccountManagePage = ({
             <Button variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Manage Bank Account
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Manage Bank Account</h1>
           </div>
         </div>
         <div className="flex items-center justify-center p-8">
           <Card className="w-full max-w-md">
             <CardContent className="pt-6">
-              <div className="text-center text-red-600">
-                เกิดข้อผิดพลาดในการโหลดข้อมูล
-              </div>
+              <div className="text-center text-red-600">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>
             </CardContent>
           </Card>
         </div>
@@ -139,14 +119,9 @@ export const BankAccountManagePage = ({
             <Button variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Manage Bank Account
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Manage Bank Account</h1>
           </div>
-          <Button
-            onClick={handleAddAccount}
-            className="bg-blue-600 text-white hover:bg-blue-700"
-          >
+          <Button onClick={handleAddAccount} className="bg-blue-600 text-white hover:bg-blue-700">
             <Plus className="mr-2 h-4 w-4" />
             ADD
           </Button>
@@ -166,7 +141,7 @@ export const BankAccountManagePage = ({
             </Card>
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {bankAccounts.map((account : BankAccount) => (
+              {bankAccounts.map((account: BankAccount) => (
                 <BankAccountCard
                   key={account.id}
                   account={account}

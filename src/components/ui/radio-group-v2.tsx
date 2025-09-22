@@ -71,9 +71,7 @@ const RadioGroup = React.forwardRef<
                   option.disabled ? 'font-normal' : 'font-medium',
                 )}
                 style={{
-                  color: option.disabled
-                    ? colors.neutral[500]
-                    : colors.neutral[800],
+                  color: option.disabled ? colors.neutral[500] : colors.neutral[800],
                 }}
               >
                 <span className="truncate">{option.label}</span>
@@ -87,9 +85,7 @@ const RadioGroup = React.forwardRef<
               <div
                 className="mt-1 break-words text-xs leading-relaxed"
                 style={{
-                  color: option.disabled
-                    ? colors.neutral[400]
-                    : colors.neutral[500],
+                  color: option.disabled ? colors.neutral[400] : colors.neutral[500],
                 }}
               >
                 <span>{option.description}</span>

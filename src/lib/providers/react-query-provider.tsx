@@ -4,11 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
 import { QUERY_KEYS } from '@/lib/constants'
 
-export default function ReactQueryProvider({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function ReactQueryProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -25,10 +21,7 @@ export default function ReactQueryProvider({
                 return false
               }
 
-              if (
-                error instanceof Error &&
-                error.message.includes('Session expired')
-              ) {
+              if (error instanceof Error && error.message.includes('Session expired')) {
                 return false
               }
 
@@ -40,10 +33,7 @@ export default function ReactQueryProvider({
           },
           mutations: {
             retry: (failureCount, error) => {
-              if (
-                error instanceof Error &&
-                error.message.includes('Session expired')
-              ) {
+              if (error instanceof Error && error.message.includes('Session expired')) {
                 return false
               }
               return failureCount < 1

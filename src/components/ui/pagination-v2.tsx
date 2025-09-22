@@ -39,10 +39,7 @@ export const Pagination = ({
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p
-            className="text-sm font-medium"
-            style={{ color: colors.neutral[550] }}
-          >
+          <p className="text-sm font-medium" style={{ color: colors.neutral[550] }}>
             Rows per page
           </p>
           <Select

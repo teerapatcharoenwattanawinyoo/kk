@@ -2,11 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from 'lucide-react'
 
 interface DateTimePickerProps {
@@ -62,9 +58,7 @@ export function DateTimePicker({
           variant="ghost"
           size="sm"
           className={`mt-1 h-auto p-0 text-xs underline hover:bg-transparent ${
-            isEnabled
-              ? 'text-primary hover:text-primary'
-              : 'text-[#949494] hover:text-[#949494]'
+            isEnabled ? 'text-primary hover:text-primary' : 'text-[#949494] hover:text-[#949494]'
           } ${triggerClassName}`}
         >
           ตั้งค่าวันที่เวลา

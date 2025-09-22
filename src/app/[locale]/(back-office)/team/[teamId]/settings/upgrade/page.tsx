@@ -1,9 +1,5 @@
 import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
-import {
-  PlanUpgradeContent,
-  type BillingData,
-  type UsageData,
-} from '../_components/plan'
+import { PlanUpgradeContent, type BillingData, type UsageData } from '../_components/plan'
 import { SettingsLayout } from '../_components/settings-layout'
 import { upgradePlanAction } from './actions'
 
@@ -25,9 +21,7 @@ async function getUsageData(teamId: string): Promise<UsageData> {
   }
 }
 
-async function getCurrentPlan(
-  teamId: string,
-): Promise<{ planName: string; planId: string }> {
+async function getCurrentPlan(teamId: string): Promise<{ planName: string; planId: string }> {
   // TODO: Replace with actual API call
 
   // Mock data

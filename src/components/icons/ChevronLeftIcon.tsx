@@ -4,9 +4,7 @@ interface ChevronLeftIconProps {
   className?: string
 }
 
-export const ChevronLeftIcon: React.FC<ChevronLeftIconProps> = ({
-  className = 'h-4 w-4',
-}) => {
+export const ChevronLeftIcon: React.FC<ChevronLeftIconProps> = ({ className = 'h-4 w-4' }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

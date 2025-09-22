@@ -36,9 +36,7 @@ const getTaxInformation = async (
   return api.get(url)
 }
 
-const createTaxInformation = async (
-  data: CreateTaxInformationApiData,
-): Promise<IResponse> => {
+const createTaxInformation = async (data: CreateTaxInformationApiData): Promise<IResponse> => {
   const formData = new FormData()
 
   formData.append('name', data.name)
@@ -69,15 +67,11 @@ const createTaxInformation = async (
     formData.append('file_certificate', data.file_certificate)
   }
 
-  return api.post(
-    API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.INFORMATION.CREATE,
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+  return api.post(API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.INFORMATION.CREATE, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
     },
-  )
+  })
 }
 
 const updateTaxInformation = async (
@@ -127,10 +121,7 @@ const updateTaxInformation = async (
 }
 
 const deleteTaxInformation = async (taxId: string): Promise<IResponse> => {
-  const url = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.INFORMATION.DELETE.replace(
-    '{id}',
-    taxId,
-  )
+  const url = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.INFORMATION.DELETE.replace('{id}', taxId)
   return api.delete(url)
 }
 
@@ -145,9 +136,7 @@ const getTaxInvoiceReceipt = async (
   return api.get(url)
 }
 
-const createTaxInvoiceReceipt = async (
-  data: TaxInvoiceReceiptFullData,
-): Promise<IResponse> => {
+const createTaxInvoiceReceipt = async (data: TaxInvoiceReceiptFullData): Promise<IResponse> => {
   const formData = new FormData()
 
   // ส่วนของ invoice-number-prefix
@@ -163,8 +152,7 @@ const createTaxInvoiceReceipt = async (
   if (data.tax_code) formData.append('tax_code', data.tax_code)
   if (data.tax_fullname) formData.append('tax_fullname', data.tax_fullname)
   if (data.tax_branch) formData.append('tax_branch', data.tax_branch)
-  if (data.tax_payee_name)
-    formData.append('tax_payee_name', data.tax_payee_name)
+  if (data.tax_payee_name) formData.append('tax_payee_name', data.tax_payee_name)
   if (data.tax_position) formData.append('tax_position', data.tax_position)
   if (data.tax_country) formData.append('tax_country', data.tax_country)
   if (data.tax_address) formData.append('tax_address', data.tax_address)
@@ -182,15 +170,11 @@ const createTaxInvoiceReceipt = async (
     formData.append('tax_signature', data.tax_signature)
   }
 
-  return api.post(
-    API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.RECEIPT.CREATE,
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+  return api.post(API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.RECEIPT.CREATE, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
     },
-  )
+  })
 }
 
 const updateTaxInvoiceReceipt = async (
@@ -212,8 +196,7 @@ const updateTaxInvoiceReceipt = async (
   if (data.tax_code) formData.append('tax_code', data.tax_code)
   if (data.tax_fullname) formData.append('tax_fullname', data.tax_fullname)
   if (data.tax_branch) formData.append('tax_branch', data.tax_branch)
-  if (data.tax_payee_name)
-    formData.append('tax_payee_name', data.tax_payee_name)
+  if (data.tax_payee_name) formData.append('tax_payee_name', data.tax_payee_name)
   if (data.tax_position) formData.append('tax_position', data.tax_position)
   if (data.tax_country) formData.append('tax_country', data.tax_country)
   if (data.tax_address) formData.append('tax_address', data.tax_address)
@@ -244,9 +227,6 @@ const updateTaxInvoiceReceipt = async (
 }
 
 const deleteTaxInvoiceReceipt = async (id: string): Promise<IResponse> => {
-  const url = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.RECEIPT.DELETE.replace(
-    '{id}',
-    id,
-  )
+  const url = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.RECEIPT.DELETE.replace('{id}', id)
   return api.delete(url)
 }

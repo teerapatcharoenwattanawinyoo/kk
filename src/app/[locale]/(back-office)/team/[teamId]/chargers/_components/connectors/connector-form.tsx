@@ -122,9 +122,7 @@ export function ConnectorForm({
                   </FormControl>
                   <SelectContent>
                     {isChargersListLoading ? (
-                      <div className="px-4 py-2 text-xs text-gray-400">
-                        Loading...
-                      </div>
+                      <div className="px-4 py-2 text-xs text-gray-400">Loading...</div>
                     ) : chargersListData?.data?.data?.length ? (
                       chargersListData.data.data.map((item) => (
                         <SelectItem key={item.id} value={String(item.id)}>
@@ -132,9 +130,7 @@ export function ConnectorForm({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-4 py-2 text-xs text-gray-400">
-                        No data
-                      </div>
+                      <div className="px-4 py-2 text-xs text-gray-400">No data</div>
                     )}
                   </SelectContent>
                 </Select>
@@ -162,9 +158,7 @@ export function ConnectorForm({
                   </FormControl>
                   <SelectContent>
                     {isChargerTypesLoading ? (
-                      <div className="px-4 py-2 text-xs text-gray-400">
-                        Loading...
-                      </div>
+                      <div className="px-4 py-2 text-xs text-gray-400">Loading...</div>
                     ) : chargerTypesData?.data?.length ? (
                       chargerTypesData.data.map((type) => (
                         <SelectItem key={type.id} value={String(type.id)}>
@@ -172,9 +166,7 @@ export function ConnectorForm({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-4 py-2 text-xs text-gray-400">
-                        No data
-                      </div>
+                      <div className="px-4 py-2 text-xs text-gray-400">No data</div>
                     )}
                   </SelectContent>
                 </Select>
@@ -234,9 +226,7 @@ export function ConnectorForm({
             />
             {/* Pricing Label */}
             <div className="flex flex-col">
-              <FormLabel className="mb-2 block text-sm font-medium">
-                Pricing
-              </FormLabel>
+              <FormLabel className="mb-2 block text-sm font-medium">Pricing</FormLabel>
               <Button
                 type="button"
                 variant="outline"
@@ -262,8 +252,7 @@ export function ConnectorForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Charger Connector ID{' '}
-                  <span className="text-destructive">*</span>
+                  Charger Connector ID <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input

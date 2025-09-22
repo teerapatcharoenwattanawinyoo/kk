@@ -1,11 +1,8 @@
 // Bank Server Actions - Bank account operations
 'use server'
 
-import { api } from '@/lib/api/config/axios'
-import {
-  type IBankAccount,
-  type IBankAccountUpdate,
-} from '@/lib/api/team-group/bank'
+import { api } from '@/lib/api/config/axios-server'
+import { type IBankAccount, type IBankAccountUpdate } from '@/lib/api/team-group/bank'
 import { API_ENDPOINTS } from '@/lib/constants'
 import { revalidateTag } from 'next/cache'
 
@@ -16,13 +13,11 @@ import { revalidateTag } from 'next/cache'
 /**
  * Get all bank accounts for a team
  */
-export async function getBankAccountsServerAction(
-  team_group_id: string,
-): Promise<any> {
+export async function getBankAccountsServerAction(team_group_id: string): Promise<any> {
   try {
     const apiUrl = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.LIST.replace(
-      '{team_group_id}', 
-      team_group_id
+      '{team_group_id}',
+      team_group_id,
     )
     const result = await api.get(apiUrl)
     return result
@@ -35,14 +30,9 @@ export async function getBankAccountsServerAction(
 /**
  * Get bank account by ID
  */
-export async function getBankAccountByIdServerAction(
-  id: number,
-): Promise<any> {
+export async function getBankAccountByIdServerAction(id: number): Promise<any> {
   try {
-    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.GET_BY_ID.replace(
-      '{id}', 
-      id.toString()
-    )
+    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.GET_BY_ID.replace('{id}', id.toString())
     const result = await api.get(apiUrl)
     return result
   } catch (error) {
@@ -71,15 +61,13 @@ export async function getBankListsServerAction(): Promise<any> {
 /**
  * Create bank account
  */
-export async function createBankAccountServerAction(
-  data: IBankAccount,
-): Promise<any> {
+export async function createBankAccountServerAction(data: IBankAccount): Promise<any> {
   try {
     const result = await api.post(API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.CREATE, data)
-    
+
     // Revalidate bank-related cache
     revalidateTag('bank-accounts')
-    
+
     return result
   } catch (error) {
     console.error('Error creating bank account:', error)
@@ -95,16 +83,13 @@ export async function updateBankAccountServerAction(
   data: IBankAccountUpdate,
 ): Promise<any> {
   try {
-    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.UPDATE.replace(
-      '{id}', 
-      id.toString()
-    )
+    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.UPDATE.replace('{id}', id.toString())
     const result = await api.put(apiUrl, data)
-    
+
     // Revalidate bank-related cache
     revalidateTag('bank-accounts')
     revalidateTag(`bank-account-${id}`)
-    
+
     return result
   } catch (error) {
     console.error('Error updating bank account:', error)
@@ -117,16 +102,13 @@ export async function updateBankAccountServerAction(
  */
 export async function deleteBankAccountServerAction(id: number): Promise<any> {
   try {
-    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.DELETE.replace(
-      '{id}', 
-      id.toString()
-    )
+    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.DELETE.replace('{id}', id.toString())
     const result = await api.delete(apiUrl)
-    
+
     // Revalidate bank-related cache
     revalidateTag('bank-accounts')
     revalidateTag(`bank-account-${id}`)
-    
+
     return result
   } catch (error) {
     console.error('Error deleting bank account:', error)

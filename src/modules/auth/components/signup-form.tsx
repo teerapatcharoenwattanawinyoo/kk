@@ -1,29 +1,14 @@
 'use client'
 import { PhoneInput } from '@/components/phone-input'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useLocale } from '@/hooks'
-import {
-  registerByEmailAction,
-  registerByPhoneAction,
-} from '@modules/auth/actions'
+import { registerByEmailAction, registerByPhoneAction } from '@modules/auth/actions'
 import { PolicyDialog } from '@modules/auth/components'
 import { PhoneFormSchema, SignUpFormSchema } from '@modules/auth/models'
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js'
@@ -147,17 +132,12 @@ export default function SignUpForm() {
     <Card className="w-full max-w-md border-0 shadow-none">
       <CardHeader className="px-0 pb-6">
         <CardTitle className="text-4xl font-bold">Sign Up</CardTitle>
-        <CardDescription>
-          Empower your experience, sign up for a free account today
-        </CardDescription>
+        <CardDescription>Empower your experience, sign up for a free account today</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6 px-0">
         {/* Tab Toggle */}
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as 'phone' | 'email')}
-        >
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'phone' | 'email')}>
           <TabsList className="grid w-full grid-cols-2 gap-2 bg-transparent">
             <TabsTrigger
               value="phone"
@@ -223,8 +203,7 @@ export default function SignUpForm() {
                 >
                   <p className="text-left font-normal text-muted-foreground">
                     {country
-                      ? countries.find((c) => c.value === country)?.label ||
-                        'Select your country'
+                      ? countries.find((c) => c.value === country)?.label || 'Select your country'
                       : 'Select your country'}
                   </p>
                   <ChevronDown className="ml-2 h-4 w-4" />
@@ -244,9 +223,7 @@ export default function SignUpForm() {
                 </div>
                 <div className="">
                   <SheetTitle>Select your country</SheetTitle>
-                  <p className="text-sm text-muted-foreground">
-                    for sign in OneCharge Application
-                  </p>
+                  <p className="text-sm text-muted-foreground">for sign in OneCharge Application</p>
                 </div>
                 <div className="relative mb-4">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#515151]" />
@@ -385,11 +362,7 @@ export default function SignUpForm() {
         <div className="text-left">
           <p className="text-sm text-muted-foreground">
             You have an account?{' '}
-            <Button
-              variant="link"
-              size="sm"
-              className="h-auto px-0 font-medium text-primary"
-            >
+            <Button variant="link" size="sm" className="h-auto px-0 font-medium text-primary">
               <Link href={'/sign-in'}>Sign in</Link>
             </Button>
           </p>

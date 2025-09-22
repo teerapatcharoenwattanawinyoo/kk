@@ -8,13 +8,7 @@ import { useFormStatus } from 'react-dom'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
 function getCookie(name: string): string | undefined {
@@ -62,9 +56,7 @@ export default function VerifyEmail() {
   const [otpRef, setOtpRef] = useState<string | null>(null)
 
   // เรียก hooks ทั้งหมดไว้บนสุด ห้ามมีเงื่อนไขก่อนเรียก
-  const maskedEmail = email
-    ? email.replace(/(.).+(@.+)/, (_, a, b) => a + '****' + b)
-    : 'Null'
+  const maskedEmail = email ? email.replace(/(.).+(@.+)/, (_, a, b) => a + '****' + b) : 'Null'
   const [otp, setOtp] = useState<string[]>(Array(6).fill(''))
   const [countdown, setCountdown] = useState(50)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -122,8 +114,8 @@ export default function VerifyEmail() {
           {maskedEmail}
         </Link>
         <CardDescription className="mt-2 text-sm font-normal text-[#969696]">
-          Please enter the code received from email or verify in email with a
-          link to activate your account
+          Please enter the code received from email or verify in email with a link to activate your
+          account
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 px-0">
@@ -134,12 +126,7 @@ export default function VerifyEmail() {
             rel="noopener noreferrer"
             className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-primary"
           >
-            <Image
-              src="/assets/images/icons/gmail_icon.svg"
-              alt="Gmail"
-              width={30}
-              height={30}
-            />
+            <Image src="/assets/images/icons/gmail_icon.svg" alt="Gmail" width={30} height={30} />
             <span className="text-primary underline">Open Gmail</span>
           </Link>
           <Link
@@ -205,9 +192,7 @@ export default function VerifyEmail() {
             {countdown > 0 ? (
               <span>
                 Resend Code in{' '}
-                <span className="text-[#FD6B22]">
-                  00:{countdown.toString().padStart(2, '0')}
-                </span>
+                <span className="text-[#FD6B22]">00:{countdown.toString().padStart(2, '0')}</span>
               </span>
             ) : (
               <Button
@@ -226,9 +211,7 @@ export default function VerifyEmail() {
                 }}
                 disabled={resendEmailOtpMutation.isPending}
               >
-                {resendEmailOtpMutation.isPending
-                  ? 'Sending...'
-                  : 'Resend Code'}
+                {resendEmailOtpMutation.isPending ? 'Sending...' : 'Resend Code'}
               </Button>
             )}
           </p>

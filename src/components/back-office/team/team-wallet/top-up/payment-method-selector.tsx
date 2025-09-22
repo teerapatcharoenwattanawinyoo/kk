@@ -47,15 +47,11 @@ interface PaymentMethodSelectorProps {
   onPaymentSelect: (methodId: string, methodData: PaymentMethod) => void
 }
 
-export function PaymentMethodSelector({
-  amount,
-  onPaymentSelect,
-}: PaymentMethodSelectorProps) {
+export function PaymentMethodSelector({ amount, onPaymentSelect }: PaymentMethodSelectorProps) {
   const [selectedMethod, setSelectedMethod] = useState<string>('')
 
   const THB = useMemo(
-    () =>
-      new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
+    () => new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
     [],
   )
 
@@ -115,11 +111,7 @@ export function PaymentMethodSelector({
                 />
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="mb-4 h-16 w-16 bg-muted">
-                    <AvatarImage
-                      src={method.icon}
-                      alt={method.name}
-                      className="object-cover"
-                    />
+                    <AvatarImage src={method.icon} alt={method.name} className="object-cover" />
                     <AvatarFallback className="text-xs font-medium">
                       {method.name?.[0] ?? '?'}
                     </AvatarFallback>
@@ -127,9 +119,7 @@ export function PaymentMethodSelector({
                   <div
                     className={cn(
                       'text-base font-semibold',
-                      selectedMethod === method.id
-                        ? 'text-primary'
-                        : 'text-foreground',
+                      selectedMethod === method.id ? 'text-primary' : 'text-foreground',
                     )}
                   >
                     {method.name}
@@ -138,9 +128,7 @@ export function PaymentMethodSelector({
                     <div
                       className={cn(
                         'mt-1 text-sm',
-                        selectedMethod === method.id
-                          ? 'text-primary'
-                          : 'text-muted-foreground',
+                        selectedMethod === method.id ? 'text-primary' : 'text-muted-foreground',
                       )}
                     >
                       {method.description}
@@ -162,9 +150,7 @@ export function PaymentMethodSelector({
               </div>
               <div className="flex justify-between font-light">
                 <span>ช่องทางการเติมเงิน:</span>
-                <span className="truncate text-right">
-                  {selectedMethodName}
-                </span>
+                <span className="truncate text-right">{selectedMethodName}</span>
               </div>
               <div className="flex justify-between font-light">
                 <span>ค่าธรรมเนียม: (3%)</span>
@@ -181,11 +167,7 @@ export function PaymentMethodSelector({
       </Card>
 
       {/* Proceed Button - Outside the card */}
-      <Button
-        className="h-12 w-full"
-        disabled={!selectedMethod}
-        onClick={handleProceed}
-      >
+      <Button className="h-12 w-full" disabled={!selectedMethod} onClick={handleProceed}>
         Continue
       </Button>
     </div>

@@ -59,20 +59,14 @@ export function PricingPackages({
                 {/* Plan Header */}
                 <div className="mb-6 text-center">
                   <div className="mb-3 flex justify-center">
-                    <div className="rounded-lg bg-primary/10 px-3 py-3">
-                      {plan.icon}
-                    </div>
+                    <div className="rounded-lg bg-primary/10 px-3 py-3">{plan.icon}</div>
                   </div>
                   <h3 className="text-xl font-medium">{plan.name}</h3>
                   <div className="mt-2">
                     <span className="text-3xl font-bold">฿{plan.price}</span>
-                    <span className="text-muted-foreground">
-                      /{plan.period}
-                    </span>
+                    <span className="text-muted-foreground">/{plan.period}</span>
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {plan.description}
-                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
                 </div>
 
                 {/* Features List */}

@@ -22,12 +22,7 @@ const settingsMenuItems = [
   { id: 'team', label: 'Team Setting', path: 'team' },
 ]
 
-export const SettingsLayout = ({
-  children,
-  teamId,
-  locale,
-  title,
-}: SettingsLayoutProps) => {
+export const SettingsLayout = ({ children, teamId, locale, title }: SettingsLayoutProps) => {
   const router = useRouter()
   const pathname = usePathname()
 
@@ -58,9 +53,7 @@ export const SettingsLayout = ({
           >
             <ChevronLeft className="size-4" />
           </Button>
-          <h1 className="text-lg font-semibold text-foreground lg:text-xl">
-            {title}
-          </h1>
+          <h1 className="text-lg font-semibold text-foreground lg:text-xl">{title}</h1>
         </div>
       </div>
 
@@ -79,10 +72,7 @@ export const SettingsLayout = ({
                       onClick={() => handleMenuItemClick(item.path)}
                       variant={isActive ? 'default' : 'ghost'}
                       size="sm"
-                      className={cn(
-                        'whitespace-nowrap',
-                        !isActive && 'text-foreground/80',
-                      )}
+                      className={cn('whitespace-nowrap', !isActive && 'text-foreground/80')}
                       aria-current={isActive ? 'page' : undefined}
                     >
                       {item.label}
@@ -104,10 +94,7 @@ export const SettingsLayout = ({
                       key={item.id}
                       onClick={() => handleMenuItemClick(item.path)}
                       variant={isActive ? 'default' : 'ghost'}
-                      className={cn(
-                        'w-full justify-start',
-                        !isActive && 'text-foreground/80',
-                      )}
+                      className={cn('w-full justify-start', !isActive && 'text-foreground/80')}
                       aria-current={isActive ? 'page' : undefined}
                     >
                       {item.label}

@@ -1,13 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -93,19 +87,13 @@ const mockGroups: GroupCard[] = [
   },
 ]
 
-function VisibilityBadge({
-  visibility,
-}: {
-  visibility: GroupCard['visibility']
-}) {
+function VisibilityBadge({ visibility }: { visibility: GroupCard['visibility'] }) {
   const isExternal = visibility === 'External'
   return (
     <span
       className={[
         'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium',
-        isExternal
-          ? 'bg-foreground text-background'
-          : 'bg-primary/10 text-primary',
+        isExternal ? 'bg-foreground text-background' : 'bg-primary/10 text-primary',
       ].join(' ')}
     >
       {visibility}
@@ -149,29 +137,19 @@ export function MemberGroupsTab({}: MemberGroupsTabProps) {
                 </DropdownMenu>
               </div>
               <CardTitle className="text-base">{g.name}</CardTitle>
-              <CardDescription className="text-xs">
-                {g.description}
-              </CardDescription>
+              <CardDescription className="text-xs">{g.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">
-                  {g.priceGroup.label}
-                </span>
-                <Link
-                  href={g.priceGroup.href}
-                  className="text-primary hover:underline"
-                >
+                <span className="text-muted-foreground">{g.priceGroup.label}</span>
+                <Link href={g.priceGroup.href} className="text-primary hover:underline">
                   {g.priceGroup.linkText}
                 </Link>
               </div>
 
               <div className="space-y-2 pt-1">
                 {g.permissions.map((p, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between text-xs"
-                  >
+                  <div key={idx} className="flex items-center justify-between text-xs">
                     <span className="text-oc-title-secondary">{p.label}</span>
                     {p.enabled ? (
                       <CheckIcon className="bg-success size-4 rounded-full text-white" />

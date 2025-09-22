@@ -22,11 +22,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import {
-  BANK_QUERY_KEYS,
-  useBankLists,
-  useCreateBankAccount,
-} from '../_hooks/use-bank'
+import { BANK_QUERY_KEYS, useBankLists, useCreateBankAccount } from '../_hooks/use-bank'
 
 const bankAccountSchema = z.object({
   bank_id: z.string().min(1, 'กรุณาเลือกธนาคาร'),
@@ -42,15 +38,11 @@ interface BankAccountFormAddPageProps {
   locale: string
 }
 
-export const BankAccountFormAddPage = ({
-  teamId,
-  locale,
-}: BankAccountFormAddPageProps) => {
+export const BankAccountFormAddPage = ({ teamId, locale }: BankAccountFormAddPageProps) => {
   const router = useRouter()
   const { toast } = useToast()
   const queryClient = useQueryClient()
-  const { data: bankListsResponse, isLoading: bankListsLoading } =
-    useBankLists()
+  const { data: bankListsResponse, isLoading: bankListsLoading } = useBankLists()
   const createBankAccountMutation = useCreateBankAccount()
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -72,10 +64,7 @@ export const BankAccountFormAddPage = ({
     mode: 'onChange',
   })
 
-  const bankLists = useMemo(
-    () => bankListsResponse?.data || [],
-    [bankListsResponse?.data],
-  )
+  const bankLists = useMemo(() => bankListsResponse?.data || [], [bankListsResponse?.data])
 
   const handleBack = useCallback(() => {
     router.push(`/${locale}/team/${teamId}/revenue/bank-account/manage`)
@@ -94,12 +83,7 @@ export const BankAccountFormAddPage = ({
 
       // Simple file validation
       const maxSize = 5 * 1024 * 1024 // 5MB (ลดจาก 10MB)
-      const allowedTypes = [
-        'image/jpeg',
-        'image/png',
-        'image/jpg',
-        'application/pdf',
-      ]
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
 
       if (file.size > maxSize) {
         toast({
@@ -178,15 +162,7 @@ export const BankAccountFormAddPage = ({
         },
       })
     },
-    [
-      selectedFile,
-      createBankAccountMutation,
-      queryClient,
-      toast,
-      router,
-      locale,
-      teamId,
-    ],
+    [selectedFile, createBankAccountMutation, queryClient, toast, router, locale, teamId],
   )
 
   if (bankListsLoading) {
@@ -194,17 +170,10 @@ export const BankAccountFormAddPage = ({
       <div className="min-h-screen bg-gray-50">
         <div className="border-b bg-white px-6 py-4">
           <div className="flex items-center space-x-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleBack}
-            >
+            <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Add Receivable Account
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Add Receivable Account</h1>
           </div>
         </div>
         <div className="flex items-center justify-center p-8">
@@ -222,17 +191,10 @@ export const BankAccountFormAddPage = ({
       <div className="border-b bg-white px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleBack}
-            >
+            <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Add Receivable Account
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Add Receivable Account</h1>
           </div>
           <Button
             type="submit"
@@ -257,36 +219,23 @@ export const BankAccountFormAddPage = ({
         <div className="mx-auto max-w-2xl">
           <Card className="bg-white">
             <CardContent className="p-6">
-              <form
-                id="bank-account-form"
-                onSubmit={handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
+              <form id="bank-account-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* ธนาคาร */}
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="bank_id"
-                    className="text-sm font-medium text-gray-700"
-                  >
+                  <Label htmlFor="bank_id" className="text-sm font-medium text-gray-700">
                     ธนาคาร <span className="text-red-500">*</span>
                   </Label>
                   <Controller
                     name="bank_id"
                     control={control}
                     render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="เลือกธนาคาร" />
                         </SelectTrigger>
                         <SelectContent>
                           {bankLists.map((bank: IBankListItem) => (
-                            <SelectItem
-                              key={bank.id}
-                              value={bank.id.toString()}
-                            >
+                            <SelectItem key={bank.id} value={bank.id.toString()}>
                               <div className="flex items-center space-x-3">
                                 <div className="relative h-6 w-6 overflow-hidden rounded">
                                   <Image
@@ -306,18 +255,13 @@ export const BankAccountFormAddPage = ({
                     )}
                   />
                   {errors.bank_id && (
-                    <p className="text-sm text-red-500">
-                      {errors.bank_id.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors.bank_id.message}</p>
                   )}
                 </div>
 
                 {/* ชื่อบัญชี */}
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="account_name"
-                    className="text-sm font-medium text-gray-700"
-                  >
+                  <Label htmlFor="account_name" className="text-sm font-medium text-gray-700">
                     ชื่อบัญชี <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -327,18 +271,13 @@ export const BankAccountFormAddPage = ({
                     className="w-full"
                   />
                   {errors.account_name && (
-                    <p className="text-sm text-red-500">
-                      {errors.account_name.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors.account_name.message}</p>
                   )}
                 </div>
 
                 {/* เลขบัญชี */}
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="account_number"
-                    className="text-sm font-medium text-gray-700"
-                  >
+                  <Label htmlFor="account_number" className="text-sm font-medium text-gray-700">
                     เลขบัญชี <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -348,9 +287,7 @@ export const BankAccountFormAddPage = ({
                     className="w-full"
                   />
                   {errors.account_number && (
-                    <p className="text-sm text-red-500">
-                      {errors.account_number.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors.account_number.message}</p>
                   )}
                 </div>
 
@@ -367,10 +304,7 @@ export const BankAccountFormAddPage = ({
                       />
                     )}
                   />
-                  <Label
-                    htmlFor="is_primary"
-                    className="text-sm font-medium text-gray-700"
-                  >
+                  <Label htmlFor="is_primary" className="text-sm font-medium text-gray-700">
                     ตั้งเป็นบัญชีหลัก <span className="text-red-500">*</span>
                   </Label>
                 </div>
@@ -415,16 +349,12 @@ export const BankAccountFormAddPage = ({
                         <div
                           className="flex w-full items-center justify-between rounded-lg border p-3"
                           style={{
-                            backgroundColor: selectedFile
-                              ? '#2563EB'
-                              : 'transparent',
+                            backgroundColor: selectedFile ? '#2563EB' : 'transparent',
                             color: selectedFile ? 'white' : 'gray',
                           }}
                         >
                           <span className="text-sm">
-                            {selectedFile
-                              ? selectedFile.name
-                              : 'อัปโหลดสมุดบัญชีที่นี่'}
+                            {selectedFile ? selectedFile.name : 'อัปโหลดสมุดบัญชีที่นี่'}
                           </span>
                           {selectedFile && (
                             <Button

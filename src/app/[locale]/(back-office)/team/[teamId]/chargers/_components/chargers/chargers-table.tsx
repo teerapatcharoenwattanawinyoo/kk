@@ -22,15 +22,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useChargersList } from '@/hooks/use-chargers'
 import { useI18n } from '@/lib/i18n'
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { Eye, EyeClosed, Pencil, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useState } from 'react'
@@ -53,10 +48,7 @@ const EmptyState = ({
   debouncedSearchTerm,
   statusFilter,
   clearAllFilters,
-}: Pick<
-  ChargersTableProps,
-  'debouncedSearchTerm' | 'statusFilter' | 'clearAllFilters'
->) => (
+}: Pick<ChargersTableProps, 'debouncedSearchTerm' | 'statusFilter' | 'clearAllFilters'>) => (
   <div className="py-8 text-center">
     {debouncedSearchTerm || statusFilter ? (
       <div>
@@ -214,7 +206,7 @@ export function ChargersTable({
         const chargerDetail = response.data
 
         // Map API accessibility values to form values
-        const mappedAccessValue = mapApiAccessToForm(chargerDetail.aceesibility)
+        const mappedAccessValue = mapApiAccessToForm(chargerDetail.aceesibility ?? null)
 
         // Handle selectedPowerLevel - convert max_power to string with kW unit
         const powerLevelValue = chargerDetail.max_power
@@ -235,10 +227,7 @@ export function ChargersTable({
 
         onEditCharger(mappedValues)
       } else {
-        console.error(
-          'Failed to fetch charger details, status:',
-          response.statusCode,
-        )
+        console.error('Failed to fetch charger details, status:', response.statusCode)
       }
     } catch (error) {
       console.error('Error fetching charger detail:', error)
@@ -293,9 +282,7 @@ export function ChargersTable({
               <ChargerRow
                 key={charger.id ?? `table-charger-${idx}`}
                 charger={charger}
-                isLoadingChargerDetail={
-                  loadingChargerId === charger.id?.toString()
-                }
+                isLoadingChargerDetail={loadingChargerId === charger.id?.toString()}
                 getStatusBadge={getStatusBadge}
                 getConnectionButton={getConnectionButton}
                 setPendingEditCharger={handleEditCharger}
@@ -313,10 +300,7 @@ interface ChargerRowProps {
   charger: ChargerListItem
   isLoadingChargerDetail: boolean
   getStatusBadge: (status: string) => React.ReactElement
-  getConnectionButton: (
-    connection: string,
-    charger?: unknown,
-  ) => React.ReactElement | string
+  getConnectionButton: (connection: string, charger?: unknown) => React.ReactElement | string
   setPendingEditCharger: (charger: ChargerListItem) => void
   handleDeleteCharger: (chargerId: string | number | undefined) => void
 }
@@ -333,6 +317,7 @@ const ChargerRow = React.memo(function ChargerRow({
   const params = useParams()
   const locale = (params?.locale as string) || 'en'
   const teamId = params?.teamId as string | undefined
+  const [isHoveringMore, setIsHoveringMore] = useState(false)
   return (
     <TableRow className="shadow-xs rounded-lg bg-background">
       <TableCell className="whitespace-nowrap rounded-l-lg px-2 py-2 text-center text-xs text-gray-900 md:px-4 md:py-3">
@@ -347,10 +332,8 @@ const ChargerRow = React.memo(function ChargerRow({
             />
           </div>
           <div className="text-left">
-            <div className="text-oc-sidebar text-xs font-medium">
-              {charger.name}
-            </div>
-            <div className="text-oc-sidebar text-xs font-light">
+            <div className="text-oc-title text-xs font-medium">{charger.name}</div>
+            <div className="text-oc-title text-xs font-light">
               {charger.serial_number || 'Null'}
             </div>
           </div>
@@ -362,9 +345,7 @@ const ChargerRow = React.memo(function ChargerRow({
         </div>
       </TableCell>
       <TableCell className="whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
-        <span className="text-oc-sidebar">
-          {charger.accessibility || 'Unknown'}
-        </span>
+        <span className="text-oc-sidebar">{charger.accessibility || 'Unknown'}</span>
       </TableCell>
       <TableCell className="text-oc-sidebar whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
         {getStatusBadge(charger.status)}
@@ -378,7 +359,46 @@ const ChargerRow = React.memo(function ChargerRow({
         {charger.time}
       </TableCell>
       <TableCell className="text-oc-sidebar whitespace-nowrap rounded-r-lg px-2 py-2 text-center text-xs md:px-4 md:py-3">
-        <TooltipProvider>
+        <TooltipProvider delayDuration={200}>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-2 mr-3 h-[18px] w-[18px] p-0"
+                    aria-label="More"
+                    onMouseEnter={() => setIsHoveringMore(true)}
+                    onMouseLeave={() => setIsHoveringMore(false)}
+                  >
+                    {isHoveringMore ? (
+                      <Eye className="h-[18px] w-[18px] p-0" />
+                    ) : (
+                      <EyeClosed className="h-[18px] w-[18px] p-0" />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="top">View Connectors</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem
+                onClick={() => {
+                  const basePath = teamId ? `/${locale}/team/${teamId}/chargers` : '/chargers'
+                  const query = new URLSearchParams({
+                    tab: 'connectors',
+                    charger_id: String(charger.id ?? ''),
+                    page: '1',
+                    pageSize: '10',
+                  })
+                  router.push(`${basePath}?${query.toString()}`)
+                }}
+              >
+                Connectors
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -407,36 +427,6 @@ const ChargerRow = React.memo(function ChargerRow({
             </TooltipTrigger>
             <TooltipContent>Delete</TooltipContent>
           </Tooltip>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="ml-2 h-[18px] w-[18px] p-0"
-                aria-label="More"
-              >
-                <MoreHorizontal className="h-[18px] w-[18px] p-0" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem
-                onClick={() => {
-                  const basePath = teamId
-                    ? `/${locale}/team/${teamId}/chargers`
-                    : '/chargers'
-                  const query = new URLSearchParams({
-                    tab: 'connectors',
-                    charger_id: String(charger.id ?? ''),
-                    page: '1',
-                    pageSize: '10',
-                  })
-                  router.push(`${basePath}?${query.toString()}`)
-                }}
-              >
-                Connectors
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </TooltipProvider>
       </TableCell>
     </TableRow>

@@ -5,10 +5,7 @@ import type {
 import { QUERY_KEYS } from '@/lib/constants'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import {
-  confirmPayoutServerAction,
-  initPayoutServerAction,
-} from '../_servers/revenue.actions'
+import { confirmPayoutServerAction, initPayoutServerAction } from '../_servers/revenue.actions'
 
 // ==========================
 // MUTATIONS
@@ -39,8 +36,7 @@ export const useInitPayout = () => {
       },
     ) => {
       const errorMessage = error?.response?.data?.message
-      const statusCode =
-        error?.response?.data?.statusCode || error?.response?.status
+      const statusCode = error?.response?.data?.statusCode || error?.response?.status
 
       if (errorMessage) {
         toast.error(errorMessage)
@@ -61,7 +57,9 @@ export const useConfirmPayout = () => {
   return useMutation<any, Error, PayoutConfirmRequest>({
     mutationFn: (data: PayoutConfirmRequest) => confirmPayoutServerAction(data),
     onSuccess: (data) => {
-      console.log('🎭 useConfirmPayout onSuccess - invalidating REVENUE_BALANCE after successful withdraw')
+      console.log(
+        '🎭 useConfirmPayout onSuccess - invalidating REVENUE_BALANCE after successful withdraw',
+      )
 
       // Invalidate balance after successful withdrawal
       queryClient.invalidateQueries({
@@ -82,8 +80,7 @@ export const useConfirmPayout = () => {
       },
     ) => {
       const errorMessage = error?.response?.data?.message
-      const statusCode =
-        error?.response?.data?.statusCode || error?.response?.status
+      const statusCode = error?.response?.data?.statusCode || error?.response?.status
 
       if (errorMessage) {
         toast.error(errorMessage)

@@ -115,11 +115,7 @@ export function PaymentPage({ teamId }: PaymentPageProps) {
 
       {/* Navigation Tabs Section */}
       <div className="">
-        <TeamTabMenu
-          active="team-wallet"
-          locale={String(params.locale)}
-          teamId={teamId}
-        />
+        <TeamTabMenu active="team-wallet" locale={String(params.locale)} teamId={teamId} />
       </div>
 
       {/* Main Content Section */}

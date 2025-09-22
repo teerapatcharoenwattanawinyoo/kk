@@ -11,18 +11,8 @@ const InitialUserContext = createContext<InitialUserContextValue>({
   user: undefined,
 })
 
-export function UserProvider({
-  user,
-  children,
-}: {
-  user: User | null
-  children: React.ReactNode
-}) {
-  return (
-    <InitialUserContext.Provider value={{ user }}>
-      {children}
-    </InitialUserContext.Provider>
-  )
+export function UserProvider({ user, children }: { user: User | null; children: React.ReactNode }) {
+  return <InitialUserContext.Provider value={{ user }}>{children}</InitialUserContext.Provider>
 }
 
 export function useInitialUser() {

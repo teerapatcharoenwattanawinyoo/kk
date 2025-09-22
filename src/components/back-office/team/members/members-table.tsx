@@ -118,10 +118,7 @@ export function MembersTable() {
           </TableHeader>
           <TableBody>
             {mockMembers.map((member) => (
-              <TableRow
-                key={member.id}
-                className="h-14 border-0 bg-background sm:h-16"
-              >
+              <TableRow key={member.id} className="h-14 border-0 bg-background sm:h-16">
                 <TableCell className="text-center">
                   <div className="flex justify-center">
                     <div className="h-3 w-3 rounded border bg-primary-foreground sm:h-4 sm:w-4">
@@ -199,9 +196,7 @@ export function MembersTable() {
                 <TableCell className="hidden text-center sm:table-cell">
                   <span
                     className={`text-[10px] font-medium leading-[16px] tracking-[0.15px] sm:text-[12px] sm:leading-[18px] ${
-                      member.memberGroup
-                        ? 'text-oc-title-secondary'
-                        : 'text-[#DADADA]'
+                      member.memberGroup ? 'text-oc-title-secondary' : 'text-[#DADADA]'
                     }`}
                   >
                     {member.memberGroup || 'No Member Group'}
@@ -210,9 +205,7 @@ export function MembersTable() {
                 <TableCell className="hidden text-center md:table-cell">
                   <span
                     className={`text-[10px] font-medium leading-[16px] tracking-[0.15px] sm:text-[12px] sm:leading-[18px] ${
-                      member.priceGroup
-                        ? 'text-oc-title-secondary'
-                        : 'text-[#DADADA]'
+                      member.priceGroup ? 'text-oc-title-secondary' : 'text-[#DADADA]'
                     }`}
                   >
                     {member.priceGroup || 'No Price Group'}
@@ -221,16 +214,12 @@ export function MembersTable() {
                 <TableCell className="text-center">
                   <div
                     className={`inline-flex h-6 items-center rounded px-2 sm:h-7 sm:px-3 ${
-                      member.status === 'joined'
-                        ? 'bg-[#DFF8F3]'
-                        : 'bg-[#D1E9FF]'
+                      member.status === 'joined' ? 'bg-[#DFF8F3]' : 'bg-[#D1E9FF]'
                     }`}
                   >
                     <span
                       className={`font-open-sans text-[10px] font-semibold leading-[20px] sm:text-[12px] sm:leading-[24px] ${
-                        member.status === 'joined'
-                          ? 'text-[#0D8A72]'
-                          : 'text-[#40A3FF]'
+                        member.status === 'joined' ? 'text-[#0D8A72]' : 'text-[#40A3FF]'
                       }`}
                     >
                       {member.status === 'joined' ? 'Joined' : 'Invite'}

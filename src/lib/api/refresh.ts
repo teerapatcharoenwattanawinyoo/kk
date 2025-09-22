@@ -2,9 +2,7 @@ import type { LoginResponse } from '@modules/auth'
 import { localApi } from './config/axios-server'
 
 // Use direct axios instance to avoid interceptor conflicts
-export async function refreshAccessToken(
-  _refreshToken?: string,
-): Promise<LoginResponse> {
+export async function refreshAccessToken(_refreshToken?: string): Promise<LoginResponse> {
   // Step 7: Refresh token request to authorization server
   // Call internal API which reads httpOnly refresh token cookie and makes request to auth server
   console.log('[refreshAccessToken] Attempting token refresh')
@@ -22,10 +20,7 @@ export async function refreshAccessToken(
         // Optional: multi-tab sync marker
         localStorage.setItem('auth_last_refreshed', String(Date.now()))
       } catch (e) {
-        console.warn(
-          '[refreshAccessToken] Failed to dispatch refresh event:',
-          e,
-        )
+        console.warn('[refreshAccessToken] Failed to dispatch refresh event:', e)
       }
     }
 

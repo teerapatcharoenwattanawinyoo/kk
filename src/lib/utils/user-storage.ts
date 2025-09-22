@@ -1,4 +1,4 @@
-interface UserData {
+export interface UserData {
   user: {
     customer_id: number
     email: string

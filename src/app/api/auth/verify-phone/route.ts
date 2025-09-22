@@ -3,8 +3,7 @@ import { API_ENDPOINTS } from '@/lib/constants'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
-const API_BASE_URL =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
 
 const VerifyPhoneSchema = z.object({
   phone: z.string().min(1),
@@ -15,10 +14,7 @@ const VerifyPhoneSchema = z.object({
 
 export async function POST(req: Request) {
   if (!API_BASE_URL) {
-    return NextResponse.json(
-      { message: 'Backend URL not configured' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Backend URL not configured' }, { status: 500 })
   }
   let body: unknown
   try {

@@ -8,9 +8,7 @@ export function getLocalizedPath(path: string, locale: Locale): string {
   const cleanPath = removeLocaleFromPath(path)
 
   // Remove leading slash if present after locale removal
-  const normalizedPath = cleanPath.startsWith('/')
-    ? cleanPath.slice(1)
-    : cleanPath
+  const normalizedPath = cleanPath.startsWith('/') ? cleanPath.slice(1) : cleanPath
 
   // If path is empty, return just the locale
   if (!normalizedPath) return `/${locale}`
@@ -30,9 +28,7 @@ export function getLocaleFromPath(pathname: string): Locale | null {
   const possibleLocale = segments[0]
   const validLocales: Locale[] = ['th', 'en', 'lo']
 
-  return validLocales.includes(possibleLocale as Locale)
-    ? (possibleLocale as Locale)
-    : null
+  return validLocales.includes(possibleLocale as Locale) ? (possibleLocale as Locale) : null
 }
 
 /**
@@ -67,11 +63,7 @@ export function getDefaultLocale(): Locale {
  */
 export function getAssetPath(path: string): string {
   // Remove locale prefix from asset paths
-  if (
-    path.startsWith('/en/') ||
-    path.startsWith('/th/') ||
-    path.startsWith('/lo/')
-  ) {
+  if (path.startsWith('/en/') || path.startsWith('/th/') || path.startsWith('/lo/')) {
     return path.replace(/^\/[a-z]{2}/, '')
   }
   return path

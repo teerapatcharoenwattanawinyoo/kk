@@ -5,28 +5,25 @@ const stringFromAny = z.preprocess((value) => {
   return String(value)
 }, z.string())
 
-const optionalStringFromAny = z
-  .preprocess((value) => {
-    if (value === undefined || value === null) return undefined
-    return String(value)
-  }, z.string().optional())
+const optionalStringFromAny = z.preprocess((value) => {
+  if (value === undefined || value === null) return undefined
+  return String(value)
+}, z.string().optional())
 
-const optionalNumberFromAny = z
-  .preprocess((value) => {
-    if (value === undefined || value === null || value === '') return undefined
-    if (typeof value === 'string') {
-      const parsed = Number(value)
-      return Number.isNaN(parsed) ? undefined : parsed
-    }
-    if (typeof value === 'number') return value
-    return undefined
-  }, z.number().optional())
+const optionalNumberFromAny = z.preprocess((value) => {
+  if (value === undefined || value === null || value === '') return undefined
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+    return Number.isNaN(parsed) ? undefined : parsed
+  }
+  if (typeof value === 'number') return value
+  return undefined
+}, z.number().optional())
 
-const nullableStringFromAny = z
-  .preprocess((value) => {
-    if (value === null || value === undefined) return null
-    return String(value)
-  }, z.string().nullable())
+const nullableStringFromAny = z.preprocess((value) => {
+  if (value === null || value === undefined) return null
+  return String(value)
+}, z.string().nullable())
 
 const legacyStringPagination = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z.object({
@@ -82,9 +79,7 @@ export const ConnectorListItemSchema = z.object({
   time: stringFromAny,
 })
 
-export const ConnectorListDataSchema = createPaginatedSchema(
-  ConnectorListItemSchema,
-)
+export const ConnectorListDataSchema = createPaginatedSchema(ConnectorListItemSchema)
 
 export const ConnectorListResponseSchema = z.object({
   statusCode: z.number(),
@@ -175,9 +170,7 @@ export const DeleteConnectorResponseSchema = z.object({
   message: z.string(),
 })
 
-export type ConnectorTypeListResponse = z.infer<
-  typeof ConnectorTypeListResponseSchema
->
+export type ConnectorTypeListResponse = z.infer<typeof ConnectorTypeListResponseSchema>
 export type ConnectorType = z.infer<typeof connectorTypeSchema>
 
 export type ConnectorListItem = z.infer<typeof ConnectorListItemSchema>
@@ -185,29 +178,15 @@ export type ConnectorListData = z.infer<typeof ConnectorListDataSchema>
 export type ConnectorListResponse = z.infer<typeof ConnectorListResponseSchema>
 
 export type ConnectorCharger = z.infer<typeof ConnectorChargerSchema>
-export type ConnectorChargerListResponse = z.infer<
-  typeof ConnectorChargerListResponseSchema
->
+export type ConnectorChargerListResponse = z.infer<typeof ConnectorChargerListResponseSchema>
 export type ConnectorSelectItem = z.infer<typeof ConnectorSelectItemSchema>
 
-export type CreateConnectorRequest = z.infer<
-  typeof CreateConnectorRequestSchema
->
-export type CreateConnectorResponse = z.infer<
-  typeof CreateConnectorResponseSchema
->
+export type CreateConnectorRequest = z.infer<typeof CreateConnectorRequestSchema>
+export type CreateConnectorResponse = z.infer<typeof CreateConnectorResponseSchema>
 
-export type UpdateConnectorRequest = z.infer<
-  typeof UpdateConnectorRequestSchema
->
-export type UpdateConnectorResponse = z.infer<
-  typeof UpdateConnectorResponseSchema
->
+export type UpdateConnectorRequest = z.infer<typeof UpdateConnectorRequestSchema>
+export type UpdateConnectorResponse = z.infer<typeof UpdateConnectorResponseSchema>
 
-export type ConnectorDetailResponse = z.infer<
-  typeof ConnectorDetailResponseSchema
->
+export type ConnectorDetailResponse = z.infer<typeof ConnectorDetailResponseSchema>
 export type ConnectorData = z.infer<typeof connectorDataSchema>
-export type DeleteConnectorResponse = z.infer<
-  typeof DeleteConnectorResponseSchema
->
+export type DeleteConnectorResponse = z.infer<typeof DeleteConnectorResponseSchema>

@@ -90,12 +90,8 @@ export type ChargerPlugPower = z.infer<typeof chargerPlugPowerSchema>
 export type Payment = z.infer<typeof paymentSchema>
 export type Charge = z.infer<typeof chargeSchema>
 export type TransactionDetailData = z.infer<typeof transactionDetailDataSchema>
-export type TransactionDetailResponse = z.infer<
-  typeof transactionDetailResponseSchema
->
-export type TransactionDetailParams = z.infer<
-  typeof transactionDetailParamsSchema
->
+export type TransactionDetailResponse = z.infer<typeof transactionDetailResponseSchema>
+export type TransactionDetailParams = z.infer<typeof transactionDetailParamsSchema>
 
 // === Validation Helpers ===
 export const validateTransactionDetailParams = (data: unknown) => {

@@ -3,12 +3,7 @@
 import { checkConnection } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/charger'
 import { SuccessDialog } from '@/components/notifications'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Check, Copy, Loader2 } from 'lucide-react'
 import Image from 'next/image'
@@ -43,13 +38,10 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
-  const OCPP_BASE_URL =
-    process.env.NEXT_PUBLIC_OCPP_BASE_URL || 'ws://ocpp.onecharge.co.th'
+  const OCPP_BASE_URL = process.env.NEXT_PUBLIC_OCPP_BASE_URL || 'ws://ocpp.onecharge.co.th'
 
   // Generate the complete URL with additional input
-  const completeUrl = additionalInput
-    ? `${OCPP_BASE_URL}/${additionalInput}`
-    : ocppUrl
+  const completeUrl = additionalInput ? `${OCPP_BASE_URL}/${additionalInput}` : ocppUrl
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -111,8 +103,7 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
         <DialogContent className="flex w-full max-w-xl flex-col items-center justify-center rounded-2xl px-3 py-6 sm:px-4 md:px-10 md:py-8">
           <DialogTitle className="sr-only">OCPP URL Configuration</DialogTitle>
           <DialogDescription className="sr-only">
-            Configure the OCPP URL for your charger to establish connection with
-            OneCharge server
+            Configure the OCPP URL for your charger to establish connection with OneCharge server
           </DialogDescription>
           <div className="mb-4 flex flex-col items-center">
             <Image
@@ -128,19 +119,17 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
               OCPP Url Configuration
             </h2>
             <p className="mt-2 text-center text-xs font-light text-[#767676] sm:text-left sm:text-sm">
-              Configure your EV charger with the OCPP URL below and the charger
-              code you registered. The serial number will automatically appear
-              in your charger list once your physical EV charger connects
-              successfully via OCPP protocol.
+              Configure your EV charger with the OCPP URL below and the charger code you registered.
+              The serial number will automatically appear in your charger list once your physical EV
+              charger connects successfully via OCPP protocol.
             </p>
             <p className="mt-6 text-center text-xs font-light text-[#767676] sm:mt-10 sm:text-left sm:text-sm">
-              If you don&apos;t have a physical charger yet, you can use an OCPP
-              simulator for testing. The connection status and serial number
-              will update once the device connects.
+              If you don&apos;t have a physical charger yet, you can use an OCPP simulator for
+              testing. The connection status and serial number will update once the device connects.
             </p>
             <span className="mt-6 text-center text-xs text-[#6E82A5] sm:mt-10 sm:text-left sm:text-sm">
-              *Not all chargers support setting an OCPP URL. If this is the case
-              with your charger, them skip this step.
+              *Not all chargers support setting an OCPP URL. If this is the case with your charger,
+              them skip this step.
             </span>
           </div>
           <form className="flex w-full flex-col gap-4">

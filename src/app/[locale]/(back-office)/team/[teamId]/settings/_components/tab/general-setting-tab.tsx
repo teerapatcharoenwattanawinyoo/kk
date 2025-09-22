@@ -17,6 +17,8 @@ import {
 import { AlertTriangle, Loader2, Pencil, UploadCloud } from 'lucide-react'
 import Image from 'next/image'
 import { useCallback, useEffect, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { QUERY_KEYS } from '@/lib/constants'
 import { useTeamById, useUpdateTeam } from '../../../../_hooks/use-teams'
 
 interface GeneralSettingProps {
@@ -56,6 +58,7 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
   // ดึงข้อมูลทีมจาก hook
   const { team: teamData, isLoading, error } = useTeamById(teamId)
   const updateTeamMutation = useUpdateTeam()
+  const queryClient = useQueryClient()
 
   // Load existing data into form
   useEffect(() => {
@@ -196,6 +199,14 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
   const handleLanguageChange = useCallback((language: string) => {
     setSelectedLanguage(language)
   }, [])
+
+  const handleSuccessDialogConfirm = useCallback(() => {
+    setShowSuccessDialog(false)
+    void queryClient.invalidateQueries({
+      queryKey: [QUERY_KEYS.TEAMS, 'list'],
+      refetchType: 'inactive',
+    })
+  }, [queryClient, setShowSuccessDialog])
 
   // Cleanup object URLs on unmount
   useEffect(() => {
@@ -498,6 +509,7 @@ export const GeneralSettingTab = ({ teamId, onCancel }: GeneralSettingProps) => 
         title="สำเร็จ"
         message={successMessage}
         buttonText="ตกลง"
+        onButtonClick={handleSuccessDialogConfirm}
       />
 
       {/* Error Dialog */}

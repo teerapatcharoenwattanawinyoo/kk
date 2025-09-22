@@ -15,10 +15,7 @@ import { IResponse } from '../config/model'
 export const getBankAccounts = async (
   team_group_id: string,
 ): Promise<IResponse<BankAccountListResponse>> => {
-  const url = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.LIST.replace(
-    '{team_group_id}',
-    team_group_id,
-  )
+  const url = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.LIST.replace('{team_group_id}', team_group_id)
   return api.get(url)
 }
 
@@ -26,10 +23,7 @@ export const getBankAccounts = async (
 export const getBankAccountById = async (
   id: number,
 ): Promise<IResponse<BankAccountDetailResponse>> => {
-  const url = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.GET_BY_ID.replace(
-    '{id}',
-    id.toString(),
-  )
+  const url = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.GET_BY_ID.replace('{id}', id.toString())
   return api.get(url)
 }
 
@@ -65,17 +59,12 @@ export const updateBankAccount = async (
   id: number,
   data: IBankAccountUpdate,
 ): Promise<IResponse<BankAccountMutationResponse>> => {
-  const url = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.UPDATE.replace(
-    '{id}',
-    id.toString(),
-  )
+  const url = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.UPDATE.replace('{id}', id.toString())
   if (data.file) {
     const formData = new FormData()
     if (data.account_name) formData.append('account_name', data.account_name)
-    if (data.account_number)
-      formData.append('account_number', data.account_number)
-    if (data.is_primary !== undefined)
-      formData.append('is_primary', data.is_primary.toString())
+    if (data.account_number) formData.append('account_number', data.account_number)
+    if (data.is_primary !== undefined) formData.append('is_primary', data.is_primary.toString())
     if (data.bank_id) formData.append('bank_id', data.bank_id.toString())
     formData.append('file', data.file)
 
@@ -93,10 +82,7 @@ export const updateBankAccount = async (
 export const deleteBankAccount = async (
   id: number,
 ): Promise<IResponse<BankAccountMutationResponse>> => {
-  const url = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.DELETE.replace(
-    '{id}',
-    id.toString(),
-  )
+  const url = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.DELETE.replace('{id}', id.toString())
   return api.delete(url)
 }
 

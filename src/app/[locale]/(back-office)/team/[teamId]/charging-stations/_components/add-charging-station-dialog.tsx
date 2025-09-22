@@ -13,12 +13,7 @@ import type {
 } from '../_schemas/charging-stations.schema'
 import { ChargingStationForm } from './charging-station-form'
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { CheckIcon, Loader2 } from 'lucide-react'
@@ -77,9 +72,7 @@ const dayOfWeekMap: Record<DayOfWeek, number> = {
   saturday: 6,
 }
 
-export function openCloseToWorkArray(
-  openCloseForm: OpenCloseFormState,
-): WorkTime[] {
+export function openCloseToWorkArray(openCloseForm: OpenCloseFormState): WorkTime[] {
   return (Object.keys(openCloseForm.days) as DayOfWeek[]).map((day) => ({
     work_day: dayOfWeekMap[day].toString(),
     work_status: openCloseForm.days[day]?.enabled ? '1' : '0',
@@ -105,8 +98,7 @@ export default function AddChargingStationDialog({
 
   // Local state
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] =
-    useState<ChargingStationFormData>(initialFormData)
+  const [formData, setFormData] = useState<ChargingStationFormData>(initialFormData)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const [showErrorDialog, setShowErrorDialog] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -127,9 +119,7 @@ export default function AddChargingStationDialog({
   }, [showErrorDialog, errorMessage])
 
   // ฟอร์มเวลาเปิด-ปิด
-  const [openCloseForm, setOpenCloseForm] = useState<OpenCloseFormState>(
-    initialOpenCloseFormState,
-  )
+  const [openCloseForm, setOpenCloseForm] = useState<OpenCloseFormState>(initialOpenCloseFormState)
 
   const dayLabels: Record<DayOfWeek, string> = {
     monday: t('common.days.monday'),
@@ -168,16 +158,12 @@ export default function AddChargingStationDialog({
       })()
 
       const englishValid =
-        formData.station_name.trim() !== '' &&
-        formData.station_detail.trim() !== ''
+        formData.station_name.trim() !== '' && formData.station_detail.trim() !== ''
 
       return currentLangValid && englishValid
     } else {
       // เลือกภาษาอังกฤษ ก็กรอกแค่อังกฤษ
-      return (
-        formData.station_name.trim() !== '' &&
-        formData.station_detail.trim() !== ''
-      )
+      return formData.station_name.trim() !== '' && formData.station_detail.trim() !== ''
     }
   })()
 
@@ -330,9 +316,7 @@ export default function AddChargingStationDialog({
 
       // Validate file types (ภาพเท่านั้น)
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
-      const invalidFiles = newFiles.filter(
-        (file) => !validTypes.includes(file.type),
-      )
+      const invalidFiles = newFiles.filter((file) => !validTypes.includes(file.type))
 
       if (invalidFiles.length > 0) {
         alert('Please upload only image files (JPG, PNG, WEBP)')
@@ -341,9 +325,7 @@ export default function AddChargingStationDialog({
       }
 
       // Validate file sizes (10MB limit per file)
-      const oversizedFiles = newFiles.filter(
-        (file) => file.size > 10 * 1024 * 1024,
-      )
+      const oversizedFiles = newFiles.filter((file) => file.size > 10 * 1024 * 1024)
       if (oversizedFiles.length > 0) {
         alert('Each image must be smaller than 10MB')
         event.target.value = ''
@@ -351,8 +333,7 @@ export default function AddChargingStationDialog({
       }
 
       setUploadedFiles((prev) => {
-        const totalAfterUpload =
-          prev.length + newFiles.length + existingImageCount
+        const totalAfterUpload = prev.length + newFiles.length + existingImageCount
 
         // ตรวจสอบไม่ให้เกินขีดจำกัด
         if (totalAfterUpload > maxImages) {
@@ -407,10 +388,7 @@ export default function AddChargingStationDialog({
             [field === 'station_name' ? 'name' : 'detail']: value,
           },
         }))
-      } else if (
-        field === 'station_name_lao' ||
-        field === 'station_detail_lao'
-      ) {
+      } else if (field === 'station_name_lao' || field === 'station_detail_lao') {
         setStagingData((prev) => ({
           ...prev,
           lo: {
@@ -561,9 +539,7 @@ export default function AddChargingStationDialog({
                     <div key={step.number}>
                       <div
                         className={`ml-[73px] flex cursor-pointer select-none items-center transition-opacity ${
-                          canClick
-                            ? 'opacity-100 hover:opacity-80'
-                            : 'cursor-default opacity-60'
+                          canClick ? 'opacity-100 hover:opacity-80' : 'cursor-default opacity-60'
                         }`}
                         onClick={() => setCurrentStep(step.number)}
                       >
@@ -572,9 +548,7 @@ export default function AddChargingStationDialog({
                         >
                           {stepContent}
                         </div>
-                        <span className={`ml-3 text-sm ${textClass}`}>
-                          {step.name}
-                        </span>
+                        <span className={`ml-3 text-sm ${textClass}`}>{step.name}</span>
                       </div>
                       {index < steps.length - 1 && (
                         <div className="my-2 ml-[calc(73px+(--spacing(3))-1px)] h-10 w-px bg-none" />
@@ -597,9 +571,7 @@ export default function AddChargingStationDialog({
                     <Switch
                       id="status-sidebar"
                       checked={formData.show_on_map}
-                      onCheckedChange={(checked) =>
-                        handleInputChange('show_on_map', checked)
-                      }
+                      onCheckedChange={(checked) => handleInputChange('show_on_map', checked)}
                       className="data-[state=checked]:bg-[#00DD9C]"
                     />
                   </div>
@@ -609,9 +581,7 @@ export default function AddChargingStationDialog({
                       className="mb-4 text-sm font-normal tracking-[0.15px] text-black"
                     >
                       {t('status.status')}
-                      <span className="ml-1 text-[15px] font-normal text-destructive">
-                        *
-                      </span>
+                      <span className="ml-1 text-[15px] font-normal text-destructive">*</span>
                     </Label>
                     <Switch
                       // Mock ไว้ก่อน ยังไม่มี key จาก API request body
@@ -628,10 +598,7 @@ export default function AddChargingStationDialog({
                 {steps.map((step) => {
                   const isCompleted = currentStep > step.number
                   const isActive = currentStep === step.number
-                  const { circleBgClass, textClass } = getStepStyles(
-                    isCompleted,
-                    isActive,
-                  )
+                  const { circleBgClass, textClass } = getStepStyles(isCompleted, isActive)
 
                   let stepContent
                   if (isCompleted) {
@@ -647,18 +614,13 @@ export default function AddChargingStationDialog({
                   }
 
                   return (
-                    <div
-                      key={step.number}
-                      className="flex flex-col items-center"
-                    >
+                    <div key={step.number} className="flex flex-col items-center">
                       <div
                         className={`flex h-6 w-6 items-center justify-center rounded-full ${circleBgClass}`}
                       >
                         {stepContent}
                       </div>
-                      <span className={`mt-1 text-xs ${textClass}`}>
-                        {step.name}
-                      </span>
+                      <span className={`mt-1 text-xs ${textClass}`}>{step.name}</span>
                     </div>
                   )
                 })}
@@ -707,9 +669,7 @@ export default function AddChargingStationDialog({
                 type="button"
                 onClick={handleNext}
                 className={`h-10 w-full font-normal text-white sm:h-11 sm:w-[175px] ${
-                  isFormValid
-                    ? 'bg-primary'
-                    : 'cursor-not-allowed bg-muted-foreground'
+                  isFormValid ? 'bg-primary' : 'cursor-not-allowed bg-muted-foreground'
                 }`}
                 disabled={currentStep === 1 && !isFormValid}
               >
@@ -722,11 +682,7 @@ export default function AddChargingStationDialog({
                 onClick={handleSubmitForm}
                 className="h-10 w-full font-normal text-white sm:h-11 sm:w-[175px]"
               >
-                {isLoading ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  t('buttons.submit')
-                )}
+                {isLoading ? <Loader2 className="size-4 animate-spin" /> : t('buttons.submit')}
               </Button>
             )}
           </div>

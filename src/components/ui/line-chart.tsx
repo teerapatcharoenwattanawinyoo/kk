@@ -34,9 +34,7 @@ export const LineChart = ({
   const points = data.map((point, index) => {
     const x = padding + (index * (chartWidth - 2 * padding)) / (data.length - 1)
     const y =
-      chartHeight -
-      padding -
-      ((point.value - minValue) / range) * (chartHeight - 2 * padding)
+      chartHeight - padding - ((point.value - minValue) / range) * (chartHeight - 2 * padding)
     return { x, y, ...point }
   })
 
@@ -51,9 +49,7 @@ export const LineChart = ({
 
   return (
     <div className={`w-full ${className}`}>
-      {title && (
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">{title}</h3>
-      )}
+      {title && <h3 className="mb-4 text-lg font-semibold text-gray-900">{title}</h3>}
       <div className="relative">
         <svg
           width="100%"
@@ -64,14 +60,8 @@ export const LineChart = ({
           {/* Define gradients */}
           <defs>
             <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop
-                offset="0%"
-                style={{ stopColor: colors.primary[500], stopOpacity: 0.3 }}
-              />
-              <stop
-                offset="100%"
-                style={{ stopColor: colors.primary[500], stopOpacity: 0.05 }}
-              />
+              <stop offset="0%" style={{ stopColor: colors.primary[500], stopOpacity: 0.3 }} />
+              <stop offset="100%" style={{ stopColor: colors.primary[500], stopOpacity: 0.05 }} />
             </linearGradient>
             <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" style={{ stopColor: colors.primary[400] }} />
@@ -85,8 +75,7 @@ export const LineChart = ({
             <g>
               {/* Horizontal grid lines */}
               {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio, index) => {
-                const y =
-                  chartHeight - padding - ratio * (chartHeight - 2 * padding)
+                const y = chartHeight - padding - ratio * (chartHeight - 2 * padding)
                 return (
                   <line
                     key={index}
@@ -194,8 +183,7 @@ export const LineChart = ({
 
           {/* Y-axis labels */}
           {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio, index) => {
-            const y =
-              chartHeight - padding - ratio * (chartHeight - 2 * padding)
+            const y = chartHeight - padding - ratio * (chartHeight - 2 * padding)
             const percentage = Math.round(ratio * 100)
             return (
               <text

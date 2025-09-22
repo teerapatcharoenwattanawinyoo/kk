@@ -86,18 +86,14 @@ export function MemberGroupRightPanel() {
   const [selectedIds, setSelectedIds] = useState<number[]>([])
 
   const [openConnectorFor, setOpenConnectorFor] = useState<number | null>(null)
-  const [memberConnectors, setMemberConnectors] = useState<
-    Record<number, string[]>
-  >({})
+  const [memberConnectors, setMemberConnectors] = useState<Record<number, string[]>>({})
 
   const pageSize = 10
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return MOCK_MEMBERS
-    return MOCK_MEMBERS.filter(
-      (m) => m.name.toLowerCase().includes(q) || String(m.id).includes(q),
-    )
+    return MOCK_MEMBERS.filter((m) => m.name.toLowerCase().includes(q) || String(m.id).includes(q))
   }, [query])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
@@ -108,20 +104,14 @@ export function MemberGroupRightPanel() {
 
   const toggleAll = () => {
     if (allCheckedOnPage) {
-      setSelectedIds((prev) =>
-        prev.filter((id) => !members.some((m) => m.id === id)),
-      )
+      setSelectedIds((prev) => prev.filter((id) => !members.some((m) => m.id === id)))
     } else {
-      setSelectedIds((prev) =>
-        Array.from(new Set([...prev, ...members.map((m) => m.id)])),
-      )
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...members.map((m) => m.id)])))
     }
   }
 
   const toggleOne = (id: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    )
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
   }
 
   return (
@@ -129,9 +119,7 @@ export function MemberGroupRightPanel() {
       <CardHeader>
         {/* Top title + search */}
         <div className="flex items-center justify-between gap-3">
-          <div className="text-oc-title-secondary text-xl font-semibold">
-            รายการ
-          </div>
+          <div className="text-oc-title-secondary text-xl font-semibold">รายการ</div>
           <div className="relative max-w-4xl">
             <Input
               value={query}
@@ -152,17 +140,12 @@ export function MemberGroupRightPanel() {
           {/* Subheader: select-all + right column header */}
           <div className="mt-3 flex items-center justify-between border-t p-3 pt-3">
             <Label className="inline-flex items-center">
-              <Checkbox
-                checked={allCheckedOnPage}
-                onCheckedChange={toggleAll}
-              />
+              <Checkbox checked={allCheckedOnPage} onCheckedChange={toggleAll} />
               <span className="p-2 text-sm text-muted-foreground">
                 เลือกทั้งหมด : {selectedIds.length} รายการ
               </span>
             </Label>
-            <div className="text-sm font-normal text-muted-foreground">
-              Connector Access
-            </div>
+            <div className="text-sm font-normal text-muted-foreground">Connector Access</div>
           </div>
           {members.map((m) => (
             <div
@@ -179,9 +162,7 @@ export function MemberGroupRightPanel() {
                   <div className="text-oc-title-secondary truncate text-sm font-medium">
                     {m.name}
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    ID: {m.id}
-                  </div>
+                  <div className="text-xs text-muted-foreground">ID: {m.id}</div>
                 </div>
               </div>
 
@@ -203,9 +184,7 @@ export function MemberGroupRightPanel() {
                             onClick={() =>
                               setMemberConnectors((prev) => ({
                                 ...prev,
-                                [m.id]: (prev[m.id] || []).filter(
-                                  (x) => x !== id,
-                                ),
+                                [m.id]: (prev[m.id] || []).filter((x) => x !== id),
                               }))
                             }
                             variant={'destructive'}
@@ -245,8 +224,8 @@ export function MemberGroupRightPanel() {
 
       <CardFooter className="flex items-center justify-between text-xs text-muted-foreground">
         <div>
-          Showing {start + 1} to {Math.min(start + pageSize, filtered.length)}{' '}
-          of {filtered.length} Results
+          Showing {start + 1} to {Math.min(start + pageSize, filtered.length)} of {filtered.length}{' '}
+          Results
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -288,9 +267,7 @@ export function MemberGroupRightPanel() {
       <ConnectorDialog
         open={openConnectorFor !== null}
         onOpenChange={(v) => !v && setOpenConnectorFor(null)}
-        selected={
-          openConnectorFor ? (memberConnectors[openConnectorFor] ?? []) : []
-        }
+        selected={openConnectorFor ? (memberConnectors[openConnectorFor] ?? []) : []}
         onSubmit={(next) => {
           if (openConnectorFor !== null) {
             setMemberConnectors((prev) => ({
@@ -324,13 +301,7 @@ type StationDialogProps = {
   onChange: (next: string[]) => void
 }
 
-function StationChip({
-  label,
-  onRemove,
-}: {
-  label: string
-  onRemove?: () => void
-}) {
+function StationChip({ label, onRemove }: { label: string; onRemove?: () => void }) {
   return (
     <Badge
       variant="default"
@@ -367,12 +338,7 @@ type ConnectorDialogProps = {
   onSubmit: (next: string[]) => void
 }
 
-function ConnectorDialog({
-  open,
-  onOpenChange,
-  selected,
-  onSubmit,
-}: ConnectorDialogProps) {
+function ConnectorDialog({ open, onOpenChange, selected, onSubmit }: ConnectorDialogProps) {
   const [q, setQ] = useState('')
   const [pick, setPick] = useState<string[]>(selected)
   const [showDropdown, setShowDropdown] = useState(false)
@@ -382,25 +348,19 @@ function ConnectorDialog({
     return !s
       ? MOCK_CONNECTORS
       : MOCK_CONNECTORS.filter(
-          (c) =>
-            c.label.toLowerCase().includes(s) ||
-            c.charger.toLowerCase().includes(s),
+          (c) => c.label.toLowerCase().includes(s) || c.charger.toLowerCase().includes(s),
         )
   }, [q])
 
   const toggle = (id: string) => {
-    setPick((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    )
+    setPick((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
     setShowDropdown(false)
   }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="h-auto max-w-4xl">
         <DialogHeader className="pb-8">
-          <DialogTitle className="text-oc-title-secondary">
-            Select Connector
-          </DialogTitle>
+          <DialogTitle className="text-oc-title-secondary">Select Connector</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -418,11 +378,7 @@ function ConnectorDialog({
                 placeholder="Search Station"
                 className="h-11 rounded-r-none bg-muted shadow-none"
               />
-              <Button
-                type="button"
-                variant="default"
-                className="h-11 rounded-l-none"
-              >
+              <Button type="button" variant="default" className="h-11 rounded-l-none">
                 <Search className="size-4" />
               </Button>
             </div>
@@ -466,9 +422,7 @@ function ConnectorDialog({
 
           {/* Selected chips */}
           <div>
-            <div className="mb-3 text-sm text-muted-foreground">
-              {pick.length} Connector
-            </div>
+            <div className="mb-3 text-sm text-muted-foreground">{pick.length} Connector</div>
             <div className="flex flex-wrap gap-3 rounded-lg border-2 border-dashed p-2 py-4">
               {pick.length === 0 ? (
                 <div className="flex w-full items-center justify-center py-4 text-sm text-muted-foreground">
@@ -523,18 +477,11 @@ function ConnectorDialog({
   )
 }
 
-function StationDialog({
-  open,
-  onOpenChange,
-  selected,
-  onChange,
-}: StationDialogProps) {
+function StationDialog({ open, onOpenChange, selected, onChange }: StationDialogProps) {
   const [q, setQ] = useState('')
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase()
-    return !s
-      ? MOCK_STATIONS
-      : MOCK_STATIONS.filter((x) => x.toLowerCase().includes(s))
+    return !s ? MOCK_STATIONS : MOCK_STATIONS.filter((x) => x.toLowerCase().includes(s))
   }, [q])
 
   const toggle = (name: string) => {
@@ -567,11 +514,7 @@ function StationDialog({
                 placeholder="Search Station"
                 className="h-11 rounded-r-none"
               />
-              <Button
-                type="button"
-                variant="default"
-                className="h-11 rounded-l-none"
-              >
+              <Button type="button" variant="default" className="h-11 rounded-l-none">
                 <Search className="size-4" />
               </Button>
             </div>
@@ -579,9 +522,7 @@ function StationDialog({
 
           {/* Selected chips */}
           <div>
-            <div className="mb-3 text-sm text-muted-foreground">
-              {selected.length} Stations
-            </div>
+            <div className="mb-3 text-sm text-muted-foreground">{selected.length} Stations</div>
             <div className="flex flex-wrap gap-3">
               {selected.map((s) => (
                 <StationChip
@@ -612,11 +553,7 @@ function StationDialog({
                     className={`grid size-5 place-items-center rounded-full text-sm ${active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
                   >
                     {' '}
-                    {active ? (
-                      <Check className="size-3" />
-                    ) : (
-                      <Plus className="size-3" />
-                    )}{' '}
+                    {active ? <Check className="size-3" /> : <Plus className="size-3" />}{' '}
                   </span>
                 </Button>
               )
@@ -680,10 +617,7 @@ function MemberGroupLeftForm() {
         <div>
           <div className="mb-1 flex items-center justify-between">
             <Label>
-              Details{' '}
-              <span className="align-middle text-xs text-muted-foreground">
-                (Optional)
-              </span>
+              Details <span className="align-middle text-xs text-muted-foreground">(Optional)</span>
             </Label>
           </div>
           <Textarea
@@ -718,9 +652,7 @@ function MemberGroupLeftForm() {
                 <div className="flex w-full items-center justify-between">
                   <div className="flex items-center gap-1.5 overflow-hidden">
                     {selectedStations.length === 0 ? (
-                      <span className="text-sm font-normal text-muted-foreground">
-                        เลือกสถานี
-                      </span>
+                      <span className="text-sm font-normal text-muted-foreground">เลือกสถานี</span>
                     ) : (
                       <>
                         {selectedStations.slice(0, 2).map((s) => (
@@ -824,9 +756,7 @@ function MemberGroupLeftForm() {
           </div>
 
           <div className="flex items-stretch justify-between pb-2">
-            <div className="mb-4 text-sm">
-              Can pay charging fees with Team wallet
-            </div>
+            <div className="mb-4 text-sm">Can pay charging fees with Team wallet</div>
             <Switch
               checked={walletAllowed}
               onCheckedChange={setWalletAllowed}
@@ -834,33 +764,20 @@ function MemberGroupLeftForm() {
             />
           </div>
 
-          <RadioGroup
-            value={scope}
-            onValueChange={(v: 'any' | 'team') => setScope(v)}
-          >
+          <RadioGroup value={scope} onValueChange={(v: 'any' | 'team') => setScope(v)}>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="any"
-                id="scope-any"
-                disabled={!walletAllowed}
-              />
+              <RadioGroupItem value="any" id="scope-any" disabled={!walletAllowed} />
               <Label
                 htmlFor="scope-any"
                 className={`text-xs ${
-                  !walletAllowed
-                    ? 'text-xs text-muted-foreground'
-                    : 'text-muted-foreground'
+                  !walletAllowed ? 'text-xs text-muted-foreground' : 'text-muted-foreground'
                 }`}
               >
                 On any chargers in OneCharge
               </Label>
             </div>
             <div className="mt-2 flex items-start gap-2">
-              <RadioGroupItem
-                value="team"
-                id="scope-team"
-                disabled={!walletAllowed}
-              />
+              <RadioGroupItem value="team" id="scope-team" disabled={!walletAllowed} />
               <Label
                 htmlFor="scope-team"
                 className={`leading-5 ${!walletAllowed ? 'text-muted-foreground' : ''}`}

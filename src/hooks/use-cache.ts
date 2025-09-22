@@ -21,9 +21,7 @@ export const useTeamFromCache = (teamId: string) => {
     ])
 
     if (cachedHostList?.data?.data) {
-      const team = cachedHostList.data.data.find(
-        (team) => team.team_group_id.toString() === teamId,
-      )
+      const team = cachedHostList.data.data.find((team) => team.team_group_id.toString() === teamId)
       if (team) return team
     }
 
@@ -41,11 +39,7 @@ export const useHasCachedData = () => {
 
   return useMemo(() => {
     const teamListData = queryClient.getQueryData(QUERY_KEYS.TEAMS)
-    const teamHostData = queryClient.getQueryData([
-      ...QUERY_KEYS.TEAMS,
-      'host-list',
-      undefined,
-    ])
+    const teamHostData = queryClient.getQueryData([...QUERY_KEYS.TEAMS, 'host-list', undefined])
 
     return !!(teamListData || teamHostData)
   }, [queryClient])

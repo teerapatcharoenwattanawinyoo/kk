@@ -28,10 +28,7 @@ export const TeamGuard = ({
   const teamExists = useMemo(
     () =>
       Array.isArray(teams) &&
-      teams.some(
-        (team: { team_group_id: number }) =>
-          team?.team_group_id?.toString() === teamId,
-      ),
+      teams.some((team: { team_group_id: number }) => team?.team_group_id?.toString() === teamId),
     [teams, teamId],
   )
 
@@ -52,16 +49,7 @@ export const TeamGuard = ({
     if (!teamExists) {
       router.replace(redirectPath)
     }
-  }, [
-    autoRedirect,
-    isLoading,
-    error,
-    teamsData,
-    teamExists,
-    router,
-    locale,
-    fallbackPath,
-  ])
+  }, [autoRedirect, isLoading, error, teamsData, teamExists, router, locale, fallbackPath])
 
   // แสดง loading ขณะตรวจสอบ
   if (isLoading) {
@@ -69,9 +57,7 @@ export const TeamGuard = ({
       <div className="bg-oc-muted-background flex h-screen items-center justify-center">
         <div className="text-center">
           <FetchLoader />
-          <p className="mt-4 text-sm text-foreground">
-            กำลังตรวจสอบข้อมูลทีม...
-          </p>
+          <p className="mt-4 text-sm text-foreground">กำลังตรวจสอบข้อมูลทีม...</p>
         </div>
       </div>
     )
@@ -97,9 +83,7 @@ export const TeamGuard = ({
               />
             </svg>
           </div>
-          <h2 className="mb-2 text-lg font-semibold text-gray-900">
-            เกิดข้อผิดพลาด
-          </h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-900">เกิดข้อผิดพลาด</h2>
           <p className="mb-4 text-sm text-gray-600">ไม่สามารถดึงข้อมูลทีมได้</p>
           {autoRedirect ? (
             <p className="text-xs text-muted-foreground">กำลังพาไปหน้าทีม...</p>
@@ -135,12 +119,9 @@ export const TeamGuard = ({
               />
             </svg>
           </div>
-          <h2 className="mb-2 text-lg font-semibold text-gray-900">
-            ไม่พบทีมนี้
-          </h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-900">ไม่พบทีมนี้</h2>
           <p className="mb-4 text-sm text-gray-600">
-            ทีม ID:{' '}
-            <code className="rounded bg-gray-100 px-2 py-1">{teamId}</code>{' '}
+            ทีม ID: <code className="rounded bg-gray-100 px-2 py-1">{teamId}</code>{' '}
             ไม่ถูกต้องหรือไม่มีอยู่ในระบบ
           </p>
           {autoRedirect ? (

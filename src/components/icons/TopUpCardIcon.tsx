@@ -9,10 +9,7 @@ export interface TopUpCardIconProps
 }
 
 const TopUpCardIcon = React.forwardRef<SVGSVGElement, TopUpCardIconProps>(
-  (
-    { width, height, fill = 'currentColor', className, title, ...rest },
-    ref,
-  ) => (
+  ({ width, height, fill = 'currentColor', className, title, ...rest }, ref) => (
     <svg
       ref={ref}
       width={width}

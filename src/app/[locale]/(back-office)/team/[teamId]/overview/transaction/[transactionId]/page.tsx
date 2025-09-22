@@ -9,11 +9,5 @@ export default function TransactionDetailPage() {
   const transactionId = params.transactionId as string
   const locale = params.locale as string
 
-  return (
-    <TransactionDetail
-      transactionId={transactionId}
-      teamId={teamId}
-      locale={locale}
-    />
-  )
+  return <TransactionDetail transactionId={transactionId} teamId={teamId} locale={locale} />
 }

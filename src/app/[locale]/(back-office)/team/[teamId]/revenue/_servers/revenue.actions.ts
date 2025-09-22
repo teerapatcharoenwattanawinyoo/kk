@@ -4,10 +4,7 @@
 import { api } from '@/lib/api/config/axios-server'
 import { IResponse } from '@/lib/api/config/model'
 import { API_ENDPOINTS } from '@/lib/constants'
-import {
-  PayoutConfirmRequest,
-  PayoutInitRequest,
-} from '../_schemas/payout.schema'
+import { PayoutConfirmRequest, PayoutInitRequest } from '../_schemas/payout.schema'
 import { RevenueBalanceResponse } from '../_schemas/revenue.schema'
 
 // ===========================
@@ -22,8 +19,8 @@ export async function getRevenueBalanceServerAction(
 ): Promise<IResponse<RevenueBalanceResponse>> {
   try {
     const apiUrl = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BALANCE.replace(
-      '{team_group_id}', 
-      team_group_id.toString()
+      '{team_group_id}',
+      team_group_id.toString(),
     )
     const result = await api.get(apiUrl)
     return result
@@ -40,9 +37,7 @@ export async function getRevenueBalanceServerAction(
 /**
  * Initialize payout transaction
  */
-export async function initPayoutServerAction(
-  data: PayoutInitRequest,
-): Promise<IResponse> {
+export async function initPayoutServerAction(data: PayoutInitRequest): Promise<IResponse> {
   try {
     const result = await api.post(API_ENDPOINTS.TEAM_GROUPS.REVENUE.PAYOUT.INIT, data)
     return result
@@ -55,9 +50,7 @@ export async function initPayoutServerAction(
 /**
  * Confirm payout transaction
  */
-export async function confirmPayoutServerAction(
-  data: PayoutConfirmRequest,
-): Promise<IResponse> {
+export async function confirmPayoutServerAction(data: PayoutConfirmRequest): Promise<IResponse> {
   try {
     const result = await api.post(API_ENDPOINTS.TEAM_GROUPS.REVENUE.PAYOUT.CONFIRM, data)
     return result

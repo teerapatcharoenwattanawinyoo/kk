@@ -5,12 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useI18n } from '@/lib/i18n'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -59,15 +54,10 @@ export default function MapClient({
   const lastGeocodedCoordsRef = useRef<string>('')
 
   // State
-  const [latitude, setLatitude] = useState<number | null>(
-    initialCoordinates?.lat ?? null,
-  )
-  const [longitude, setLongitude] = useState<number | null>(
-    initialCoordinates?.lng ?? null,
-  )
+  const [latitude, setLatitude] = useState<number | null>(initialCoordinates?.lat ?? null)
+  const [longitude, setLongitude] = useState<number | null>(initialCoordinates?.lng ?? null)
   const [address, setAddress] = useState<string>(initialAddress ?? '')
-  const [currentLocationName, setCurrentLocationName] =
-    useState<string>('ตำแหน่งปัจจุบัน')
+  const [currentLocationName, setCurrentLocationName] = useState<string>('ตำแหน่งปัจจุบัน')
   const [isLoadingLocation, setIsLoadingLocation] = useState(true)
   const [isGeocodingLoading, setIsGeocodingLoading] = useState(false)
   const [searchResults, setSearchResults] = useState<
@@ -119,45 +109,35 @@ export default function MapClient({
   }, [])
 
   // Optimized marker update function
-  const updateMarker = useCallback(
-    (lat: number, lng: number, popupText: string) => {
-      if (!mapInstanceRef.current) return
+  const updateMarker = useCallback((lat: number, lng: number, popupText: string) => {
+    if (!mapInstanceRef.current) return
 
-      try {
-        // Remove existing marker
-        if (
-          markerRef.current &&
-          mapInstanceRef.current.hasLayer(markerRef.current)
-        ) {
-          mapInstanceRef.current.removeLayer(markerRef.current)
-        }
-
-        // Add new marker with animation
-        const newMarker = L.marker([lat, lng], {
-          icon: defaultIcon,
-          riseOnHover: true,
-        }).addTo(mapInstanceRef.current)
-
-        markerRef.current = newMarker
-        newMarker.bindPopup(popupText)
-
-        // Show popup briefly for feedback
-        newMarker.openPopup()
-        setTimeout(() => {
-          if (
-            newMarker &&
-            mapInstanceRef.current &&
-            mapInstanceRef.current.hasLayer(newMarker)
-          ) {
-            newMarker.closePopup()
-          }
-        }, 2000)
-      } catch (error) {
-        console.error('Error updating marker:', error)
+    try {
+      // Remove existing marker
+      if (markerRef.current && mapInstanceRef.current.hasLayer(markerRef.current)) {
+        mapInstanceRef.current.removeLayer(markerRef.current)
       }
-    },
-    [],
-  )
+
+      // Add new marker with animation
+      const newMarker = L.marker([lat, lng], {
+        icon: defaultIcon,
+        riseOnHover: true,
+      }).addTo(mapInstanceRef.current)
+
+      markerRef.current = newMarker
+      newMarker.bindPopup(popupText)
+
+      // Show popup briefly for feedback
+      newMarker.openPopup()
+      setTimeout(() => {
+        if (newMarker && mapInstanceRef.current && mapInstanceRef.current.hasLayer(newMarker)) {
+          newMarker.closePopup()
+        }
+      }, 2000)
+    } catch (error) {
+      console.error('Error updating marker:', error)
+    }
+  }, [])
 
   // Debounced reverse geocoding with caching
   const debouncedReverseGeocode = useCallback(
@@ -251,11 +231,7 @@ export default function MapClient({
   // Get current location on component mount
   useEffect(() => {
     // If initial coordinates provided, use them instead of geolocation
-    if (
-      initialCoordinates &&
-      initialCoordinates.lat !== 0 &&
-      initialCoordinates.lng !== 0
-    ) {
+    if (initialCoordinates && initialCoordinates.lat !== 0 && initialCoordinates.lng !== 0) {
       setLatitude(initialCoordinates.lat)
       setLongitude(initialCoordinates.lng)
       if (initialAddress) {
@@ -283,10 +259,7 @@ export default function MapClient({
       setIsLoadingLocation(false)
 
       // Call callbacks with fallback coordinates
-      onCoordinatesChange?.(
-        parseFloat(fallbackLat.toFixed(4)),
-        parseFloat(fallbackLng.toFixed(4)),
-      )
+      onCoordinatesChange?.(parseFloat(fallbackLat.toFixed(4)), parseFloat(fallbackLng.toFixed(4)))
       onAddressChange?.(fallbackAddress)
 
       // Clear error after 5 seconds
@@ -325,10 +298,7 @@ export default function MapClient({
         }
 
         // Call coordinates callback
-        onCoordinatesChange?.(
-          parseFloat(currentLat.toFixed(4)),
-          parseFloat(currentLng.toFixed(4)),
-        )
+        onCoordinatesChange?.(parseFloat(currentLat.toFixed(4)), parseFloat(currentLng.toFixed(4)))
         setIsLoadingLocation(false)
       },
       (error) => {
@@ -347,9 +317,7 @@ export default function MapClient({
             break
         }
 
-        console.warn(
-          `Geolocation error: ${errorMessage}. Using Bangkok fallback.`,
-        )
+        console.warn(`Geolocation error: ${errorMessage}. Using Bangkok fallback.`)
         setLocationError(errorMessage)
 
         // Fallback to Bangkok coordinates if location access fails
@@ -383,12 +351,10 @@ export default function MapClient({
 
   // Initialize map once and update content
   useEffect(() => {
-    if (!mapRef.current || isMapInitializedRef.current || !currentCoordinates)
-      return
+    if (!mapRef.current || isMapInitializedRef.current || !currentCoordinates) return
 
     const timeoutId = setTimeout(() => {
-      if (!mapRef.current || isCleaningUpRef.current || !currentCoordinates)
-        return
+      if (!mapRef.current || isCleaningUpRef.current || !currentCoordinates) return
 
       try {
         // Create map instance once with valid coordinates
@@ -422,8 +388,7 @@ export default function MapClient({
         const mapClickHandler = async (e: L.LeafletMouseEvent) => {
           // Check current pin mode from DOM attribute to avoid stale closure
           const container = map.getContainer()
-          const currentPinMode =
-            container.getAttribute('data-pin-mode') === 'true'
+          const currentPinMode = container.getAttribute('data-pin-mode') === 'true'
 
           if (!currentPinMode) return
 
@@ -470,21 +435,14 @@ export default function MapClient({
 
   // Update map view and marker when coordinates change
   useEffect(() => {
-    if (
-      !currentCoordinates ||
-      !mapInstanceRef.current ||
-      !isMapInitializedRef.current
-    )
-      return
+    if (!currentCoordinates || !mapInstanceRef.current || !isMapInitializedRef.current) return
 
     const { lat, lng } = currentCoordinates
 
     try {
       // Set view if first time or significant movement
       const currentCenter = mapInstanceRef.current.getCenter()
-      const distance = currentCenter
-        ? currentCenter.distanceTo([lat, lng])
-        : Infinity
+      const distance = currentCenter ? currentCenter.distanceTo([lat, lng]) : Infinity
 
       if (distance > 1000 || !currentCenter || !currentCenter.lat) {
         // Initial load or major change
@@ -716,10 +674,7 @@ export default function MapClient({
   // Handle address search with keyboard navigation
   const handleAddressSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      if (
-        selectedSuggestionIndex >= 0 &&
-        searchResults[selectedSuggestionIndex]
-      ) {
+      if (selectedSuggestionIndex >= 0 && searchResults[selectedSuggestionIndex]) {
         selectSearchResult(searchResults[selectedSuggestionIndex])
       } else {
         geocodeAddress(address)
@@ -729,16 +684,12 @@ export default function MapClient({
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
       if (showSuggestions && searchResults.length > 0) {
-        setSelectedSuggestionIndex((prev) =>
-          prev < searchResults.length - 1 ? prev + 1 : 0,
-        )
+        setSelectedSuggestionIndex((prev) => (prev < searchResults.length - 1 ? prev + 1 : 0))
       }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
       if (showSuggestions && searchResults.length > 0) {
-        setSelectedSuggestionIndex((prev) =>
-          prev > 0 ? prev - 1 : searchResults.length - 1,
-        )
+        setSelectedSuggestionIndex((prev) => (prev > 0 ? prev - 1 : searchResults.length - 1))
       }
     } else if (e.key === 'Escape') {
       setShowSuggestions(false)
@@ -904,9 +855,7 @@ export default function MapClient({
         </div>
 
         {/* Spacer to prevent overlap when dropdown is open */}
-        {showSuggestions && searchResults.length > 0 && (
-          <div className="h-20"></div>
-        )}
+        {showSuggestions && searchResults.length > 0 && <div className="h-20"></div>}
       </div>
 
       {/* Map container */}
@@ -917,9 +866,7 @@ export default function MapClient({
               <Card className="p-6">
                 <CardContent className="flex flex-col items-center space-y-4 p-0">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  <p className="text-center text-muted-foreground">
-                    กำลังค้นหาตำแหน่งปัจจุบัน...
-                  </p>
+                  <p className="text-center text-muted-foreground">กำลังค้นหาตำแหน่งปัจจุบัน...</p>
                 </CardContent>
               </Card>
             </div>

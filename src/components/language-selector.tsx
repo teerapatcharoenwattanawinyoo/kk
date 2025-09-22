@@ -18,10 +18,7 @@ interface LanguageSelectorProps {
   onLanguageChange?: (language: Locale) => void
 }
 
-export function LanguageSelector({
-  selectedLanguage,
-  onLanguageChange,
-}: LanguageSelectorProps) {
+export function LanguageSelector({ selectedLanguage, onLanguageChange }: LanguageSelectorProps) {
   const { locale, setLocale } = useI18n()
   const { assetPath } = useLocale()
 

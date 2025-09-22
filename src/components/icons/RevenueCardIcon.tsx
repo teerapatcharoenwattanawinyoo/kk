@@ -4,9 +4,7 @@ interface RevenueCardIconProps {
   className?: string
 }
 
-export const RevenueCardIcon: React.FC<RevenueCardIconProps> = ({
-  className = '',
-}) => {
+export const RevenueCardIcon: React.FC<RevenueCardIconProps> = ({ className = '' }) => {
   return (
     <svg
       width="24"

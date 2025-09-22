@@ -6,10 +6,7 @@ interface LocaleLayoutProps {
   params: Promise<{ locale: Locale }>
 }
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: LocaleLayoutProps) {
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale } = await params
 
   return <div data-locale={locale}>{children}</div>

@@ -26,11 +26,7 @@ export const prefetchTeamData = async (queryClient: QueryClient) => {
  */
 export const hasCachedTeamData = (queryClient: QueryClient): boolean => {
   const teamListData = queryClient.getQueryData(QUERY_KEYS.TEAMS)
-  const teamHostData = queryClient.getQueryData([
-    ...QUERY_KEYS.TEAMS,
-    'host-list',
-    undefined,
-  ])
+  const teamHostData = queryClient.getQueryData([...QUERY_KEYS.TEAMS, 'host-list', undefined])
 
   return !!(teamListData || teamHostData)
 }

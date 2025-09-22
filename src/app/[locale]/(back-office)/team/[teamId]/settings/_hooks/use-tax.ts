@@ -214,12 +214,7 @@ export const useFileUpload = () => {
     }
 
     // ตรวจสอบประเภทไฟล์
-    const allowedTypes = [
-      'image/jpeg',
-      'image/jpg',
-      'image/png',
-      'application/pdf',
-    ]
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
     if (!allowedTypes.includes(file.type)) {
       errors.push('รองรับเฉพาะไฟล์ JPG, PNG, PDF เท่านั้น')
     }
@@ -228,11 +223,7 @@ export const useFileUpload = () => {
   }, [])
 
   const handleFileSelect = useCallback(
-    (
-      file: File | null,
-      onSuccess: (file: File) => void,
-      onError: (errors: string[]) => void,
-    ) => {
+    (file: File | null, onSuccess: (file: File) => void, onError: (errors: string[]) => void) => {
       if (!file) return
 
       const errors = validateFile(file)

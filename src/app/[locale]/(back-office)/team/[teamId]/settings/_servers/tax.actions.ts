@@ -1,12 +1,10 @@
 // Tax Server Actions - Tax information operations
 'use server'
 
-import { api } from '@/lib/api/config/axios'
+import { api } from '@/lib/api/config/axios-server'
 import { API_ENDPOINTS } from '@/lib/constants'
 import { revalidateTag } from 'next/cache'
-import {
-  CreateTaxInformationApiData,
-} from '../_schemas/tax.schema'
+import { CreateTaxInformationApiData } from '../_schemas/tax.schema'
 
 // ===========================
 // READ OPERATIONS (QUERIES)
@@ -31,8 +29,8 @@ export async function getTaxTypesServerAction(): Promise<any> {
 export async function getTaxInformationServerAction(teamId: string): Promise<any> {
   try {
     const apiUrl = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.INFORMATION.LIST.replace(
-      '{team_group_id}', 
-      teamId
+      '{team_group_id}',
+      teamId,
     )
     const result = await api.get(apiUrl)
     return result
@@ -48,8 +46,8 @@ export async function getTaxInformationServerAction(teamId: string): Promise<any
 export async function getTaxInvoiceReceiptServerAction(teamId: string): Promise<any> {
   try {
     const apiUrl = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.RECEIPT.LIST.replace(
-      '{team_group_id}', 
-      teamId
+      '{team_group_id}',
+      teamId,
     )
     const result = await api.get(apiUrl)
     return result
@@ -71,11 +69,11 @@ export async function createTaxInformationServerAction(
 ): Promise<any> {
   try {
     const result = await api.post(API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.INFORMATION.CREATE, data)
-    
+
     // Revalidate tax-related cache
     revalidateTag('tax-information')
     revalidateTag(`tax-information-${data.team_group_id}`)
-    
+
     return result
   } catch (error) {
     console.error('Error creating tax information:', error)
@@ -92,15 +90,15 @@ export async function updateTaxInformationServerAction(
 ): Promise<any> {
   try {
     const apiUrl = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.INFORMATION.UPDATE.replace(
-      '{team_group_id}', 
-      taxId
+      '{team_group_id}',
+      taxId,
     )
     const result = await api.put(apiUrl, data)
-    
+
     // Revalidate tax-related cache
     revalidateTag('tax-information')
     revalidateTag(`tax-information-${taxId}`)
-    
+
     return result
   } catch (error) {
     console.error('Error updating tax information:', error)
@@ -113,16 +111,13 @@ export async function updateTaxInformationServerAction(
  */
 export async function deleteTaxInformationServerAction(taxId: string): Promise<any> {
   try {
-    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.INFORMATION.DELETE.replace(
-      '{id}', 
-      taxId
-    )
+    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.INFORMATION.DELETE.replace('{id}', taxId)
     const result = await api.delete(apiUrl)
-    
+
     // Revalidate tax-related cache
     revalidateTag('tax-information')
     revalidateTag(`tax-information-${taxId}`)
-    
+
     return result
   } catch (error) {
     console.error('Error deleting tax information:', error)
@@ -138,10 +133,10 @@ export async function createTaxInvoiceReceiptServerAction(
 ): Promise<any> {
   try {
     const result = await api.post(API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.RECEIPT.CREATE, data)
-    
+
     // Revalidate tax-related cache
     revalidateTag('tax-invoice-receipt')
-    
+
     return result
   } catch (error) {
     console.error('Error creating tax invoice receipt:', error)
@@ -158,15 +153,15 @@ export async function updateTaxInvoiceReceiptServerAction(
 ): Promise<any> {
   try {
     const apiUrl = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.RECEIPT.UPDATE.replace(
-      '{team_group_id}', 
-      receiptId
+      '{team_group_id}',
+      receiptId,
     )
     const result = await api.put(apiUrl, data)
-    
+
     // Revalidate tax-related cache
     revalidateTag('tax-invoice-receipt')
     revalidateTag(`tax-invoice-receipt-${receiptId}`)
-    
+
     return result
   } catch (error) {
     console.error('Error updating tax invoice receipt:', error)
@@ -179,16 +174,13 @@ export async function updateTaxInvoiceReceiptServerAction(
  */
 export async function deleteTaxInvoiceReceiptServerAction(receiptId: string): Promise<any> {
   try {
-    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.RECEIPT.DELETE.replace(
-      '{id}', 
-      receiptId
-    )
+    const apiUrl = API_ENDPOINTS.TEAM_GROUPS.SETTINGS.TAX.RECEIPT.DELETE.replace('{id}', receiptId)
     const result = await api.delete(apiUrl)
-    
+
     // Revalidate tax-related cache
     revalidateTag('tax-invoice-receipt')
     revalidateTag(`tax-invoice-receipt-${receiptId}`)
-    
+
     return result
   } catch (error) {
     console.error('Error deleting tax invoice receipt:', error)

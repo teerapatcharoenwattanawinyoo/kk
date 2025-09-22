@@ -4,10 +4,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createProfile } from '../api/auth'
 
-export async function createProfileAction(data: {
-  profilename: string
-  password: string
-}) {
+export async function createProfileAction(data: { profilename: string; password: string }) {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('register_token')?.value

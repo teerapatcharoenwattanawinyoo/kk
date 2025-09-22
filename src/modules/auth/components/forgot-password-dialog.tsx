@@ -2,12 +2,7 @@
 
 import { PhoneInput } from '@/components/phone-input'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { formatPhoneForAPI } from '@/lib/utils'
@@ -30,10 +25,7 @@ interface ForgotPasswordDialogProps {
 type Step = 'select' | 'verify' | 'reset'
 type Method = 'phone' | 'email'
 
-export default function ForgotPasswordDialog({
-  open,
-  onOpenChange,
-}: ForgotPasswordDialogProps) {
+export default function ForgotPasswordDialog({ open, onOpenChange }: ForgotPasswordDialogProps) {
   const [step, setStep] = useState<Step>('select')
   const [method, setMethod] = useState<Method>('phone')
   const [email, setEmail] = useState('')
@@ -76,10 +68,7 @@ export default function ForgotPasswordDialog({
     (e: React.FormEvent) => {
       e.preventDefault()
 
-      const data =
-        method === 'phone'
-          ? { phone: formatPhoneForAPI(phoneValue) }
-          : { email }
+      const data = method === 'phone' ? { phone: formatPhoneForAPI(phoneValue) } : { email }
 
       forgotPasswordMutation.mutate(data, {
         onSuccess: (response) => {
@@ -125,15 +114,7 @@ export default function ForgotPasswordDialog({
         })
       }
     },
-    [
-      otp,
-      token,
-      method,
-      phoneValue,
-      email,
-      verifyPhoneMutation,
-      verifyEmailMutation,
-    ],
+    [otp, token, method, phoneValue, email, verifyPhoneMutation, verifyEmailMutation],
   )
 
   const handleResetPassword = useCallback(
@@ -165,9 +146,7 @@ export default function ForgotPasswordDialog({
 
     // Auto focus next input
     if (value && index < 5) {
-      const nextInput = document.querySelector(
-        `input[name="otp-${index + 1}"]`,
-      ) as HTMLInputElement
+      const nextInput = document.querySelector(`input[name="otp-${index + 1}"]`) as HTMLInputElement
       nextInput?.focus()
     }
   }
@@ -179,24 +158,15 @@ export default function ForgotPasswordDialog({
           <div className="space-y-6">
             <div className="text-center">
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                <svg
-                  className="h-6 w-6"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
                 </svg>
               </div>
               <h2 className="text-2xl font-bold">Forgot Password</h2>
-              <p className="text-muted-foreground">
-                Forgot your password? Reset it in seconds
-              </p>
+              <p className="text-muted-foreground">Forgot your password? Reset it in seconds</p>
             </div>
 
-            <Tabs
-              value={method}
-              onValueChange={(value: string) => setMethod(value as Method)}
-            >
+            <Tabs value={method} onValueChange={(value: string) => setMethod(value as Method)}>
               <TabsList className="grid w-full grid-cols-2 gap-2 bg-transparent">
                 <TabsTrigger
                   value="phone"
@@ -330,19 +300,13 @@ export default function ForgotPasswordDialog({
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-gray-600">
-                  Confirm Password
-                </label>
+                <label className="text-sm text-gray-600">Confirm Password</label>
                 <div className="relative">
                   <Input
                     type={showConfirmPassword ? 'text' : 'password'}

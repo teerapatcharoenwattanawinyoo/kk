@@ -1,7 +1,7 @@
 'use client'
 import {
-    ChargersTable,
-    OcppUrlDialog,
+  ChargersTable,
+  OcppUrlDialog,
 } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_components/chargers'
 import { ConnectorsTable } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_components/connectors'
 import { TeamHeader } from '@/app/[locale]/(back-office)/team/_components/team-header'
@@ -10,25 +10,25 @@ import { DeleteConfirmDialog } from '@/components/notifications'
 import { EditChargerDialog } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_components/chargers/edit-charger-dialog'
 import EditConnectorDialog from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_components/connectors/edit-connector-dialog'
 import { SetPriceDialog, SetPriceDialogFormTable } from '@/components/back-office/team/set-price'
+import { AddChargerDialog } from '../chargers/add-charger-dialog'
 import AddConnectorDialog from '../connectors/add-connector-dialog'
-import { AddChargerDialog } from './add-charger-dialog'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 
 import type { EditChargerInitialValues } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/chargers.schema'
 import { deleteCharger } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/charger'
 import type {
-    ConnectorListItem,
-    ConnectorSelectItem,
+  ConnectorListItem,
+  ConnectorSelectItem,
 } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/connectors'
 import { TeamTabMenu } from '@/app/[locale]/(back-office)/team/_components/team-tab-menu'
 import { useChargersList } from '@/hooks/use-chargers'

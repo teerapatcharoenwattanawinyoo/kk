@@ -13,11 +13,9 @@ import type {
 } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/chargers.schema'
 import {
   checkConnection,
-  createCharger,
   getChargerBrands,
   getChargerTypes,
   getTeamChargingStations,
-  updateSerialNumber,
 } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/charger'
 import { TeamHostData } from '@/app/[locale]/(back-office)/team/_schemas/team.schema'
 import { Button } from '@/components/ui/button'
@@ -33,11 +31,11 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { getTeamHostList } from '@/lib/api/team-group/team'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ChargerFormData, ChargerFormSchema } from '../../_schemas/chargers.schema'
+import { useCreateCharger, useUpdateSerialNumber } from '../../_hooks/use-chargers'
 
 interface AddChargerDialogProps {
   open?: boolean
@@ -46,7 +44,6 @@ interface AddChargerDialogProps {
 }
 
 export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddChargerDialogProps) {
-  const queryClient = useQueryClient()
   const [currentStep, setCurrentStep] = useState(1)
   const [isActive, setIsActive] = useState(false)
   const [isControlled] = useState(open !== undefined && onOpenChange !== undefined)
@@ -57,6 +54,8 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
   const [ocppUrl, setOcppUrl] = useState('ws://ocpp.onecharge.co.th')
   const ocppUrlInputRef = useRef<HTMLInputElement>(null)
+  const closeReasonRef = useRef<'success' | null>(null)
+  const preserveStateForStepTwoRef = useRef(false)
 
   // Initialize form
   const form = useForm<ChargerFormData>({
@@ -97,6 +96,9 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   const dialogOpen = isControlled ? open : internalOpen
   const setDialogOpen = isControlled ? onOpenChange : setInternalOpen
 
+  const createChargerMutation = useCreateCharger(teamGroupId)
+  const updateSerialNumberMutation = useUpdateSerialNumber()
+
   // Reset form when dialog closes
   const resetForm = () => {
     setCurrentStep(1)
@@ -130,10 +132,27 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   // Handle dialog open/close
   const handleDialogOpenChange = (open: boolean) => {
     if (!open) {
-      resetForm()
+      if (closeReasonRef.current !== 'success') {
+        resetForm()
+      }
+    } else {
+      closeReasonRef.current = null
     }
     setDialogOpen?.(open)
   }
+
+  useEffect(() => {
+    if (!confirmDialogOpen && closeReasonRef.current === 'success' && !preserveStateForStepTwoRef.current) {
+      resetForm()
+      closeReasonRef.current = null
+    }
+  }, [confirmDialogOpen])
+
+  useEffect(() => {
+    if (dialogOpen) {
+      preserveStateForStepTwoRef.current = false
+    }
+  }, [dialogOpen])
 
   // Fetch charger brands and charging stations on component mount
   useEffect(() => {
@@ -318,9 +337,22 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         }
 
         // Create the charger
-        const response = await createCharger(teamGroupId!, chargerData)
+        if (!teamGroupId) {
+          toast.error('Team group id is missing. Please try again.')
+          return
+        }
 
-        if (response.statusCode === 200 || response.statusCode === 201) {
+        const response = await createChargerMutation.mutateAsync(chargerData)
+
+        const normalizedStatus =
+          typeof response.statusCode === 'number'
+            ? response.statusCode
+            : (response as { status?: number }).status
+        const isSuccessfulResponse =
+          (typeof normalizedStatus === 'number' && normalizedStatus >= 200 && normalizedStatus < 300) ||
+          response.message?.toLowerCase() === 'success'
+
+        if (isSuccessfulResponse) {
           // Try multiple possible response structures
           let chargerId = null
 
@@ -352,22 +384,10 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
           if (chargerId) {
             setCreatedChargerId(Number(chargerId))
 
-            // Refetch chargers list immediately to show the newly created charger
-            if (teamGroupId) {
-              await queryClient.invalidateQueries({
-                queryKey: ['chargers-list', teamGroupId],
-                exact: false,
-              })
-              // Force refetch all related queries
-              await queryClient.refetchQueries({
-                queryKey: ['chargers-list', teamGroupId],
-                exact: false,
-              })
-            }
-
             // Move to confirmation dialog
-            setDialogOpen?.(false)
+            closeReasonRef.current = 'success'
             setConfirmDialogOpen(true)
+            setDialogOpen?.(false)
           } else {
             // no charger id in response
           }
@@ -400,22 +420,9 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
           charger_id: Number(createdChargerId),
         }
 
-        const updateResponse = await updateSerialNumber(updatePayload)
+        const updateResponse = await updateSerialNumberMutation.mutateAsync(updatePayload)
 
-        if (updateResponse.statusCode === 200) {
-          // Refetch chargers list immediately to update serial number and status
-          if (teamGroupId) {
-            await queryClient.invalidateQueries({
-              queryKey: ['chargers-list', teamGroupId],
-              exact: false,
-            })
-            // Force refetch all related queries
-            await queryClient.refetchQueries({
-              queryKey: ['chargers-list', teamGroupId],
-              exact: false,
-            })
-          }
-
+        if (updateResponse.statusCode === 200 || updateResponse.statusCode === 201) {
           // Wait a moment for database to update
           await new Promise((resolve) => setTimeout(resolve, 2000))
 
@@ -439,9 +446,11 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   }
 
   const handleConfirmNext = () => {
+    preserveStateForStepTwoRef.current = true
     setConfirmDialogOpen(false)
     // เปิด dialog อีกครั้งด้วย step 2
     setCurrentStep(2)
+    closeReasonRef.current = null
     setDialogOpen?.(true)
   }
 
@@ -635,14 +644,15 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
           </div>
         </DialogContent>
 
-        <ChargerAddedDialog
-          open={confirmDialogOpen}
-          onOpenChange={setConfirmDialogOpen}
-          title="Charger Added"
-          description="‘Connecting’ pairs your charger hardware with out software. This is a critical step before you can start charging. If your charge point is installed, connect it now or do this later whenever your charger is installed"
-          onConfirm={handleConfirmNext}
-        />
       </Dialog>
+
+      <ChargerAddedDialog
+        open={confirmDialogOpen}
+        onOpenChange={setConfirmDialogOpen}
+        title="Charger Added"
+        description="‘Connecting’ pairs your charger hardware with out software. This is a critical step before you can start charging. If your charge point is installed, connect it now or do this later whenever your charger is installed"
+        onConfirm={handleConfirmNext}
+      />
 
       {/* OCPP Url Configuration Dialog */}
       <OcppUrlDialog

@@ -17,10 +17,7 @@ export function getCurrentLanguage(): Language {
       const persistedState = localStorage.getItem('i18n-storage')
       if (persistedState) {
         const parsed = JSON.parse(persistedState)
-        if (
-          parsed?.state?.locale &&
-          ['th', 'en', 'lo'].includes(parsed.state.locale)
-        ) {
+        if (parsed?.state?.locale && ['th', 'en', 'lo'].includes(parsed.state.locale)) {
           return parsed.state.locale as Language
         }
       }

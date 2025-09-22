@@ -112,9 +112,7 @@ export default function CreateProfile() {
                 required
               />
               {formErrors.profilename && (
-                <p className="text-sm text-destructive">
-                  {formErrors.profilename}
-                </p>
+                <p className="text-sm text-destructive">{formErrors.profilename}</p>
               )}
             </div>
 
@@ -140,17 +138,11 @@ export default function CreateProfile() {
                   className="absolute inset-y-0 right-0 h-full px-3 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </Button>
               </div>
               {formErrors.password && (
-                <p className="text-sm text-destructive">
-                  {formErrors.password}
-                </p>
+                <p className="text-sm text-destructive">{formErrors.password}</p>
               )}
             </div>
 
@@ -184,16 +176,12 @@ export default function CreateProfile() {
                 </Button>
               </div>
               {formErrors.confirmPassword && (
-                <p className="text-sm text-destructive">
-                  {formErrors.confirmPassword}
-                </p>
+                <p className="text-sm text-destructive">{formErrors.confirmPassword}</p>
               )}
             </div>
 
             {/* General error */}
-            {formErrors.general && (
-              <p className="text-sm text-destructive">{formErrors.general}</p>
-            )}
+            {formErrors.general && <p className="text-sm text-destructive">{formErrors.general}</p>}
 
             <SubmitButton />
           </form>
@@ -206,12 +194,7 @@ export default function CreateProfile() {
 function SubmitButton() {
   const { pending } = useFormStatus()
   return (
-    <Button
-      type="submit"
-      variant={'default'}
-      className="h-12 w-full rounded-lg"
-      disabled={pending}
-    >
+    <Button type="submit" variant={'default'} className="h-12 w-full rounded-lg" disabled={pending}>
       {pending ? (
         <span className="flex items-center justify-center gap-2">
           <Loader2 className="h-5 w-5 animate-spin" />

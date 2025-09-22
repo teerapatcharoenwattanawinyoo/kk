@@ -32,9 +32,7 @@ export default function EditMemberGroup({ params }: EditMemberGroupPageProps) {
               >
                 <ChevronLeft className="h-5 w-5 text-muted-foreground" />
               </Button>
-              <h1 className="text-oc-title-secondary text-xl font-semibold">
-                Edit Member Group
-              </h1>
+              <h1 className="text-oc-title-secondary text-xl font-semibold">Edit Member Group</h1>
             </div>
 
             {/* Submit Button */}

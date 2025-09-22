@@ -4,9 +4,7 @@ interface PublicPriceIconProps {
   className?: string
 }
 
-export const PublicPriceIcon: React.FC<PublicPriceIconProps> = ({
-  className,
-}) => (
+export const PublicPriceIcon: React.FC<PublicPriceIconProps> = ({ className }) => (
   <svg
     width="27"
     height="31"

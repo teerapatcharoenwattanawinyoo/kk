@@ -55,24 +55,9 @@ export function useConnectorsList(
         : undefined
 
   return useQuery({
-    queryKey: [
-      'connectors-list',
-      teamGroupId,
-      page,
-      pageSize,
-      search,
-      status,
-      chargerId ?? null,
-    ], // include search, status, chargerId in queryKey
+    queryKey: ['connectors-list', teamGroupId, page, pageSize, search, status, chargerId ?? null], // include search, status, chargerId in queryKey
     queryFn: () =>
-      getConnectorsList(
-        teamGroupId,
-        pageNum,
-        pageSizeNum,
-        search,
-        status,
-        chargerIdNum,
-      ),
+      getConnectorsList(teamGroupId, pageNum, pageSizeNum, search, status, chargerIdNum),
     enabled: enabled && !!teamGroupId,
     // Enable realtime updates with polling every 30 seconds
     refetchInterval: enableRealtime ? refetchInterval : false,

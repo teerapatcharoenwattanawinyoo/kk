@@ -4,11 +4,7 @@ interface LocationPinIconProps {
   className?: string
 }
 
-export function LocationPinIcon({
-  width = 27,
-  height = 32,
-  className,
-}: LocationPinIconProps) {
+export function LocationPinIcon({ width = 27, height = 32, className }: LocationPinIconProps) {
   return (
     <svg
       width={width}

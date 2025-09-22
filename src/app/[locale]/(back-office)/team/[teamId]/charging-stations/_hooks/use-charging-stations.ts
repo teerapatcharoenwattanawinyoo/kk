@@ -235,8 +235,7 @@ export function useDeleteStationImage() {
   const queryClient = useQueryClient()
 
   return useMutation<{ statusCode: number; message: string }, Error, number>({
-    mutationFn: (partnerStationGalleryId: number) =>
-      deleteStationImage(partnerStationGalleryId),
+    mutationFn: (partnerStationGalleryId: number) => deleteStationImage(partnerStationGalleryId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.STATION],

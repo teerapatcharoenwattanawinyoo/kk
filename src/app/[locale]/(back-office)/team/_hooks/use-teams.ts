@@ -1,8 +1,5 @@
 import { IResponse } from '@/lib/api/config/model'
-import {
-  getTeamById,
-  getTeamList
-} from '@/lib/api/team-group/team'
+import { getTeamById, getTeamList } from '@/lib/api/team-group/team'
 import { QUERY_KEYS } from '@/lib/constants'
 import { useLocalStorage } from '@/lib/helpers/storage'
 import { UserData } from '@/lib/schemas/user.schema'
@@ -54,6 +51,11 @@ export const useCreateTeam = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.TEAMS, 'list'],
+        exact: false,
+      })
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.TEAMS, 'list'],
+        exact: false,
       })
     },
     onError: (error) => {
@@ -75,9 +77,10 @@ export const useUpdateTeam = () => {
         queryKey: [QUERY_KEYS.TEAMS, 'list'],
       })
 
-      const previousTeams = queryClient.getQueryData<
-        IResponse<ITeamListResponse>
-      >([QUERY_KEYS.TEAMS, 'list'])
+      const previousTeams = queryClient.getQueryData<IResponse<ITeamListResponse>>([
+        QUERY_KEYS.TEAMS,
+        'list',
+      ])
 
       queryClient.setQueryData(
         [QUERY_KEYS.TEAMS, 'list'],
@@ -86,9 +89,7 @@ export const useUpdateTeam = () => {
 
           const updatedData = Array.isArray(old.data)
             ? old.data.map((team) =>
-                team.id.toString() === variables.id
-                  ? { ...team, ...variables }
-                  : team,
+                team.id.toString() === variables.id ? { ...team, ...variables } : team,
               )
             : old.data
 
@@ -103,10 +104,7 @@ export const useUpdateTeam = () => {
     },
     onError: (error, variables, context) => {
       if (context?.previousTeams) {
-        queryClient.setQueryData(
-          [QUERY_KEYS.TEAMS, 'list'],
-          context.previousTeams,
-        )
+        queryClient.setQueryData([QUERY_KEYS.TEAMS, 'list'], context.previousTeams)
       }
     },
     onSuccess: () => {
@@ -128,9 +126,10 @@ export const useDeleteTeam = () => {
         queryKey: [QUERY_KEYS.TEAMS, 'list'],
       })
 
-      const previousTeams = queryClient.getQueryData<
-        IResponse<ITeamListResponse>
-      >([QUERY_KEYS.TEAMS, 'list'])
+      const previousTeams = queryClient.getQueryData<IResponse<ITeamListResponse>>([
+        QUERY_KEYS.TEAMS,
+        'list',
+      ])
 
       queryClient.setQueryData(
         [QUERY_KEYS.TEAMS, 'list'],
@@ -152,10 +151,7 @@ export const useDeleteTeam = () => {
     },
     onError: (error, teamId, context) => {
       if (context?.previousTeams) {
-        queryClient.setQueryData(
-          [QUERY_KEYS.TEAMS, 'list'],
-          context.previousTeams,
-        )
+        queryClient.setQueryData([QUERY_KEYS.TEAMS, 'list'], context.previousTeams)
       }
       console.error('Error deleting team:', error)
     },
@@ -172,9 +168,7 @@ export const useTeamById = (teamId: string) => {
 
   const team =
     teamsData?.data && Array.isArray(teamsData.data.data)
-      ? teamsData.data.data.find(
-          (team) => team.team_group_id.toString() === teamId,
-        )
+      ? teamsData.data.data.find((team) => team.team_group_id.toString() === teamId)
       : null
 
   return {
@@ -236,10 +230,7 @@ export const useTeamHostById = (teamId: string) => {
 
   const teamData = useMemo(() => {
     if (!data?.data?.data || !teamId) return null
-    return (
-      data.data.data.find((team) => team.team_group_id.toString() === teamId) ||
-      null
-    )
+    return data.data.data.find((team) => team.team_group_id.toString() === teamId) || null
   }, [data, teamId])
 
   return {

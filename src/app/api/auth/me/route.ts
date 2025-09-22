@@ -2,18 +2,14 @@
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
-const API_BASE_URL =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
 
 export async function GET() {
   console.log('[API] /api/auth/me: incoming request')
 
   if (!API_BASE_URL) {
     console.error('[API] Backend URL not configured')
-    return NextResponse.json(
-      { message: 'Backend URL not configured' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Backend URL not configured' }, { status: 500 })
   }
 
   try {
@@ -46,10 +42,7 @@ export async function GET() {
       json = text ? JSON.parse(text) : {}
     } catch (e) {
       console.error('[API] /api/auth/me: invalid JSON from backend:', text)
-      return NextResponse.json(
-        { message: 'Invalid response from backend' },
-        { status: 502 },
-      )
+      return NextResponse.json({ message: 'Invalid response from backend' }, { status: 502 })
     }
 
     if (!beRes.ok) {
@@ -63,9 +56,6 @@ export async function GET() {
     return NextResponse.json(json, { status: 200 })
   } catch (err) {
     console.error('[API] /api/auth/me: unexpected error', err)
-    return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 })
   }
 }

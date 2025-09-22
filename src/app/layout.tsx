@@ -35,10 +35,7 @@ export default async function RootLayout({
   const user = await getUser()
   return (
     <html suppressHydrationWarning>
-      <body
-        className={`${kanit.className} antialiased`}
-        suppressHydrationWarning
-      >
+      <body className={`${kanit.className} antialiased`} suppressHydrationWarning>
         <ReactQueryProvider>
           <I18nProvider>
             <UserProvider user={user}>

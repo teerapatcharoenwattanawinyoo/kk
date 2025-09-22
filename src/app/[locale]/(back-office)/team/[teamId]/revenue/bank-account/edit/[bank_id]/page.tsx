@@ -8,9 +8,7 @@ export default function EditBankAccountPage() {
   const params = useParams()
   const teamId = params.teamId as string
   const locale = params.locale as string
-  const accountId = parseInt(
-    typeof params.bank_id === 'string' ? params.bank_id : '',
-  )
+  const accountId = parseInt(typeof params.bank_id === 'string' ? params.bank_id : '')
 
   if (isNaN(accountId)) {
     return (
@@ -24,11 +22,7 @@ export default function EditBankAccountPage() {
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
-      <BankAccountFormEditPage
-        teamId={teamId}
-        locale={locale}
-        accountId={accountId}
-      />
+      <BankAccountFormEditPage teamId={teamId} locale={locale} accountId={accountId} />
     </TeamGuard>
   )
 }

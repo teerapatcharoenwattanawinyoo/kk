@@ -36,22 +36,20 @@ const nullableNumberFromAny = z.preprocess((value) => {
   return null
 }, z.number().nullable())
 
-const optionalStringFromAny = z
-  .preprocess((value) => {
-    if (value === undefined || value === null) return undefined
-    return String(value)
-  }, z.string().optional())
+const optionalStringFromAny = z.preprocess((value) => {
+  if (value === undefined || value === null) return undefined
+  return String(value)
+}, z.string().optional())
 
-const optionalNumberFromAny = z
-  .preprocess((value) => {
-    if (value === undefined || value === null || value === '') return undefined
-    if (typeof value === 'string') {
-      const parsed = Number(value)
-      return Number.isNaN(parsed) ? undefined : parsed
-    }
-    if (typeof value === 'number') return value
-    return undefined
-  }, z.number().optional())
+const optionalNumberFromAny = z.preprocess((value) => {
+  if (value === undefined || value === null || value === '') return undefined
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+    return Number.isNaN(parsed) ? undefined : parsed
+  }
+  if (typeof value === 'number') return value
+  return undefined
+}, z.number().optional())
 
 export const ChargerFormSchema = z.object({
   chargerName: z.string().min(1, 'Charger name is required'),
@@ -60,9 +58,7 @@ export const ChargerFormSchema = z.object({
   selectedModel: z.string().min(1, 'Model is required'),
   typeConnector: z.string().optional(),
   selectedPowerLevel: z.string().optional(),
-  selectedChargingStation: z
-    .string()
-    .min(1, 'Charging station is required'),
+  selectedChargingStation: z.string().min(1, 'Charging station is required'),
   serialNumber: z.string().optional(),
   selectedTeam: z.string().min(1, 'Team is required'),
 })
@@ -82,9 +78,7 @@ export const EditChargerInitialValuesSchema = z.object({
   selectedTeam: z.string().optional(),
 })
 
-export type EditChargerInitialValues = z.infer<
-  typeof EditChargerInitialValuesSchema
->
+export type EditChargerInitialValues = z.infer<typeof EditChargerInitialValuesSchema>
 
 export const ChargerModelSchema = z.object({
   id: z.number(),
@@ -130,9 +124,7 @@ export const ChargingStationSchema = z.object({
 
 export type ChargingStation = z.infer<typeof ChargingStationSchema>
 
-export const ChargingStationsDataSchema = createPaginatedSchema(
-  ChargingStationSchema,
-)
+export const ChargingStationsDataSchema = createPaginatedSchema(ChargingStationSchema)
 
 export type ChargingStationsData = z.infer<typeof ChargingStationsDataSchema>
 
@@ -142,9 +134,7 @@ export const ChargingStationsResponseSchema = z.object({
   message: z.string(),
 })
 
-export type ChargingStationsResponse = z.infer<
-  typeof ChargingStationsResponseSchema
->
+export type ChargingStationsResponse = z.infer<typeof ChargingStationsResponseSchema>
 
 export const CreateChargerRequestSchema = z.object({
   partner_id: z.string(),
@@ -175,9 +165,7 @@ export const CreateChargerResponseSchema = z.object({
   message: z.string(),
 })
 
-export type CreateChargerResponse = z.infer<
-  typeof CreateChargerResponseSchema
->
+export type CreateChargerResponse = z.infer<typeof CreateChargerResponseSchema>
 
 export const ChargerDetailSchema = z.object({
   id: z.number(),
@@ -210,18 +198,14 @@ export const ChargerDetailResponseSchema = z.object({
   message: z.string(),
 })
 
-export type ChargerDetailResponse = z.infer<
-  typeof ChargerDetailResponseSchema
->
+export type ChargerDetailResponse = z.infer<typeof ChargerDetailResponseSchema>
 
 export const UpdateSerialNumberRequestSchema = z.object({
   charger_code: z.string(),
   charger_id: z.number(),
 })
 
-export type UpdateSerialNumberRequest = z.infer<
-  typeof UpdateSerialNumberRequestSchema
->
+export type UpdateSerialNumberRequest = z.infer<typeof UpdateSerialNumberRequestSchema>
 
 export const UpdateSerialNumberResponseSchema = z.object({
   statusCode: z.number(),
@@ -232,9 +216,7 @@ export const UpdateSerialNumberResponseSchema = z.object({
   message: z.string(),
 })
 
-export type UpdateSerialNumberResponse = z.infer<
-  typeof UpdateSerialNumberResponseSchema
->
+export type UpdateSerialNumberResponse = z.infer<typeof UpdateSerialNumberResponseSchema>
 
 export const CheckConnectionResponseSchema = z.object({
   statusCode: z.number(),
@@ -245,9 +227,7 @@ export const CheckConnectionResponseSchema = z.object({
   message: z.string(),
 })
 
-export type CheckConnectionResponse = z.infer<
-  typeof CheckConnectionResponseSchema
->
+export type CheckConnectionResponse = z.infer<typeof CheckConnectionResponseSchema>
 
 export const ChargerListItemSchema = z.object({
   id: z.number(),
@@ -276,9 +256,7 @@ export const ChargerListItemSchema = z.object({
 
 export type ChargerListItem = z.infer<typeof ChargerListItemSchema>
 
-export const ChargerListDataSchema = createPaginatedSchema(
-  ChargerListItemSchema,
-)
+export const ChargerListDataSchema = createPaginatedSchema(ChargerListItemSchema)
 
 export type ChargerListData = z.infer<typeof ChargerListDataSchema>
 
@@ -315,6 +293,4 @@ export const DeleteChargerResponseSchema = z.object({
   message: z.string(),
 })
 
-export type DeleteChargerResponse = z.infer<
-  typeof DeleteChargerResponseSchema
->
+export type DeleteChargerResponse = z.infer<typeof DeleteChargerResponseSchema>

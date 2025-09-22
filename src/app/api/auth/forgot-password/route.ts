@@ -2,8 +2,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
-const API_BASE_URL =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
 
 const BodySchema = z.union([
   z.object({ email: z.string().email() }),
@@ -12,10 +11,7 @@ const BodySchema = z.union([
 
 export async function POST(req: Request) {
   if (!API_BASE_URL) {
-    return NextResponse.json(
-      { message: 'Backend URL not configured' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Backend URL not configured' }, { status: 500 })
   }
   let body: unknown
   try {
@@ -24,8 +20,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 })
   }
   const parsed = BodySchema.safeParse(body)
-  if (!parsed.success)
-    return NextResponse.json({ message: 'Validation error' }, { status: 422 })
+  if (!parsed.success) return NextResponse.json({ message: 'Validation error' }, { status: 422 })
   const url = `${API_BASE_URL}/auth/forgot-password`
   const be = await fetch(url, {
     method: 'POST',

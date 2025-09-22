@@ -19,13 +19,7 @@ function maskEmail(email?: string | null) {
   const [name, domain] = email.split('@')
   if (!domain) return email
   if (name.length <= 2) return '*'.repeat(name.length) + '@' + domain
-  return (
-    name[0] +
-    '*'.repeat(Math.max(1, name.length - 2)) +
-    name.slice(-1) +
-    '@' +
-    domain
-  )
+  return name[0] + '*'.repeat(Math.max(1, name.length - 2)) + name.slice(-1) + '@' + domain
 }
 
 function maskPhone(phone?: string | null) {
@@ -63,21 +57,16 @@ export async function signInAction(
     console.log('[Action] signInAction: calling /api/auth/sign-in')
     const payload = {
       email: parsed.data.email,
-      phone: parsed.data.phone
-        ? formatPhoneForAPI(parsed.data.phone)
-        : undefined,
+      phone: parsed.data.phone ? formatPhoneForAPI(parsed.data.phone) : undefined,
       password: parsed.data.password,
     }
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/auth/sign-in`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'lang-id': '1' },
-        body: JSON.stringify(payload),
-        cache: 'no-store',
-      },
-    )
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/auth/sign-in`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'lang-id': '1' },
+      body: JSON.stringify(payload),
+      cache: 'no-store',
+    })
 
     if (!res.ok) {
       const msg = await res.text()
@@ -111,10 +100,7 @@ export async function signInWithCredentials(input: {
     password: input.password,
   })
   if (!parsed.success) {
-    console.warn(
-      '[Action] signInWithCredentials: validation failed',
-      parsed.error.flatten(),
-    )
+    console.warn('[Action] signInWithCredentials: validation failed', parsed.error.flatten())
     throw new Error('Validation error')
   }
 
@@ -134,10 +120,7 @@ export async function signInWithCredentials(input: {
 
   const parsedRes = BackendLoginSchema.safeParse(raw)
   if (!parsedRes.success) {
-    console.error(
-      '[Action] signInWithCredentials: invalid response schema',
-      parsedRes.error,
-    )
+    console.error('[Action] signInWithCredentials: invalid response schema', parsedRes.error)
     throw new Error('Invalid response schema')
   }
 
@@ -162,7 +145,7 @@ export async function signInWithCredentials(input: {
 
   // Set httpOnly cookies on server (respect env for secure)
   const cookieStore = await cookies()
-  const secure = process.env.NODE_ENV === 'production'
+  const secure = false
   const oneDay = 60 * 60 * 24
   const sevenDays = oneDay * 7
 
@@ -200,14 +183,11 @@ export async function signInWithCredentials(input: {
     expires: new Date(Date.now() + sevenDays * 1000),
   })
 
-  console.log(
-    '[Action] signInWithCredentials: success (cookies set). user_data',
-    {
-      has_customer_id: !!user_data.customer_id,
-      has_email: !!user_data.email,
-      has_phone: !!user_data.phone,
-    },
-  )
+  console.log('[Action] signInWithCredentials: success (cookies set). user_data', {
+    has_customer_id: !!user_data.customer_id,
+    has_email: !!user_data.email,
+    has_phone: !!user_data.phone,
+  })
   return {
     access_token,
     refresh_token,

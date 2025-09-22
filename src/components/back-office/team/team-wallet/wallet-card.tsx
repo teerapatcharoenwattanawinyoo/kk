@@ -28,9 +28,7 @@ export function WalletCard({ walletBalance, teamId }: WalletCardProps) {
           </div>
         </div>
         <div className="mt-6">
-          <div className="text-3xl font-bold">
-            {walletBalance.toLocaleString()} ฿
-          </div>
+          <div className="text-3xl font-bold">{walletBalance.toLocaleString()} ฿</div>
           <div className="text-xs font-light">Team ID : {teamId}</div>
         </div>
       </div>

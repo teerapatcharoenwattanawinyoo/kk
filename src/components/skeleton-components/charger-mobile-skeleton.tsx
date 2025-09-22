@@ -4,9 +4,7 @@ interface ChargerMobileSkeletonProps {
   count?: number
 }
 
-export function ChargerMobileSkeleton({
-  count = 5,
-}: ChargerMobileSkeletonProps) {
+export function ChargerMobileSkeleton({ count = 5 }: ChargerMobileSkeletonProps) {
   return (
     <div className="space-y-4">
       {Array.from({ length: count }).map((_, idx) => (

@@ -12,9 +12,7 @@ interface TaxInformationCreatePageProps {
   }>
 }
 
-const TaxInformationCreatePage = ({
-  params,
-}: TaxInformationCreatePageProps) => {
+const TaxInformationCreatePage = ({ params }: TaxInformationCreatePageProps) => {
   const { locale, teamId } = use(params)
   const router = useRouter()
 
@@ -40,12 +38,7 @@ const TaxInformationCreatePage = ({
               onClick={handleBack}
               className="flex items-center text-gray-600 hover:text-gray-800"
             >
-              <svg
-                className="mr-2 h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -54,9 +47,7 @@ const TaxInformationCreatePage = ({
                 />
               </svg>
             </button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Create Tax Information
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Create Tax Information</h1>
           </div>
         </div>
 

@@ -12,9 +12,7 @@ export async function getAccessToken(): Promise<string | null> {
 
 function base64UrlDecode(input: string): string {
   const pad = 4 - (input.length % 4 || 4)
-  const normalized = (input + '='.repeat(pad))
-    .replace(/-/g, '+')
-    .replace(/_/g, '/')
+  const normalized = (input + '='.repeat(pad)).replace(/-/g, '+').replace(/_/g, '/')
   return Buffer.from(normalized, 'base64').toString('utf8')
 }
 

@@ -35,8 +35,7 @@ export default function VehiclesPage({ teamId }: VehiclesPageProps) {
   const mockVehicles: Vehicle[] = [
     {
       id: '1',
-      image:
-        'https://www.electrifying.com/files/NJrrmuCgrZQIS_WK/TeslaModelS.png',
+      image: 'https://www.electrifying.com/files/NJrrmuCgrZQIS_WK/TeslaModelS.png',
       name: 'My Wakim',
       macaddress: '02:E3:4F:8A:9C:D1',
       brand: 'Tesla',
@@ -46,8 +45,7 @@ export default function VehiclesPage({ teamId }: VehiclesPageProps) {
     },
     {
       id: '2',
-      image:
-        'https://ev-database.org/img/auto/BMW_i4_M50_2024/BMW_i4_M50_2024-01@2x.jpg',
+      image: 'https://ev-database.org/img/auto/BMW_i4_M50_2024/BMW_i4_M50_2024-01@2x.jpg',
       name: 'BMW i4 M50',
       macaddress: '04:7B:2D:F6:A8:E3',
       brand: 'BMW',
@@ -104,11 +102,7 @@ export default function VehiclesPage({ teamId }: VehiclesPageProps) {
 
       {/* Navigation Tabs Section */}
       <div className="">
-        <TeamTabMenu
-          active="vehicles"
-          locale={String(params.locale)}
-          teamId={teamId}
-        />
+        <TeamTabMenu active="vehicles" locale={String(params.locale)} teamId={teamId} />
       </div>
 
       {/* Main Content Section */}
@@ -174,9 +168,7 @@ export default function VehiclesPage({ teamId }: VehiclesPageProps) {
           <div className="my-4 border-gray-200 bg-card px-4 py-4 md:px-6">
             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
               <div className="flex flex-col items-center space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0">
-                <div className="text-sm text-gray-700">
-                  Showing 1 to 10 of 130 Results
-                </div>
+                <div className="text-sm text-gray-700">Showing 1 to 10 of 130 Results</div>
                 <div className="flex items-center">
                   <select
                     className="h-8 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm md:h-9 md:px-3"

@@ -115,9 +115,7 @@ export function TeamTabs({ teamId, activeTab }: TeamTabsProps) {
               href={getHrefWithParams(tab.href)}
               className={cn(
                 'min-w-[100px] flex-1 truncate px-4 py-2 text-center text-sm transition-colors',
-                activeTab === tab.id
-                  ? 'text-primary'
-                  : 'text-[#6E82A5] hover:text-foreground',
+                activeTab === tab.id ? 'text-primary' : 'text-[#6E82A5] hover:text-foreground',
               )}
             >
               {tab.label}

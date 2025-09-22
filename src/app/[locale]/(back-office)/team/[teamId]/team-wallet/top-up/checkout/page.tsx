@@ -14,10 +14,7 @@ interface CheckoutPageProps {
   }>
 }
 
-export default async function CheckoutPage({
-  params,
-  searchParams,
-}: CheckoutPageProps) {
+export default async function CheckoutPage({ params, searchParams }: CheckoutPageProps) {
   const { teamId, locale } = await params
   const { amount } = await searchParams
 
@@ -37,18 +34,12 @@ export default async function CheckoutPage({
                     <ChevronLeft className="size-4" />
                   </Button>
                 </Link>
-                <h2 className="text-oc-title-secondary text-2xl font-semibold">
-                  Back
-                </h2>
+                <h2 className="text-oc-title-secondary text-2xl font-semibold">Back</h2>
               </div>
             </div>
             {/* content payment Method UI */}
             <div className="p-6">
-              <CheckoutContent
-                amount={amount || '0'}
-                teamId={teamId}
-                locale={locale}
-              />
+              <CheckoutContent amount={amount || '0'} teamId={teamId} locale={locale} />
             </div>
           </div>
         </div>

@@ -75,9 +75,7 @@ export function SimpleMap() {
           key={station.id}
           className="absolute z-10 -translate-x-1/2 -translate-y-1/2 transform cursor-pointer"
           style={{ left: `${station.x}%`, top: `${station.y}%` }}
-          onClick={() =>
-            setActiveStation(activeStation === station.id ? null : station.id)
-          }
+          onClick={() => setActiveStation(activeStation === station.id ? null : station.id)}
         >
           <div
             className={`h-4 w-4 rounded-full border-2 border-white shadow-md ${

@@ -18,10 +18,7 @@ export interface PlanUpgradeContentProps {
   usage: UsageData
   currentPlan?: string
   currentPlanId?: string
-  upgradePlanAction: (
-    teamId: string,
-    planId: string,
-  ) => Promise<{ error?: string } | void>
+  upgradePlanAction: (teamId: string, planId: string) => Promise<{ error?: string } | void>
   teamId: string
   billingData: BillingData
   updatePaymentMethodAction: (teamId: string) => Promise<void>
@@ -42,12 +39,8 @@ export function PlanUpgradeContent({
 }: PlanUpgradeContentProps) {
   const [isPending, startTransition] = useTransition()
 
-  const stationsPct = Math.round(
-    (usage.stations.used / usage.stations.limit) * 100,
-  )
-  const membersPct = Math.round(
-    (usage.members.used / usage.members.limit) * 100,
-  )
+  const stationsPct = Math.round((usage.stations.used / usage.stations.limit) * 100)
+  const membersPct = Math.round((usage.members.used / usage.members.limit) * 100)
 
   // Mock pricing plans data (ตาม design ที่แนบมา)
   const pricingPlans: PricingPlan[] = [
@@ -123,9 +116,7 @@ export function PlanUpgradeContent({
   return (
     <div className="mx-auto max-w-6xl p-6">
       <Label className="text-2xl font-semibold">Plan Upgrade</Label>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Manage your subscription and billing
-      </p>
+      <p className="mt-1 text-sm text-muted-foreground">Manage your subscription and billing</p>
 
       {/* Current Usage Section */}
       <div className="mb-10 mt-10">
@@ -149,9 +140,7 @@ export function PlanUpgradeContent({
                   </span>
                 </div>
                 <Progress value={stationsPct} className="h-2" />
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  {stationsPct}% used
-                </p>
+                <p className="mt-1 text-[11px] text-muted-foreground">{stationsPct}% used</p>
               </div>
 
               {/* Team Members */}
@@ -163,9 +152,7 @@ export function PlanUpgradeContent({
                   </span>
                 </div>
                 <Progress value={membersPct} className="h-2" />
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  {membersPct}% used
-                </p>
+                <p className="mt-1 text-[11px] text-muted-foreground">{membersPct}% used</p>
               </div>
             </div>
           </CardContent>

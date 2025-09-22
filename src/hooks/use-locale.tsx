@@ -17,8 +17,7 @@ export function useLocale() {
   const pathname = usePathname()
 
   // Get locale from params (if using [locale] dynamic route)
-  const locale =
-    (params?.locale as Locale) || getLocaleFromPath(pathname) || 'en'
+  const locale = (params?.locale as Locale) || getLocaleFromPath(pathname) || 'en'
 
   /**
    * Create a localized version of a path

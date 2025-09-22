@@ -2,13 +2,7 @@
 
 import { PhoneInput } from '@/components/phone-input'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -40,18 +34,14 @@ export default function SignInForm({ signIn }: Props) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const loginData: LoginRequest =
-      activeTab === 'phone'
-        ? { phone: phoneValue, password }
-        : { email, password }
+      activeTab === 'phone' ? { phone: phoneValue, password } : { email, password }
     loginMutation.mutate(loginData)
   }
 
   return (
     <Card className="w-full max-w-xl border-0 shadow-none">
       <CardHeader className="px-0">
-        <CardTitle className="text-4xl font-bold">
-          {t('auth.sign_in')}
-        </CardTitle>
+        <CardTitle className="text-4xl font-bold">{t('auth.sign_in')}</CardTitle>
         <CardDescription className="font-normal text-[#969696]">
           {t('auth.please_login_to_continue')}
         </CardDescription>
@@ -131,11 +121,7 @@ export default function SignInForm({ signIn }: Props) {
                   className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
               </div>
               <div className="flex justify-end">
@@ -158,14 +144,9 @@ export default function SignInForm({ signIn }: Props) {
                 id="keep-logged-in"
                 className="rounded-xl border-muted-foreground"
                 checked={keepLoggedIn}
-                onCheckedChange={(checked) =>
-                  setKeepLoggedIn(checked as boolean)
-                }
+                onCheckedChange={(checked) => setKeepLoggedIn(checked as boolean)}
               />
-              <Label
-                htmlFor="keep-logged-in"
-                className="cursor-pointer text-sm font-normal"
-              >
+              <Label htmlFor="keep-logged-in" className="cursor-pointer text-sm font-normal">
                 {t('auth.remember_me')}
               </Label>
             </div>
@@ -178,11 +159,7 @@ export default function SignInForm({ signIn }: Props) {
               </div>
             )}
 
-            <Button
-              type="submit"
-              className="h-12 w-full"
-              disabled={loginMutation.isPending}
-            >
+            <Button type="submit" className="h-12 w-full" disabled={loginMutation.isPending}>
               {loginMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -243,10 +220,7 @@ export default function SignInForm({ signIn }: Props) {
         </Tabs>
       </CardContent>
 
-      <ForgotPasswordDialog
-        open={showForgotPassword}
-        onOpenChange={setShowForgotPassword}
-      />
+      <ForgotPasswordDialog open={showForgotPassword} onOpenChange={setShowForgotPassword} />
     </Card>
   )
 }

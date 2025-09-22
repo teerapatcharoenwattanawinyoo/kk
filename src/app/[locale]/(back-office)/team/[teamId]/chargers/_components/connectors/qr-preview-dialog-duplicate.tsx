@@ -75,19 +75,13 @@ export function QrPreviewDialogDuplicate({
             {/* Top row: Title + Badge */}
             <div className="mb-6 flex items-start justify-between">
               <div className="space-y-1">
-                <h3 className="text-lg font-bold text-primary">
-                  {connectorName}
-                </h3>
+                <h3 className="text-lg font-bold text-primary">{connectorName}</h3>
                 <p className="text-sm text-foreground">
                   Connector ID :{' '}
-                  <span className="font-semibold text-foreground">
-                    {connectorId}
-                  </span>
+                  <span className="font-semibold text-foreground">{connectorId}</span>
                 </p>
               </div>
-              <Badge className="rounded-full px-4 py-2 text-white">
-                ⚡ SCAN TO CHARGE
-              </Badge>
+              <Badge className="rounded-full px-4 py-2 text-white">⚡ SCAN TO CHARGE</Badge>
             </div>
 
             {/* QR Container */}
@@ -102,9 +96,7 @@ export function QrPreviewDialogDuplicate({
               {/* Error State */}
               {hasError && (
                 <div className="flex h-full w-full items-center justify-center rounded-xl border-2 border-dashed border-primary/30 bg-primary/5">
-                  <p className="text-sm text-primary/60">
-                    Failed to load QR code
-                  </p>
+                  <p className="text-sm text-primary/60">Failed to load QR code</p>
                 </div>
               )}
 

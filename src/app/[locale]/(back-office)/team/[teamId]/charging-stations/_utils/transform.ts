@@ -9,15 +9,9 @@ export function convertStationDetailToFormData(
 ): ChargingStationFormData & {
   existingGallery: PartnerStationGalleryDetail[]
 } {
-  const englishDesc = detail.partner_station_description?.find(
-    (desc) => desc.language_id === 1,
-  )
-  const thaiDesc = detail.partner_station_description?.find(
-    (desc) => desc.language_id === 2,
-  )
-  const laoDesc = detail.partner_station_description?.find(
-    (desc) => desc.language_id === 3,
-  )
+  const englishDesc = detail.partner_station_description?.find((desc) => desc.language_id === 1)
+  const thaiDesc = detail.partner_station_description?.find((desc) => desc.language_id === 2)
+  const laoDesc = detail.partner_station_description?.find((desc) => desc.language_id === 3)
 
   let openCloseString = ''
   if (detail.partner_station_work && detail.partner_station_work.length > 0) {
@@ -83,13 +77,11 @@ export function convertStationDetailToFormData(
     show_on_map: true,
     openClose: openCloseString,
     contact: detail.contact || '',
-    existingGallery: (detail.partner_station_gallery || []).map(
-      (item, index) => ({
-        id: item.id,
-        image: item.image,
-        sort_order: item.sort_order || index + 1,
-      }),
-    ),
+    existingGallery: (detail.partner_station_gallery || []).map((item, index) => ({
+      id: item.id,
+      image: item.image,
+      sort_order: item.sort_order || index + 1,
+    })),
   }
 
   return formData

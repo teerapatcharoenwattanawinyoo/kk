@@ -90,11 +90,7 @@ export const useI18n = create<I18nStore>()(
         let translation: unknown = translations[locale]
 
         for (const k of keys) {
-          if (
-            translation &&
-            typeof translation === 'object' &&
-            k in translation
-          ) {
+          if (translation && typeof translation === 'object' && k in translation) {
             translation = (translation as Record<string, unknown>)[k]
           } else {
             translation = undefined
@@ -102,8 +98,7 @@ export const useI18n = create<I18nStore>()(
           }
         }
 
-        const finalTranslation =
-          typeof translation === 'string' ? translation : key
+        const finalTranslation = typeof translation === 'string' ? translation : key
 
         if (!params) return finalTranslation
 
@@ -156,11 +151,7 @@ export const loadTranslations = async (locale: Locale) => {
 export const initI18n = async (locale?: Locale) => {
   const detectedLocale = locale || detectDefaultLocale()
 
-  await Promise.all([
-    loadTranslations('th'),
-    loadTranslations('en'),
-    loadTranslations('lo'),
-  ])
+  await Promise.all([loadTranslations('th'), loadTranslations('en'), loadTranslations('lo')])
 
   useI18n.getState().setLocale(detectedLocale)
   return detectedLocale
@@ -183,10 +174,7 @@ export const removeLocaleFromPathname = (pathname: string): string => {
   return pathname
 }
 
-export const addLocaleToPathname = (
-  pathname: string,
-  locale: Locale,
-): string => {
+export const addLocaleToPathname = (pathname: string, locale: Locale): string => {
   // ตรวจสอบว่า pathname มีภาษาอยู่แล้วหรือไม่
   const currentLocale = getLocaleFromPathname(pathname)
 

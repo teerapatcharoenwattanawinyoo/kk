@@ -8,10 +8,7 @@ import {
   verifyPhoneOTPApi,
 } from '../api/forgot-password'
 
-export async function forgotPasswordAction(data: {
-  email?: string
-  phone?: string
-}) {
+export async function forgotPasswordAction(data: { email?: string; phone?: string }) {
   try {
     const result = await forgotPasswordApi(data)
 
@@ -131,8 +128,7 @@ export async function resetPasswordAction(data: { newPassword: string }) {
 
     return {
       success: result.statusCode === 200,
-      message:
-        result.data?.message || result.message || 'Password reset completed',
+      message: result.data?.message || result.message || 'Password reset completed',
     }
   } catch (error) {
     console.error('Reset password error:', error)

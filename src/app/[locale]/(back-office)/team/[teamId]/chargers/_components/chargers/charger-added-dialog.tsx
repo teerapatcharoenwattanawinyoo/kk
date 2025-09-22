@@ -1,12 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import Image from 'next/image'
 
 interface ChargerAddedDialogProps {
@@ -53,7 +48,7 @@ export default function ChargerAddedDialog({
         <div className="mx-auto flex w-full max-w-full flex-col items-center justify-center gap-2 pt-3 sm:w-60 sm:max-w-xs sm:gap-3 sm:pt-8">
           <Button
             onClick={onConfirm}
-            className="h-9 w-full max-w-[340px] rounded-2xl bg-[#355FF5] text-sm font-medium text-white hover:bg-[#2a4dd4] sm:h-11 sm:text-base"
+            className="h-9 w-full max-w-[340px] rounded-2xl text-sm font-medium sm:h-11 sm:text-base"
           >
             {confirmText}
           </Button>

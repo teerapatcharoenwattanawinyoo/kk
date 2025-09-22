@@ -2,13 +2,7 @@
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { verifyPhoneAction } from '@modules/auth/actions'
 import { useRegisterByPhone } from '@modules/auth/hooks'
@@ -158,9 +152,7 @@ export default function VerifyPhone() {
             {countdown > 0 ? (
               <span>
                 Resend Code in{' '}
-                <span className="text-[#FD6B22]">
-                  00:{countdown.toString().padStart(2, '0')}
-                </span>
+                <span className="text-[#FD6B22]">00:{countdown.toString().padStart(2, '0')}</span>
               </span>
             ) : (
               <Button

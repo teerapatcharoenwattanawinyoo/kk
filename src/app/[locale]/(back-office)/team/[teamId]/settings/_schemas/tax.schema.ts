@@ -35,12 +35,7 @@ const fileSchema = z
   })
   .refine(
     (file) => {
-      const allowedTypes = [
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'application/pdf',
-      ]
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
       return allowedTypes.includes(file.type)
     },
     {
@@ -84,9 +79,7 @@ export const taxInformationSchema = z.object({
 export type TaxInformationFormData = z.infer<typeof taxInformationSchema>
 export type TaxTypeData = z.infer<typeof taxTypeSchema>
 export type ITaxType = z.infer<typeof taxTypeSchema> // เพิ่มสำหรับ backward compatibility
-export type TaxInformationResponse = z.infer<
-  typeof taxInformationResponseSchema
->
+export type TaxInformationResponse = z.infer<typeof taxInformationResponseSchema>
 
 // API request schema for creating tax information
 export const createTaxInformationApiSchema = z.object({
@@ -108,9 +101,7 @@ export const createTaxInformationApiSchema = z.object({
   file_id_card: z.instanceof(File).optional(),
 })
 
-export type CreateTaxInformationApiData = z.infer<
-  typeof createTaxInformationApiSchema
->
+export type CreateTaxInformationApiData = z.infer<typeof createTaxInformationApiSchema>
 
 // TaxInvoiceReceipt Schemas (รวมทั้งหมดตาม API response)
 export const taxInvoiceReceiptFullDataSchema = z.object({
@@ -216,24 +207,17 @@ export const receiptTaxInvoiceDataSchema = z.object({
 })
 
 // Type inference for TaxInvoiceReceipt schemas
-export type TaxInvoiceReceiptFullData = z.infer<
-  typeof taxInvoiceReceiptFullDataSchema
->
+export type TaxInvoiceReceiptFullData = z.infer<typeof taxInvoiceReceiptFullDataSchema>
 export type TaxInvoiceReceiptData = z.infer<typeof taxInvoiceReceiptDataSchema>
 export type ReceiptTaxInvoiceData = z.infer<typeof receiptTaxInvoiceDataSchema>
-export type TaxInvoiceReceiptResponse = z.infer<
-  typeof taxInvoiceReceiptResponseSchema
->
+export type TaxInvoiceReceiptResponse = z.infer<typeof taxInvoiceReceiptResponseSchema>
 
 // Validation helpers
 export const validateTaxForm = (data: unknown) => {
   return taxInformationSchema.safeParse(data)
 }
 
-export const validateTaxFormField = (
-  field: keyof TaxInformationFormData,
-  value: unknown,
-) => {
+export const validateTaxFormField = (field: keyof TaxInformationFormData, value: unknown) => {
   const fieldSchema = taxInformationSchema.shape[field]
   return fieldSchema.safeParse(value)
 }

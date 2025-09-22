@@ -1,34 +1,41 @@
 'use client'
 
-import { TeamHeader } from '@/app/[locale]/(back-office)/team/_components/team-header'
 import { CardIcon, WarningIcon } from '@/components/icons'
+import SuccessDialog from '@/components/notifications/success-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { DataTable, TableColumn } from '@/components/ui/data-table'
-import { RadioOption } from '@/components/ui/radio-group-v2'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { RadioGroup, RadioOption } from '@/components/ui/radio-group-v2'
 import { Switch } from '@/components/ui/switch'
 import { useI18n } from '@/lib/i18n'
 import { colors } from '@/lib/utils/colors'
-import { useRevenueBalance } from '../_hooks/use-revenue'
-
-import { RadioGroup } from '@/components/ui/radio-group'
+import { useAuth } from '@/modules/auth/hooks/use-auth'
 import { Download } from 'lucide-react'
 import Link from 'next/link'
-import { memo, useCallback, useMemo, useState, type MouseEvent } from 'react'
-import { TeamTabMenu } from '../../settings/_components'
-import { BankAccountItem } from '../bank-account/_components'
-import { WithdrawDialog } from './withdraw-dialog'
+import { memo, useCallback, useEffect, useMemo, useState, type MouseEvent } from 'react'
+import { toast } from 'sonner'
+import { TeamHeader } from '../../../_components/team-header'
+import { TeamTabMenu } from '../../../_components/team-tab-menu'
+import { useConfirmPayout, useInitPayout } from '../_hooks/use-payout'
+import { useRevenueBalance } from '../_hooks/use-revenue'
+import { BankAccountItem } from '../bank-account/_components/bank-account-item'
+import { SelectOTPStep } from './select-otp-step'
+import { VerifyOTPStep } from './verify-otp-step'
+import { WithdrawStep } from './withdraw-step'
 
 interface RevenuePageProps {
   teamId: string
   locale: string
 }
 
+type OTPMethod = 'phone' | 'email'
+
 const tableColumns: TableColumn[] = [
   { key: 'no', header: 'NO', width: '6%' },
   { key: 'transaction', header: 'ยอดเงินขาเข้า', width: '25%' },
   { key: 'amount', header: 'จำนวนเงิน', width: '12%' },
-  { key: 'customer', header: 'ลูกค้า/ลิขทิง', width: '18%' },
+  { key: 'customer', header: 'บัญชีรับเงิน', width: '18%' },
   { key: 'method', header: 'ทำรายการโดย', width: '12%' },
   { key: 'date', header: 'วันที่ทำรายการ', width: '15%' },
   { key: 'status', header: 'สถานะ', width: '8%' },
@@ -92,13 +99,31 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
   const { t } = useI18n()
   const [selectedAccount, setSelectedAccount] = useState('monthly')
   const [autoWithdraw, setAutoWithdraw] = useState(true)
-  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false)
 
+  // Separate dialog states for each step
+  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false)
+  const [showSelectOTPDialog, setShowSelectOTPDialog] = useState(false)
+  const [showVerifyOTPDialog, setShowVerifyOTPDialog] = useState(false)
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
+
+  // Withdraw dialog states
+  const [withdrawAmount, setWithdrawAmount] = useState('')
+  const [otpMethod, setOtpMethod] = useState<OTPMethod>('phone')
+  const [otp, setOtp] = useState(['', '', '', '', '', ''])
+  const [initResponse, setInitResponse] = useState<any>(null)
+  const [timeLeft, setTimeLeft] = useState<number>(0)
+
+  // Hooks
+  const { user } = useAuth()
   const {
     data: revenueBalanceResponse,
     isLoading: isRevenueLoading,
     error: revenueError,
+    refetch: refetchBalance,
   } = useRevenueBalance(teamId)
+
+  const initPayoutMutation = useInitPayout()
+  const confirmPayoutMutation = useConfirmPayout()
 
   const { transferBalance, lastWithdraw, revenueBankAccount } = useMemo(() => {
     // Get revenue balance data
@@ -124,6 +149,88 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
       revenueBankAccount,
     }
   }, [revenueBalanceResponse?.data])
+
+  // Withdraw dialog logic
+  const currentBalance = revenueBalanceResponse?.data?.transfer_balance || 0
+  const maxWithdrawAmount = currentBalance
+
+  const userPhone = user?.phone
+  const userEmail = user?.email
+  const maskedPhone = userPhone ? userPhone.replace(/(\d{3})\d{4}(\d{3})/, '$1****$2') : null
+  const maskedEmail = userEmail ? userEmail.replace(/(.{2}).+(@.+)/, '$1****$2') : null
+  const hasPhone = !!userPhone
+  const hasEmail = !!userEmail
+
+  // Effects for withdraw dialog
+  useEffect(() => {
+    if (showWithdrawDialog) {
+      refetchBalance()
+      if (hasPhone && !hasEmail) {
+        setOtpMethod('phone')
+      } else if (hasEmail && !hasPhone) {
+        setOtpMethod('email')
+      } else if (hasPhone) {
+        setOtpMethod('phone')
+      }
+    }
+  }, [showWithdrawDialog, refetchBalance, hasPhone, hasEmail])
+
+  // Countdown timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+
+    if (showVerifyOTPDialog && initResponse?.expires_in) {
+      setTimeLeft(initResponse.expires_in)
+
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval)
+      }
+    }
+  }, [showVerifyOTPDialog, initResponse?.expires_in])
+
+  useEffect(() => {
+    if (initPayoutMutation.isSuccess && initPayoutMutation.data) {
+      setInitResponse(initPayoutMutation.data.data)
+      setShowSelectOTPDialog(false)
+
+      queueMicrotask(() => {
+        setShowVerifyOTPDialog(true)
+      })
+    }
+  }, [initPayoutMutation.isSuccess, initPayoutMutation.data])
+
+  useEffect(() => {
+    if (confirmPayoutMutation.isSuccess) {
+      setShowSuccessDialog(true)
+      // Close all withdraw dialogs
+      setShowWithdrawDialog(false)
+      setShowSelectOTPDialog(false)
+      setShowVerifyOTPDialog(false)
+      refetchBalance()
+    }
+  }, [confirmPayoutMutation.isSuccess, refetchBalance])
+
+  // Separate effect for resetting confirm mutation
+  useEffect(() => {
+    if (confirmPayoutMutation.isSuccess && showSuccessDialog) {
+      const timer = setTimeout(() => {
+        confirmPayoutMutation.reset()
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [confirmPayoutMutation.isSuccess, showSuccessDialog])
 
   const accountOptions = useMemo<RadioOption[]>(
     () => [
@@ -177,9 +284,139 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
     setShowWithdrawDialog(true)
   }, [])
 
-  const handleCloseWithdrawDialog = useCallback(() => {
+  // Withdraw dialog handlers
+  const handleWithdrawReset = useCallback(() => {
+    setWithdrawAmount('')
+    setOtp(['', '', '', '', '', ''])
+    setInitResponse(null)
+    setTimeLeft(0)
+    setShowSuccessDialog(false)
+    if (hasPhone) {
+      setOtpMethod('phone')
+    } else if (hasEmail) {
+      setOtpMethod('email')
+    }
+  }, [hasPhone, hasEmail])
+
+  const handleWithdrawClose = useCallback(() => {
+    handleWithdrawReset()
     setShowWithdrawDialog(false)
+    setShowSelectOTPDialog(false)
+    setShowVerifyOTPDialog(false)
+  }, [handleWithdrawReset])
+
+  const handleSuccessDialogClose = useCallback(() => {
+    setShowSuccessDialog(false)
+    handleWithdrawClose() // Close all dialogs
+  }, [handleWithdrawClose])
+
+  const handleWithdrawAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    if (/^\d*\.?\d*$/.test(value)) {
+      setWithdrawAmount(value)
+    }
   }, [])
+
+  const validateAmount = useCallback(() => {
+    const numAmount = parseFloat(withdrawAmount)
+    if (!withdrawAmount || numAmount <= 0) {
+      toast.error('กรุณาระบุจำนวนเงินที่ต้องการถอน')
+      return false
+    }
+    if (numAmount < 30) {
+      toast.error('จำนวนเงินขั้นต่ำในการถอนคือ 30 บาท')
+      return false
+    }
+    if (numAmount > maxWithdrawAmount) {
+      toast.error(`จำนวนเงินที่ถอนได้สูงสุด ${maxWithdrawAmount.toLocaleString()} บาท`)
+      return false
+    }
+    return true
+  }, [withdrawAmount, maxWithdrawAmount])
+
+  const handleNextToOTP = useCallback(() => {
+    if (!validateAmount()) return
+
+    if (!hasPhone && !hasEmail) {
+      toast.error('กรุณาเพิ่มเบอร์โทรศัพท์หรืออีเมลในโปรไฟล์ก่อนถอนเงิน')
+      return
+    }
+
+    // Close withdraw dialog and open select OTP dialog
+    setShowWithdrawDialog(false)
+    setShowSelectOTPDialog(true)
+  }, [validateAmount, hasPhone, hasEmail])
+
+  const handleSelectOTPMethod = useCallback(() => {
+    if (!validateAmount()) return
+
+    setShowSelectOTPDialog(false)
+
+    initPayoutMutation.mutate({
+      team_group_id: parseInt(teamId, 10),
+      amount: parseFloat(withdrawAmount),
+      otp_type: otpMethod,
+    })
+  }, [validateAmount, withdrawAmount, otpMethod, teamId, initPayoutMutation])
+
+  const handleOtpChange = useCallback(
+    (index: number, value: string) => {
+      if (value.length > 1) return
+
+      const newOtp = [...otp]
+      newOtp[index] = value
+      setOtp(newOtp)
+
+      if (value && index < 5) {
+        const nextInput = document.querySelector(
+          `input[name="otp-${index + 1}"]`,
+        ) as HTMLInputElement
+        nextInput?.focus()
+      }
+    },
+    [otp],
+  )
+
+  const handleSubmitOTP = useCallback(async () => {
+    const otpString = otp.join('')
+    if (otpString.length !== 6) {
+      toast.error('กรุณากรอกรหัส OTP ให้ครบ 6 หลัก')
+      return
+    }
+
+    if (timeLeft <= 0) {
+      toast.error('รหัส OTP หมดอายุแล้ว กรุณาขอรหัสใหม่')
+      return
+    }
+
+    if (!initResponse?.payout_transaction_id) {
+      toast.error('ไม่พบรหัสธุรกรรม กรุณาเริ่มต้นใหม่')
+      return
+    }
+
+    confirmPayoutMutation.mutate({
+      payout_transaction_id: initResponse.payout_transaction_id,
+      otp_ref: initResponse.otp_ref,
+      otp_code: otpString,
+    })
+  }, [otp, initResponse, confirmPayoutMutation, timeLeft])
+
+  const handleWithdrawBack = useCallback(() => {
+    if (showVerifyOTPDialog) {
+      // Go back from verify OTP to select OTP
+      setShowVerifyOTPDialog(false)
+      setShowSelectOTPDialog(true)
+    } else if (showSelectOTPDialog) {
+      // Go back from select OTP to withdraw
+      setShowSelectOTPDialog(false)
+      setShowWithdrawDialog(true)
+    }
+  }, [showVerifyOTPDialog, showSelectOTPDialog])
+
+  // Handler for canceling withdraw
+  const handleWithdrawCancel = useCallback(() => {
+    handleWithdrawClose()
+  }, [handleWithdrawClose])
 
   // Format currency
   const formatCurrency = useCallback((amount: number) => {
@@ -228,7 +465,7 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
 
   return (
     <div className="space-y-6 p-4">
-      {/* Header with Logo */}
+      {/* Header */}
       <TeamHeader teamId={teamId} pageTitle={t('team_tabs.revenue')} />
 
       {/* Common Team Tab Menu */}
@@ -590,11 +827,86 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
       </div>
 
       {/* Withdraw Dialog */}
-      <WithdrawDialog
-        isOpen={showWithdrawDialog}
-        onClose={handleCloseWithdrawDialog}
-        balance={formatCurrency(transferBalance)}
-        teamId={teamId}
+      <Dialog
+        open={showWithdrawDialog}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowWithdrawDialog(false)
+          }
+        }}
+      >
+        <DialogContent className="max-w-md p-0">
+          <DialogTitle className="sr-only">ถอนเงิน</DialogTitle>
+          <WithdrawStep
+            amount={withdrawAmount}
+            currentBalance={currentBalance}
+            isBalanceLoading={isRevenueLoading}
+            onAmountChange={handleWithdrawAmountChange}
+            onNext={handleNextToOTP}
+            onCancel={handleWithdrawCancel}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Select OTP Dialog */}
+      <Dialog
+        open={showSelectOTPDialog}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowSelectOTPDialog(false)
+          }
+        }}
+      >
+        <DialogContent className="max-w-md p-0">
+          <DialogTitle className="sr-only">เลือกวิธีรับ OTP</DialogTitle>
+          <SelectOTPStep
+            otpMethod={otpMethod}
+            hasPhone={hasPhone}
+            hasEmail={hasEmail}
+            maskedPhone={maskedPhone}
+            maskedEmail={maskedEmail}
+            isLoading={initPayoutMutation.isPending}
+            onOtpMethodChange={setOtpMethod}
+            onSendOTP={handleSelectOTPMethod}
+            onBack={handleWithdrawBack}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Verify OTP Dialog */}
+      <Dialog
+        open={showVerifyOTPDialog}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowVerifyOTPDialog(false)
+          }
+        }}
+      >
+        <DialogContent className="max-w-md p-0">
+          <DialogTitle className="sr-only">ยืนยัน OTP</DialogTitle>
+          <VerifyOTPStep
+            otp={otp}
+            otpMethod={otpMethod}
+            maskedPhone={maskedPhone}
+            maskedEmail={maskedEmail}
+            timeLeft={timeLeft}
+            otpRef={initResponse?.otp_ref || null}
+            isLoading={confirmPayoutMutation.isPending}
+            onOtpChange={handleOtpChange}
+            onSubmit={handleSubmitOTP}
+            onBack={handleWithdrawBack}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Dialog */}
+      <SuccessDialog
+        open={showSuccessDialog}
+        onOpenChange={handleSuccessDialogClose}
+        title="ถอนเงินสำเร็จ"
+        message={`จำนวนเงิน ${parseFloat(withdrawAmount || '0').toLocaleString()} บาท`}
+        buttonText="เสร็จสิ้น"
+        onButtonClick={handleSuccessDialogClose}
       />
     </div>
   )

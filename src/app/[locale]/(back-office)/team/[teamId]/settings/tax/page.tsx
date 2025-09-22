@@ -22,9 +22,7 @@ const TaxSettingsPage = ({ params }: TaxSettingsPageProps) => {
   }
 
   const handleEditClick = (taxData: { id: string }) => {
-    router.push(
-      `/${locale}/team/${teamId}/settings/tax/information/edit/${taxData.id}`,
-    )
+    router.push(`/${locale}/team/${teamId}/settings/tax/information/edit/${taxData.id}`)
   }
 
   return (

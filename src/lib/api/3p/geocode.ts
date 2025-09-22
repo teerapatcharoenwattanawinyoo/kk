@@ -31,13 +31,10 @@ export async function reverseGeocode(
   lon: number,
   options?: { signal?: AbortSignal },
 ): Promise<NominatimReverseResponse> {
-  const { data } = await geocodeClient.get<NominatimReverseResponse>(
-    '/reverse',
-    {
-      params: { format: 'json', lat, lon, zoom: 14, addressdetails: 1 },
-      signal: options?.signal,
-    },
-  )
+  const { data } = await geocodeClient.get<NominatimReverseResponse>('/reverse', {
+    params: { format: 'json', lat, lon, zoom: 14, addressdetails: 1 },
+    signal: options?.signal,
+  })
   return data
 }
 

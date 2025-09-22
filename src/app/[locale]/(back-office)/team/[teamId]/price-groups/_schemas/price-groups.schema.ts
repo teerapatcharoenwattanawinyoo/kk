@@ -79,10 +79,7 @@ const LegacyPriceGroupsSchema = z.object({
   count: z.number().optional(),
 })
 
-export const PriceSetDataSchema = z.union([
-  PaginatedPriceGroupsSchema,
-  LegacyPriceGroupsSchema,
-])
+export const PriceSetDataSchema = z.union([PaginatedPriceGroupsSchema, LegacyPriceGroupsSchema])
 
 export type PriceSetData = z.infer<typeof PriceSetDataSchema>
 

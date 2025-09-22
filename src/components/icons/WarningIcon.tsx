@@ -8,12 +8,7 @@ export const WarningIcon: React.FC<WarningIconProps> = ({
   className = 'mt-0.5 h-4 w-4 text-[#F67416]',
 }) => {
   return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"

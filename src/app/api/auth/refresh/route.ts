@@ -4,8 +4,7 @@ import { NextResponse, NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
-const API_BASE_URL =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
 
 const RefreshResponseSchema = z.object({
   statusCode: z.number().optional(),
@@ -27,10 +26,7 @@ export async function GET(req: NextRequest) {
 
   if (!API_BASE_URL) {
     console.error('[API] Backend URL not configured')
-    return NextResponse.json(
-      { message: 'Backend URL not configured' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Backend URL not configured' }, { status: 500 })
   }
 
   try {
@@ -64,44 +60,27 @@ export async function GET(req: NextRequest) {
       json = text ? JSON.parse(text) : {}
     } catch (e) {
       console.error('[API] /api/auth/refresh: invalid JSON from backend:', text)
-      return NextResponse.json(
-        { message: 'Invalid response from backend' },
-        { status: 502 },
-      )
+      return NextResponse.json({ message: 'Invalid response from backend' }, { status: 502 })
     }
 
     if (!beRes.ok) {
-      console.error(
-        '[API] /api/auth/refresh: backend error',
-        beRes.status,
-        json,
-      )
+      console.error('[API] /api/auth/refresh: backend error', beRes.status, json)
       return NextResponse.json(json, { status: beRes.status })
     }
 
     const parsed = RefreshResponseSchema.safeParse(json)
     if (!parsed.success) {
-      console.error(
-        '[API] /api/auth/refresh: response validation failed',
-        parsed.error,
-      )
-      return NextResponse.json(
-        { message: 'Invalid response schema' },
-        { status: 502 },
-      )
+      console.error('[API] /api/auth/refresh: response validation failed', parsed.error)
+      return NextResponse.json({ message: 'Invalid response schema' }, { status: 502 })
     }
 
     const payload = parsed.data
     const accessToken = payload.data?.access_token || payload.access_token
-    const nextRefreshToken =
-      payload.data?.refresh_token || payload.refresh_token || refreshToken
+    const nextRefreshToken = payload.data?.refresh_token || payload.refresh_token || refreshToken
 
     if (!accessToken) {
       console.error('[API] /api/auth/refresh: no access_token in response')
-      return NextResponse.json(
-        { message: 'No access token in response' },
-        { status: 502 },
-      )
+      return NextResponse.json({ message: 'No access token in response' }, { status: 502 })
     }
 
     // Update cookies (httpOnly)
@@ -154,9 +133,6 @@ export async function GET(req: NextRequest) {
     return response
   } catch (err) {
     console.error('[API] /api/auth/refresh: unexpected error', err)
-    return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 })
   }
 }

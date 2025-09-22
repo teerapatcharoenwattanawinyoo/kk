@@ -5,8 +5,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-const API_BASE_URL =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
 
 // Best practice: accept only POST for sign-out
 export async function POST(_req: NextRequest) {
@@ -35,19 +34,13 @@ export async function POST(_req: NextRequest) {
           })
           console.log('[API] /api/auth/sign-out: backend logout successful')
         } catch (backendError) {
-          console.warn(
-            '[API] /api/auth/sign-out: backend logout failed:',
-            backendError,
-          )
+          console.warn('[API] /api/auth/sign-out: backend logout failed:', backendError)
           // Continue with local logout even if backend fails
         }
       }
     }
   } catch (error) {
-    console.warn(
-      '[API] /api/auth/sign-out: error during backend logout:',
-      error,
-    )
+    console.warn('[API] /api/auth/sign-out: error during backend logout:', error)
     // Continue with local logout
   }
 

@@ -11,20 +11,12 @@ interface TaxSettingProps {
   onEditClick?: (taxData: { id: string; [key: string]: unknown }) => void
 }
 
-export const TaxSetting = ({
-  teamId,
-  onCreateClick,
-  onEditClick,
-}: TaxSettingProps) => {
+export const TaxSetting = ({ teamId, onCreateClick, onEditClick }: TaxSettingProps) => {
   return (
     <div className="">
       <div className="border-b p-6">
-        <h2 className="text-oc-title-secondary mb-1 text-xl font-semibold">
-          Tax Setting
-        </h2>
-        <p className="text-oc-sidebar text-sm">
-          Configure tax invoice settings
-        </p>
+        <h2 className="text-oc-title-secondary mb-1 text-xl font-semibold">Tax Setting</h2>
+        <p className="text-oc-sidebar text-sm">Configure tax invoice settings</p>
       </div>
 
       <div className="mx-auto max-w-4xl p-6">

@@ -43,12 +43,8 @@ export const RegisterByEmailResponseSchema = z.object({
 
 export type SignUpFormData = z.infer<typeof SignUpFormSchema>
 export type PhoneFormData = z.infer<typeof PhoneFormSchema>
-export type RegisterByEmailRequest = z.infer<
-  typeof RegisterByEmailRequestSchema
->
-export type RegisterByEmailResponse = z.infer<
-  typeof RegisterByEmailResponseSchema
->
+export type RegisterByEmailRequest = z.infer<typeof RegisterByEmailRequestSchema>
+export type RegisterByEmailResponse = z.infer<typeof RegisterByEmailResponseSchema>
 
 // Register by phone
 export const RegisterByPhoneRequestSchema = z.object({
@@ -69,9 +65,5 @@ export const RegisterByPhoneResponseSchema = z.object({
   message: z.string(),
 })
 
-export type RegisterByPhoneRequest = z.infer<
-  typeof RegisterByPhoneRequestSchema
->
-export type RegisterByPhoneResponse = z.infer<
-  typeof RegisterByPhoneResponseSchema
->
+export type RegisterByPhoneRequest = z.infer<typeof RegisterByPhoneRequestSchema>
+export type RegisterByPhoneResponse = z.infer<typeof RegisterByPhoneResponseSchema>

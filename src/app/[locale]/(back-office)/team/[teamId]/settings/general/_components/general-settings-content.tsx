@@ -10,10 +10,7 @@ interface GeneralSettingsContentProps {
   locale: string
 }
 
-export const GeneralSettingsContent = ({
-  teamId,
-  locale,
-}: GeneralSettingsContentProps) => {
+export const GeneralSettingsContent = ({ teamId, locale }: GeneralSettingsContentProps) => {
   const { t } = useI18n()
   const router = useRouter()
 
@@ -23,11 +20,7 @@ export const GeneralSettingsContent = ({
   }
 
   return (
-    <SettingsLayout
-      teamId={teamId}
-      locale={locale}
-      title={t('team_tabs.settings')}
-    >
+    <SettingsLayout teamId={teamId} locale={locale} title={t('team_tabs.settings')}>
       <div className="p-4 lg:p-6">
         <GeneralSettingTab teamId={teamId} onCancel={handleCancel} />
       </div>

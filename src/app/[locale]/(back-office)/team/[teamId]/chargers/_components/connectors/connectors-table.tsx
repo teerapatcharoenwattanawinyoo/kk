@@ -6,12 +6,7 @@ import {
 } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/connectors'
 import { ConnectorTableSkeleton } from '@/components/skeleton-components'
 import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useI18n } from '@/lib/i18n'
 import { Pen, Trash2 } from 'lucide-react'
 import Image from 'next/image'
@@ -103,9 +98,7 @@ export function ConnectorsTable({
     }
 
     return (
-      <span
-        className={`rounded px-3 py-1 ${config.bgColor} ${config.textColor}`}
-      >
+      <span className={`rounded px-3 py-1 ${config.bgColor} ${config.textColor}`}>
         {config.label}
       </span>
     )
@@ -163,10 +156,7 @@ export function ConnectorsTable({
             <EmptyState colSpan={10} />
           ) : (
             connectors.map((connector) => (
-              <tr
-                key={connector.id}
-                className="shadow-xs rounded-lg bg-background"
-              >
+              <tr key={connector.id} className="shadow-xs rounded-lg bg-background">
                 <td className="text-oc-sidebar whitespace-nowrap rounded-l-lg px-2 py-2 text-center text-xs md:px-4 md:py-3">
                   <div className="flex items-center">
                     <div className="mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-muted font-bold">
@@ -200,9 +190,7 @@ export function ConnectorsTable({
                   {connector.type}
                 </td>
                 <td className="whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
-                  {connector.qr &&
-                  connector.qr !== 'null' &&
-                  connector.qr !== '' ? (
+                  {connector.qr && connector.qr !== 'null' && connector.qr !== '' ? (
                     <QrPreviewDialog
                       qrUrl={connector.qr}
                       connectorName={connector.name || undefined}

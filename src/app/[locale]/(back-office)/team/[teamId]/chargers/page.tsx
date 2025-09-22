@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { ChargersPage } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_components/chargers/chargers-page'
 import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
@@ -16,19 +16,12 @@ export default function TeamChargersPage({
 
   const rawPage = resolvedSearchParams?.page
   const rawPageSize = resolvedSearchParams?.pageSize
-  const pageStr = Array.isArray(rawPage) ? rawPage[0] ?? '1' : rawPage ?? '1'
-  const pageSizeStr = Array.isArray(rawPageSize)
-    ? rawPageSize[0] ?? '10'
-    : rawPageSize ?? '10'
+  const pageStr = Array.isArray(rawPage) ? (rawPage[0] ?? '1') : (rawPage ?? '1')
+  const pageSizeStr = Array.isArray(rawPageSize) ? (rawPageSize[0] ?? '10') : (rawPageSize ?? '10')
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
-      <ChargersPage
-        teamId={teamId}
-        locale={locale}
-        page={pageStr}
-        pageSize={pageSizeStr}
-      />
+      <ChargersPage teamId={teamId} locale={locale} page={pageStr} pageSize={pageSizeStr} />
     </TeamGuard>
   )
 }

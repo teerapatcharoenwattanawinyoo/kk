@@ -8,12 +8,12 @@ import { toast } from '@/hooks/use-toast'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import {
-    PriceGroupForm,
-    type FeeFormData,
-    type FormData,
-    type PriceFormData,
-    type PriceType,
-} from '../../member-group/price-groups'
+  PriceGroupForm,
+  type FeeFormData,
+  type FormData,
+  type PriceFormData,
+  type PriceType,
+} from '../../member-group/price-groups/'
 
 export default function AddPriceGroup() {
   const router = useRouter()

@@ -36,16 +36,10 @@ export const VerifyOTPResponseSchema = z.object({
   message: z.string(),
 })
 
-export type ForgotPasswordEmailRequest = z.infer<
-  typeof ForgotPasswordEmailRequestSchema
->
-export type ForgotPasswordPhoneRequest = z.infer<
-  typeof ForgotPasswordPhoneRequestSchema
->
+export type ForgotPasswordEmailRequest = z.infer<typeof ForgotPasswordEmailRequestSchema>
+export type ForgotPasswordPhoneRequest = z.infer<typeof ForgotPasswordPhoneRequestSchema>
 export type VerifyEmailOTPRequest = z.infer<typeof VerifyEmailOTPRequestSchema>
 export type VerifyPhoneOTPRequest = z.infer<typeof VerifyPhoneOTPRequestSchema>
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>
-export type ForgotPasswordResponse = z.infer<
-  typeof ForgotPasswordResponseSchema
->
+export type ForgotPasswordResponse = z.infer<typeof ForgotPasswordResponseSchema>
 export type VerifyOTPResponse = z.infer<typeof VerifyOTPResponseSchema>

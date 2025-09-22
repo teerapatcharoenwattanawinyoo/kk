@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { api } from '@/lib/api/config/axios'
 import { API_ENDPOINTS } from '@/lib/constants'
@@ -81,9 +81,7 @@ export const getChargersList = async (
   }
 }
 
-export const checkConnection = async (
-  chargerCode: string,
-): Promise<CheckConnectionResponse> => {
+export const checkConnection = async (chargerCode: string): Promise<CheckConnectionResponse> => {
   const url = `${API_ENDPOINTS.CHARGER.CHECK_CONNECTION}/${chargerCode}`
   const response = await api.get(url)
   return CheckConnectionResponseSchema.parse(response)
@@ -114,16 +112,11 @@ export const updateSerialNumber = async (
   serialData: UpdateSerialNumberRequest,
 ): Promise<UpdateSerialNumberResponse> => {
   const payload = UpdateSerialNumberRequestSchema.parse(serialData)
-  const response = await api.put(
-    API_ENDPOINTS.CHARGER.UPDATE_SERIAL,
-    payload,
-  )
+  const response = await api.put(API_ENDPOINTS.CHARGER.UPDATE_SERIAL, payload)
   return UpdateSerialNumberResponseSchema.parse(response)
 }
 
-export const deleteCharger = async (
-  chargerId: number | string,
-): Promise<DeleteChargerResponse> => {
+export const deleteCharger = async (chargerId: number | string): Promise<DeleteChargerResponse> => {
   const url = `${API_ENDPOINTS.CHARGER.DELETE}/${chargerId}`
   const response = await api.delete(url)
   return DeleteChargerResponseSchema.parse(response)

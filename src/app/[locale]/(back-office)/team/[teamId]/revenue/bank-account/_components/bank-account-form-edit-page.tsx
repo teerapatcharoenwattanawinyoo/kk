@@ -52,10 +52,8 @@ export const BankAccountFormEditPage = ({
   const router = useRouter()
   const { toast } = useToast()
   const queryClient = useQueryClient()
-  const { data: bankListsResponse, isLoading: bankListsLoading } =
-    useBankLists()
-  const { data: bankAccountResponse, isLoading: isLoadingAccount } =
-    useBankAccountById(accountId)
+  const { data: bankListsResponse, isLoading: bankListsLoading } = useBankLists()
+  const { data: bankAccountResponse, isLoading: isLoadingAccount } = useBankAccountById(accountId)
   const updateBankAccountMutation = useUpdateBankAccount()
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -63,10 +61,7 @@ export const BankAccountFormEditPage = ({
   const isSubmittingRef = useRef(false)
 
   const bankAccount = bankAccountResponse?.data
-  const bankLists = React.useMemo(
-    () => bankListsResponse?.data || [],
-    [bankListsResponse?.data],
-  )
+  const bankLists = React.useMemo(() => bankListsResponse?.data || [], [bankListsResponse?.data])
 
   const [formInitialized, setFormInitialized] = React.useState(false)
 
@@ -100,9 +95,7 @@ export const BankAccountFormEditPage = ({
         is_primary: bankAccount.is_primary ?? false, // ใช้ nullish coalescing แทน
       }
 
-      const bankExists = bankLists.find(
-        (bank) => bank.id.toString() === initData.bank_id,
-      )
+      const bankExists = bankLists.find((bank) => bank.id.toString() === initData.bank_id)
 
       if (bankExists) {
         reset(initData)
@@ -114,9 +107,7 @@ export const BankAccountFormEditPage = ({
   useEffect(() => {
     if (bankAccount?.file_name) {
       const fileName = bankAccount.file_name.split('/').pop() || 'existing-file'
-      setSelectedFile(
-        new File([], fileName, { type: 'application/octet-stream' }),
-      )
+      setSelectedFile(new File([], fileName, { type: 'application/octet-stream' }))
       setHasNewFile(false)
     }
   }, [bankAccount])
@@ -138,12 +129,7 @@ export const BankAccountFormEditPage = ({
 
       // Simple file validation
       const maxSize = 5 * 1024 * 1024 // 5MB
-      const allowedTypes = [
-        'image/jpeg',
-        'image/png',
-        'image/jpg',
-        'application/pdf',
-      ]
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
 
       if (file.size > maxSize) {
         toast({
@@ -249,17 +235,10 @@ export const BankAccountFormEditPage = ({
       <div className="min-h-screen bg-gray-50">
         <div className="border-b bg-white px-6 py-4">
           <div className="flex items-center space-x-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleBack}
-            >
+            <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Edit Receivable Account
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Edit Receivable Account</h1>
           </div>
         </div>
         <div className="flex items-center justify-center p-8">
@@ -276,17 +255,10 @@ export const BankAccountFormEditPage = ({
       <div className="min-h-screen bg-gray-50">
         <div className="border-b bg-white px-6 py-4">
           <div className="flex items-center space-x-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleBack}
-            >
+            <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Edit Receivable Account
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Edit Receivable Account</h1>
           </div>
         </div>
         <div className="flex items-center justify-center p-8">
@@ -304,17 +276,10 @@ export const BankAccountFormEditPage = ({
       <div className="border-b bg-white px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleBack}
-            >
+            <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Edit Receivable Account
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Edit Receivable Account</h1>
           </div>
           <Button
             type="submit"
@@ -339,17 +304,10 @@ export const BankAccountFormEditPage = ({
         <div className="mx-auto max-w-2xl">
           <Card className="bg-white">
             <CardContent className="p-6">
-              <form
-                id="bank-account-form"
-                onSubmit={handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
+              <form id="bank-account-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* ธนาคาร */}
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="bank_id"
-                    className="text-sm font-medium text-gray-700"
-                  >
+                  <Label htmlFor="bank_id" className="text-sm font-medium text-gray-700">
                     ธนาคาร <span className="text-red-500">*</span>
                   </Label>
                   <Controller
@@ -359,11 +317,7 @@ export const BankAccountFormEditPage = ({
                       <Select
                         value={field.value}
                         onValueChange={(value) => {
-                          if (
-                            value !== undefined &&
-                            value !== null &&
-                            value !== ''
-                          ) {
+                          if (value !== undefined && value !== null && value !== '') {
                             field.onChange(value)
                           }
                         }}
@@ -373,10 +327,7 @@ export const BankAccountFormEditPage = ({
                         </SelectTrigger>
                         <SelectContent>
                           {bankLists.map((bank: IBankListItem) => (
-                            <SelectItem
-                              key={bank.id}
-                              value={bank.id.toString()}
-                            >
+                            <SelectItem key={bank.id} value={bank.id.toString()}>
                               <div className="flex items-center space-x-3">
                                 <div className="relative h-6 w-6 overflow-hidden rounded">
                                   {bank.logo ? (
@@ -389,9 +340,7 @@ export const BankAccountFormEditPage = ({
                                     />
                                   ) : (
                                     <div className="flex h-6 w-6 items-center justify-center rounded bg-gray-200">
-                                      <span className="text-xs text-gray-500">
-                                        🏦
-                                      </span>
+                                      <span className="text-xs text-gray-500">🏦</span>
                                     </div>
                                   )}
                                 </div>
@@ -404,18 +353,13 @@ export const BankAccountFormEditPage = ({
                     )}
                   />
                   {errors.bank_id && (
-                    <p className="text-sm text-red-500">
-                      {errors.bank_id.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors.bank_id.message}</p>
                   )}
                 </div>
 
                 {/* ชื่อบัญชี */}
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="account_name"
-                    className="text-sm font-medium text-gray-700"
-                  >
+                  <Label htmlFor="account_name" className="text-sm font-medium text-gray-700">
                     ชื่อบัญชี <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -425,18 +369,13 @@ export const BankAccountFormEditPage = ({
                     className="w-full"
                   />
                   {errors.account_name && (
-                    <p className="text-sm text-red-500">
-                      {errors.account_name.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors.account_name.message}</p>
                   )}
                 </div>
 
                 {/* เลขบัญชี */}
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="account_number"
-                    className="text-sm font-medium text-gray-700"
-                  >
+                  <Label htmlFor="account_number" className="text-sm font-medium text-gray-700">
                     เลขบัญชี <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -446,9 +385,7 @@ export const BankAccountFormEditPage = ({
                     className="w-full"
                   />
                   {errors.account_number && (
-                    <p className="text-sm text-red-500">
-                      {errors.account_number.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors.account_number.message}</p>
                   )}
                 </div>
 
@@ -465,10 +402,7 @@ export const BankAccountFormEditPage = ({
                       />
                     )}
                   />
-                  <Label
-                    htmlFor="is_primary"
-                    className="text-sm font-medium text-gray-700"
-                  >
+                  <Label htmlFor="is_primary" className="text-sm font-medium text-gray-700">
                     ตั้งเป็นบัญชีหลัก <span className="text-red-500">*</span>
                   </Label>
                 </div>
@@ -513,16 +447,12 @@ export const BankAccountFormEditPage = ({
                         <div
                           className="flex w-full items-center justify-between rounded-lg border p-3"
                           style={{
-                            backgroundColor: selectedFile
-                              ? '#2563EB'
-                              : 'transparent',
+                            backgroundColor: selectedFile ? '#2563EB' : 'transparent',
                             color: selectedFile ? 'white' : 'gray',
                           }}
                         >
                           <span className="text-sm">
-                            {selectedFile
-                              ? selectedFile.name
-                              : 'อัปโหลดสมุดบัญชีที่นี่'}
+                            {selectedFile ? selectedFile.name : 'อัปโหลดสมุดบัญชีที่นี่'}
                           </span>
                           {selectedFile && (
                             <Button

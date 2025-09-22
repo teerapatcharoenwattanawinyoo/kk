@@ -53,12 +53,8 @@ export function ChargeSessionsTable({ sessions }: ChargeSessionsTableProps) {
             <tr key={index} className="shadow-xs rounded-lg bg-background">
               <td className="whitespace-nowrap rounded-l-lg px-2 py-2 text-center md:px-4 md:py-3">
                 <div>
-                  <div className="text-oc-sidebar text-xs font-medium">
-                    {session.orderNumber}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {session.location}
-                  </div>
+                  <div className="text-oc-sidebar text-xs font-medium">{session.orderNumber}</div>
+                  <div className="text-xs text-muted-foreground">{session.location}</div>
                 </div>
               </td>
               <td className="text-oc-sidebar whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
@@ -91,11 +87,7 @@ export function ChargeSessionsTable({ sessions }: ChargeSessionsTableProps) {
                 </span>
               </td>
               <td className="whitespace-nowrap rounded-r-lg px-1 py-1 text-center text-xs text-[#818894] md:px-4 md:py-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 hover:bg-gray-100"
-                >
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-100">
                   <svg
                     width="10"
                     height="10"

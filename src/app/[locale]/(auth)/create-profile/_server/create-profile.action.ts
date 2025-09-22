@@ -37,10 +37,8 @@ export async function createProfileAction(
     hasCountryCode: !!country_code,
   })
 
-  if (!token || !country_code)
-    return { ok: false, error: 'Missing register info' }
-  if (!email && !phone)
-    return { ok: false, error: 'Missing email or phone in cookies' }
+  if (!token || !country_code) return { ok: false, error: 'Missing register info' }
+  if (!email && !phone) return { ok: false, error: 'Missing email or phone in cookies' }
 
   const payload = { email, phone, country_code, profilename, password, token }
 

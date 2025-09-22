@@ -15,6 +15,4 @@ export const revenueBalanceResponseSchema = z.object({
 // ==========================
 // TYPESCRIPT TYPES
 // ==========================
-export type RevenueBalanceResponse = z.infer<
-  typeof revenueBalanceResponseSchema
->
+export type RevenueBalanceResponse = z.infer<typeof revenueBalanceResponseSchema>

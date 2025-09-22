@@ -41,22 +41,16 @@ export function BillingInformation({
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Next Billing Date */}
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Next Billing Date
-            </h3>
-            <p className="text-sm text-gray-900">
-              {billingData.nextBillingDate}
-            </p>
+            <h3 className="text-sm font-medium text-muted-foreground">Next Billing Date</h3>
+            <p className="text-sm text-gray-900">{billingData.nextBillingDate}</p>
           </div>
 
           {/* Payment Method */}
           <div className="space-y-2 justify-self-end text-right">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Payment Method
-            </h3>
+            <h3 className="text-sm font-medium text-muted-foreground">Payment Method</h3>
             <p className="text-sm text-gray-900">
-              •••• •••• •••• {billingData.paymentMethod.lastFour} (
-              {billingData.paymentMethod.brand})
+              •••• •••• •••• {billingData.paymentMethod.lastFour} ({billingData.paymentMethod.brand}
+              )
             </p>
           </div>
         </div>

@@ -120,24 +120,17 @@ export function ChargingStationForm({
       {currentStep === 1 && (
         <>
           <div className="mb-6 sm:mb-8">
-            <LanguageSelectorBodyRequest
-              onLanguageChange={onLanguageChange}
-              defaultLanguage="en"
-            />
+            <LanguageSelectorBodyRequest onLanguageChange={onLanguageChange} defaultLanguage="en" />
             <p className="mt-2 text-xs text-gray-500">
-              กรอกชื่อสถานีในแต่ละภาษา
-              เพื่อให้ผู้ใช้เห็นข้อมูลถูกต้องตามภาษาที่เลือก
+              กรอกชื่อสถานีในแต่ละภาษา เพื่อให้ผู้ใช้เห็นข้อมูลถูกต้องตามภาษาที่เลือก
             </p>
           </div>
           <div>
             <div className="mb-2 flex items-center">
               <Label className="text-sm font-normal tracking-[0.15px] text-black">
-                {t('charging-stations.station_name')} (
-                {selectedLanguage.toUpperCase()})
+                {t('charging-stations.station_name')} ({selectedLanguage.toUpperCase()})
               </Label>
-              <span className="ml-1 text-[15px] font-normal text-destructive">
-                *
-              </span>
+              <span className="ml-1 text-[15px] font-normal text-destructive">*</span>
             </div>
             <Input
               id="station_name"
@@ -155,10 +148,7 @@ export function ChargingStationForm({
                     : selectedLanguage === 'en'
                       ? 'station_name'
                       : 'station_name_lao'
-                onInputChange(
-                  field as keyof ChargingStationFormData,
-                  e.target.value,
-                )
+                onInputChange(field as keyof ChargingStationFormData, e.target.value)
               }}
               placeholder={`Specify Name in ${selectedLanguage.toUpperCase()}`}
               className="h-10 border-none bg-[#f2f2f2] text-sm placeholder:text-[#CACACA] sm:h-11"
@@ -167,8 +157,7 @@ export function ChargingStationForm({
 
           <div>
             <Label className="mb-2 block text-sm font-normal tracking-[0.15px] text-black">
-              {t('charging-stations.station_detail')} (
-              {selectedLanguage.toUpperCase()})
+              {t('charging-stations.station_detail')} ({selectedLanguage.toUpperCase()})
             </Label>
             <Textarea
               id="description"
@@ -186,10 +175,7 @@ export function ChargingStationForm({
                     : selectedLanguage === 'en'
                       ? 'station_detail'
                       : 'station_detail_lao'
-                onInputChange(
-                  field as keyof ChargingStationFormData,
-                  e.target.value,
-                )
+                onInputChange(field as keyof ChargingStationFormData, e.target.value)
               }}
               placeholder={`Add Charging Station Description in ${selectedLanguage.toUpperCase()}`}
               className="h-[120px] resize-none border-none bg-[#f2f2f2] text-sm placeholder:text-[#CACACA] sm:h-[195px]"
@@ -202,19 +188,11 @@ export function ChargingStationForm({
               <Label className="text-sm font-normal tracking-[0.15px] text-black">
                 {t('charging-stations.station_category')}
               </Label>
-              <span className="ml-1 text-[15px] font-normal text-destructive">
-                *
-              </span>
+              <span className="ml-1 text-[15px] font-normal text-destructive">*</span>
             </div>
             <Select
-              value={
-                formData.station_type_id
-                  ? formData.station_type_id.toString()
-                  : undefined
-              }
-              onValueChange={(value) =>
-                onInputChange('station_type_id', Number(value))
-              }
+              value={formData.station_type_id ? formData.station_type_id.toString() : undefined}
+              onValueChange={(value) => onInputChange('station_type_id', Number(value))}
               disabled={isLoadingCategories}
             >
               <SelectTrigger
@@ -226,11 +204,7 @@ export function ChargingStationForm({
                     Loading categories...
                   </div>
                 ) : (
-                  <SelectValue
-                    placeholder={t(
-                      'charging-stations.station_category_placeholder',
-                    )}
-                  />
+                  <SelectValue placeholder={t('charging-stations.station_category_placeholder')} />
                 )}
               </SelectTrigger>
               <SelectContent className="z-[1000] bg-background text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">
@@ -255,10 +229,7 @@ export function ChargingStationForm({
                     </SelectItem>
                   ) : (
                     stationCategories.map((category) => (
-                      <SelectItem
-                        key={category.id}
-                        value={category.station_type_id.toString()}
-                      >
+                      <SelectItem key={category.id} value={category.station_type_id.toString()}>
                         {category.name}
                       </SelectItem>
                     ))
@@ -287,10 +258,7 @@ export function ChargingStationForm({
             <Label className="mb-2 block text-sm font-normal tracking-[0.15px] text-black">
               {t('charging-stations.working_hours_label')}
             </Label>
-            <Dialog
-              open={openCloseDialogOpen}
-              onOpenChange={onOpenCloseDialogChange}
-            >
+            <Dialog open={openCloseDialogOpen} onOpenChange={onOpenCloseDialogChange}>
               <DialogTrigger asChild>
                 <Button
                   type="button"
@@ -300,39 +268,26 @@ export function ChargingStationForm({
                   <div className="text-left">
                     {openCloseForm.open24hrs ? (
                       <div>
-                        <p className="font-normal text-[#364A63]">
-                          เปิดให้บริการ 24 ชั่วโมง
-                        </p>
-                        <p className="mt-1 text-xs text-green-600">
-                          ทุกวัน 00:00 - 23:59
-                        </p>
+                        <p className="font-normal text-[#364A63]">เปิดให้บริการ 24 ชั่วโมง</p>
+                        <p className="mt-1 text-xs text-green-600">ทุกวัน 00:00 - 23:59</p>
                       </div>
                     ) : openCloseForm.sameEveryday ? (
                       <div>
-                        <p className="font-normal text-[#364A63]">
-                          เวลาเดียวกันทุกวัน
-                        </p>
+                        <p className="font-normal text-[#364A63]">เวลาเดียวกันทุกวัน</p>
                         <p className="mt-1 text-xs text-blue-600">
-                          {openCloseForm.days.monday?.open} -{' '}
-                          {openCloseForm.days.monday?.close}
+                          {openCloseForm.days.monday?.open} - {openCloseForm.days.monday?.close}
                         </p>
                       </div>
-                    ) : Object.values(openCloseForm.days).some(
-                        (day) => day.enabled,
-                      ) ? (
+                    ) : Object.values(openCloseForm.days).some((day) => day.enabled) ? (
                       <div>
                         <p className="mt-1 text-xs">
                           {Object.entries(openCloseForm.days)
                             .filter(([_, day]) => day.enabled)
-                            .map(
-                              ([dayName, day]) =>
-                                `${dayLabels[dayName as DayOfWeek]}`,
-                            )
+                            .map(([dayName, day]) => `${dayLabels[dayName as DayOfWeek]}`)
                             .slice(0, 7)
                             .join(', ')}
-                          {Object.values(openCloseForm.days).filter(
-                            (day) => day.enabled,
-                          ).length > 7}
+                          {Object.values(openCloseForm.days).filter((day) => day.enabled).length >
+                            7}
                         </p>
                       </div>
                     ) : (
@@ -346,9 +301,7 @@ export function ChargingStationForm({
               </DialogTrigger>
               <DialogContent className="max-w-[min(96vw,800px)]! md:w-[800px]! max-h-[min(92vh,800px)] w-full overflow-y-auto p-6">
                 <DialogHeader>
-                  <DialogTitle className="text-xl text-primary">
-                    Add Open - Closed
-                  </DialogTitle>
+                  <DialogTitle className="text-xl text-primary">Add Open - Closed</DialogTitle>
                 </DialogHeader>
                 <div className="my-4 flex flex-col gap-6 md:flex-row">
                   {/* Left: Date And Time */}
@@ -360,9 +313,7 @@ export function ChargingStationForm({
                       >
                         <Switch
                           checked={openCloseForm.days[day]?.enabled ?? false}
-                          onCheckedChange={(checked) =>
-                            onOpenCloseChange(day, 'enabled', checked)
-                          }
+                          onCheckedChange={(checked) => onOpenCloseChange(day, 'enabled', checked)}
                           disabled={openCloseForm.open24hrs}
                           className="ml-4 data-[state=checked]:bg-[#1ED86B] data-[state=unchecked]:bg-[#CECECE]"
                         />
@@ -383,17 +334,9 @@ export function ChargingStationForm({
                               onChange={(e) => {
                                 if (openCloseForm.sameEveryday) {
                                   // sync ทุกวัน
-                                  ;(
-                                    Object.keys(
-                                      openCloseForm.days,
-                                    ) as DayOfWeek[]
-                                  ).forEach((d) => {
+                                  ;(Object.keys(openCloseForm.days) as DayOfWeek[]).forEach((d) => {
                                     if (openCloseForm.days[d]?.enabled) {
-                                      onOpenCloseChange(
-                                        d,
-                                        'open',
-                                        e.target.value,
-                                      )
+                                      onOpenCloseChange(d, 'open', e.target.value)
                                     }
                                   })
                                 } else {
@@ -409,25 +352,13 @@ export function ChargingStationForm({
                               value={openCloseForm.days[day]?.close ?? '00:00'}
                               onChange={(e) => {
                                 if (openCloseForm.sameEveryday) {
-                                  ;(
-                                    Object.keys(
-                                      openCloseForm.days,
-                                    ) as DayOfWeek[]
-                                  ).forEach((d) => {
+                                  ;(Object.keys(openCloseForm.days) as DayOfWeek[]).forEach((d) => {
                                     if (openCloseForm.days[d]?.enabled) {
-                                      onOpenCloseChange(
-                                        d,
-                                        'close',
-                                        e.target.value,
-                                      )
+                                      onOpenCloseChange(d, 'close', e.target.value)
                                     }
                                   })
                                 } else {
-                                  onOpenCloseChange(
-                                    day,
-                                    'close',
-                                    e.target.value,
-                                  )
+                                  onOpenCloseChange(day, 'close', e.target.value)
                                 }
                               }}
                               disabled={openCloseForm.open24hrs}
@@ -436,9 +367,7 @@ export function ChargingStationForm({
                           </>
                         )}
                         {openCloseForm.open24hrs && (
-                          <span className="ml-3 text-xs text-green-600">
-                            24 ชั่วโมง
-                          </span>
+                          <span className="ml-3 text-xs text-green-600">24 ชั่วโมง</span>
                         )}
                       </div>
                     ))}
@@ -447,9 +376,7 @@ export function ChargingStationForm({
                   <div className="flex w-64 flex-col gap-6">
                     <div>
                       <Label className="font-semibold">Open 24hrs</Label>
-                      <p className="mb-2 text-xs text-gray-500">
-                        for station ev charger
-                      </p>
+                      <p className="mb-2 text-xs text-gray-500">for station ev charger</p>
                       <Switch
                         checked={openCloseForm.open24hrs}
                         onCheckedChange={onOpen24hrs}
@@ -457,9 +384,7 @@ export function ChargingStationForm({
                       />
                     </div>
                     <div>
-                      <Label className="font-semibold">
-                        Set the same time every day
-                      </Label>
+                      <Label className="font-semibold">Set the same time every day</Label>
                       <p className="mb-2 text-xs text-gray-500">
                         Auto–charge your EV at your preferred time every day.
                       </p>
@@ -581,9 +506,7 @@ export function ChargingStationForm({
                 <div className="flex flex-wrap gap-2">
                   {deletedImageIds.map((imageId) => {
                     // หารูปจาก allGalleryImages
-                    const originalImage = allGalleryImages.find(
-                      (img: any) => img.id === imageId,
-                    )
+                    const originalImage = allGalleryImages.find((img: any) => img.id === imageId)
                     if (!originalImage) return null
 
                     return (
@@ -592,9 +515,7 @@ export function ChargingStationForm({
                         type="button"
                         variant={'link'}
                         size={'lg'}
-                        onClick={() =>
-                          onUndoDeleteImage && onUndoDeleteImage(imageId)
-                        }
+                        onClick={() => onUndoDeleteImage && onUndoDeleteImage(imageId)}
                         className="flex items-center gap-1 text-sm text-destructive"
                         title="Undo deletion"
                       >
@@ -667,9 +588,7 @@ export function ChargingStationForm({
                       >
                         <X className="size-3" />
                       </Button>
-                      <p className="mt-1 truncate text-xs text-gray-500">
-                        {file.name}
-                      </p>
+                      <p className="mt-1 truncate text-xs text-gray-500">{file.name}</p>
                     </div>
                   ))}
                 </div>
@@ -682,9 +601,7 @@ export function ChargingStationForm({
           </div>
 
           <div className="my-2">
-            <Label className="block py-2 font-normal">
-              {t('status.status')}
-            </Label>
+            <Label className="block py-2 font-normal">{t('status.status')}</Label>
             <Select
               value={formData.status?.toString() || '1'}
               onValueChange={(value) => onInputChange('status', Number(value))}
@@ -714,9 +631,7 @@ export function ChargingStationForm({
               <Switch
                 id="status-sidebar"
                 checked={formData.show_on_map}
-                onCheckedChange={(checked) =>
-                  onInputChange('show_on_map', checked)
-                }
+                onCheckedChange={(checked) => onInputChange('show_on_map', checked)}
                 className="data-[state=checked]:bg-[#00DD9C]"
               />
             </div>

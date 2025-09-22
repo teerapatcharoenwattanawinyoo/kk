@@ -3,10 +3,7 @@
 import { cookies } from 'next/headers'
 import { registerByEmail, registerByPhone } from '../api/auth'
 
-export async function registerByEmailAction(data: {
-  email: string
-  country_code: string
-}) {
+export async function registerByEmailAction(data: { email: string; country_code: string }) {
   try {
     console.log('Starting registerByEmailAction with data:', data)
     const result = await registerByEmail(data)
@@ -67,10 +64,7 @@ export async function registerByEmailAction(data: {
   }
 }
 
-export async function registerByPhoneAction(data: {
-  phone: string
-  country_code: string
-}) {
+export async function registerByPhoneAction(data: { phone: string; country_code: string }) {
   try {
     console.log('Starting registerByPhoneAction with data:', data)
     const result = await registerByPhone(data)

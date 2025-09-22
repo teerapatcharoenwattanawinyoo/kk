@@ -4,9 +4,7 @@ interface ConnectorTableSkeletonProps {
   count?: number
 }
 
-export function ConnectorTableSkeleton({
-  count = 5,
-}: ConnectorTableSkeletonProps) {
+export function ConnectorTableSkeleton({ count = 5 }: ConnectorTableSkeletonProps) {
   return (
     <>
       {Array.from({ length: count }).map((_, idx) => (

@@ -2,41 +2,25 @@
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
-const API_BASE_URL =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { path: string[] } },
-) {
+export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleProxyRequest(request, params, 'GET')
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { path: string[] } },
-) {
+export async function POST(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleProxyRequest(request, params, 'POST')
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { path: string[] } },
-) {
+export async function PUT(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleProxyRequest(request, params, 'PUT')
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { path: string[] } },
-) {
+export async function PATCH(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleProxyRequest(request, params, 'PATCH')
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { path: string[] } },
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleProxyRequest(request, params, 'DELETE')
 }
 
@@ -49,10 +33,7 @@ async function handleProxyRequest(
 
   if (!API_BASE_URL) {
     console.error('[API] Backend URL not configured')
-    return NextResponse.json(
-      { message: 'Backend URL not configured' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Backend URL not configured' }, { status: 500 })
   }
 
   try {
@@ -121,22 +102,12 @@ async function handleProxyRequest(
     try {
       responseJson = responseText ? JSON.parse(responseText) : {}
     } catch (e) {
-      console.error(
-        '[API] /api/proxy: invalid JSON from backend:',
-        responseText,
-      )
-      return NextResponse.json(
-        { message: 'Invalid response from backend' },
-        { status: 502 },
-      )
+      console.error('[API] /api/proxy: invalid JSON from backend:', responseText)
+      return NextResponse.json({ message: 'Invalid response from backend' }, { status: 502 })
     }
 
     if (!backendResponse.ok) {
-      console.error(
-        '[API] /api/proxy: backend error',
-        backendResponse.status,
-        responseJson,
-      )
+      console.error('[API] /api/proxy: backend error', backendResponse.status, responseJson)
       // Forward the error response from backend
       return NextResponse.json(responseJson, { status: backendResponse.status })
     }
@@ -145,9 +116,6 @@ async function handleProxyRequest(
     return NextResponse.json(responseJson, { status: backendResponse.status })
   } catch (err) {
     console.error('[API] /api/proxy: unexpected error', err)
-    return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 })
   }
 }

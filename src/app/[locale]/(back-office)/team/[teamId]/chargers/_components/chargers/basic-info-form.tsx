@@ -1,12 +1,6 @@
 'use client'
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -146,15 +140,9 @@ export function BasicInfoForm({
                   </SelectTrigger>
                   <SelectContent>
                     {chargerBrands
-                      .filter(
-                        (brand) =>
-                          brand.id && brand.id.toString().trim() !== '',
-                      )
+                      .filter((brand) => brand.id && brand.id.toString().trim() !== '')
                       .map((brand) => (
-                        <SelectItem
-                          key={brand.id}
-                          value={brand.id.toString().trim()}
-                        >
+                        <SelectItem key={brand.id} value={brand.id.toString().trim()}>
                           {brand.brand_name}
                         </SelectItem>
                       ))}
@@ -190,15 +178,9 @@ export function BasicInfoForm({
                   </SelectTrigger>
                   <SelectContent>
                     {getModelsForBrand(selectedBrand)
-                      .filter(
-                        (model) =>
-                          model.id && model.id.toString().trim() !== '',
-                      )
+                      .filter((model) => model.id && model.id.toString().trim() !== '')
                       .map((model) => (
-                        <SelectItem
-                          key={model.id}
-                          value={model.id.toString().trim()}
-                        >
+                        <SelectItem key={model.id} value={model.id.toString().trim()}>
                           {model.model_name}
                         </SelectItem>
                       ))}
@@ -314,10 +296,7 @@ export function BasicInfoForm({
                   </SelectTrigger>
                   <SelectContent>
                     {teamOptions.map((team) => (
-                      <SelectItem
-                        key={team.team_group_id}
-                        value={team.team_group_id.toString()}
-                      >
+                      <SelectItem key={team.team_group_id} value={team.team_group_id.toString()}>
                         {team.team_name}
                       </SelectItem>
                     ))}
@@ -355,22 +334,14 @@ export function BasicInfoForm({
                   <SelectContent>
                     {chargingStations && chargingStations.length > 0 ? (
                       chargingStations
-                        .filter(
-                          (station) =>
-                            station.id && station.id.toString().trim() !== '',
-                        )
+                        .filter((station) => station.id && station.id.toString().trim() !== '')
                         .map((station) => (
-                          <SelectItem
-                            key={station.id}
-                            value={station.id.toString().trim()}
-                          >
+                          <SelectItem key={station.id} value={station.id.toString().trim()}>
                             {station.station_name}
                           </SelectItem>
                         ))
                     ) : (
-                      <p className="p-4 text-sm text-muted-foreground">
-                        No stations available.
-                      </p>
+                      <p className="p-4 text-sm text-muted-foreground">No stations available.</p>
                     )}
                   </SelectContent>
                 </Select>

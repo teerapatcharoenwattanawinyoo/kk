@@ -16,19 +16,14 @@ interface SummaryPageProps {
   }>
 }
 
-export default async function SummaryPage({
-  params,
-  searchParams,
-}: SummaryPageProps) {
+export default async function SummaryPage({ params, searchParams }: SummaryPageProps) {
   const { teamId, locale } = await params
   const { amount, method, methodData } = await searchParams
 
   // Parse method data if available
   let parsedMethodData
   try {
-    parsedMethodData = methodData
-      ? JSON.parse(decodeURIComponent(methodData))
-      : undefined
+    parsedMethodData = methodData ? JSON.parse(decodeURIComponent(methodData)) : undefined
   } catch (error) {
     console.error('Error parsing methodData:', error)
     parsedMethodData = undefined
@@ -52,9 +47,7 @@ export default async function SummaryPage({
                     <ChevronLeft className="size-4" />
                   </Button>
                 </Link>
-                <h2 className="text-oc-title-secondary text-2xl font-semibold">
-                  Back
-                </h2>
+                <h2 className="text-oc-title-secondary text-2xl font-semibold">Back</h2>
               </div>
             </div>
 

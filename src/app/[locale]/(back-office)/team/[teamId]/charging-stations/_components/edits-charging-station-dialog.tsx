@@ -5,12 +5,7 @@ import {
 } from '@/app/[locale]/(back-office)/team/[teamId]/charging-stations'
 import { ErrorDialog, SuccessDialog } from '@/components/notifications'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useI18n } from '@/lib/i18n'
@@ -112,9 +107,7 @@ const parseOpenCloseString = (openClose?: string): ZodOpenCloseFormState => {
   }
 }
 
-const openCloseFormToWorkTimePayload = (
-  openCloseForm: ZodOpenCloseFormState,
-): WorkTime[] => {
+const openCloseFormToWorkTimePayload = (openCloseForm: ZodOpenCloseFormState): WorkTime[] => {
   return (Object.keys(openCloseForm.days) as ZodDayOfWeek[]).map((day) => {
     const dayData = openCloseForm.days[day]
     if (!dayData) {
@@ -161,8 +154,7 @@ export default function EditsChargingStationDialog({
   // State Management
   // ============================
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] =
-    useState<ZodChargingStationFormData>(initialData)
+  const [formData, setFormData] = useState<ZodChargingStationFormData>(initialData)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const [showErrorDialog, setShowErrorDialog] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -222,16 +214,12 @@ export default function EditsChargingStationDialog({
       })()
 
       const englishValid =
-        formData.station_name.trim() !== '' &&
-        formData.station_detail.trim() !== ''
+        formData.station_name.trim() !== '' && formData.station_detail.trim() !== ''
 
       return currentLangValid && englishValid
     } else {
       // เลือกภาษาอังกฤษ ก็กรอกแค่อังกฤษ
-      return (
-        formData.station_name.trim() !== '' &&
-        formData.station_detail.trim() !== ''
-      )
+      return formData.station_name.trim() !== '' && formData.station_detail.trim() !== ''
     }
   })()
 
@@ -254,9 +242,7 @@ export default function EditsChargingStationDialog({
 
     return {
       circleBgClass: 'bg-card border border-[#D6D6D6]',
-      circleContent: (
-        <span className="text-sm font-normal text-[#8D93A5]"></span>
-      ),
+      circleContent: <span className="text-sm font-normal text-[#8D93A5]"></span>,
       textClass: 'font-normal text-[#8d93a5]',
     }
   }
@@ -340,10 +326,7 @@ export default function EditsChargingStationDialog({
             [field === 'station_name' ? 'name' : 'detail']: value,
           },
         }))
-      } else if (
-        field === 'station_name_lao' ||
-        field === 'station_detail_lao'
-      ) {
+      } else if (field === 'station_name_lao' || field === 'station_detail_lao') {
         setStagingData((prev) => ({
           ...prev,
           lo: {
@@ -479,9 +462,7 @@ export default function EditsChargingStationDialog({
     // ไม่ลบจาก API ทันที รอจนกว่าจะ submit form
     setDeletedImageIds((prev) => [...prev, imageId])
 
-    toast.success(
-      'Image marked for deletion. It will be removed when you save.',
-    )
+    toast.success('Image marked for deletion. It will be removed when you save.')
   }
 
   const handleUndoDeleteImage = (imageId: number) => {
@@ -625,9 +606,7 @@ export default function EditsChargingStationDialog({
                     <div key={step.number}>
                       <div
                         className={`ml-[73px] flex cursor-pointer select-none items-center transition-opacity ${
-                          canClick
-                            ? 'opacity-100 hover:opacity-80'
-                            : 'cursor-default opacity-60'
+                          canClick ? 'opacity-100 hover:opacity-80' : 'cursor-default opacity-60'
                         }`}
                         onClick={() => setCurrentStep(step.number)}
                       >
@@ -636,9 +615,7 @@ export default function EditsChargingStationDialog({
                         >
                           {stepContent}
                         </div>
-                        <span className={`ml-3 text-sm ${textClass}`}>
-                          {step.name}
-                        </span>
+                        <span className={`ml-3 text-sm ${textClass}`}>{step.name}</span>
                       </div>
                       {index < steps.length - 1 && (
                         <div className="my-2 ml-[calc(73px+(--spacing(3))-1px)] h-10 w-px bg-none" />
@@ -660,9 +637,7 @@ export default function EditsChargingStationDialog({
                       <Switch
                         id="show-on-map-sidebar"
                         checked={formData.show_on_map}
-                        onCheckedChange={(checked) =>
-                          handleInputChange('show_on_map', checked)
-                        }
+                        onCheckedChange={(checked) => handleInputChange('show_on_map', checked)}
                         className="data-[state=checked]:bg-[#00DD9C]"
                       />
                     </div>
@@ -672,9 +647,7 @@ export default function EditsChargingStationDialog({
                         className="mb-4 text-sm font-normal tracking-[0.15px]"
                       >
                         {t('status.status')}
-                        <span className="ml-1 text-[15px] font-normal text-destructive">
-                          *
-                        </span>
+                        <span className="ml-1 text-[15px] font-normal text-destructive">*</span>
                       </Label>
                       <Switch
                         // Mock ไว้ก่อน ยังไม่มี key จาก API request body
@@ -690,10 +663,7 @@ export default function EditsChargingStationDialog({
                 {steps.map((step) => {
                   const isCompleted = currentStep > step.number
                   const isActive = currentStep === step.number
-                  const { circleBgClass, textClass } = getStepStyles(
-                    isCompleted,
-                    isActive,
-                  )
+                  const { circleBgClass, textClass } = getStepStyles(isCompleted, isActive)
 
                   let stepContent
                   if (isCompleted) {
@@ -709,18 +679,13 @@ export default function EditsChargingStationDialog({
                   }
 
                   return (
-                    <div
-                      key={step.number}
-                      className="flex flex-col items-center"
-                    >
+                    <div key={step.number} className="flex flex-col items-center">
                       <div
                         className={`flex h-6 w-6 items-center justify-center rounded-full ${circleBgClass}`}
                       >
                         {stepContent}
                       </div>
-                      <span className={`mt-1 text-xs ${textClass}`}>
-                        {step.name}
-                      </span>
+                      <span className={`mt-1 text-xs ${textClass}`}>{step.name}</span>
                     </div>
                   )
                 })}
@@ -736,9 +701,9 @@ export default function EditsChargingStationDialog({
                 openCloseDialogOpen={openCloseDialogOpen}
                 uploadedFiles={uploadedFiles}
                 dayLabels={dayLabels}
-                existingGallery={(
-                  (initialData as any).existingGallery || []
-                ).filter((img: any) => !deletedImageIds.includes(img.id))}
+                existingGallery={((initialData as any).existingGallery || []).filter(
+                  (img: any) => !deletedImageIds.includes(img.id),
+                )}
                 allGalleryImages={(initialData as any).existingGallery || []}
                 deletedImageIds={deletedImageIds}
                 maxImages={5}
@@ -746,8 +711,7 @@ export default function EditsChargingStationDialog({
                   0,
                   5 -
                     uploadedFiles.length -
-                    (((initialData as any).existingGallery || []).length -
-                      deletedImageIds.length),
+                    (((initialData as any).existingGallery || []).length - deletedImageIds.length),
                 )}
                 onSubmit={handleSubmitForm}
                 onInputChange={handleInputChange}
@@ -792,11 +756,7 @@ export default function EditsChargingStationDialog({
                 onClick={handleSubmitForm}
                 className="h-10 w-full font-normal text-white sm:h-11 sm:w-[175px]"
               >
-                {isLoading ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  t('buttons.update')
-                )}
+                {isLoading ? <Loader2 className="size-4 animate-spin" /> : t('buttons.update')}
               </Button>
             )}
           </div>

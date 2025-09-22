@@ -128,9 +128,7 @@ export const BankAccountCard = memo(
                 <h3 className="font-semibold text-gray-900">
                   {account.bank_name || 'Unknown Bank'}
                 </h3>
-                <p className="text-sm text-gray-600">
-                  {account.account_number}
-                </p>
+                <p className="text-sm text-gray-600">{account.account_number}</p>
               </div>
             </div>
 

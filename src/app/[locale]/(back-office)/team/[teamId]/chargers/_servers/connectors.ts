@@ -134,10 +134,7 @@ export const createConnector = async (
 ): Promise<CreateConnectorResponse> => {
   try {
     const payload = CreateConnectorRequestSchema.parse(requestData)
-    const response = await api.post(
-      API_ENDPOINTS.CONNECTOR.CREATE,
-      payload,
-    )
+    const response = await api.post(API_ENDPOINTS.CONNECTOR.CREATE, payload)
     return CreateConnectorResponseSchema.parse(response)
   } catch (error) {
     console.error('Error creating connector:', error)
@@ -151,10 +148,7 @@ export const updateConnector = async (
 ): Promise<UpdateConnectorResponse> => {
   try {
     const payload = UpdateConnectorRequestSchema.parse(requestData)
-    const response = await api.patch(
-      `${API_ENDPOINTS.CONNECTOR.UPDATE}${connectorId}`,
-      payload,
-    )
+    const response = await api.patch(`${API_ENDPOINTS.CONNECTOR.UPDATE}${connectorId}`, payload)
     return UpdateConnectorResponseSchema.parse(response)
   } catch (error) {
     console.error('Error updating connector:', error)
@@ -166,9 +160,7 @@ export const deleteConnector = async (
   connectorId: number | string,
 ): Promise<DeleteConnectorResponse> => {
   try {
-    const response = await api.delete(
-      `${API_ENDPOINTS.CONNECTOR.DELETE}/${connectorId}`,
-    )
+    const response = await api.delete(`${API_ENDPOINTS.CONNECTOR.DELETE}/${connectorId}`)
     return DeleteConnectorResponseSchema.parse(response)
   } catch (error) {
     console.error('Error deleting connector:', error)

@@ -97,12 +97,11 @@ async function doFetch(path: string, opts: BackendOptions = {}, attempt = 0) {
       }
 
       const newAccess = json?.data?.access_token || json?.access_token
-      const newRefresh =
-        json?.data?.refresh_token || json?.refresh_token || refreshCookie
+      const newRefresh = json?.data?.refresh_token || json?.refresh_token || refreshCookie
       if (newAccess) {
         cookieStore.set('access_token', newAccess, {
           httpOnly: true,
-          secure: true,
+          secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
           path: '/',
           maxAge: 60 * 60 * 24,
@@ -111,7 +110,7 @@ async function doFetch(path: string, opts: BackendOptions = {}, attempt = 0) {
       if (newRefresh) {
         cookieStore.set('refresh_token', newRefresh, {
           httpOnly: true,
-          secure: true,
+          secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
           path: '/',
           maxAge: 60 * 60 * 24 * 7,
@@ -131,16 +130,10 @@ async function doFetch(path: string, opts: BackendOptions = {}, attempt = 0) {
   return res
 }
 
-export async function backend<T>(
-  path: string,
-  options: BackendOptions = {},
-): Promise<T> {
+export async function backend<T>(path: string, options: BackendOptions = {}): Promise<T> {
   const timeoutMs = options.timeoutMs ?? 60_000
   const controller = new AbortController()
-  const timer = setTimeout(
-    () => controller.abort('backend timed out'),
-    timeoutMs,
-  )
+  const timer = setTimeout(() => controller.abort('backend timed out'), timeoutMs)
   const res = await doFetch(path, { ...options, signal: controller.signal })
   clearTimeout(timer)
 

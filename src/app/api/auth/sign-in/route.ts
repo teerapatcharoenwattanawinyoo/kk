@@ -1,13 +1,9 @@
 // src/app/api/auth/sign-in/route.ts
 import { COOKIE_KEYS } from '@/lib/constants'
-import {
-  BackendLoginSchema,
-  SignInSchema,
-} from '@/modules/auth/models/sign-in.schema'
+import { BackendLoginSchema, SignInSchema } from '@/modules/auth/models/sign-in.schema'
 import { NextRequest, NextResponse } from 'next/server'
 
-const API_BASE_URL =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
 
 // FE input validation and BE response schema are imported from shared schemas
 
@@ -16,10 +12,7 @@ export async function POST(req: NextRequest) {
 
   if (!API_BASE_URL) {
     console.error('[API] Backend URL not configured')
-    return NextResponse.json(
-      { message: 'Backend URL not configured' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Backend URL not configured' }, { status: 500 })
   }
 
   let body: unknown
@@ -31,10 +24,7 @@ export async function POST(req: NextRequest) {
 
   const parsed = SignInSchema.safeParse(body)
   if (!parsed.success) {
-    console.warn(
-      '[API] /api/auth/sign-in: validation failed',
-      parsed.error.flatten(),
-    )
+    console.warn('[API] /api/auth/sign-in: validation failed', parsed.error.flatten())
     return NextResponse.json({ message: 'Validation error' }, { status: 422 })
   }
 
@@ -65,31 +55,18 @@ export async function POST(req: NextRequest) {
       json = text ? JSON.parse(text) : {}
     } catch (e) {
       console.error('[API] /api/auth/sign-in: invalid JSON from backend:', text)
-      return NextResponse.json(
-        { message: 'Invalid response from backend' },
-        { status: 502 },
-      )
+      return NextResponse.json({ message: 'Invalid response from backend' }, { status: 502 })
     }
 
     if (!beRes.ok) {
-      console.error(
-        '[API] /api/auth/sign-in: backend error',
-        beRes.status,
-        json,
-      )
+      console.error('[API] /api/auth/sign-in: backend error', beRes.status, json)
       return NextResponse.json(json, { status: beRes.status })
     }
 
     const result = BackendLoginSchema.safeParse(json)
     if (!result.success) {
-      console.error(
-        '[API] /api/auth/sign-in: response validation failed',
-        result.error,
-      )
-      return NextResponse.json(
-        { message: 'Invalid response schema' },
-        { status: 502 },
-      )
+      console.error('[API] /api/auth/sign-in: response validation failed', result.error)
+      return NextResponse.json({ message: 'Invalid response schema' }, { status: 502 })
     }
 
     const { access_token, refresh_token, user } = result.data.data
@@ -161,9 +138,6 @@ export async function POST(req: NextRequest) {
     return response
   } catch (err) {
     console.error('[API] /api/auth/sign-in: unexpected error', err)
-    return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 })
   }
 }

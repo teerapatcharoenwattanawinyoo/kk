@@ -19,7 +19,6 @@ import {
 // READ OPERATIONS (QUERIES)
 // ===========================
 
-
 /**
  * Get team list with pagination and search
  */
@@ -27,7 +26,6 @@ export async function getTeamsServerAction(
   params?: TeamListParams,
 ): Promise<IResponse<ITeamListResponse>> {
   try {
-    
     const queryParams = new URLSearchParams()
     if (params?.page) queryParams.append('page', params.page.toString())
     if (params?.pageSize) queryParams.append('pageSize', params.pageSize.toString())
@@ -36,7 +34,7 @@ export async function getTeamsServerAction(
     const apiUrl = queryParams.toString()
       ? `${API_ENDPOINTS.TEAM_GROUPS.TEAMS.LIST}?${queryParams.toString()}`
       : API_ENDPOINTS.TEAM_GROUPS.TEAMS.LIST
-    
+
     const result = await api.get(apiUrl)
     return result
   } catch (error) {
@@ -59,7 +57,7 @@ export async function getTeamHostListServerAction(
     const apiUrl = queryParams.toString()
       ? `${API_ENDPOINTS.AUTH.TEAM}?${queryParams.toString()}`
       : API_ENDPOINTS.AUTH.TEAM
-      
+
     const result = await api.get<TeamHostListResponse>(apiUrl)
     return result
   } catch (error) {
@@ -75,8 +73,10 @@ export async function getTeamByIdServerAction(teamId: string): Promise<TeamData 
   try {
     const result = await api.get(API_ENDPOINTS.TEAM_GROUPS.TEAMS.LIST)
     const teams = result.data?.data || result.data || []
-    const team = teams.find((t: any) => t.team_group_id?.toString() === teamId || t.id?.toString() === teamId)
-    
+    const team = teams.find(
+      (t: any) => t.team_group_id?.toString() === teamId || t.id?.toString() === teamId,
+    )
+
     return team || null
   } catch (error) {
     console.error('Error fetching team by ID:', error)
@@ -104,15 +104,13 @@ export async function getTeamListServerAction(): Promise<TeamListResponse> {
 /**
  * Create new team
  */
-export async function createTeamServerAction(
-  formData: FormData,
-): Promise<IResponse> {
+export async function createTeamServerAction(formData: FormData): Promise<IResponse> {
   try {
     const result = await api.post<IResponse>(API_ENDPOINTS.TEAM_GROUPS.TEAMS.CREATE, formData)
     // Revalidate team-related cache
     revalidateTag('teams')
     revalidateTag('team-list')
-    
+
     return result
   } catch (error) {
     console.error('Error creating team:', error)
@@ -123,9 +121,7 @@ export async function createTeamServerAction(
 /**
  * Update existing team
  */
-export async function updateTeamServerAction(
-  data: UpdateTeamFormData,
-): Promise<IResponse> {
+export async function updateTeamServerAction(data: UpdateTeamFormData): Promise<IResponse> {
   try {
     const formData = new FormData()
     formData.append('teamId', data.id)
@@ -133,19 +129,19 @@ export async function updateTeamServerAction(
     formData.append('team_email', data.team_email)
     formData.append('team_phone', data.team_phone)
     formData.append('team_status', data.team_status)
-    
+
     if (data.file) {
       formData.append('icon_group', data.file)
     }
 
     const apiUrl = API_ENDPOINTS.TEAM_GROUPS.TEAMS.UPDATE.replace('{team_group_id}', data.id)
     const result = await api.put<IResponse>(apiUrl, formData)
-    
+
     // Revalidate team-related cache
     revalidateTag('teams')
     revalidateTag('team-list')
     revalidateTag(`team-${data.id}`)
-    
+
     return result
   } catch (error) {
     console.error('Error updating team:', error)
@@ -160,12 +156,12 @@ export async function deleteTeamServerAction(teamId: string): Promise<IResponse>
   try {
     const apiUrl = API_ENDPOINTS.TEAM_GROUPS.TEAMS.DELETE.replace('{team_group_id}', teamId)
     const result = await api.delete<IResponse>(apiUrl)
-    
+
     // Revalidate team-related cache
     revalidateTag('teams')
     revalidateTag('team-list')
     revalidateTag(`team-${teamId}`)
-    
+
     return result
   } catch (error) {
     console.error('Error deleting team:', error)

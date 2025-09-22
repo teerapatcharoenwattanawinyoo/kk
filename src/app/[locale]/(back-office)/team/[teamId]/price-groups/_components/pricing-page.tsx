@@ -45,15 +45,69 @@ export function PricingPage({ teamId }: PricingPageProps) {
   const isError = teamError || isPricingError
 
   // Transform API data to display format
-  const transformPriceGroupToItem = (group: PriceGroup) => ({
-    id: group.id.toString(),
-    name: group.name || `Null ${group.id}`,
-    price: parseFloat(group.price_per_kwh || '0'),
-    unit: 'THB/kWh',
-    appliedTo: '0',
-    type: group.type,
-    details: `${group.price_per_kwh} THB/kWh`,
-  })
+  const formatNumber = (value?: string) => {
+    if (!value) return null
+    const numeric = parseFloat(value)
+    if (Number.isNaN(numeric)) return null
+    return numeric.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
+
+  const isFreePromotion = (group: PriceGroup) => {
+    const descriptors = [
+      group.starting_fee?.description,
+      group.charging_fee?.description,
+      group.minute_fee?.description,
+      group.idle_fee?.description,
+    ]
+    return descriptors.some((desc) => desc?.toLowerCase().includes('free'))
+  }
+
+  const transformPriceGroupToItem = (group: PriceGroup) => {
+    const pricePerKwh = formatNumber(group.price_per_kwh)
+    const pricePerMinute = formatNumber(group.price_per_minute)
+    const onPeak = formatNumber(group.price_on_peak)
+    const offPeak = formatNumber(group.price_off_peak)
+
+    let unitLabel = '฿/kWh'
+    let detailText = pricePerKwh ? `${pricePerKwh} ฿/kWh` : ''
+    let primaryPrice = pricePerKwh ? parseFloat(group.price_per_kwh) : 0
+
+    if (group.type === 'PER_MINUTE') {
+      unitLabel = '฿/Hrs'
+      const segments = [
+        pricePerKwh ? `${pricePerKwh} ฿/kWh` : null,
+        pricePerMinute ? `${pricePerMinute} ฿/Hrs` : null,
+      ].filter(Boolean)
+      detailText = segments.join(' · ')
+      primaryPrice = pricePerMinute ? parseFloat(group.price_per_minute) : primaryPrice
+    } else if (group.type === 'PEAK') {
+      unitLabel = 'On peak / Off peak'
+      const segments = [
+        onPeak ? `On peak ${onPeak} ฿` : null,
+        offPeak ? `Off peak ${offPeak} ฿` : null,
+      ].filter(Boolean)
+      detailText = segments.join(' · ')
+      primaryPrice = onPeak ? parseFloat(group.price_on_peak) : primaryPrice
+    } else if (isFreePromotion(group)) {
+      unitLabel = 'Free Charge Promotion'
+      detailText =
+        group.starting_fee?.description ||
+        group.charging_fee?.description ||
+        group.minute_fee?.description ||
+        'Free charge promotion'
+      primaryPrice = 0
+    }
+
+    return {
+      id: group.id.toString(),
+      name: group.name || `Null ${group.id}`,
+      price: primaryPrice,
+      unit: unitLabel,
+      appliedTo: '0',
+      type: group.type,
+      details: detailText,
+    }
+  }
 
   const currentPrices =
     priceGroups && priceGroups.length > 0 ? priceGroups.map(transformPriceGroupToItem) : []
@@ -152,6 +206,11 @@ export function PricingPage({ teamId }: PricingPageProps) {
                           <h3 className="text-oc-title-secondary text-sm font-medium">
                             {price.name}
                           </h3>
+                          {price.unit && (
+                            <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-[#4361ee]">
+                              {price.unit}
+                            </p>
+                          )}
                           {price.details && (
                             <p className="mt-1 text-xs text-muted-foreground">{price.details}</p>
                           )}

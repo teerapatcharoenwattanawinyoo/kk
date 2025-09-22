@@ -12,13 +12,7 @@ interface ProcessContentProps {
   locale: string
 }
 
-export function ProcessContent({
-  amount,
-  method,
-  orderId,
-  teamId,
-  locale,
-}: ProcessContentProps) {
+export function ProcessContent({ amount, method, orderId, teamId, locale }: ProcessContentProps) {
   const router = useRouter()
   const [showSuccess, setShowSuccess] = useState(false)
   const [isProcessing, setIsProcessing] = useState(true)

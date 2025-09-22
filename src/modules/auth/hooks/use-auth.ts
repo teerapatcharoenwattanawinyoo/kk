@@ -4,6 +4,7 @@ import { localApi } from '@/lib/api/config/axios-server'
 import { setAuthTokens } from '@/lib/auth/tokens'
 import { QUERY_KEYS, ROUTES } from '@/lib/constants'
 import { useInitialUser } from '@/lib/providers/user-provider'
+import { UserData } from '@/lib/utils'
 import {
   createProfile,
   loginByPhone,
@@ -55,6 +56,13 @@ export function useLogin(loginFn?: (request: LoginRequest) => Promise<LoginRespo
       const userData = (data as any)?.json
       if (userData) {
         console.log('[useLogin] caching user_data into react-query')
+        if (typeof window !== 'undefined') {
+          const user: UserData = {
+            user: userData,
+            timestamp: Date.now(),
+          }
+          localStorage.setItem('user_data', JSON.stringify(user))
+        }
         queryClient.setQueryData(QUERY_KEYS.USER_DATA, userData)
         const cachedUserData = queryClient.getQueryData(QUERY_KEYS.USER_DATA)
         console.log('[useLogin] cached USER_DATA?', { ok: !!cachedUserData })

@@ -9,11 +9,7 @@ interface CheckoutContentProps {
   locale: string
 }
 
-export function CheckoutContent({
-  amount,
-  teamId,
-  locale,
-}: CheckoutContentProps) {
+export function CheckoutContent({ amount, teamId, locale }: CheckoutContentProps) {
   const router = useRouter()
 
   const handlePaymentSelect = (methodId: string, methodData: any) => {
@@ -26,10 +22,7 @@ export function CheckoutContent({
 
   return (
     <div className="mx-auto max-w-md">
-      <PaymentMethodSelector
-        amount={amount}
-        onPaymentSelect={handlePaymentSelect}
-      />
+      <PaymentMethodSelector amount={amount} onPaymentSelect={handlePaymentSelect} />
     </div>
   )
 }

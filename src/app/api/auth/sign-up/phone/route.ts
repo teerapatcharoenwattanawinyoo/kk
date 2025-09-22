@@ -4,8 +4,7 @@ import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
 
-const API_BASE_URL =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
 
 const RegisterByPhoneSchema = z.object({
   phone: z.string().min(1),
@@ -17,10 +16,7 @@ export async function POST(req: Request) {
 
   if (!API_BASE_URL) {
     console.error('[API] Backend URL not configured')
-    return NextResponse.json(
-      { message: 'Backend URL not configured' },
-      { status: 500 },
-    )
+    return NextResponse.json({ message: 'Backend URL not configured' }, { status: 500 })
   }
 
   let body: unknown
@@ -71,9 +67,6 @@ export async function POST(req: Request) {
     return NextResponse.json(json, { status: 200 })
   } catch (fetchError) {
     console.error('[API] Fetch error:', fetchError)
-    return NextResponse.json(
-      { message: 'Backend connection failed' },
-      { status: 503 },
-    )
+    return NextResponse.json({ message: 'Backend connection failed' }, { status: 503 })
   }
 }

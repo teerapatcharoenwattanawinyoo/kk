@@ -1,10 +1,6 @@
 'use client'
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useI18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -18,13 +14,7 @@ interface MenuLinkProps {
   isCollapsed: boolean
 }
 
-export function MenuLink({
-  href,
-  icon,
-  labelKey,
-  isActive,
-  isCollapsed,
-}: MenuLinkProps) {
+export function MenuLink({ href, icon, labelKey, isActive, isCollapsed }: MenuLinkProps) {
   const { t } = useI18n()
   const label = t(labelKey)
 

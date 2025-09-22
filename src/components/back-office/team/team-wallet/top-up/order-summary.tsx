@@ -35,8 +35,7 @@ export function OrderSummary({
   onConfirm,
 }: OrderSummaryProps) {
   const THB = useMemo(
-    () =>
-      new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
+    () => new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
     [],
   )
 
@@ -112,10 +111,7 @@ export function OrderSummary({
       </Card>
 
       {/* Proceed Button */}
-      <Button
-        className="h-12 w-full bg-primary hover:bg-primary/90"
-        onClick={onConfirm}
-      >
+      <Button className="h-12 w-full bg-primary hover:bg-primary/90" onClick={onConfirm}>
         ชำระเงิน
       </Button>
     </div>

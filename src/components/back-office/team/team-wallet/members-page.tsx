@@ -2,11 +2,7 @@
 
 import { TeamHeader } from '@/app/[locale]/(back-office)/team/_components/team-header'
 import { TeamTabMenu } from '@/app/[locale]/(back-office)/team/_components/team-tab-menu'
-import {
-  MemberGroupsTab,
-  MembersTable,
-  Pagination,
-} from '@/components/back-office/team/members'
+import { MemberGroupsTab, MembersTable, Pagination } from '@/components/back-office/team/members'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useI18n } from '@/lib/i18n'
@@ -35,11 +31,7 @@ export function MembersPage({ teamId }: MembersPageProps) {
 
       {/* Navigation Tabs Section */}
       <div className="">
-        <TeamTabMenu
-          active="members"
-          locale={String(params.locale)}
-          teamId={teamId}
-        />
+        <TeamTabMenu active="members" locale={String(params.locale)} teamId={teamId} />
       </div>
 
       {/* Main Content Section */}
@@ -137,9 +129,7 @@ export function MembersPage({ teamId }: MembersPageProps) {
                       className="font-public-sans h-9 w-64 bg-primary-foreground text-[13px] leading-[21px]"
                     />
                     {/* Add Member Group Button */}
-                    <Link
-                      href={`/${params.locale}/team/${teamId}/members/add-member-group`}
-                    >
+                    <Link href={`/${params.locale}/team/${teamId}/members/add-member-group`}>
                       <Button className="flex h-9 items-center gap-[11.59px]">
                         <Plus />
                         Add Member Group

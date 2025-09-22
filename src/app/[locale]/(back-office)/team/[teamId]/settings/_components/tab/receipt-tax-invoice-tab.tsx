@@ -57,11 +57,7 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
   const [errorMessage, setErrorMessage] = useState('')
 
   // API hooks
-  const {
-    data: taxInvoiceReceiptData,
-    isLoading,
-    error,
-  } = useTaxInvoiceReceipt(teamId)
+  const { data: taxInvoiceReceiptData, isLoading, error } = useTaxInvoiceReceipt(teamId)
   const updateMutation = useUpdateReceiptTaxInvoice(teamId)
   const { handleFileSelect } = useFileUpload()
 
@@ -104,8 +100,7 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
   // Check for changes
   useEffect(() => {
     if (originalData) {
-      const dataChanged =
-        JSON.stringify(formData) !== JSON.stringify(originalData)
+      const dataChanged = JSON.stringify(formData) !== JSON.stringify(originalData)
       setHasChanges(dataChanged)
     }
   }, [formData, originalData])
@@ -228,11 +223,7 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
         {hasChanges && hasExistingData && (
           <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
             <div className="flex items-center">
-              <svg
-                className="mr-2 h-5 w-5 text-yellow-600"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
+              <svg className="mr-2 h-5 w-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -240,8 +231,7 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
                 />
               </svg>
               <span className="text-sm text-yellow-800">
-                มีการเปลี่ยนแปลงข้อมูล กรุณากดปุ่ม Update
-                เพื่อบันทึกการเปลี่ยนแปลง
+                มีการเปลี่ยนแปลงข้อมูล กรุณากดปุ่ม Update เพื่อบันทึกการเปลี่ยนแปลง
               </span>
             </div>
           </div>
@@ -258,18 +248,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
             <div className="space-y-5">
               {/* เลขประจำตัวผู้เสียภาษี */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="tax-code"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="tax-code" className="text-sm font-medium text-gray-700">
                   เลขประจำตัวผู้เสียภาษี <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="tax-code"
                   value={formData.tax_code}
-                  onChange={(e) =>
-                    handleInputChange('tax_code', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('tax_code', e.target.value)}
                   placeholder="0-1234-56789-12-3"
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   style={{ backgroundColor: colors.input.background }}
@@ -278,18 +263,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
 
               {/* สำนักงาน/สาขาที่ */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="tax-branch"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="tax-branch" className="text-sm font-medium text-gray-700">
                   สำนักงาน/สาขาที่ <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="tax-branch"
                   value={formData.tax_branch}
-                  onChange={(e) =>
-                    handleInputChange('tax_branch', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('tax_branch', e.target.value)}
                   placeholder="00000"
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   style={{ backgroundColor: colors.input.background }}
@@ -298,18 +278,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
 
               {/* ตำแหน่ง */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="tax-position"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="tax-position" className="text-sm font-medium text-gray-700">
                   ตำแหน่ง
                 </Label>
                 <Input
                   id="tax-position"
                   value={formData.tax_position}
-                  onChange={(e) =>
-                    handleInputChange('tax_position', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('tax_position', e.target.value)}
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   style={{ backgroundColor: colors.input.background }}
                 />
@@ -320,18 +295,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
             <div className="space-y-5">
               {/* ชื่อผู้เสียภาษี */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="tax-fullname"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="tax-fullname" className="text-sm font-medium text-gray-700">
                   ชื่อผู้เสียภาษี <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="tax-fullname"
                   value={formData.tax_fullname}
-                  onChange={(e) =>
-                    handleInputChange('tax_fullname', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('tax_fullname', e.target.value)}
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   style={{ backgroundColor: colors.input.background }}
                 />
@@ -339,18 +309,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
 
               {/* ชื่อผู้รับเงิน */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="tax-payee-name"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="tax-payee-name" className="text-sm font-medium text-gray-700">
                   ชื่อผู้รับเงิน <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="tax-payee-name"
                   value={formData.tax_payee_name}
-                  onChange={(e) =>
-                    handleInputChange('tax_payee_name', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('tax_payee_name', e.target.value)}
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   style={{ backgroundColor: colors.input.background }}
                 />
@@ -358,18 +323,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
 
               {/* ประเทศ */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="tax-country"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="tax-country" className="text-sm font-medium text-gray-700">
                   ประเทศ <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="tax-country"
                   value={formData.tax_country}
-                  onChange={(e) =>
-                    handleInputChange('tax_country', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('tax_country', e.target.value)}
                   placeholder="ระบุประเทศ"
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   style={{ backgroundColor: colors.input.background }}
@@ -383,12 +343,8 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
         <div className="mb-10">
           {/* ที่อยู่ - Full width */}
           <div className="mb-6 space-y-2">
-            <Label
-              htmlFor="tax-address"
-              className="text-sm font-medium text-gray-700"
-            >
-              ที่อยู่ผู้เสียภาษีสำหรับใบเสร็จ{' '}
-              <span className="text-red-500">*</span>
+            <Label htmlFor="tax-address" className="text-sm font-medium text-gray-700">
+              ที่อยู่ผู้เสียภาษีสำหรับใบเสร็จ <span className="text-red-500">*</span>
             </Label>
             <textarea
               id="tax-address"
@@ -405,18 +361,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
             <div className="space-y-5">
               {/* จังหวัด */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="province"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="province" className="text-sm font-medium text-gray-700">
                   จังหวัด <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="province"
                   value={formData.province}
-                  onChange={(e) =>
-                    handleInputChange('province', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('province', e.target.value)}
                   placeholder="ระบุจังหวัด"
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   style={{ backgroundColor: colors.input.background }}
@@ -425,18 +376,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
 
               {/* แขวง/ตำบล */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="sub-district"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="sub-district" className="text-sm font-medium text-gray-700">
                   แขวง/ตำบล <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="sub-district"
                   value={formData.sub_district}
-                  onChange={(e) =>
-                    handleInputChange('sub_district', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('sub_district', e.target.value)}
                   placeholder="ระบุแขวง/ตำบล"
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   style={{ backgroundColor: colors.input.background }}
@@ -448,18 +394,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
             <div className="space-y-5">
               {/* เขต/อำเภอ */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="district"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="district" className="text-sm font-medium text-gray-700">
                   เขต/อำเภอ <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="district"
                   value={formData.district}
-                  onChange={(e) =>
-                    handleInputChange('district', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('district', e.target.value)}
                   placeholder="ระบุเขต/อำเภอ"
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   style={{ backgroundColor: colors.input.background }}
@@ -468,18 +409,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
 
               {/* รหัสไปรษณีย์ */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="post-code"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="post-code" className="text-sm font-medium text-gray-700">
                   รหัสไปรษณีย์ <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="post-code"
                   value={formData.post_code}
-                  onChange={(e) =>
-                    handleInputChange('post_code', e.target.value)
-                  }
+                  onChange={(e) => handleInputChange('post_code', e.target.value)}
                   placeholder="10000"
                   maxLength={5}
                   className="h-11 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -494,10 +430,7 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
         <div className="mb-8">
           {/* หมายเหตุ - Full width */}
           <div className="mb-8 space-y-2">
-            <Label
-              htmlFor="tax-note"
-              className="text-sm font-medium text-gray-700"
-            >
+            <Label htmlFor="tax-note" className="text-sm font-medium text-gray-700">
               หมายเหตุ
             </Label>
             <textarea
@@ -515,20 +448,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
           <div className="grid grid-cols-2 gap-8">
             {/* ภาพ Logo */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-gray-700">
-                ภาพ Logo
-              </Label>
+              <Label className="text-sm font-medium text-gray-700">ภาพ Logo</Label>
               <button
                 onClick={() => handleFileUpload('tax_logo')}
                 className="flex h-10 w-full items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white text-sm text-gray-500 transition-all duration-200 hover:border-gray-400 hover:bg-gray-50"
                 style={{ backgroundColor: colors.input.background }}
               >
-                <svg
-                  className="mr-2 h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -559,20 +485,13 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
 
             {/* ภาพลายเซ็น */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-gray-700">
-                ภาพลายเซ็น
-              </Label>
+              <Label className="text-sm font-medium text-gray-700">ภาพลายเซ็น</Label>
               <button
                 onClick={() => handleFileUpload('tax_signature')}
                 className="flex h-10 w-full items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white text-sm text-gray-500 transition-all duration-200 hover:border-gray-400 hover:bg-gray-50"
                 style={{ backgroundColor: colors.input.background }}
               >
-                <svg
-                  className="mr-2 h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -611,12 +530,7 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
             onClick={handlePreview}
             className="flex h-10 items-center border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-600 transition-all duration-200 hover:border-gray-400 hover:bg-gray-50"
           >
-            <svg
-              className="mr-2 h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -640,9 +554,7 @@ export const ReceiptTaxInvoiceTab = ({ teamId }: { teamId: string }) => {
               disabled={!hasChanges || updateMutation.isPending}
               className="h-10 rounded-lg px-8 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:shadow-md"
               style={{
-                backgroundColor: hasChanges
-                  ? colors.primary[500]
-                  : colors.neutral[400],
+                backgroundColor: hasChanges ? colors.primary[500] : colors.neutral[400],
               }}
             >
               {updateMutation.isPending ? 'กำลังอัปเดต...' : 'UPDATE'}

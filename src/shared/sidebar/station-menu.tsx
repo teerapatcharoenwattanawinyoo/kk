@@ -4,11 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCallback, useState } from 'react'
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useLocale } from '@/hooks/use-locale'
 import { useI18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
@@ -51,18 +47,13 @@ export function StationMenu({ isMenuCollapsed }: StationMenuProps) {
                 isMenuCollapsed
                   ? 'h-12 w-12 justify-center p-0'
                   : 'w-full justify-between px-3 py-3',
-                isActive('/station') ||
-                  isActive('/charger') ||
-                  isActive('/connector')
+                isActive('/station') || isActive('/charger') || isActive('/connector')
                   ? 'bg-blue-50 text-blue-600'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
               )}
             >
               <div
-                className={cn(
-                  'flex items-center gap-3',
-                  isMenuCollapsed ? 'justify-center' : '',
-                )}
+                className={cn('flex items-center gap-3', isMenuCollapsed ? 'justify-center' : '')}
               >
                 <svg
                   width="21"
@@ -80,31 +71,20 @@ export function StationMenu({ isMenuCollapsed }: StationMenuProps) {
               </div>
             </button>
           </TooltipTrigger>
-          <TooltipContent side="right">
-            {t('navigation.station_charger_connector')}
-          </TooltipContent>
+          <TooltipContent side="right">{t('navigation.station_charger_connector')}</TooltipContent>
         </Tooltip>
       ) : (
         <button
           onClick={toggleStationMenu}
           className={cn(
             'flex items-center rounded-lg transition-colors',
-            isMenuCollapsed
-              ? 'h-12 w-12 justify-center p-0'
-              : 'w-full justify-between px-3 py-3',
-            isActive('/station') ||
-              isActive('/charger') ||
-              isActive('/connector')
+            isMenuCollapsed ? 'h-12 w-12 justify-center p-0' : 'w-full justify-between px-3 py-3',
+            isActive('/station') || isActive('/charger') || isActive('/connector')
               ? 'bg-blue-50 text-blue-600'
               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
           )}
         >
-          <div
-            className={cn(
-              'flex items-center gap-3',
-              isMenuCollapsed ? 'justify-center' : '',
-            )}
-          >
+          <div className={cn('flex items-center gap-3', isMenuCollapsed ? 'justify-center' : '')}>
             <svg
               width="21"
               height="20"
@@ -126,10 +106,7 @@ export function StationMenu({ isMenuCollapsed }: StationMenuProps) {
           </div>
           {!isMenuCollapsed && (
             <ChevronDown
-              className={cn(
-                'h-4 w-4 transition-transform',
-                isStationMenuOpen ? 'rotate-180' : '',
-              )}
+              className={cn('h-4 w-4 transition-transform', isStationMenuOpen ? 'rotate-180' : '')}
             />
           )}
         </button>
@@ -145,23 +122,18 @@ export function StationMenu({ isMenuCollapsed }: StationMenuProps) {
                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
             )}
           >
-            <span className="max-w-[120px] truncate">
-              {t('common.stations')}
-            </span>
+            <span className="max-w-[120px] truncate">{t('common.stations')}</span>
           </Link>
           <Link
             href={localizePath('/station/charger')}
             className={cn(
               'flex items-center gap-2 rounded-lg px-6 py-2 text-sm transition-colors',
-              isActive('/station/charger') &&
-                !isActive('/station/charger/connector')
+              isActive('/station/charger') && !isActive('/station/charger/connector')
                 ? 'bg-blue-50 text-blue-600'
                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
             )}
           >
-            <span className="max-w-[120px] truncate">
-              {t('common.chargers')}
-            </span>
+            <span className="max-w-[120px] truncate">{t('common.chargers')}</span>
           </Link>
           <Link
             href={localizePath('/station/charger/connector')}
@@ -172,9 +144,7 @@ export function StationMenu({ isMenuCollapsed }: StationMenuProps) {
                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
             )}
           >
-            <span className="max-w-[120px] truncate">
-              {t('common.connector')}
-            </span>
+            <span className="max-w-[120px] truncate">{t('common.connector')}</span>
           </Link>
         </div>
       )}

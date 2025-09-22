@@ -37,10 +37,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
         </thead>
         <tbody>
           {cards.map((card) => (
-            <tr
-              key={card.id}
-              className="shadow-xs rounded-lg bg-white hover:bg-gray-50"
-            >
+            <tr key={card.id} className="shadow-xs rounded-lg bg-white hover:bg-gray-50">
               <td className="whitespace-nowrap rounded-l-lg px-2 py-2 text-center md:px-4 md:py-3">
                 <div className="flex items-center justify-center">
                   <div className="relative mr-2 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#E7E7E7] bg-card text-[#B6B6B6]">
@@ -48,12 +45,8 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
                     <div className="absolute bottom-1.5 right-1 h-[9px] w-[9px] rounded-full bg-primary"></div>
                   </div>
                   <div>
-                    <div className="mr-3 text-xs font-medium text-[#6E82A5]">
-                      CARD {card.id}
-                    </div>
-                    <div className="text-xs text-[#818894]">
-                      ID: {card.cardId}
-                    </div>
+                    <div className="mr-3 text-xs font-medium text-[#6E82A5]">CARD {card.id}</div>
+                    <div className="text-xs text-[#818894]">ID: {card.cardId}</div>
                   </div>
                 </div>
               </td>
@@ -78,11 +71,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
                 {card.created}
               </td>
               <td className="whitespace-nowrap rounded-r-lg px-2 py-2 text-center text-xs text-gray-500 md:px-4 md:py-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 hover:bg-gray-100"
-                >
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-100">
                   <MoreHorizontal className="h-3.5 w-3.5" />
                 </Button>
               </td>

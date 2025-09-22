@@ -29,12 +29,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         disabled={disabled}
         className="border-gray-200 pl-10 focus:border-blue-500 focus:ring-blue-500"
         style={{
-          backgroundColor: disabled
-            ? colors.search.disabled.background
-            : colors.search.background,
-          borderColor: disabled
-            ? colors.search.disabled.border
-            : colors.search.border,
+          backgroundColor: disabled ? colors.search.disabled.background : colors.search.background,
+          borderColor: disabled ? colors.search.disabled.border : colors.search.border,
           color: disabled ? colors.search.disabled.text : undefined,
         }}
       />

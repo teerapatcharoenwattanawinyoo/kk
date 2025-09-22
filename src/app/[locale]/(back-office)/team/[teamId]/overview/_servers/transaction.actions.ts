@@ -4,9 +4,7 @@
 import { api } from '@/lib/api/config/axios-server'
 import { API_ENDPOINTS } from '@/lib/constants'
 import { type TransactionDetailParams } from '../_schemas/transaction-detail.schema'
-import {
-  type TransactionListParams,
-} from '../_schemas/transaction.schema'
+import { type TransactionListParams } from '../_schemas/transaction.schema'
 
 // ===========================
 // READ OPERATIONS (QUERIES)
@@ -15,9 +13,7 @@ import {
 /**
  * Get transaction list with pagination
  */
-export async function getTransactionListServerAction(
-  params?: TransactionListParams,
-): Promise<any> {
+export async function getTransactionListServerAction(params?: TransactionListParams): Promise<any> {
   try {
     const queryParams = new URLSearchParams()
 
@@ -72,9 +68,7 @@ export async function getTransactionDetailServerAction(
 /**
  * Download transaction as PDF
  */
-export async function downloadTransactionServerAction(
-  transactionId: string,
-): Promise<Blob> {
+export async function downloadTransactionServerAction(transactionId: string): Promise<Blob> {
   try {
     const apiUrl = `/transaction/dashboard/download/${transactionId}`
 

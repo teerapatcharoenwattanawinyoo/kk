@@ -87,8 +87,7 @@ export function useUpdateCharger(teamGroupId: string) {
     Error,
     { chargerId: number; data: CreateChargerRequest }
   >({
-    mutationFn: ({ chargerId, data }) =>
-      updateCharger(teamGroupId, chargerId, data),
+    mutationFn: ({ chargerId, data }) => updateCharger(teamGroupId, chargerId, data),
     onSuccess: () => {
       // Refetch all chargers list queries for this team group
       queryClient.invalidateQueries({
@@ -102,11 +101,7 @@ export function useUpdateCharger(teamGroupId: string) {
 export function useUpdateSerialNumber() {
   const queryClient = useQueryClient()
 
-  return useMutation<
-    UpdateSerialNumberResponse,
-    Error,
-    UpdateSerialNumberRequest
-  >({
+  return useMutation<UpdateSerialNumberResponse, Error, UpdateSerialNumberRequest>({
     mutationFn: (serialData) => updateSerialNumber(serialData),
     onSuccess: (data, variables) => {
       // Invalidate all chargers list queries

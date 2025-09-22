@@ -19,11 +19,7 @@ const TeamPermissionPage = ({ params }: TeamPermissionPageProps) => {
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
-      <SettingsLayout
-        teamId={teamId}
-        locale={locale}
-        title={t('team_tabs.settings')}
-      >
+      <SettingsLayout teamId={teamId} locale={locale} title={t('team_tabs.settings')}>
         <div className="p-4 lg:p-6">
           <DevelopmentPlaceholder title="Team Permission" />
         </div>

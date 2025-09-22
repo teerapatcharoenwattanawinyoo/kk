@@ -31,9 +31,7 @@ interface OverviewTeamPageProps {
 export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
   const { t } = useI18n()
   const router = useRouter()
-  const [selectedPeriod, setSelectedPeriod] = useState(
-    t('overview.last_7_days'),
-  )
+  const [selectedPeriod, setSelectedPeriod] = useState(t('overview.last_7_days'))
   const [activeTab] = useState('overview')
   const [currentPage, setCurrentPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
@@ -55,16 +53,11 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
     search: searchQuery,
   })
 
-  const tableData = (transactionData?.data?.data || []) as unknown as Record<
-    string,
-    unknown
-  >[]
+  const tableData = (transactionData?.data?.data || []) as unknown as Record<string, unknown>[]
 
   const handleRowClick = (row: Record<string, unknown>) => {
     const transactionId = String(row.id || row.order_number)
-    router.push(
-      `/${params.locale}/team/${teamId}/overview/transaction/${transactionId}`,
-    )
+    router.push(`/${params.locale}/team/${teamId}/overview/transaction/${transactionId}`)
   }
 
   // Mock data for the overview
@@ -116,9 +109,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
       key: 'order_number',
       header: t('table.order_number'),
       width: '15%',
-      render: (value: string) => (
-        <span style={{ color: '#6E82A5' }}>{value}</span>
-      ),
+      render: (value: string) => <span style={{ color: '#6E82A5' }}>{value}</span>,
     },
     {
       key: 'charging_station',
@@ -139,9 +130,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
       render: (value: string, row: Record<string, unknown>) => (
         <div className="text-center">
           <div>{value}</div>
-          <div style={{ color: '#6E82A5' }}>
-            {String(row.start_charge_time || '')}
-          </div>
+          <div style={{ color: '#6E82A5' }}>{String(row.start_charge_time || '')}</div>
         </div>
       ),
     },
@@ -152,9 +141,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
       render: (value: string, row: Record<string, unknown>) => (
         <div className="text-center">
           <div>{value}</div>
-          <div style={{ color: '#6E82A5' }}>
-            {String(row.stop_charge_time || '')}
-          </div>
+          <div style={{ color: '#6E82A5' }}>{String(row.stop_charge_time || '')}</div>
         </div>
       ),
     },
@@ -240,17 +227,10 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
           className="text-gray-400 hover:text-gray-600"
           onClick={() => {
             const transactionId = String(row.id || row.order_number)
-            router.push(
-              `/${params.locale}/team/${teamId}/overview/transaction/${transactionId}`,
-            )
+            router.push(`/${params.locale}/team/${teamId}/overview/transaction/${transactionId}`)
           }}
         >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -301,11 +281,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
         </div>
 
         <div className="relative z-10 p-6 text-white">
-          <TeamHeader
-            teamId={teamId}
-            pageTitle={t("team_tabs.overview")}
-            variant="hero"
-          />
+          <TeamHeader teamId={teamId} pageTitle={t('team_tabs.overview')} variant="hero" />
         </div>
       </div>
 
@@ -327,11 +303,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
 
       {/* Common Team Tab Menu */}
       <div className="mb-6 px-6">
-        <TeamTabMenu
-          active={activeTab}
-          locale={String(params.locale)}
-          teamId={teamId}
-        />
+        <TeamTabMenu active={activeTab} locale={String(params.locale)} teamId={teamId} />
       </div>
 
       {/* Main Content */}
@@ -342,10 +314,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{t('overview.charge_sessions')}</CardTitle>
-                <Select
-                  value={selectedPeriod}
-                  onValueChange={setSelectedPeriod}
-                >
+                <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                   <SelectTrigger className="w-48">
                     <SelectValue />
                   </SelectTrigger>
@@ -363,12 +332,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
                 </Select>
               </CardHeader>
               <CardContent>
-                <LineChart
-                  data={chartData}
-                  height={400}
-                  showGrid={true}
-                  showTooltip={true}
-                />
+                <LineChart data={chartData} height={400} showGrid={true} showTooltip={true} />
               </CardContent>
             </Card>
 
@@ -376,10 +340,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{t('overview.charge_sessions')}</CardTitle>
-                <Button
-                  variant={'darkwhite'}
-                  className="flex items-center space-x-2"
-                >
+                <Button variant={'darkwhite'} className="flex items-center space-x-2">
                   <Download className="h-4 w-4" />
                   <span>{t('overview.export')}</span>
                 </Button>
@@ -409,39 +370,23 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">{t('overview.all')}</SelectItem>
-                        <SelectItem value="completed">
-                          {t('status.completed')}
-                        </SelectItem>
-                        <SelectItem value="pending">
-                          {t('status.pending')}
-                        </SelectItem>
-                        <SelectItem value="failed">
-                          {t('buttons.cancel')}
-                        </SelectItem>
+                        <SelectItem value="completed">{t('status.completed')}</SelectItem>
+                        <SelectItem value="pending">{t('status.pending')}</SelectItem>
+                        <SelectItem value="failed">{t('buttons.cancel')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">
-                      {t('overview.date_by')}
-                    </span>
+                    <span className="text-sm text-muted-foreground">{t('overview.date_by')}</span>
                     <Select defaultValue="all_dates">
                       <SelectTrigger className="w-32">
                         <SelectValue placeholder={t('overview.all_dates')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all_dates">
-                          {t('overview.all_dates')}
-                        </SelectItem>
-                        <SelectItem value="today">
-                          {t('overview.today')}
-                        </SelectItem>
-                        <SelectItem value="week">
-                          {t('overview.this_week')}
-                        </SelectItem>
-                        <SelectItem value="month">
-                          {t('overview.this_month')}
-                        </SelectItem>
+                        <SelectItem value="all_dates">{t('overview.all_dates')}</SelectItem>
+                        <SelectItem value="today">{t('overview.today')}</SelectItem>
+                        <SelectItem value="week">{t('overview.this_week')}</SelectItem>
+                        <SelectItem value="month">{t('overview.this_month')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -454,11 +399,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
                     <p>Error loading transaction data</p>
                   </div>
                 ) : (
-                  <DataTable
-                    columns={tableColumns}
-                    data={tableData}
-                    onRowClick={handleRowClick}
-                  />
+                  <DataTable columns={tableColumns} data={tableData} onRowClick={handleRowClick} />
                 )}
 
                 <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
@@ -477,16 +418,12 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
                       Previous
                     </Button>
                     {transactionData?.data &&
-                      [
-                        ...Array(Math.min(5, transactionData.data.page_total)),
-                      ].map((_, index) => {
+                      [...Array(Math.min(5, transactionData.data.page_total))].map((_, index) => {
                         const page = index + 1
                         return (
                           <Button
                             key={page}
-                            variant={
-                              page === currentPage ? 'default' : 'outline'
-                            }
+                            variant={page === currentPage ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => setCurrentPage(page)}
                           >
@@ -494,31 +431,25 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
                           </Button>
                         )
                       })}
-                    {transactionData?.data &&
-                      transactionData.data.page_total > 5 && (
-                        <>
-                          <span>...</span>
-                          <Button
-                            variant={
-                              currentPage === transactionData.data.page_total
-                                ? 'default'
-                                : 'outline'
-                            }
-                            size="sm"
-                            onClick={() =>
-                              setCurrentPage(transactionData.data.page_total)
-                            }
-                          >
-                            {transactionData.data.page_total}
-                          </Button>
-                        </>
-                      )}
+                    {transactionData?.data && transactionData.data.page_total > 5 && (
+                      <>
+                        <span>...</span>
+                        <Button
+                          variant={
+                            currentPage === transactionData.data.page_total ? 'default' : 'outline'
+                          }
+                          size="sm"
+                          onClick={() => setCurrentPage(transactionData.data.page_total)}
+                        >
+                          {transactionData.data.page_total}
+                        </Button>
+                      </>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
                       disabled={
-                        !transactionData?.data ||
-                        currentPage === transactionData.data.page_total
+                        !transactionData?.data || currentPage === transactionData.data.page_total
                       }
                       onClick={() => setCurrentPage(currentPage + 1)}
                     >
@@ -538,9 +469,7 @@ export const OverviewTeamPage = ({ teamId }: OverviewTeamPageProps) => {
               <h3 className="mb-2 text-lg font-medium text-muted-foreground">
                 {TEAM_TABS.find((tab) => tab.value === activeTab)?.label}
               </h3>
-              <p className="text-muted-foreground">
-                This section is under development.
-              </p>
+              <p className="text-muted-foreground">This section is under development.</p>
             </CardContent>
           </Card>
         )}

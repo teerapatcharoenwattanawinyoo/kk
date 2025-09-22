@@ -48,15 +48,8 @@ export const WalletIcon: React.FC<WalletIconProps> = ({
           <feOffset />
           <feGaussianBlur stdDeviation="4" />
           <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix
-            type="matrix"
-            values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.34 0"
-          />
-          <feBlend
-            mode="normal"
-            in2="BackgroundImageFix"
-            result="effect1_dropShadow_318_8389"
-          />
+          <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.34 0" />
+          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_318_8389" />
           <feBlend
             mode="normal"
             in="SourceGraphic"

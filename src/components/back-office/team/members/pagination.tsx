@@ -104,10 +104,7 @@ export function Pagination({
               {pageNumbers.map((pageNumber, index) => {
                 if (pageNumber === '...') {
                   return (
-                    <span
-                      key={`dots-${index}`}
-                      className="px-2 py-1 text-sm text-muted-foreground"
-                    >
+                    <span key={`dots-${index}`} className="px-2 py-1 text-sm text-muted-foreground">
                       ...
                     </span>
                   )
@@ -139,9 +136,7 @@ export function Pagination({
               size="icon"
               className="h-8 w-8 md:h-9 md:w-9"
               disabled={currentPage >= totalPages}
-              onClick={() =>
-                onPageChange(Math.min(totalPages, currentPage + 1))
-              }
+              onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
               aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />

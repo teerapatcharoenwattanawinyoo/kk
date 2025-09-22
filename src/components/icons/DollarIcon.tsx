@@ -4,9 +4,7 @@ interface DollarIconProps {
   className?: string
 }
 
-export const DollarIcon: React.FC<DollarIconProps> = ({
-  className = 'h-5 w-5',
-}) => {
+export const DollarIcon: React.FC<DollarIconProps> = ({ className = 'h-5 w-5' }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

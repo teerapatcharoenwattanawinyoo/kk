@@ -44,9 +44,7 @@ export const transactionListResponseSchema = z.object({
 // === Type Inference ===
 export type TransactionListParams = z.infer<typeof transactionListParamsSchema>
 export type TransactionItem = z.infer<typeof transactionItemSchema>
-export type TransactionListResponse = z.infer<
-  typeof transactionListResponseSchema
->
+export type TransactionListResponse = z.infer<typeof transactionListResponseSchema>
 
 // === Validation Helpers ===
 export const validateTransactionListParams = (data: unknown) => {

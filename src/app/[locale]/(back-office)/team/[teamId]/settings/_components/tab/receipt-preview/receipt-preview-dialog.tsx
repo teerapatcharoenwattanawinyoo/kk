@@ -4,10 +4,7 @@ import FetchLoader from '@/components/FetchLoader'
 import { Button } from '@/components/ui/button'
 import { colors } from '@/lib/utils/colors'
 import { useState } from 'react'
-import {
-  useTaxInformation,
-  useTaxInvoiceReceipt,
-} from '../../../_hooks/use-tax'
+import { useTaxInformation, useTaxInvoiceReceipt } from '../../../_hooks/use-tax'
 import { ReceiptNoVat } from './receipt-no-vat'
 import { ReceiptVat } from './receipt-vat'
 
@@ -80,11 +77,7 @@ export const ReceiptPreviewDialog = ({
           <div className="flex h-96 items-center justify-center">
             <div className="text-center">
               <div className="mb-4 text-red-500">
-                <svg
-                  className="mx-auto h-12 w-12"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg className="mx-auto h-12 w-12" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -224,8 +217,7 @@ export const ReceiptPreviewDialog = ({
         `${taxInvoiceReceiptData?.data?.tax_address || '-'} ${taxInvoiceReceiptData?.data?.sub_district || '-'} ${taxInvoiceReceiptData?.data?.district || '-'} ${taxInvoiceReceiptData?.data?.province || '-'} ${taxInvoiceReceiptData?.data?.post_code || '-'}` ||
         `${formData?.tax_address || '-'} ${formData?.sub_district || '-'} ${formData?.district || '-'} ${formData?.province || '-'} ${formData?.post_code || '-'}` ||
         '-',
-      branch:
-        taxInvoiceReceiptData?.data?.tax_branch || formData.tax_branch || '-',
+      branch: taxInvoiceReceiptData?.data?.tax_branch || formData.tax_branch || '-',
     },
     station: {
       name: 'Apaccharging Station',
@@ -255,14 +247,8 @@ export const ReceiptPreviewDialog = ({
           ? files.tax_signature
           : URL.createObjectURL(files.tax_signature)
         : undefined,
-      name:
-        taxInvoiceReceiptData?.data?.tax_payee_name ||
-        formData.tax_payee_name ||
-        '-',
-      position:
-        taxInvoiceReceiptData?.data?.tax_position ||
-        formData.tax_position ||
-        '-',
+      name: taxInvoiceReceiptData?.data?.tax_payee_name || formData.tax_payee_name || '-',
+      position: taxInvoiceReceiptData?.data?.tax_position || formData.tax_position || '-',
     },
   }
 
@@ -297,11 +283,7 @@ export const ReceiptPreviewDialog = ({
               </button>
             </div>
 
-            <Button
-              variant="outline"
-              onClick={onClose}
-              className="text-gray-600"
-            >
+            <Button variant="outline" onClick={onClose} className="text-gray-600">
               Close
             </Button>
           </div>

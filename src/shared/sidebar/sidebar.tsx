@@ -87,9 +87,7 @@ export function Sidebar() {
       <SidebarContent className="px-2">
         {/* Menu group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground">
-            Menu
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (

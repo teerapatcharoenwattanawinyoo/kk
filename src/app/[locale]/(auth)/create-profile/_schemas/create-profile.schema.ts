@@ -5,12 +5,8 @@ import { z } from 'zod'
 export const CreateProfileFormSchema = z
   .object({
     profilename: z.string().min(1, { message: 'Profile name is required' }),
-    password: z
-      .string()
-      .min(6, { message: 'Password must be at least 6 characters' }),
-    confirmPassword: z
-      .string()
-      .min(6, { message: 'Confirm password is required' }),
+    password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+    confirmPassword: z.string().min(6, { message: 'Confirm password is required' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match!',

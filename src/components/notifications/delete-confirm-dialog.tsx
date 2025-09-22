@@ -39,9 +39,7 @@ export default function DeleteConfirmDialog({
           <DialogHeader className="space-y-0">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
-                <DialogTitle className="text-xl font-semibold text-gray-900">
-                  {title}
-                </DialogTitle>
+                <DialogTitle className="text-xl font-semibold text-gray-900">{title}</DialogTitle>
                 <DialogDescription className="max-w-sm text-lg text-black">
                   {description || defaultDescription}
                 </DialogDescription>
@@ -57,9 +55,7 @@ export default function DeleteConfirmDialog({
             size={'lg'}
             className="rounded-full bg-[#F46262] px-20 py-6"
           >
-            {isLoading ? (
-              <Loader2 className="mr-2 size-4 animate-spin" />
-            ) : null}
+            {isLoading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
             Confirm
           </Button>
           <Button

@@ -1,7 +1,6 @@
 'use client'
 
-import { ImageUploadFormIcon } from '@/components/icons'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,9 +12,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useI18n } from '@/lib/i18n'
-import { colors } from '@/lib/utils/colors'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { X } from 'lucide-react'
+import { Camera, UploadCloud } from 'lucide-react'
 import Image from 'next/image'
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -105,6 +103,44 @@ const TeamAddForm = ({ onSubmit, teamHostId, onValidationChange }: TeamAddFormPr
       }
     },
     [handleFileSelect],
+  )
+
+  // --- Phone formatting helpers ---
+  const formatPhone = (raw: string) => {
+    const digits = raw.replace(/\D/g, '').slice(0, 10)
+    const p1 = digits.slice(0, 3)
+    const p2 = digits.slice(3, 6)
+    const p3 = digits.slice(6, 10)
+    let out = p1
+    if (p2) out += `-${p2}`
+    if (p3) out += `-${p3}`
+    return out
+  }
+
+  const handlePhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const formatted = formatPhone(e.target.value)
+      setValue('team_phone', formatted, { shouldValidate: true, shouldTouch: true })
+    },
+    [setValue],
+  )
+
+  const handlePhoneKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Block manual hyphen entry and any non-digit except controls
+    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab']
+    if (allowedKeys.includes(e.key)) return
+    if (/^\d$/.test(e.key)) return // allow digits only; hyphen will be auto-inserted
+    e.preventDefault()
+  }, [])
+
+  const handlePhonePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLInputElement>) => {
+      e.preventDefault()
+      const text = e.clipboardData.getData('text') || ''
+      const formatted = formatPhone(text)
+      setValue('team_phone', formatted, { shouldValidate: true, shouldTouch: true })
+    },
+    [setValue],
   )
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -206,7 +242,7 @@ const TeamAddForm = ({ onSubmit, teamHostId, onValidationChange }: TeamAddFormPr
   return (
     <div>
       {/* Form */}
-      <form id="add-team-form" onSubmit={handleSubmit(onFormSubmit)}>
+      <form id="add-team-form" onSubmit={handleSubmit(onFormSubmit)} noValidate>
         <Card className="border-none shadow-none">
           <CardContent className="p-0">
             <div className="flex flex-col lg:flex-row">
@@ -227,68 +263,49 @@ const TeamAddForm = ({ onSubmit, teamHostId, onValidationChange }: TeamAddFormPr
 
                   {/* Upload area */}
                   <div
-                    className={`flex h-[181px] w-[181px] cursor-pointer flex-col items-center justify-center space-y-4 rounded-lg transition-all ${
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Upload team image"
+                    className={`group relative flex h-[181px] w-[181px] cursor-pointer items-center justify-center rounded-xl border border-dashed shadow-sm ring-1 ring-border/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${
                       isDragging
-                        ? `border-[${colors.primary[500]}] bg-[${colors.primary[500]}]/5`
+                        ? 'border-primary/60 bg-primary/5 ring-2 ring-primary/30'
                         : selectedFile
-                          ? 'border-green-300 bg-green-50'
-                          : 'border-gray-300'
-                    }`}
-                    style={{
-                      backgroundColor: isDragging
-                        ? `${colors.primary[500]}0D` // 5% opacity
-                        : selectedFile
-                          ? '#f0fdf4'
-                          : colors.search.background,
-                    }}
+                          ? ''
+                          : 'border-muted-foreground/20 bg-muted/20 hover:border-accent-foreground/30 hover:bg-accent/20'
+                    } group-hover:-translate-y-0.5 group-hover:shadow-md group-hover:ring-primary/30`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                     onClick={triggerFileInput}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        triggerFileInput()
+                      }
+                    }}
                   >
                     {previewUrl ? (
                       // Image preview
-                      <div className="relative h-full w-full p-4">
+                      <div className="relative h-full w-full p-3">
                         <Image
                           src={previewUrl}
                           alt="Preview"
                           width={200}
                           height={200}
-                          className="h-full w-full rounded object-cover"
+                          className="h-full w-full rounded-lg object-cover shadow-sm ring-1 ring-border"
                           unoptimized
                         />
-                        <Button
-                          type="button"
-                          variant={'secondary'}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleRemoveFile()
-                          }}
-                          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border bg-card"
-                        >
-                          <X className="size-3" />
-                        </Button>
                       </div>
                     ) : selectedFile ? (
                       // File selected (non-image)
-                      <div className="space-y-2 text-center">
-                        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
-                          <svg
-                            className="h-6 w-6 text-green-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
+                      <div className="flex flex-col items-center gap-2 text-center">
+                        <div className="mx-auto mb-1 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
+                          <UploadCloud className="h-5 w-5 text-emerald-600" />
                         </div>
-                        <p className="text-sm font-medium text-green-700">{selectedFile.name}</p>
-                        <p className="text-xs text-green-600">
+                        <p className="max-w-[150px] truncate text-sm font-medium text-emerald-700">
+                          {selectedFile.name}
+                        </p>
+                        <p className="text-xs text-emerald-600">
                           {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                         </p>
                         <button
@@ -297,21 +314,61 @@ const TeamAddForm = ({ onSubmit, teamHostId, onValidationChange }: TeamAddFormPr
                             e.stopPropagation()
                             handleRemoveFile()
                           }}
-                          className="text-xs text-red-500 underline hover:text-red-700"
+                          className="text-xs text-destructive underline hover:text-destructive/90"
                         >
                           {t('team.remove_file')}
                         </button>
                       </div>
                     ) : (
                       // Default upload state
-                      <div className="space-y-2 text-center">
-                        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center">
-                          <ImageUploadFormIcon className="text-primary" />
+                      <div className="flex flex-col items-center gap-2 text-center">
+                        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-background shadow-sm transition-transform group-hover:scale-105">
+                          <UploadCloud className="h-5 w-5 text-muted-foreground" />
                         </div>
-                        <p className="text-sm font-medium text-gray-700">
+                        <p className="text-sm font-medium text-foreground">
                           {t('team.image_upload_label')}
                         </p>
-                        <p className="text-xs text-gray-500">{t('team.supported_formats')}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('team.supported_formats')}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Subtle inner ring & shadow layer */}
+                    <div className="pointer-events-none absolute inset-0 z-[1] rounded-xl ring-1 ring-border/40 transition-all group-hover:shadow-[0_10px_24px_-10px_rgba(0,0,0,0.35)] group-hover:ring-primary/30" />
+
+                    {/* Corner accents (hover only) */}
+                    <div className="pointer-events-none absolute inset-0 z-[2] opacity-0 transition-opacity group-hover:opacity-100">
+                      <span className="absolute left-2 top-2 h-px w-5 bg-primary/50" />
+                      <span className="absolute left-2 top-2 h-5 w-px bg-primary/50" />
+                      <span className="absolute bottom-2 right-2 h-px w-5 bg-primary/50" />
+                      <span className="absolute bottom-2 right-2 h-5 w-px bg-primary/50" />
+                    </div>
+
+                    {/* Hover overlay (full cover, sleek) */}
+                    <div className="pointer-events-none absolute inset-0 z-[3] flex flex-col items-center justify-center rounded-xl bg-gradient-to-t from-muted-foreground/60 to-muted-foreground/30 text-white opacity-0 backdrop-blur-[2px] transition-all duration-200 group-hover:opacity-100">
+                      <UploadCloud className="mb-1 h-5 w-5 text-white/90" />
+                      <span className="text-xs font-medium">
+                        {previewUrl || selectedFile ? 'เปลี่ยนรูปภาพ' : 'อัพโหลดรูปภาพ'}
+                      </span>
+                    </div>
+
+                    {/* Bottom-right camera badge (only show if file/image exists) */}
+                    {(previewUrl || selectedFile) && (
+                      <Badge
+                        variant="secondary"
+                        className="pointer-events-none absolute bottom-2 right-2 z-[4] rounded-full bg-background/80 p-1.5 text-foreground shadow-sm ring-1 ring-border transition-colors group-hover:bg-muted-foreground/70 group-hover:text-white"
+                      >
+                        <Camera className="h-3.5 w-3.5" />
+                      </Badge>
+                    )}
+
+                    {/* Drag overlay above all */}
+                    {isDragging && (
+                      <div className="pointer-events-none absolute inset-0 z-[5] grid place-items-center rounded-xl bg-primary/10">
+                        <span className="rounded-md bg-primary/15 px-2 py-1 text-xs font-medium text-primary shadow-sm">
+                          Drop to upload
+                        </span>
                       </div>
                     )}
                   </div>
@@ -361,8 +418,14 @@ const TeamAddForm = ({ onSubmit, teamHostId, onValidationChange }: TeamAddFormPr
                   <Input
                     id="team_phone"
                     type="tel"
-                    {...register('team_phone')}
-                    placeholder="Specify"
+                    value={watchedValues.team_phone}
+                    {...register('team_phone', { onChange: handlePhoneChange })}
+                    onKeyDown={handlePhoneKeyDown}
+                    onPaste={handlePhonePaste}
+                    placeholder="094-371-8956"
+                    inputMode="numeric"
+                    autoComplete="tel"
+                    maxLength={12}
                     className="bg-muted"
                   />
                   {errors.team_phone && (

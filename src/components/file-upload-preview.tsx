@@ -12,11 +12,7 @@ interface FileUploadPreviewProps {
   onRemove: () => void
 }
 
-export function FileUploadPreview({
-  file,
-  previewUrl,
-  onRemove,
-}: FileUploadPreviewProps) {
+export function FileUploadPreview({ file, previewUrl, onRemove }: FileUploadPreviewProps) {
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes'
     const k = 1024
@@ -74,9 +70,7 @@ export function FileUploadPreview({
         {/* File Info */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="mr-2 flex-1 truncate text-sm font-medium">
-              {file.name}
-            </span>
+            <span className="mr-2 flex-1 truncate text-sm font-medium">{file.name}</span>
             <Badge variant="outline" className="text-xs">
               {fileType.toUpperCase()}
             </Badge>

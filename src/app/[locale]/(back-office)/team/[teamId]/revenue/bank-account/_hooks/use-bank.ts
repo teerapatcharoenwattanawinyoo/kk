@@ -1,16 +1,13 @@
 import { toast } from '@/hooks/use-toast'
-import {
-    type IBankAccount,
-    type IBankAccountUpdate,
-} from '@/lib/api/team-group/bank'
+import { type IBankAccount, type IBankAccountUpdate } from '@/lib/api/team-group/bank'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-    createBankAccountServerAction,
-    deleteBankAccountServerAction,
-    getBankAccountByIdServerAction,
-    getBankAccountsServerAction,
-    getBankListsServerAction,
-    updateBankAccountServerAction,
+  createBankAccountServerAction,
+  deleteBankAccountServerAction,
+  getBankAccountByIdServerAction,
+  getBankAccountsServerAction,
+  getBankListsServerAction,
+  updateBankAccountServerAction,
 } from '../_servers/bank.actions'
 
 // Query Keys
@@ -93,8 +90,7 @@ export const useCreateBankAccount = () => {
     ) => {
       toast({
         title: 'เกิดข้อผิดพลาด',
-        description:
-          error?.response?.data?.message || 'ไม่สามารถสร้างบัญชีธนาคารได้',
+        description: error?.response?.data?.message || 'ไม่สามารถสร้างบัญชีธนาคารได้',
         variant: 'destructive',
       })
     },
@@ -135,8 +131,7 @@ export const useUpdateBankAccount = () => {
     ) => {
       toast({
         title: 'เกิดข้อผิดพลาด',
-        description:
-          error?.response?.data?.message || 'ไม่สามารถอัปเดตบัญชีธนาคารได้',
+        description: error?.response?.data?.message || 'ไม่สามารถอัปเดตบัญชีธนาคารได้',
         variant: 'destructive',
       })
     },
@@ -171,8 +166,7 @@ export const useDeleteBankAccount = () => {
     ) => {
       toast({
         title: 'เกิดข้อผิดพลาด',
-        description:
-          error?.response?.data?.message || 'ไม่สามารถลบบัญชีธนาคารได้',
+        description: error?.response?.data?.message || 'ไม่สามารถลบบัญชีธนาคารได้',
         variant: 'destructive',
       })
     },

@@ -22,8 +22,7 @@ export const useTransactionDetail = (params: TransactionDetailParams) => {
 // Hook สำหรับ download transaction
 export const useDownloadTransaction = () => {
   return useMutation<Blob, Error, string>({
-    mutationFn: (transactionId: string) =>
-      downloadTransactionServerAction(transactionId),
+    mutationFn: (transactionId: string) => downloadTransactionServerAction(transactionId),
     onSuccess: (blob, transactionId) => {
       // Create download link
       const url = window.URL.createObjectURL(blob)

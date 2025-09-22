@@ -111,9 +111,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             <div className="flex h-full items-center justify-start">
               <div className="z-20 mx-20 px-10 text-left text-white">
                 <h1 className="mb-4 text-7xl font-bold">{t('auth.title')}</h1>
-                <p className="max-w-xl text-xl text-blue-100">
-                  {t('auth.description')}
-                </p>
+                <p className="max-w-xl text-xl text-blue-100">{t('auth.description')}</p>
               </div>
             </div>
           </div>
@@ -149,10 +147,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                 <DropdownMenuItem
                   key={language.code}
                   disabled={language.code === locale}
-                  onClick={() =>
-                    language.code !== locale &&
-                    handleLanguageChange(language.code)
-                  }
+                  onClick={() => language.code !== locale && handleLanguageChange(language.code)}
                   className="flex items-center gap-2"
                   aria-checked={language.code === locale}
                   role="menuitemcheckbox"
@@ -165,9 +160,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                     className="h-4 w-4 rounded-full object-cover"
                   />
                   <span className="text-sm">{language.name}</span>
-                  {language.code === locale && (
-                    <Check className="ml-auto h-4 w-4" />
-                  )}
+                  {language.code === locale && <Check className="ml-auto h-4 w-4" />}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

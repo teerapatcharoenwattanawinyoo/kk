@@ -57,6 +57,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   const closeReasonRef = useRef<'success' | null>(null)
   const preserveStateForStepTwoRef = useRef(false)
   const resumeDialogAfterConfirmRef = useRef(false)
+  const shouldCloseAfterOcppRef = useRef(false)
 
   // Initialize form
   const form = useForm<ChargerFormData>({
@@ -133,6 +134,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
     setConfirmDialogOpen(false)
     setIsLoading(false)
     setIsActive(false)
+    shouldCloseAfterOcppRef.current = false
   }
 
   // Handle dialog open/close
@@ -542,8 +544,13 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
           // setup completed
 
-          // Close dialog and show OCPP info
-          setDialogOpen?.(false)
+          closeReasonRef.current = 'success'
+          shouldCloseAfterOcppRef.current = true
+
+          if (!isControlled) {
+            setInternalOpen(false)
+          }
+
           setShowOcppDialog(true)
         } else {
           console.log('[AddChargerDialog] Update serial returned unexpected status', {
@@ -567,6 +574,24 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
     setCurrentStep(2)
     closeReasonRef.current = null
+  }
+
+  const handleOcppDialogOpenChange = (open: boolean) => {
+    setShowOcppDialog(open)
+
+    if (!open && shouldCloseAfterOcppRef.current) {
+      shouldCloseAfterOcppRef.current = false
+      closeReasonRef.current = 'success'
+      resetForm()
+
+      if (isControlled) {
+        setDialogOpen?.(false)
+      } else {
+        setInternalOpen(false)
+      }
+
+      closeReasonRef.current = null
+    }
   }
 
   const handleBack = () => {
@@ -771,7 +796,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
       {/* OCPP Url Configuration Dialog */}
       <OcppUrlDialog
         open={showOcppDialog}
-        onOpenChange={setShowOcppDialog}
+        onOpenChange={handleOcppDialogOpenChange}
         ocppUrl={ocppUrl}
         setOcppUrl={setOcppUrl}
         ocppUrlInputRef={ocppUrlInputRef as React.RefObject<HTMLInputElement>}

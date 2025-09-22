@@ -115,6 +115,42 @@ const toBoolean = (value: unknown): boolean | undefined => {
   return undefined
 }
 
+<<<<<<< HEAD
+const tryParseJson = (value: unknown): unknown => {
+  if (typeof value !== 'string') {
+    return value
+  }
+
+  const trimmed = value.trim()
+
+  if (!trimmed) {
+    return value
+  }
+
+  const startsLikeJson =
+    (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+    (trimmed.startsWith('[') && trimmed.endsWith(']'))
+
+  if (!startsLikeJson) {
+    return value
+  }
+
+  try {
+    return JSON.parse(trimmed)
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Failed to parse JSON while normalizing checkConnection response', {
+        rawValue: value,
+        error,
+      })
+    }
+
+    return value
+  }
+}
+
+=======
+>>>>>>> bug
 const normalizeCheckConnectionResponse = (
   rawResponse: unknown,
   parseError: z.ZodError<CheckConnectionResponse>,
@@ -126,6 +162,24 @@ const normalizeCheckConnectionResponse = (
     })
   }
 
+<<<<<<< HEAD
+  const normalizedRaw = tryParseJson(rawResponse)
+
+  const responseLike =
+    (typeof normalizedRaw === 'object' && normalizedRaw !== null
+      ? normalizedRaw
+      : {}) as {
+      statusCode?: unknown
+      status?: unknown
+      status_code?: unknown
+      code?: unknown
+      httpStatus?: unknown
+      http_code?: unknown
+      message?: unknown
+      statusMessage?: unknown
+      data?: unknown
+    }
+=======
   const responseLike = rawResponse as {
     statusCode?: unknown
     status?: unknown
@@ -137,6 +191,7 @@ const normalizeCheckConnectionResponse = (
     statusMessage?: unknown
     data?: unknown
   }
+>>>>>>> bug
 
   const statusCodeCandidates: unknown[] = [
     responseLike.statusCode,
@@ -163,6 +218,13 @@ const normalizeCheckConnectionResponse = (
     responseLike.status,
   ]
 
+<<<<<<< HEAD
+  if (typeof normalizedRaw === 'string') {
+    messageCandidates.push(normalizedRaw)
+  }
+
+=======
+>>>>>>> bug
   let resolvedMessage = ''
   for (const candidate of messageCandidates) {
     const parsed = toString(candidate)
@@ -172,7 +234,13 @@ const normalizeCheckConnectionResponse = (
     }
   }
 
+<<<<<<< HEAD
+  const dataLike = tryParseJson(
+    responseLike.data !== undefined ? responseLike.data : normalizedRaw,
+  )
+=======
   const dataLike = responseLike.data
+>>>>>>> bug
 
   let resolvedStatus = ''
   let resolvedConnected: boolean | undefined
@@ -203,7 +271,13 @@ const normalizeCheckConnectionResponse = (
     applyStatus(dataLike)
     applyConnected(dataLike)
   } else if (Array.isArray(dataLike)) {
+<<<<<<< HEAD
+    for (const rawEntry of dataLike) {
+      const entry = tryParseJson(rawEntry)
+
+=======
     for (const entry of dataLike) {
+>>>>>>> bug
       if (typeof entry === 'object' && entry !== null) {
         applyStatus((entry as { status?: unknown }).status)
         applyStatus((entry as { detail?: unknown }).detail)
@@ -247,12 +321,23 @@ const normalizeCheckConnectionResponse = (
     applyConnected(dataObject.online)
     applyConnected(dataObject.isOnline)
 
+<<<<<<< HEAD
+    const normalizedResult = tryParseJson(dataObject.result)
+
+    if (
+      typeof normalizedResult === 'object' &&
+      normalizedResult !== null &&
+      'status' in (normalizedResult as Record<string, unknown>)
+    ) {
+      const nested = normalizedResult as {
+=======
     if (
       typeof dataObject.result === 'object' &&
       dataObject.result !== null &&
       'status' in (dataObject.result as Record<string, unknown>)
     ) {
       const nested = dataObject.result as {
+>>>>>>> bug
         status?: unknown
         connected?: unknown
         online?: unknown

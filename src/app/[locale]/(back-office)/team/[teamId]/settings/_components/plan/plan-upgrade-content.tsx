@@ -3,11 +3,33 @@
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { Crown, Database, Star, Zap } from 'lucide-react'
+import { Database } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { BillingInformation, type BillingData } from './billing-information'
-import { PricingPackages, type PricingPlan } from './pricing-packages'
+import { pricingPlanSchema, type PricingPlan } from './plans.schema'
+import { PricingPackages } from './pricing-packages'
+
+const defaultPricingPlans = pricingPlanSchema.array().parse([
+  {
+    id: 'professional',
+    icon_package_path: 'lucide:crown',
+    package_name: 'Professional',
+    type_of_prices: 'month',
+    description: 'Best for growing businesses',
+    price: '329',
+    detail: [
+      'Up to 25 charging stations',
+      'Advanced analytics & reporting',
+      'Priority support',
+      '50GB storage',
+      'API access',
+      'Custom branding',
+      'Multi-location support',
+    ],
+    is_default: true,
+  },
+])
 
 export interface UsageData {
   stations: { used: number; limit: number }
@@ -18,6 +40,7 @@ export interface PlanUpgradeContentProps {
   usage: UsageData
   currentPlan?: string
   currentPlanId?: string
+  plans?: PricingPlan[]
   upgradePlanAction: (teamId: string, planId: string) => Promise<{ error?: string } | void>
   teamId: string
   billingData: BillingData
@@ -28,8 +51,9 @@ export interface PlanUpgradeContentProps {
 
 export function PlanUpgradeContent({
   usage,
-  currentPlan = 'Professional',
-  currentPlanId = 'professional',
+  currentPlan,
+  currentPlanId,
+  plans = defaultPricingPlans,
   upgradePlanAction,
   teamId,
   billingData,
@@ -42,60 +66,20 @@ export function PlanUpgradeContent({
   const stationsPct = Math.round((usage.stations.used / usage.stations.limit) * 100)
   const membersPct = Math.round((usage.members.used / usage.members.limit) * 100)
 
-  // Mock pricing plans data (ตาม design ที่แนบมา)
-  const pricingPlans: PricingPlan[] = [
-    {
-      id: 'starter',
-      name: 'Starter',
-      price: 129,
-      period: 'month',
-      description: 'Perfect for small teams getting started',
-      icon: <Zap className="h-8 w-8 text-primary" />,
-      features: [
-        'Up to 5 charging stations',
-        'Basic analytics',
-        'Email support',
-        '5GB storage',
-        'Standard integrations',
-      ],
-    },
-    {
-      id: 'professional',
-      name: 'Professional',
-      price: 329,
-      period: 'month',
-      description: 'Best for growing businesses',
-      icon: <Crown className="h-8 w-8 text-primary" />,
-      isPopular: true,
-      features: [
-        'Up to 25 charging stations',
-        'Advanced analytics & reporting',
-        'Priority support',
-        '50GB storage',
-        'API access',
-        'Custom branding',
-        'Multi-location support',
-      ],
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: 999,
-      period: 'month',
-      description: 'For large scale operations',
-      icon: <Star className="h-8 w-8 text-primary" />,
-      features: [
-        'Unlimited charging stations',
-        'Real-time monitoring',
-        '24/7 phone support',
-        'Unlimited storage',
-        'Custom integrations',
-        'White-label solution',
-        'Dedicated account manager',
-        'SLA guarantee',
-      ],
-    },
-  ]
+  const pricingPlans: PricingPlan[] = pricingPlanSchema.array().parse(plans)
+
+  const fallbackPlan = pricingPlans.find((plan) => plan.is_default) ?? pricingPlans[0] ?? undefined
+
+  const activePlan =
+    (currentPlanId ? pricingPlans.find((plan) => plan.id === currentPlanId) : undefined) ??
+    (currentPlan ? pricingPlans.find((plan) => plan.package_name === currentPlan) : undefined) ??
+    fallbackPlan
+
+  const activePlanName =
+    activePlan?.package_name ?? currentPlan ?? fallbackPlan?.package_name ?? '—'
+  const activePlanId = activePlan?.id ?? currentPlanId ?? fallbackPlan?.id
+
+  const visiblePlans: PricingPlan[] = activePlan ? [activePlan] : []
 
   const handleUpgrade = (planId: string) => {
     startTransition(async () => {
@@ -127,7 +111,7 @@ export function PlanUpgradeContent({
               <span>Current Usage</span>
             </CardTitle>
             <p className="mt-1 text-xs text-muted-foreground">
-              You are currently on the {currentPlan} plan.
+              You are currently on the {activePlanName} plan.
             </p>
 
             <div className="mt-4 grid gap-6 md:grid-cols-2">
@@ -161,8 +145,8 @@ export function PlanUpgradeContent({
 
       {/* Pricing Packages Section */}
       <PricingPackages
-        plans={pricingPlans}
-        currentPlanId={currentPlanId}
+        plans={visiblePlans}
+        currentPlanId={activePlanId}
         onUpgrade={handleUpgrade}
         isLoading={isPending}
       />

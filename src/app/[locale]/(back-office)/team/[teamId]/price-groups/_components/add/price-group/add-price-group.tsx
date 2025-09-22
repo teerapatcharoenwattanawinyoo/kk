@@ -18,7 +18,7 @@ import {
 export default function AddPriceGroup() {
   const router = useRouter()
   const params = useParams()
-  const teamId = params.id as string
+  const teamId = params.teamId as string
   const [isSuccess, setIsSuccess] = useState(false)
 
   // Hooks for API calls

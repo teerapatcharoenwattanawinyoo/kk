@@ -1,26 +1,11 @@
 'use client'
 
-import { z } from 'zod'
-
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { CheckIcon } from 'lucide-react'
+import { CheckIcon, Crown, Star, Zap } from 'lucide-react'
 
-export const pricingPlanSchema = z.object({
-  id: z.string(),
-  icon_package_path: z.string().optional(),
-  package_name: z.string(),
-  type_of_prices: z.string(),
-  description: z.string(),
-  price: z.string(),
-  detail: z.array(z.string()),
-  discount: z.string().optional(),
-  commission: z.string().optional(),
-  is_default: z.boolean().optional(),
-})
-
-export type PricingPlan = z.infer<typeof pricingPlanSchema>
+import { type PricingPlan } from './plans.schema'
 
 export interface PricingPackagesProps {
   plans: PricingPlan[]
@@ -35,6 +20,35 @@ export function PricingPackages({
   onUpgrade,
   isLoading = false,
 }: PricingPackagesProps) {
+  const iconComponents = {
+    zap: Zap,
+    crown: Crown,
+    star: Star,
+  } as const
+
+  const renderPlanIcon = (iconPath?: string, planName?: string) => {
+    if (!iconPath) {
+      return <CheckIcon className="h-8 w-8 text-primary" aria-hidden="true" />
+    }
+
+    if (iconPath.startsWith('lucide:')) {
+      const iconKey = iconPath.split(':')[1] as keyof typeof iconComponents
+      const IconComponent = iconComponents[iconKey]
+
+      if (IconComponent) {
+        return <IconComponent className="h-8 w-8 text-primary" aria-hidden="true" />
+      }
+    }
+
+    return (
+      <img
+        src={iconPath}
+        alt={planName ? `${planName} icon` : 'Plan icon'}
+        className="h-8 w-8 object-contain"
+      />
+    )
+  }
+
   const gridColumnsClass =
     plans.length >= 3 ? 'md:grid-cols-3' : plans.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-1'
 
@@ -42,15 +56,17 @@ export function PricingPackages({
     <div className="mt-10">
       <div className={`grid grid-cols-1 gap-6 ${gridColumnsClass}`}>
         {plans.map((plan) => {
-          const isCurrentPlan = plan.is_default || plan.id === currentPlanId
+          const isCurrentPlan = plan.id === currentPlanId
+          const isRecommendedPlan = plan.is_default && !isCurrentPlan
+
+          const cardStateClass = isCurrentPlan
+            ? 'border-2 border-green-500'
+            : isRecommendedPlan
+              ? 'border-2 border-primary'
+              : ''
 
           return (
-            <Card
-              key={plan.id}
-              className={`relative shadow-none ${
-                isCurrentPlan ? 'border-2 border-green-500' : ''
-              }`}
-            >
+            <Card key={plan.id} className={`relative shadow-none ${cardStateClass}`}>
               {isCurrentPlan && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
                   <Badge variant={'outline'} className="bg-background">
@@ -59,23 +75,21 @@ export function PricingPackages({
                 </div>
               )}
 
+              {isRecommendedPlan && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
+                  <Badge variant={'outline'} className="bg-background">
+                    <span className="font-medium">Popular</span>
+                  </Badge>
+                </div>
+              )}
+
               <CardContent className="p-6">
                 {/* Plan Header */}
                 <div className="mb-6 text-center">
                   <div className="mb-3 flex justify-center">
-                    {plan.icon_package_path ? (
-                      <div className="rounded-lg bg-primary/10 px-3 py-3">
-                        <img
-                          src={plan.icon_package_path}
-                          alt={`${plan.package_name} icon`}
-                          className="h-8 w-8 object-contain"
-                        />
-                      </div>
-                    ) : (
-                      <div className="rounded-lg bg-primary/10 px-3 py-3">
-                        <CheckIcon className="h-8 w-8 text-primary" />
-                      </div>
-                    )}
+                    <div className="rounded-lg bg-primary/10 px-3 py-3">
+                      {renderPlanIcon(plan.icon_package_path, plan.package_name)}
+                    </div>
                   </div>
                   <h3 className="text-xl font-medium">{plan.package_name}</h3>
                   <div className="mt-2">

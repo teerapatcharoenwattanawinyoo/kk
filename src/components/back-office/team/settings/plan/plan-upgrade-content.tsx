@@ -7,7 +7,8 @@ import { Database } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { BillingInformation, type BillingData } from './billing-information'
-import { PricingPackages, type PricingPlan, pricingPlanSchema } from './pricing-packages'
+import { PricingPackages } from './pricing-packages'
+import { pricingPlanSchema, type PricingPlan } from './plans.schema'
 
 export interface UsageData {
   stations: { used: number; limit: number }
@@ -28,8 +29,8 @@ export interface PlanUpgradeContentProps {
 
 export function PlanUpgradeContent({
   usage,
-  currentPlan = 'Pro',
-  currentPlanId = '24',
+  currentPlan = 'Professional',
+  currentPlanId = 'professional',
   upgradePlanAction,
   teamId,
   billingData,
@@ -44,12 +45,27 @@ export function PlanUpgradeContent({
 
   const pricingPlans: PricingPlan[] = pricingPlanSchema.array().parse([
     {
-      id: '24',
-      icon_package_path: 'https://example.com/icons/pro.svg',
-      package_name: 'Pro',
+      id: 'starter',
+      icon_package_path: 'lucide:zap',
+      package_name: 'Starter',
       type_of_prices: 'month',
-      description: 'Ideal for growing teams that need advanced capabilities.',
-      price: '150.00',
+      description: 'Perfect for small teams getting started',
+      price: '129',
+      detail: [
+        'Up to 5 charging stations',
+        'Basic analytics',
+        'Email support',
+        '5GB storage',
+        'Standard integrations',
+      ],
+    },
+    {
+      id: 'professional',
+      icon_package_path: 'lucide:crown',
+      package_name: 'Professional',
+      type_of_prices: 'month',
+      description: 'Best for growing businesses',
+      price: '329',
       detail: [
         'Up to 25 charging stations',
         'Advanced analytics & reporting',
@@ -59,15 +75,33 @@ export function PlanUpgradeContent({
         'Custom branding',
         'Multi-location support',
       ],
-      discount: '20.00',
-      commission: '2.00',
       is_default: true,
+    },
+    {
+      id: 'enterprise',
+      icon_package_path: 'lucide:star',
+      package_name: 'Enterprise',
+      type_of_prices: 'month',
+      description: 'For large scale operations',
+      price: '999',
+      detail: [
+        'Unlimited charging stations',
+        'Real-time monitoring',
+        '24/7 phone support',
+        'Unlimited storage',
+        'Custom integrations',
+        'White-label solution',
+        'Dedicated account manager',
+        'SLA guarantee',
+      ],
     },
   ])
 
-  const defaultPlan = pricingPlans.filter((plan) => plan.is_default)
-  const plansToDisplay = defaultPlan.length > 0 ? defaultPlan : pricingPlans
-  const activePlan = plansToDisplay[0]
+  const activePlan =
+    pricingPlans.find((plan) => plan.id === currentPlanId) ??
+    pricingPlans.find((plan) => plan.is_default) ??
+    pricingPlans[0]
+
   const activePlanName = activePlan?.package_name ?? currentPlan
   const activePlanId = activePlan?.id ?? currentPlanId
 
@@ -135,7 +169,7 @@ export function PlanUpgradeContent({
 
       {/* Pricing Packages Section */}
       <PricingPackages
-        plans={plansToDisplay}
+        plans={pricingPlans}
         currentPlanId={activePlanId}
         onUpgrade={handleUpgrade}
         isLoading={isPending}

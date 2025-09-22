@@ -21,7 +21,7 @@ export default function EditPriceGroup() {
   const router = useRouter()
   const params = useParams()
   const searchParams = useSearchParams()
-  const teamId = params.id as string
+  const teamId = params.teamId as string
   const priceId = searchParams.get('priceId')
   const [isSuccess, setIsSuccess] = useState(false)
 

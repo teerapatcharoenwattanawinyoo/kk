@@ -300,11 +300,61 @@ export const createCharger = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to create charger')
+  let responseData: unknown = null
+
+  try {
+    responseData = await response.json()
+  } catch (error) {
+    console.error('Failed to parse createCharger response JSON:', error)
   }
 
-  return response.json()
+  if (!response.ok) {
+    const errorMessage =
+      responseData &&
+      typeof responseData === 'object' &&
+      'message' in responseData &&
+      typeof (responseData as { message?: unknown }).message === 'string'
+        ? ((responseData as { message?: string }).message as string)
+        : 'Failed to create charger'
+
+    throw new Error(errorMessage)
+  }
+
+  if (responseData && typeof responseData === 'object') {
+    const responseRecord = responseData as CreateChargerResponse & Record<string, unknown>
+
+    const candidateStatus = [
+      responseRecord.statusCode,
+      responseRecord.status,
+      responseRecord.code,
+    ] as Array<number | string | undefined>
+
+    const normalizedStatus = candidateStatus.reduce<number | undefined>((acc, current) => {
+      if (typeof acc === 'number') {
+        return acc
+      }
+
+      if (typeof current === 'number') {
+        return current
+      }
+
+      if (typeof current === 'string') {
+        const parsed = Number.parseInt(current, 10)
+        if (!Number.isNaN(parsed)) {
+          return parsed
+        }
+      }
+
+      return acc
+    }, undefined)
+
+    return {
+      ...responseRecord,
+      statusCode: normalizedStatus ?? response.status,
+    }
+  }
+
+  throw new Error('Invalid response received while creating charger')
 }
 
 export const updateCharger = async (

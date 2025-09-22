@@ -323,7 +323,13 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         // Create the charger
         const response = await createCharger(teamGroupId!, chargerData)
 
-        if (response.statusCode === 200 || response.statusCode === 201) {
+        const normalizedStatusCode = Number(response.statusCode)
+        const isSuccessfulStatus =
+          !Number.isNaN(normalizedStatusCode) &&
+          normalizedStatusCode >= 200 &&
+          normalizedStatusCode < 300
+
+        if (isSuccessfulStatus) {
           console.log('Charger created successfully, response:', response)
           console.log('Response data structure:', response.data)
           // Try multiple possible response structures

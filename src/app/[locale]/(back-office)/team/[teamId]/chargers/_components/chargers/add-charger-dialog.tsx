@@ -56,7 +56,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   const ocppUrlInputRef = useRef<HTMLInputElement>(null)
   const closeReasonRef = useRef<'success' | null>(null)
   const preserveStateForStepTwoRef = useRef(false)
-  const resumeStepRef = useRef<number | null>(null)
+  const resumeDialogAfterConfirmRef = useRef(false)
 
   // Initialize form
   const form = useForm<ChargerFormData>({
@@ -149,17 +149,12 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
   useEffect(() => {
     if (!confirmDialogOpen) {
-      if (resumeStepRef.current !== null) {
-        const nextStep = resumeStepRef.current
-        resumeStepRef.current = null
-        setCurrentStep(nextStep)
-        preserveStateForStepTwoRef.current = false
-        closeReasonRef.current = null
-        setDialogOpenRef.current?.(true)
-        return
-      }
-
-      if (closeReasonRef.current === 'success' && !preserveStateForStepTwoRef.current) {
+      if (resumeDialogAfterConfirmRef.current) {
+        resumeDialogAfterConfirmRef.current = false
+        if (setDialogOpenRef.current) {
+          setDialogOpenRef.current(true)
+        }
+      } else if (closeReasonRef.current === 'success' && !preserveStateForStepTwoRef.current) {
         resetForm()
         closeReasonRef.current = null
       }
@@ -283,6 +278,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
     return 'text-muted-foreground'
   }
   const handleNext = async () => {
+    console.log('[AddChargerDialog] handleNext invoked', { currentStep })
     if (currentStep === 1) {
       // Validate required fields
 
@@ -293,6 +289,13 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         !selectedBrand ||
         !selectedModel
       ) {
+        console.log('[AddChargerDialog] Missing required basic info', {
+          chargerName,
+          chargerAccess,
+          selectedChargingStation,
+          selectedBrand,
+          selectedModel,
+        })
         toast.error('Please fill in all required fields.')
         return
       }
@@ -301,6 +304,9 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         setIsLoading(true)
 
         const userDataString = localStorage.getItem('user_data')
+        console.log('[AddChargerDialog] Retrieved user_data from localStorage', {
+          hasUserData: Boolean(userDataString),
+        })
         let partnerId = null
 
         if (userDataString) {
@@ -308,6 +314,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
             const userData = JSON.parse(userDataString)
             // customer_id is nested inside user object
             partnerId = userData?.user?.customer_id
+            console.log('[AddChargerDialog] Parsed user_data customer_id', { partnerId })
           } catch (error) {
             console.error('Error parsing user_data from localStorage:', error)
           }
@@ -320,6 +327,10 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
                 const parsed = JSON.parse(altData)
                 if (parsed?.customer_id) {
                   partnerId = parsed.customer_id
+                  console.log('[AddChargerDialog] Found partnerId in alternate storage', {
+                    storageKey: key,
+                    partnerId,
+                  })
                   break
                 }
               } catch {}
@@ -328,6 +339,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         }
 
         if (!partnerId) {
+          console.log('[AddChargerDialog] Partner ID not found')
           toast.error('Partner ID not found. Please login again.')
           return
         }
@@ -353,14 +365,17 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
           brand: parseInt(selectedBrand),
           model: parseInt(selectedModel),
         }
+        console.log('[AddChargerDialog] Prepared charger data payload', chargerData)
 
         // Create the charger
         if (!teamGroupId) {
+          console.log('[AddChargerDialog] Missing teamGroupId when creating charger')
           toast.error('Team group id is missing. Please try again.')
           return
         }
 
         const response = await createChargerMutation.mutateAsync(chargerData)
+        console.log('[AddChargerDialog] Create charger API response', response)
 
         const parseNumericStatus = (value: unknown) => {
           if (typeof value === 'number') {
@@ -394,9 +409,11 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
               data?: { charger_id?: unknown; id?: unknown }
               charger_id?: unknown
               id?: unknown
+              chargerId?: unknown
             }
             charger_id?: unknown
             id?: unknown
+            chargerId?: unknown
           }
 
           const possibleIds: unknown[] = [
@@ -406,6 +423,8 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
             responseLike.data?.id,
             responseLike.charger_id,
             responseLike.id,
+            responseLike.data?.chargerId,
+            responseLike.chargerId,
           ]
 
           for (const candidate of possibleIds) {
@@ -433,22 +452,37 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
             : undefined
 
         const chargerId = extractChargerIdFromResponse(response)
+        const isStatusSuccessful =
+          typeof normalizedStatus === 'number' &&
+          !Number.isNaN(normalizedStatus) &&
+          normalizedStatus >= 200 &&
+          normalizedStatus < 400
+        const isMessageSuccessful =
+          (responseMessage && responseMessage.includes('success')) ||
+          (nestedMessage && nestedMessage.includes('success'))
+        const hasChargerId = typeof chargerId === 'number' && Number.isFinite(chargerId)
 
-        const isSuccessfulResponse =
-          (typeof normalizedStatus === 'number' &&
-            !Number.isNaN(normalizedStatus) &&
-            normalizedStatus >= 200 &&
-            normalizedStatus < 300) ||
-          responseMessage === 'success' ||
-          nestedMessage === 'success' ||
-          chargerId !== null
+        const isSuccessfulResponse = isStatusSuccessful || isMessageSuccessful || hasChargerId
+
+        console.log('[AddChargerDialog] Evaluated charger creation response', {
+          normalizedStatus,
+          responseMessage,
+          nestedMessage,
+          chargerId,
+          isStatusSuccessful,
+          isMessageSuccessful,
+          hasChargerId,
+          isSuccessfulResponse,
+        })
 
         if (!isSuccessfulResponse) {
+          console.log('[AddChargerDialog] Create charger deemed unsuccessful')
           toast.error('Failed to create charger. Please try again.')
           return
         }
 
         if (chargerId === null) {
+          console.log('[AddChargerDialog] Unable to resolve chargerId from response')
           toast.error('Failed to determine charger ID. Please try again.')
           return
         }
@@ -459,19 +493,27 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         closeReasonRef.current = 'success'
         setConfirmDialogOpen(true)
         setDialogOpen?.(false)
-      } catch {
-        toast.error('Failed to create charger. Please try again.')
+      } catch (error) {
+        console.error('[AddChargerDialog] Exception occurred during charger creation', error)
+        const fallbackMessage =
+          (error as { message?: string })?.message ||
+          'Failed to create charger. Please try again.'
+        toast.error(fallbackMessage)
       } finally {
         setIsLoading(false)
       }
     } else if (currentStep === totalSteps) {
       // Final step - update serial number and check connection
       if (!serialNumber || serialNumber.trim() === '') {
+        console.log('[AddChargerDialog] Serial number missing in step two', { serialNumber })
         toast.error('Please enter a serial number.')
         return
       }
 
       if (!createdChargerId || createdChargerId === undefined || createdChargerId === null) {
+        console.log('[AddChargerDialog] Missing createdChargerId before updating serial', {
+          createdChargerId,
+        })
         toast.error('Charger ID is missing. Please create the charger again.')
         return
       }
@@ -484,8 +526,10 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
           charger_code: serialNumber.trim(),
           charger_id: Number(createdChargerId),
         }
+        console.log('[AddChargerDialog] Prepared serial update payload', updatePayload)
 
         const updateResponse = await updateSerialNumberMutation.mutateAsync(updatePayload)
+        console.log('[AddChargerDialog] Update serial API response', updateResponse)
 
         if (updateResponse.statusCode === 200 || updateResponse.statusCode === 201) {
           // Wait a moment for database to update
@@ -493,6 +537,9 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
           // Check connection
           await checkConnection(serialNumber)
+          console.log('[AddChargerDialog] Connection check triggered for serial', {
+            serialNumber,
+          })
 
           // setup completed
 
@@ -500,9 +547,13 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
           setDialogOpen?.(false)
           setShowOcppDialog(true)
         } else {
+          console.log('[AddChargerDialog] Update serial returned unexpected status', {
+            statusCode: updateResponse.statusCode,
+          })
           toast.error('Failed to register charger code.')
         }
       } catch (error) {
+        console.log('[AddChargerDialog] Exception during serial update step', { error })
         toast.error('Failed to complete charger setup.')
       } finally {
         setIsLoading(false)
@@ -512,8 +563,11 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
   const handleConfirmNext = () => {
     preserveStateForStepTwoRef.current = true
-    resumeStepRef.current = 2
+    resumeDialogAfterConfirmRef.current = true
     setConfirmDialogOpen(false)
+
+    setCurrentStep(2)
+    closeReasonRef.current = null
   }
 
   const handleBack = () => {

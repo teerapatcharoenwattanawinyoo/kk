@@ -56,6 +56,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   const ocppUrlInputRef = useRef<HTMLInputElement>(null)
   const closeReasonRef = useRef<'success' | null>(null)
   const preserveStateForStepTwoRef = useRef(false)
+  const resumeDialogAfterConfirmRef = useRef(false)
 
   // Initialize form
   const form = useForm<ChargerFormData>({
@@ -148,7 +149,12 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
   useEffect(() => {
     if (!confirmDialogOpen) {
-      if (closeReasonRef.current === 'success' && !preserveStateForStepTwoRef.current) {
+      if (resumeDialogAfterConfirmRef.current) {
+        resumeDialogAfterConfirmRef.current = false
+        if (setDialogOpenRef.current) {
+          setDialogOpenRef.current(true)
+        }
+      } else if (closeReasonRef.current === 'success' && !preserveStateForStepTwoRef.current) {
         resetForm()
         closeReasonRef.current = null
       }
@@ -501,16 +507,11 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
   const handleConfirmNext = () => {
     preserveStateForStepTwoRef.current = true
+    resumeDialogAfterConfirmRef.current = true
     setConfirmDialogOpen(false)
 
     setCurrentStep(2)
     closeReasonRef.current = null
-
-    if (setDialogOpenRef.current) {
-      setDialogOpenRef.current(true)
-    }
-
-    preserveStateForStepTwoRef.current = false
   }
 
   const handleBack = () => {

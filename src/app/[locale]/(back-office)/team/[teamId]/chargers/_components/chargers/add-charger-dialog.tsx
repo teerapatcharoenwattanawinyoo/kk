@@ -362,84 +362,103 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
         const response = await createChargerMutation.mutateAsync(chargerData)
 
-        const normalizedStatus = (() => {
-          if (typeof response.statusCode === 'number') {
-            return response.statusCode
+        const parseNumericStatus = (value: unknown) => {
+          if (typeof value === 'number') {
+            return Number.isNaN(value) ? undefined : value
           }
 
-          if (typeof (response as { statusCode?: string }).statusCode === 'string') {
-            const parsed = Number((response as { statusCode?: string }).statusCode)
-            if (!Number.isNaN(parsed)) {
-              return parsed
-            }
-          }
-
-          const fallbackStatus = (response as { status?: number | string }).status
-
-          if (typeof fallbackStatus === 'number') {
-            return fallbackStatus
-          }
-
-          if (typeof fallbackStatus === 'string') {
-            const parsed = Number(fallbackStatus)
-            if (!Number.isNaN(parsed)) {
-              return parsed
-            }
+          if (typeof value === 'string') {
+            const parsed = Number(value)
+            return Number.isNaN(parsed) ? undefined : parsed
           }
 
           return undefined
-        })()
+        }
+
+        const findValidId = (value: unknown) => {
+          if (typeof value === 'number') {
+            return Number.isFinite(value) && value > 0 ? value : null
+          }
+
+          if (typeof value === 'string') {
+            const parsed = Number(value)
+            return Number.isFinite(parsed) && parsed > 0 ? parsed : null
+          }
+
+          return null
+        }
+
+        const extractChargerIdFromResponse = (rawResponse: unknown): number | null => {
+          const responseLike = rawResponse as {
+            data?: {
+              data?: { charger_id?: unknown; id?: unknown }
+              charger_id?: unknown
+              id?: unknown
+            }
+            charger_id?: unknown
+            id?: unknown
+          }
+
+          const possibleIds: unknown[] = [
+            responseLike.data?.data?.charger_id,
+            responseLike.data?.data?.id,
+            responseLike.data?.charger_id,
+            responseLike.data?.id,
+            responseLike.charger_id,
+            responseLike.id,
+          ]
+
+          for (const candidate of possibleIds) {
+            const valid = findValidId(candidate)
+            if (valid) {
+              return valid
+            }
+          }
+
+          return null
+        }
+
+        const normalizedStatus =
+          parseNumericStatus((response as { statusCode?: unknown }).statusCode) ??
+          parseNumericStatus((response as { status?: unknown }).status)
+
+        const responseMessage =
+          typeof (response as { message?: unknown }).message === 'string'
+            ? ((response as { message?: string }).message || '').toLowerCase()
+            : undefined
+
+        const nestedMessage =
+          typeof (response as { data?: { message?: unknown } }).data?.message === 'string'
+            ? ((response as { data?: { message?: string } }).data?.message || '').toLowerCase()
+            : undefined
+
+        const chargerId = extractChargerIdFromResponse(response)
 
         const isSuccessfulResponse =
           (typeof normalizedStatus === 'number' &&
             !Number.isNaN(normalizedStatus) &&
             normalizedStatus >= 200 &&
             normalizedStatus < 300) ||
-          response.message?.toLowerCase() === 'success' ||
-          response.data?.message?.toLowerCase() === 'success'
+          responseMessage === 'success' ||
+          nestedMessage === 'success' ||
+          chargerId !== null
 
-        if (isSuccessfulResponse) {
-          // Try multiple possible response structures
-          let chargerId = null
-
-          // Check for response.data.data.charger_id (actual backend structure)
-          if (response.data?.data?.charger_id) {
-            chargerId = response.data.data.charger_id
-          }
-          // Check for deeply nested structure: response.data.data.id
-          else if (response.data?.data?.id) {
-            chargerId = response.data.data.id
-          }
-          // Check for response.data.charger_id (interface expectation)
-          else if (response.data?.charger_id) {
-            chargerId = response.data.charger_id
-          }
-          // Check for response.data.id
-          else if (response.data?.id) {
-            chargerId = response.data.id
-          }
-          // Check for response.charger_id
-          else if ((response as unknown as Record<string, unknown>).charger_id) {
-            chargerId = (response as unknown as Record<string, unknown>).charger_id as number
-          }
-          // Check for response.id
-          else if ((response as unknown as Record<string, unknown>).id) {
-            chargerId = (response as unknown as Record<string, unknown>).id as number
-          }
-
-          if (chargerId) {
-            setCreatedChargerId(Number(chargerId))
-
-            // Move to confirmation dialog
-            closeReasonRef.current = 'success'
-            setConfirmDialogOpen(true)
-            setDialogOpen?.(false)
-          } else {
-            // no charger id in response
-          }
-        } else {
+        if (!isSuccessfulResponse) {
           toast.error('Failed to create charger. Please try again.')
+          return
         }
+
+        if (chargerId === null) {
+          toast.error('Failed to determine charger ID. Please try again.')
+          return
+        }
+
+        setCreatedChargerId(chargerId)
+
+        // Move to confirmation dialog
+        closeReasonRef.current = 'success'
+        setConfirmDialogOpen(true)
+        setDialogOpen?.(false)
       } catch {
         toast.error('Failed to create charger. Please try again.')
       } finally {

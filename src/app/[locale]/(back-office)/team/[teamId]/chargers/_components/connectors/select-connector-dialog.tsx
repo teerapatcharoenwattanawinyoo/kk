@@ -1,6 +1,6 @@
 'use client'
-import { getConnectorList } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/connectors'
 import type { ConnectorSelectItem } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/connectors'
+import { getConnectorList } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/connectors'
 import { useTeam } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
 import { ChevronLeftIcon } from '@/components/icons/ChevronLeftIcon'
 import { Button } from '@/components/ui/button'
@@ -37,7 +37,7 @@ export default function SelectConnectorDialog({
   const [previousParentId, setPreviousParentId] = useState<number | null>(null)
 
   const params = useParams()
-  const teamId = params.id as string
+  const teamId = params.teamId as string
   const { data: teamData } = useTeam(teamId)
   const teamGroupId = teamData?.team_group_id
 

@@ -363,31 +363,36 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         const response = await createChargerMutation.mutateAsync(chargerData)
 
         const normalizedStatus = (() => {
-          if (typeof response.statusCode === 'number') {
-            return response.statusCode
-          }
-
-          if (typeof (response as { statusCode?: string }).statusCode === 'string') {
-            const parsed = Number((response as { statusCode?: string }).statusCode)
-            if (!Number.isNaN(parsed)) {
-              return parsed
+          const parseNumericStatus = (value: unknown) => {
+            if (typeof value === 'number') {
+              return Number.isNaN(value) ? undefined : value
             }
-          }
 
-          const fallbackStatus = (response as { status?: number | string }).status
-
-          if (typeof fallbackStatus === 'number') {
-            return fallbackStatus
-          }
-
-          if (typeof fallbackStatus === 'string') {
-            const parsed = Number(fallbackStatus)
-            if (!Number.isNaN(parsed)) {
-              return parsed
+            if (typeof value === 'string') {
+              const parsed = Number(value)
+              return Number.isNaN(parsed) ? undefined : parsed
             }
+
+            return undefined
           }
 
-          return undefined
+          const directStatus = parseNumericStatus(response.statusCode)
+          if (directStatus !== undefined) {
+            return directStatus
+          }
+
+          const responseWithPossibleStringStatus = response as unknown as {
+            statusCode?: unknown
+          }
+          const statusCodeFromResponse = parseNumericStatus(
+            responseWithPossibleStringStatus.statusCode,
+          )
+          if (statusCodeFromResponse !== undefined) {
+            return statusCodeFromResponse
+          }
+
+          const responseWithStatus = response as unknown as { status?: unknown }
+          return parseNumericStatus(responseWithStatus.status)
         })()
 
         const isSuccessfulResponse =

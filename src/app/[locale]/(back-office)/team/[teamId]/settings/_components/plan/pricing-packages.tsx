@@ -49,10 +49,28 @@ export function PricingPackages({
     )
   }
 
-  const visiblePlans = currentPlanId ? plans.filter((plan) => plan.id === currentPlanId) : plans
+  const visiblePlans = (() => {
+    if (currentPlanId) {
+      const currentPlan = plans.find((plan) => plan.id === currentPlanId)
+
+      return currentPlan ? [currentPlan] : []
+    }
+
+    const defaultPlan = plans.find((plan) => plan.is_default)
+
+    if (defaultPlan) {
+      return [defaultPlan]
+    }
+
+    return plans.length > 0 ? [plans[0]] : []
+  })()
 
   const gridColumnsClass =
-    plans.length >= 3 ? 'md:grid-cols-3' : plans.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-1'
+    visiblePlans.length >= 3
+      ? 'md:grid-cols-3'
+      : visiblePlans.length === 2
+        ? 'md:grid-cols-2'
+        : 'md:grid-cols-1'
 
   return (
     <div className="mt-10">

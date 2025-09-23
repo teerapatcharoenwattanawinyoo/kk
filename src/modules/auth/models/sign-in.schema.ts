@@ -17,14 +17,23 @@ export const SignInSchema = z
 export type SignInInput = z.infer<typeof SignInSchema>
 
 // Expected backend response wrapper for sign-in
+export const BackendLoginDataSchema = z.object({
+  access_token: z.string(),
+  refresh_token: z.string(),
+  user: z.unknown(),
+})
+
 export const BackendLoginSchema = z.object({
   statusCode: z.number(),
   message: z.string().optional(),
-  data: z.object({
-    access_token: z.string(),
-    refresh_token: z.string(),
-    user: z.unknown(),
-  }),
+  data: z
+    .union([
+      BackendLoginDataSchema,
+      z.string(),
+      z.null(),
+      z.undefined(),
+    ])
+    .optional(),
 })
 
 // Normalized login response used by FE after internal route
@@ -35,3 +44,4 @@ export const LoginResponseSchema = z.object({
 })
 
 export type LoginResponse = z.infer<typeof LoginResponseSchema>
+export type BackendLoginData = z.infer<typeof BackendLoginDataSchema>

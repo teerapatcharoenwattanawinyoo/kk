@@ -169,4 +169,5 @@ export const QUERY_KEYS = {
   BANK_LISTS: ['bank_lists'],
   REVENUE_BALANCE: ['revenue_balance'],
   PAYOUT: ['payout'],
+  PRICING_PLANS: ['pricing_plans'],
 } as const

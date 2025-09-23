@@ -1,6 +1,7 @@
 import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import { PlanUpgradeContent, type BillingData, type UsageData } from '../_components/plan'
 import { SettingsLayout } from '../_components/settings-layout'
+import { getPricingPlans } from '../_servers/plans.actions'
 import { upgradePlanAction } from './actions'
 
 interface PlanUpgradePageProps {
@@ -19,13 +20,6 @@ async function getUsageData(teamId: string): Promise<UsageData> {
     stations: { used: 18, limit: 25 },
     members: { used: 32, limit: 50 },
   }
-}
-
-async function getCurrentPlan(teamId: string): Promise<{ planName: string; planId: string }> {
-  // TODO: Replace with actual API call
-
-  // Mock data
-  return { planName: 'Professional', planId: 'professional' }
 }
 
 // Server-side billing data fetching (mock for now)
@@ -66,11 +60,15 @@ const PlanUpgradePage = async ({ params }: PlanUpgradePageProps) => {
   const { locale, teamId } = await params
 
   // Fetch data on server
-  const [usage, currentPlan, billingData] = await Promise.all([
+  const [usage, pricingPlansResponse, billingData] = await Promise.all([
     getUsageData(teamId),
-    getCurrentPlan(teamId),
+    getPricingPlans(teamId),
     getBillingData(teamId),
   ])
+
+  const pricingPlans = pricingPlansResponse?.data ?? []
+
+  const activePlan = pricingPlans.find((plan) => plan.is_default) ?? pricingPlans[0]
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
@@ -78,8 +76,9 @@ const PlanUpgradePage = async ({ params }: PlanUpgradePageProps) => {
         <PlanUpgradeContent
           usage={usage}
           teamId={teamId}
-          currentPlan={currentPlan.planName}
-          currentPlanId={currentPlan.planId}
+          currentPlan={activePlan?.package_name}
+          currentPlanId={activePlan?.id}
+          plans={pricingPlans}
           upgradePlanAction={upgradePlanAction}
           billingData={billingData}
           updatePaymentMethodAction={updatePaymentMethodAction}

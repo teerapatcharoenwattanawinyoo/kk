@@ -4,6 +4,7 @@ import type {
   ChargerTypeResponse,
   CreateChargerRequest,
   CreateChargerResponse,
+  UpdateChargerResponse,
   UpdateSerialNumberRequest,
   UpdateSerialNumberResponse,
 } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/chargers.schema'
@@ -85,7 +86,7 @@ export function useUpdateCharger(teamGroupId: string) {
   const queryClient = useQueryClient()
 
   return useMutation<
-    CreateChargerResponse,
+    UpdateChargerResponse,
     Error,
     { chargerId: number; data: CreateChargerRequest }
   >({
@@ -118,20 +119,25 @@ export function useUpdateSerialNumber() {
   })
 }
 
-export function useCreateCharger(teamGroupId?: string) {
+export function useCreateCharger() {
   const queryClient = useQueryClient()
 
-  return useMutation<CreateChargerResponse, Error, CreateChargerRequest>({
-    mutationFn: async (chargerData) => {
+  return useMutation<
+    CreateChargerResponse,
+    Error,
+    { teamGroupId: string; data: CreateChargerRequest }
+  >({
+    mutationFn: async ({ teamGroupId, data }) => {
       if (!teamGroupId) {
         throw new Error('Team group id is required to create a charger')
       }
-      return createCharger(teamGroupId, chargerData)
+
+      return createCharger(teamGroupId, data)
     },
-    onSuccess: () => {
-      if (teamGroupId) {
+    onSuccess: (_, variables) => {
+      if (variables.teamGroupId) {
         queryClient.invalidateQueries({
-          queryKey: ['chargers-list', teamGroupId],
+          queryKey: ['chargers-list', variables.teamGroupId],
           exact: false,
         })
       } else {

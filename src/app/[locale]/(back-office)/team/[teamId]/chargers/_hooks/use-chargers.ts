@@ -4,6 +4,7 @@ import type {
   ChargerTypeResponse,
   CreateChargerRequest,
   CreateChargerResponse,
+  UpdateChargerResponse,
   UpdateSerialNumberRequest,
   UpdateSerialNumberResponse,
 } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/chargers.schema'
@@ -85,7 +86,7 @@ export function useUpdateCharger(teamGroupId: string) {
   const queryClient = useQueryClient()
 
   return useMutation<
-    CreateChargerResponse,
+    UpdateChargerResponse,
     Error,
     { chargerId: number; data: CreateChargerRequest }
   >({

@@ -261,6 +261,37 @@ export const CreateChargerResponseSchema = z.object({
 
 export type CreateChargerResponse = z.infer<typeof CreateChargerResponseSchema>
 
+const UpdateChargerPayloadSchema = z
+  .union([
+    z
+      .object({
+        data: z.unknown().optional(),
+        message: optionalStringFromAny,
+      })
+      .catchall(z.unknown()),
+    stringFromAny,
+    z.null(),
+  ])
+  .transform((value) => {
+    if (value === null || value === undefined) {
+      return {}
+    }
+
+    if (typeof value === 'string') {
+      return { message: value }
+    }
+
+    return value
+  })
+
+export const UpdateChargerResponseSchema = z.object({
+  statusCode: numberFromAny,
+  data: UpdateChargerPayloadSchema.optional(),
+  message: stringFromAny,
+})
+
+export type UpdateChargerResponse = z.infer<typeof UpdateChargerResponseSchema>
+
 export const ChargerDetailSchema = z.object({
   id: z.number(),
   name: stringFromAny,

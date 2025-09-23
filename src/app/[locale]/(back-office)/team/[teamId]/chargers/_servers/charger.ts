@@ -13,6 +13,7 @@ import type {
   CreateChargerRequest,
   CreateChargerResponse,
   DeleteChargerResponse,
+  UpdateChargerResponse,
   UpdateSerialNumberRequest,
   UpdateSerialNumberResponse,
 } from '../_schemas/chargers.schema'
@@ -26,6 +27,7 @@ import {
   CreateChargerRequestSchema,
   CreateChargerResponseSchema,
   DeleteChargerResponseSchema,
+  UpdateChargerResponseSchema,
   UpdateSerialNumberRequestSchema,
   UpdateSerialNumberResponseSchema,
 } from '../_schemas/chargers.schema'
@@ -101,11 +103,11 @@ export const updateCharger = async (
   teamGroupId: string,
   chargerId: number,
   chargerData: CreateChargerRequest,
-): Promise<CreateChargerResponse> => {
+): Promise<UpdateChargerResponse> => {
   const url = `${API_ENDPOINTS.CHARGER.UPDATE}/${chargerId}?team_group_id=${teamGroupId}`
   const payload = CreateChargerRequestSchema.parse(chargerData)
   const response = await api.patch(url, payload)
-  return CreateChargerResponseSchema.parse(response)
+  return UpdateChargerResponseSchema.parse(response)
 }
 
 export const updateSerialNumber = async (

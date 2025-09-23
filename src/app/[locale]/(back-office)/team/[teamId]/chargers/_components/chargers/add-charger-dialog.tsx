@@ -103,7 +103,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
     setDialogOpenRef.current = setDialogOpen
   }, [setDialogOpen])
 
-  const createChargerMutation = useCreateCharger(teamGroupId)
+  const createChargerMutation = useCreateCharger()
   const updateSerialNumberMutation = useUpdateSerialNumber()
 
   // Reset form when dialog closes
@@ -354,10 +354,19 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
           ? selectedPowerLevelValue.replace(/kW/gi, '').trim()
           : '0'
 
+        // Create the charger
+        if (!teamGroupId) {
+          console.log('[AddChargerDialog] Missing teamGroupId when creating charger')
+          toast.error('Team group id is missing. Please try again.')
+          return
+        }
+
+        const resolvedTeamGroupId = teamGroupId
+
         const chargerData: CreateChargerRequest = {
           partner_id: partnerId,
-          station_id: parseInt(selectedChargingStation),
-          team_group_id: parseInt(teamGroupId!),
+          station_id: Number.parseInt(selectedChargingStation, 10),
+          team_group_id: Number.parseInt(resolvedTeamGroupId, 10),
           charger_name: chargerName,
           charger_access: mapChargerAccessToApi(chargerAccess),
           max_kwh: maxKwh,
@@ -370,18 +379,71 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         }
         console.log('[AddChargerDialog] Prepared charger data payload', chargerData)
 
-        // Create the charger
-        if (!teamGroupId) {
-          console.log('[AddChargerDialog] Missing teamGroupId when creating charger')
-          toast.error('Team group id is missing. Please try again.')
+        const response = await createChargerMutation.mutateAsync({
+          teamGroupId: resolvedTeamGroupId,
+          data: chargerData,
+        })
+        console.log('[AddChargerDialog] Create charger API response', response)
+
+        const isSuccessfulStatus = response.statusCode >= 200 && response.statusCode < 300
+
+        if (isSuccessfulStatus) {
+          const createdId = response.data?.data?.id
+
+          if (typeof createdId === 'number' && Number.isFinite(createdId)) {
+            setCreatedChargerId(createdId)
+          } else {
+            const responseData = response.data as Record<string, unknown>
+            const responseDataNested =
+              (response.data as { data?: Record<string, unknown> })?.data ?? undefined
+
+            const fallbackCandidates: unknown[] = [
+              responseDataNested?.charger_id,
+              responseDataNested?.chargerId,
+              responseDataNested?.id,
+              responseData?.charger_id,
+              responseData?.chargerId,
+              responseData?.id,
+            ]
+
+            let resolvedId: number | undefined
+
+            for (const candidate of fallbackCandidates) {
+              if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+                resolvedId = candidate
+                break
+              }
+
+              if (typeof candidate === 'string') {
+                const parsed = Number(candidate)
+                if (Number.isFinite(parsed)) {
+                  resolvedId = parsed
+                  break
+                }
+              }
+            }
+
+            if (typeof resolvedId === 'number') {
+              setCreatedChargerId(resolvedId)
+            } else {
+              console.warn('[AddChargerDialog] Could not resolve charger id from create response', {
+                data: response.data,
+              })
+            }
+          }
+
+          setConfirmDialogOpen(true)
           return
         }
 
-        const response = await createChargerMutation.mutateAsync(chargerData)
-        console.log('[AddChargerDialog] Create charger API response', response)
-      } catch {
-        console.log('[AddChargerDialog] Exception occurred during charger creation')
-        toast.error('Failed to create charger. Please try again.')
+        const errorMessage = response.message || 'Failed to create charger. Please try again.'
+        toast.error(errorMessage)
+      } catch (error) {
+        console.error('[AddChargerDialog] Exception occurred during charger creation', { error })
+        const fallbackMessage =
+          error instanceof Error && error.message ? error.message : undefined
+
+        toast.error(fallbackMessage ?? 'Failed to create charger. Please try again.')
       } finally {
         setIsLoading(false)
       }

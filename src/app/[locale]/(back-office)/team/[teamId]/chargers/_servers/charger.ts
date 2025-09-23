@@ -558,7 +558,9 @@ export const updateSerialNumber = async (
   serialData: UpdateSerialNumberRequest,
 ): Promise<UpdateSerialNumberResponse> => {
   const payload = UpdateSerialNumberRequestSchema.parse(serialData)
+
   const response = await api.put(API_ENDPOINTS.CHARGER.UPDATE_SERIAL, payload)
+
   return UpdateSerialNumberResponseSchema.parse(response)
 }
 

@@ -83,7 +83,7 @@ export function PricingPackages({
             typeof plan.price === 'number' ? plan.price.toLocaleString() : plan.price
 
           const cardStateClass = isCurrentPlan
-            ? 'border-2 border-green-500'
+            ? ''
             : isRecommendedPlan
               ? 'border-2 border-primary'
               : ''

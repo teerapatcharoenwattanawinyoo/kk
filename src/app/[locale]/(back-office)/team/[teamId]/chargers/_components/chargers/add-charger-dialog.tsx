@@ -281,6 +281,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
   }
   const handleNext = async () => {
     console.log('[AddChargerDialog] handleNext invoked', { currentStep })
+
     if (currentStep === 1) {
       // Validate required fields
 
@@ -378,128 +379,9 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
         const response = await createChargerMutation.mutateAsync(chargerData)
         console.log('[AddChargerDialog] Create charger API response', response)
-
-        const parseNumericStatus = (value: unknown) => {
-          if (typeof value === 'number') {
-            return Number.isNaN(value) ? undefined : value
-          }
-
-          if (typeof value === 'string') {
-            const parsed = Number(value)
-            return Number.isNaN(parsed) ? undefined : parsed
-          }
-
-          return undefined
-        }
-
-        const findValidId = (value: unknown) => {
-          if (typeof value === 'number') {
-            return Number.isFinite(value) && value > 0 ? value : null
-          }
-
-          if (typeof value === 'string') {
-            const parsed = Number(value)
-            return Number.isFinite(parsed) && parsed > 0 ? parsed : null
-          }
-
-          return null
-        }
-
-        const extractChargerIdFromResponse = (rawResponse: unknown): number | null => {
-          const responseLike = rawResponse as {
-            data?: {
-              data?: { charger_id?: unknown; id?: unknown }
-              charger_id?: unknown
-              id?: unknown
-              chargerId?: unknown
-            }
-            charger_id?: unknown
-            id?: unknown
-            chargerId?: unknown
-          }
-
-          const possibleIds: unknown[] = [
-            responseLike.data?.data?.charger_id,
-            responseLike.data?.data?.id,
-            responseLike.data?.charger_id,
-            responseLike.data?.id,
-            responseLike.charger_id,
-            responseLike.id,
-            responseLike.data?.chargerId,
-            responseLike.chargerId,
-          ]
-
-          for (const candidate of possibleIds) {
-            const valid = findValidId(candidate)
-            if (valid) {
-              return valid
-            }
-          }
-
-          return null
-        }
-
-        const normalizedStatus =
-          parseNumericStatus((response as { statusCode?: unknown }).statusCode) ??
-          parseNumericStatus((response as { status?: unknown }).status)
-
-        const responseMessage =
-          typeof (response as { message?: unknown }).message === 'string'
-            ? ((response as { message?: string }).message || '').toLowerCase()
-            : undefined
-
-        const nestedMessage =
-          typeof (response as { data?: { message?: unknown } }).data?.message === 'string'
-            ? ((response as { data?: { message?: string } }).data?.message || '').toLowerCase()
-            : undefined
-
-        const chargerId = extractChargerIdFromResponse(response)
-        const isStatusSuccessful =
-          typeof normalizedStatus === 'number' &&
-          !Number.isNaN(normalizedStatus) &&
-          normalizedStatus >= 200 &&
-          normalizedStatus < 400
-        const isMessageSuccessful =
-          (responseMessage && responseMessage.includes('success')) ||
-          (nestedMessage && nestedMessage.includes('success'))
-        const hasChargerId = typeof chargerId === 'number' && Number.isFinite(chargerId)
-
-        const isSuccessfulResponse = isStatusSuccessful || isMessageSuccessful || hasChargerId
-
-        console.log('[AddChargerDialog] Evaluated charger creation response', {
-          normalizedStatus,
-          responseMessage,
-          nestedMessage,
-          chargerId,
-          isStatusSuccessful,
-          isMessageSuccessful,
-          hasChargerId,
-          isSuccessfulResponse,
-        })
-
-        if (!isSuccessfulResponse) {
-          console.log('[AddChargerDialog] Create charger deemed unsuccessful')
-          toast.error('Failed to create charger. Please try again.')
-          return
-        }
-
-        if (chargerId === null) {
-          console.log('[AddChargerDialog] Unable to resolve chargerId from response')
-          toast.error('Failed to determine charger ID. Please try again.')
-          return
-        }
-
-        setCreatedChargerId(chargerId)
-
-        // Move to confirmation dialog
-        closeReasonRef.current = 'success'
-        setConfirmDialogOpen(true)
-        setDialogOpen?.(false)
-      } catch (error) {
-        console.error('[AddChargerDialog] Exception occurred during charger creation', error)
-        const fallbackMessage =
-          (error as { message?: string })?.message || 'Failed to create charger. Please try again.'
-        toast.error(fallbackMessage)
+      } catch {
+        console.log('[AddChargerDialog] Exception occurred during charger creation')
+        toast.error('Failed to create charger. Please try again.')
       } finally {
         setIsLoading(false)
       }
@@ -544,13 +426,13 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
           // setup completed
 
+          // Close dialog and show OCPP info
           closeReasonRef.current = 'success'
           shouldCloseAfterOcppRef.current = true
 
           if (!isControlled) {
             setInternalOpen(false)
           }
-
           setShowOcppDialog(true)
         } else {
           console.log('[AddChargerDialog] Update serial returned unexpected status', {
@@ -574,24 +456,6 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
 
     setCurrentStep(2)
     closeReasonRef.current = null
-  }
-
-  const handleOcppDialogOpenChange = (open: boolean) => {
-    setShowOcppDialog(open)
-
-    if (!open && shouldCloseAfterOcppRef.current) {
-      shouldCloseAfterOcppRef.current = false
-      closeReasonRef.current = 'success'
-      resetForm()
-
-      if (isControlled) {
-        setDialogOpen?.(false)
-      } else {
-        setInternalOpen(false)
-      }
-
-      closeReasonRef.current = null
-    }
   }
 
   const handleBack = () => {
@@ -796,7 +660,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
       {/* OCPP Url Configuration Dialog */}
       <OcppUrlDialog
         open={showOcppDialog}
-        onOpenChange={handleOcppDialogOpenChange}
+        onOpenChange={setShowOcppDialog}
         ocppUrl={ocppUrl}
         setOcppUrl={setOcppUrl}
         ocppUrlInputRef={ocppUrlInputRef as React.RefObject<HTMLInputElement>}

@@ -7,16 +7,17 @@ import { Database } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { pricingPlanSchema, type PricingPlan } from '../../_schemas/plans.schema'
-import { BillingInformation, type BillingData } from './billing-information'
+import { type BillingData } from './billing-information'
 import { PricingPackages } from './pricing-packages'
 
 const defaultPricingPlans = pricingPlanSchema.array().parse([
   {
     id: '24',
-    icon_package_path: 'https://example.com/icon-package.png',
-    package_name: 'Pro',
+    icon_package_path:
+      'https://s3dev-gramick.sgp1.digitaloceanspaces.com/uploads/package_icon/20250923-134304-NSHMX.png',
+    package_name: 'Professional',
     type_of_prices: 'month',
-    description: '2',
+    description: 'Professional plan for growing teams',
     price: '150.00',
     detail: [
       'Up to 25 charging stations',
@@ -155,13 +156,13 @@ export function PlanUpgradeContent({
 
       {/* Billing Information Section */}
       <div className="mt-10">
-        <BillingInformation
+        {/* <BillingInformation
           billingData={billingData}
           updatePaymentMethodAction={updatePaymentMethodAction}
           downloadInvoiceAction={downloadInvoiceAction}
           viewBillingHistoryAction={viewBillingHistoryAction}
           teamId={teamId}
-        />
+        /> */}
       </div>
     </div>
   )

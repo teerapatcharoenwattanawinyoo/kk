@@ -209,10 +209,7 @@ export type UpdateSerialNumberRequest = z.infer<typeof UpdateSerialNumberRequest
 
 export const UpdateSerialNumberResponseSchema = z.object({
   statusCode: z.number(),
-  data: z.object({
-    success: z.boolean(),
-    charger_id: z.number(),
-  }),
+  data: z.string(),
   message: z.string(),
 })
 

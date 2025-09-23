@@ -10,9 +10,6 @@ import { DeleteConfirmDialog } from '@/components/notifications'
 import { EditChargerDialog } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_components/chargers/edit-charger-dialog'
 import EditConnectorDialog from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_components/connectors/edit-connector-dialog'
 import { SetPriceDialog, SetPriceDialogFormTable } from '@/components/back-office/team/set-price'
-import { AddChargerDialog } from '../chargers/add-charger-dialog'
-import AddConnectorDialog from '../connectors/add-connector-dialog'
-
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -23,6 +20,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { AddChargerDialog } from '../chargers/add-charger-dialog'
+import AddConnectorDialog from '../connectors/add-connector-dialog'
 
 import type { EditChargerInitialValues } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/chargers.schema'
 import { deleteCharger } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/charger'

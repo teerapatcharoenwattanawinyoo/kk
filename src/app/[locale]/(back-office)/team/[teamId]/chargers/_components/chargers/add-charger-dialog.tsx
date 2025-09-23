@@ -440,8 +440,7 @@ export function AddChargerDialog({ open, onOpenChange, teamGroupId }: AddCharger
         toast.error(errorMessage)
       } catch (error) {
         console.error('[AddChargerDialog] Exception occurred during charger creation', { error })
-        const fallbackMessage =
-          error instanceof Error && error.message ? error.message : undefined
+        const fallbackMessage = error instanceof Error && error.message ? error.message : undefined
 
         toast.error(fallbackMessage ?? 'Failed to create charger. Please try again.')
       } finally {

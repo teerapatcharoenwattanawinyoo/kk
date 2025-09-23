@@ -6,34 +6,9 @@ import { Progress } from '@/components/ui/progress'
 import { Database } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
-import { pricingPlanSchema, type PricingPlan } from '../../_schemas/plans.schema'
 import { useCurrentTeamPlan } from '../../_hooks/use-plans'
 import { type BillingData } from './billing-information'
 import { PricingPackages } from './pricing-packages'
-
-const defaultPricingPlans = pricingPlanSchema.array().parse([
-  {
-    id: '24',
-    icon_package_path:
-      'https://s3dev-gramick.sgp1.digitaloceanspaces.com/uploads/package_icon/20250923-134304-NSHMX.png',
-    package_name: 'Professional',
-    type_of_prices: 'month',
-    description: 'Professional plan for growing teams',
-    price: '150.00',
-    detail: [
-      'Up to 25 charging stations',
-      'Advanced analytics & reporting',
-      'Priority support',
-      '50GB storage',
-      'API access',
-      'Custom branding',
-      'Multi-location support',
-    ],
-    discount: '20.00',
-    commission: '2.00',
-    is_default: true,
-  },
-])
 
 export interface UsageData {
   stations: { used: number; limit: number }
@@ -44,7 +19,7 @@ export interface PlanUpgradeContentProps {
   usage: UsageData
   currentPlan?: string
   currentPlanId?: string
-  plans?: PricingPlan[]
+  // plans?: any[]
   upgradePlanAction: (teamId: string, planId: string) => Promise<{ error?: string } | void>
   teamId: string
   billingData: BillingData
@@ -57,7 +32,6 @@ export function PlanUpgradeContent({
   usage,
   currentPlan,
   currentPlanId,
-  plans = defaultPricingPlans,
   upgradePlanAction,
   teamId,
   billingData,
@@ -71,28 +45,25 @@ export function PlanUpgradeContent({
     currentPlan: fetchedCurrentPlan,
     isLoading: isPlansLoading,
     isFetching: isPlansFetching,
-  } = useCurrentTeamPlan(teamId, plans)
+  } = useCurrentTeamPlan(teamId)
 
   const stationsPct = Math.round((usage.stations.used / usage.stations.limit) * 100)
   const membersPct = Math.round((usage.members.used / usage.members.limit) * 100)
 
-  const pricingPlans: PricingPlan[] = fetchedPlans.length
-    ? pricingPlanSchema.array().parse(fetchedPlans)
-    : pricingPlanSchema.array().parse(plans)
-
-  const fallbackPlan = pricingPlans.find((plan) => plan.is_default) ?? pricingPlans[0] ?? undefined
+  const pricingPlans: any[] = fetchedPlans.length ? fetchedPlans : []
 
   const planFromProps =
     (currentPlanId ? pricingPlans.find((plan) => plan.id === currentPlanId) : undefined) ??
     (currentPlan ? pricingPlans.find((plan) => plan.package_name === currentPlan) : undefined)
 
-  const activePlan = fetchedCurrentPlan ?? planFromProps ?? fallbackPlan
+  const activePlan = fetchedCurrentPlan ?? planFromProps ?? pricingPlans[0] ?? undefined
 
   const activePlanName =
-    activePlan?.package_name ?? currentPlan ?? fallbackPlan?.package_name ?? '—'
-  const activePlanId = activePlan?.id ?? currentPlanId ?? fallbackPlan?.id
+    activePlan?.package_name ?? currentPlan ?? pricingPlans[0]?.package_name ?? '—'
+  const activePlanId = activePlan?.id ?? currentPlanId ?? pricingPlans[0]?.id
 
-  const visiblePlans: PricingPlan[] = pricingPlans.length > 0 ? pricingPlans : activePlan ? [activePlan] : []
+  const visiblePlans: any[] =
+    pricingPlans.length > 0 ? pricingPlans : activePlan ? [activePlan] : []
 
   const handleUpgrade = (planId: string) => {
     startTransition(async () => {

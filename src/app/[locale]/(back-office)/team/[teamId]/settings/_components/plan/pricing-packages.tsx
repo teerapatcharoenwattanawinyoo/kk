@@ -105,14 +105,14 @@ export function PricingPackages({
                     <span className="text-3xl font-bold">฿{formattedPrice}</span>
                     <span className="text-muted-foreground">/{plan.type_of_prices}</span>
                   </div>
-                  {plan.discount && (
+                  {/* {plan.discount && (
                     <p className="mt-1 text-xs font-semibold text-primary">Save {plan.discount}</p>
                   )}
                   {plan.commission && (
                     <p className="text-xs text-muted-foreground">
                       Commission fee {plan.commission}
                     </p>
-                  )}
+                  )} */}
                   <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
                 </div>
 

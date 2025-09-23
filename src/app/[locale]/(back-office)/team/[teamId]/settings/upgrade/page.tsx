@@ -78,7 +78,6 @@ const PlanUpgradePage = async ({ params }: PlanUpgradePageProps) => {
           teamId={teamId}
           currentPlan={activePlan?.package_name}
           currentPlanId={activePlan?.id}
-          plans={pricingPlans}
           upgradePlanAction={upgradePlanAction}
           billingData={billingData}
           updatePaymentMethodAction={updatePaymentMethodAction}

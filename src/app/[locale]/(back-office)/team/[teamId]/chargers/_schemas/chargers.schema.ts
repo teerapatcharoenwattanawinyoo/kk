@@ -26,6 +26,16 @@ const stringFromAny = z.preprocess((value) => {
   return String(value)
 }, z.string())
 
+const numberFromAny = z.preprocess((value) => {
+  if (value === null || value === undefined || value === '') return undefined
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+    return Number.isNaN(parsed) ? undefined : parsed
+  }
+  if (typeof value === 'number') return value
+  return undefined
+}, z.number())
+
 const nullableNumberFromAny = z.preprocess((value) => {
   if (value === null || value === undefined || value === '') return null
   if (typeof value === 'string') {
@@ -150,19 +160,40 @@ export const CreateChargerRequestSchema = z.object({
 
 export type CreateChargerRequest = z.infer<typeof CreateChargerRequestSchema>
 
+const CreateChargerInnerDataSchema = z
+  .object({
+    id: optionalNumberFromAny,
+    charger_id: optionalNumberFromAny,
+    chargerId: optionalNumberFromAny,
+  })
+  .catchall(z.unknown())
+  .transform((value, ctx) => {
+    const resolvedId = value.id ?? value.charger_id ?? value.chargerId
+
+    if (typeof resolvedId !== 'number' || Number.isNaN(resolvedId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Charger id is required',
+        path: ['id'],
+      })
+
+      return z.NEVER
+    }
+
+    return {
+      id: resolvedId,
+    }
+  })
+
 export const CreateChargerResponseSchema = z.object({
-  statusCode: z.number(),
+  statusCode: numberFromAny,
   data: z
     .object({
-      data: z
-        .object({
-          id: z.number(),
-        })
-        .catchall(z.unknown()),
-      message: z.string().optional(),
+      data: CreateChargerInnerDataSchema,
+      message: optionalStringFromAny,
     })
     .catchall(z.unknown()),
-  message: z.string(),
+  message: stringFromAny,
 })
 
 export type CreateChargerResponse = z.infer<typeof CreateChargerResponseSchema>

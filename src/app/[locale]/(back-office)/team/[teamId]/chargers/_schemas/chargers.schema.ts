@@ -61,6 +61,69 @@ const optionalNumberFromAny = z.preprocess((value) => {
   return undefined
 }, z.number().optional())
 
+const booleanFromAny = z.preprocess((value) => {
+  if (value === undefined || value === null || value === '') {
+    return false
+  }
+
+  if (typeof value === 'boolean') {
+    return value
+  }
+
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      return false
+    }
+
+    if (value === 1) return true
+    if (value === 0) return false
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+
+    if (!normalized) {
+      return false
+    }
+
+    const truthyValues = [
+      'true',
+      '1',
+      'yes',
+      'y',
+      'connected',
+      'success',
+      'succeeded',
+      'online',
+      'paired',
+      'pairing success',
+    ]
+
+    if (truthyValues.includes(normalized)) {
+      return true
+    }
+
+    const falsyValues = [
+      'false',
+      '0',
+      'no',
+      'n',
+      'disconnected',
+      'failed',
+      'failure',
+      'offline',
+      'pairing failed',
+      'pairing failure',
+    ]
+
+    if (falsyValues.includes(normalized)) {
+      return false
+    }
+  }
+
+  return false
+}, z.boolean())
+
 export const ChargerFormSchema = z.object({
   chargerName: z.string().min(1, 'Charger name is required'),
   chargerAccess: z.string().min(1, 'Charger access is required'),
@@ -250,7 +313,7 @@ export const CheckConnectionResponseSchema = z.object({
   statusCode: z.number(),
   data: z.object({
     status: z.string(),
-    connected: z.boolean(),
+    connected: booleanFromAny,
   }),
   message: z.string(),
 })

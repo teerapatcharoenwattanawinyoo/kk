@@ -4,6 +4,7 @@ import type {
   ChargerListItem,
   EditChargerInitialValues,
 } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/chargers.schema'
+import { getChargerDetail } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/charger'
 import { ChargerTableSkeleton } from '@/components/skeleton-components'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,16 +23,12 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useChargersList } from '@/hooks/use-chargers'
+import { useI18n } from '@/lib/i18n'
 import { Eye, EyeClosed, Pencil, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useState } from 'react'
-
-import {
-  useChargersTableController,
-  type ConnectionDisplay,
-  type StatusBadgeConfig,
-} from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_hooks/use-chargers-table'
 
 interface ChargersTableProps {
   chargers: ChargerListItem[]
@@ -40,8 +37,11 @@ interface ChargersTableProps {
   statusFilter: string
   clearAllFilters: () => void
   onEditCharger: (editChargerData: EditChargerInitialValues) => void
-  onSetIntegration: (chargerId: number) => void
-  onDeleteCharger: (chargerId: string | number | undefined) => void
+  onSetIntegration: (chargerId: number) => void // Callback for Set Integration
+  onDeleteCharger: (chargerId: string | number | undefined) => void // Callback for Delete Charger
+  teamId: string // Add teamId for React Query refetch
+  currentPage: string // Add current page for proper query key
+  pageSize: string // Add page size for proper query key
 }
 
 const EmptyState = ({
@@ -52,8 +52,13 @@ const EmptyState = ({
   <div className="py-8 text-center">
     {debouncedSearchTerm || statusFilter ? (
       <div>
-        <p className="mb-2 text-sm text-gray-500">No chargers found matching your search criteria.</p>
-        <button onClick={clearAllFilters} className="text-xs text-blue-600 underline hover:text-blue-800">
+        <p className="mb-2 text-sm text-gray-500">
+          No chargers found matching your search criteria.
+        </p>
+        <button
+          onClick={clearAllFilters}
+          className="text-xs text-blue-600 underline hover:text-blue-800"
+        >
           Clear filters to see all chargers
         </button>
       </div>
@@ -72,15 +77,164 @@ export function ChargersTable({
   onEditCharger,
   onSetIntegration,
   onDeleteCharger,
+  teamId,
+  currentPage,
+  pageSize,
 }: ChargersTableProps) {
-  const controller = useChargersTableController({ onEditCharger, onSetIntegration })
-  const {
-    i18n: { t },
-    loadingChargerId,
-    getStatusBadgeConfig,
-    getConnectionDisplay,
-    openEditDialog,
-  } = controller
+  const { t } = useI18n()
+  const [loadingChargerId, setLoadingChargerId] = useState<string | null>(null)
+
+  // Use React Query hook for refetch capability with same parameters as chargers-page
+  const { refetch } = useChargersList(teamId, currentPage, pageSize, {
+    enableRealtime: true,
+    refetchInterval: 30000,
+    search: debouncedSearchTerm,
+    status: statusFilter,
+  })
+
+  // Helper function to map API accessibility values to form values
+  const mapApiAccessToForm = (apiAccess: string | null): string => {
+    if (!apiAccess) return ''
+
+    // Handle both string names and numeric values from API
+    const access = apiAccess.toString().trim().toLowerCase()
+
+    switch (access) {
+      case 'public':
+      case '1':
+        return '1'
+      case 'private':
+      case '2':
+        return '2'
+      case 'unavailable':
+      case '3':
+        return '3'
+      default:
+        return ''
+    }
+  }
+
+  // Status badge function - moved from chargers-page.tsx
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      Available: {
+        bgColor: 'bg-[#DFF8F3]',
+        textColor: 'text-[#0D8A72]',
+        hoverBg: 'hover:bg-[#DFF8F3]',
+        hoverText: 'hover:text-[#0D8A72]',
+      },
+      Integrate: {
+        bgColor: 'bg-[#FFE5D1]',
+        textColor: 'text-[#FF9640]',
+        hoverBg: 'hover:bg-[#FFE5D1]',
+        hoverText: 'hover:text-[#FF9640]',
+      },
+      Charging: {
+        bgColor: 'bg-[#FFE5D1]',
+        textColor: 'text-[#FF9640]',
+        hoverBg: 'hover:bg-[#FFE5D1]',
+        hoverText: 'hover:text-[#FF9640]',
+      },
+    }
+
+    const config = statusConfig[status as keyof typeof statusConfig] || {
+      bgColor: 'bg-destructive/10',
+      textColor: 'text-destructive',
+      hoverBg: 'hover:bg-destructive/20',
+      hoverText: 'hover:text-destructive',
+    }
+
+    return (
+      <Badge
+        className={`rounded-md px-5 py-1 ${config.bgColor} ${config.textColor} ${config.hoverBg} ${config.hoverText}`}
+      >
+        <p className="font-medium">{status}</p>
+      </Badge>
+    )
+  }
+
+  // Connection button function - moved from chargers-page.tsx
+  const getConnectionButton = (connection: string, charger?: unknown) => {
+    if (connection === 'Set Integration') {
+      return (
+        <Button
+          size="sm"
+          className="h-6 rounded-xl bg-[#FFE5D1] px-5 py-1 text-xs text-[#FF9640] hover:bg-[#FF9640] hover:text-white"
+          onClick={() => handleSetIntegration(charger)}
+        >
+          Set Integration
+        </Button>
+      )
+    }
+    return connection
+  }
+
+  // Set integration handler - moved from chargers-page.tsx
+  const handleSetIntegration = async (charger: unknown) => {
+    if (
+      !charger ||
+      typeof charger !== 'object' ||
+      !('id' in charger) ||
+      typeof (charger as { id: unknown }).id !== 'number'
+    ) {
+      console.error('Charger ID is missing or invalid')
+      return
+    }
+
+    const chargerId = (charger as { id: number }).id
+
+    // Call onSetIntegration callback and also fetch charger details
+    onSetIntegration(chargerId)
+
+    // Fetch and open edit dialog with integration mode
+    const chargerItem = chargers.find((c) => c.id === chargerId)
+    if (chargerItem) {
+      await handleEditCharger(chargerItem)
+    }
+  }
+
+  const handleEditCharger = async (charger: ChargerListItem) => {
+    if (!charger.id) return
+
+    setLoadingChargerId(charger.id.toString())
+
+    try {
+      // Fetch detailed charger data from API
+      const response = await getChargerDetail(charger.id)
+
+      if (response.statusCode === 200 && response.data) {
+        const chargerDetail = response.data
+
+        // Map API accessibility values to form values
+        const mappedAccessValue = mapApiAccessToForm(chargerDetail.aceesibility ?? null)
+
+        // Handle selectedPowerLevel - convert max_power to string with kW unit
+        const powerLevelValue = chargerDetail.max_power
+        const mappedPowerLevel = powerLevelValue ? `${powerLevelValue}kW` : ''
+
+        const mappedValues: EditChargerInitialValues = {
+          id: chargerDetail.id.toString(),
+          chargerName: chargerDetail.name || '',
+          chargerAccess: mappedAccessValue,
+          selectedBrand: chargerDetail.brand_id?.toString() || '',
+          selectedModel: chargerDetail.model_id?.toString() || '',
+          typeConnector: chargerDetail.charger_type || '',
+          selectedPowerLevel: mappedPowerLevel,
+          selectedChargingStation: chargerDetail.station_id?.toString() || '',
+          serialNumber: chargerDetail.serial_number || '',
+          selectedTeam: chargerDetail.team_group_id?.toString() || '',
+        }
+
+        onEditCharger(mappedValues)
+      } else {
+        console.error('Failed to fetch charger details, status:', response.statusCode)
+      }
+    } catch (error) {
+      console.error('Error fetching charger detail:', error)
+    } finally {
+      setLoadingChargerId(null)
+    }
+  }
 
   return (
     <div className="-mt-8 overflow-x-auto px-4 sm:px-4">
@@ -129,12 +283,10 @@ export function ChargersTable({
                 key={charger.id ?? `table-charger-${idx}`}
                 charger={charger}
                 isLoadingChargerDetail={loadingChargerId === charger.id?.toString()}
-                statusConfig={getStatusBadgeConfig(charger.status)}
-                connectionDisplay={getConnectionDisplay(charger)}
-                onEdit={() => {
-                  void openEditDialog(charger)
-                }}
-                onDelete={onDeleteCharger}
+                getStatusBadge={getStatusBadge}
+                getConnectionButton={getConnectionButton}
+                setPendingEditCharger={handleEditCharger}
+                handleDeleteCharger={onDeleteCharger}
               />
             ))
           )}
@@ -147,26 +299,25 @@ export function ChargersTable({
 interface ChargerRowProps {
   charger: ChargerListItem
   isLoadingChargerDetail: boolean
-  statusConfig: StatusBadgeConfig
-  connectionDisplay: ConnectionDisplay
-  onEdit: () => void
-  onDelete: (chargerId: string | number | undefined) => void
+  getStatusBadge: (status: string) => React.ReactElement
+  getConnectionButton: (connection: string, charger?: unknown) => React.ReactElement | string
+  setPendingEditCharger: (charger: ChargerListItem) => void
+  handleDeleteCharger: (chargerId: string | number | undefined) => void
 }
 
 const ChargerRow = React.memo(function ChargerRow({
   charger,
   isLoadingChargerDetail,
-  statusConfig,
-  connectionDisplay,
-  onEdit,
-  onDelete,
+  getStatusBadge,
+  getConnectionButton,
+  setPendingEditCharger,
+  handleDeleteCharger,
 }: ChargerRowProps) {
   const router = useRouter()
   const params = useParams()
   const locale = (params?.locale as string) || 'en'
   const teamId = params?.teamId as string | undefined
   const [isHoveringMore, setIsHoveringMore] = useState(false)
-
   return (
     <TableRow className="shadow-xs rounded-lg bg-background">
       <TableCell className="whitespace-nowrap rounded-l-lg px-2 py-2 text-center text-xs text-gray-900 md:px-4 md:py-3">
@@ -182,35 +333,25 @@ const ChargerRow = React.memo(function ChargerRow({
           </div>
           <div className="text-left">
             <div className="text-oc-title text-xs font-medium">{charger.name}</div>
-            <div className="text-oc-title text-xs font-light">{charger.serial_number || 'Null'}</div>
+            <div className="text-oc-title text-xs font-light">
+              {charger.serial_number || 'Null'}
+            </div>
           </div>
         </div>
       </TableCell>
       <TableCell className="whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
-        <div className="inline-block rounded-xl bg-primary/10 px-3 py-1 text-primary">{charger.station_name}</div>
+        <div className="inline-block rounded-xl bg-primary/10 px-3 py-1 text-primary">
+          {charger.station_name}
+        </div>
       </TableCell>
       <TableCell className="whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
         <span className="text-oc-sidebar">{charger.accessibility || 'Unknown'}</span>
       </TableCell>
       <TableCell className="text-oc-sidebar whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
-        <Badge
-          className={`rounded-md px-5 py-1 ${statusConfig.badgeClass} ${statusConfig.textClass}`}
-        >
-          <p className="font-medium">{charger.status}</p>
-        </Badge>
+        {getStatusBadge(charger.status)}
       </TableCell>
       <TableCell className="text-oc-sidebar whitespace-nowrap px-2 py-2 text-center text-xs md:px-4 md:py-3">
-        {connectionDisplay.type === 'action' ? (
-          <Button
-            size="sm"
-            className="h-6 rounded-xl bg-[#FFE5D1] px-5 py-1 text-xs text-[#FF9640] hover:bg-[#FF9640] hover:text-white"
-            onClick={connectionDisplay.onClick}
-          >
-            {connectionDisplay.label}
-          </Button>
-        ) : (
-          connectionDisplay.value
-        )}
+        {getConnectionButton(charger.connection, charger)}
       </TableCell>
       <TableCell className="text-oc-sidebar whitespace-pre-line px-2 py-2 text-center text-xs leading-tight md:px-4 md:py-3">
         {charger.date}
@@ -231,7 +372,11 @@ const ChargerRow = React.memo(function ChargerRow({
                     onMouseEnter={() => setIsHoveringMore(true)}
                     onMouseLeave={() => setIsHoveringMore(false)}
                   >
-                    {isHoveringMore ? <Eye className="h-[18px] w-[18px] p-0" /> : <EyeClosed className="h-[18px] w-[18px] p-0" />}
+                    {isHoveringMore ? (
+                      <Eye className="h-[18px] w-[18px] p-0" />
+                    ) : (
+                      <EyeClosed className="h-[18px] w-[18px] p-0" />
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
@@ -261,7 +406,7 @@ const ChargerRow = React.memo(function ChargerRow({
                 size="icon"
                 className="h-[13px] w-[13px] p-0"
                 disabled={isLoadingChargerDetail}
-                onClick={onEdit}
+                onClick={() => setPendingEditCharger(charger)}
               >
                 <Pencil className="h-[18px] w-[18px] p-0" />
               </Button>
@@ -274,7 +419,7 @@ const ChargerRow = React.memo(function ChargerRow({
                 variant="ghost"
                 size="icon"
                 className="ml-4 h-[18px] w-[18px] p-0"
-                onClick={() => onDelete(charger.id)}
+                onClick={() => handleDeleteCharger(charger.id)}
                 aria-label="Delete"
               >
                 <Trash2 className="h-[18px] w-[18px] p-0" />

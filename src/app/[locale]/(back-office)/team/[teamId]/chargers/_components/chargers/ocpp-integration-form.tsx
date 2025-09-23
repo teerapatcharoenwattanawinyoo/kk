@@ -8,14 +8,12 @@ import { UseFormReturn } from 'react-hook-form'
 interface OcppIntegrationFormProps {
   form: UseFormReturn<any>
   chargerName: string
-  mode?: 'add' | 'edit'
   onSerialNumberChange: (value: string) => void
 }
 
 export function OcppIntegrationForm({
   form,
   chargerName,
-  mode = 'add',
   onSerialNumberChange,
 }: OcppIntegrationFormProps) {
   return (

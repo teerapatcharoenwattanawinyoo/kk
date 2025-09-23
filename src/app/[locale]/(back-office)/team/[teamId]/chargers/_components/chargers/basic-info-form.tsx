@@ -26,15 +26,14 @@ interface BasicInfoFormProps {
   teamOptions: TeamHostData[]
   selectedBrand: string
   selectedModel: string
-  mode?: 'add' | 'edit'
+  modelOptions: ChargerBrand['models']
+  powerLevelOptions: string[]
   onChargerNameChange: (value: string) => void
   onChargerAccessChange: (value: string) => void
   onBrandChange: (value: string) => void
   onModelChange: (value: string) => void
   onTypeConnectorChange: (value: string) => void
   onChargingStationChange: (value: string) => void
-  getModelsForBrand: (brandId: string) => any[]
-  getPowerLevelsForModel: (modelId: string) => string[]
 }
 
 export function BasicInfoForm({
@@ -45,15 +44,14 @@ export function BasicInfoForm({
   teamOptions,
   selectedBrand,
   selectedModel,
-  mode = 'add',
+  modelOptions,
+  powerLevelOptions,
   onChargerNameChange,
   onChargerAccessChange,
   onBrandChange,
   onModelChange,
   onTypeConnectorChange,
   onChargingStationChange,
-  getModelsForBrand,
-  getPowerLevelsForModel,
 }: BasicInfoFormProps) {
   return (
     <>
@@ -177,7 +175,7 @@ export function BasicInfoForm({
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    {getModelsForBrand(selectedBrand)
+                    {modelOptions
                       .filter((model) => model.id && model.id.toString().trim() !== '')
                       .map((model) => (
                         <SelectItem key={model.id} value={model.id.toString().trim()}>
@@ -258,7 +256,7 @@ export function BasicInfoForm({
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    {getPowerLevelsForModel(selectedModel)
+                    {powerLevelOptions
                       .filter((level) => level && level.trim() !== '')
                       .map((level) => (
                         <SelectItem key={level} value={level.trim()}>

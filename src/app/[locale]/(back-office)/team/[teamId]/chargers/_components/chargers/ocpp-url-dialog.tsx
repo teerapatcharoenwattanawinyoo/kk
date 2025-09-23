@@ -1,27 +1,20 @@
 'use client'
 
-import { checkConnection } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/charger'
 import { SuccessDialog } from '@/components/notifications'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { useOcppUrlDialogController } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_hooks/use-ocpp-url-dialog'
 import { Check, Copy, Loader2 } from 'lucide-react'
 import Image from 'next/image'
-import React, { useState } from 'react'
-
-interface CheckConnectionData {
-  status: string
-  detail?: string
-  online?: string
-  connected?: boolean
-}
+import type { RefObject } from 'react'
 
 interface OcppUrlDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   ocppUrl: string
   setOcppUrl: (url: string) => void
-  ocppUrlInputRef: React.RefObject<HTMLInputElement>
+  ocppUrlInputRef: RefObject<HTMLInputElement>
   additionalInput?: string
 }
 
@@ -33,63 +26,18 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
   ocppUrlInputRef,
   additionalInput,
 }) => {
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
+  const controller = useOcppUrlDialogController({
+    open,
+    onOpenChange,
+    ocppUrl,
+    ocppUrlInputRef,
+    additionalInput,
+  })
 
-  const OCPP_BASE_URL = process.env.NEXT_PUBLIC_OCPP_BASE_URL || 'ws://ocpp.onecharge.co.th'
-
-  // Generate the complete URL with additional input
-  const completeUrl = additionalInput ? `${OCPP_BASE_URL}/${additionalInput}` : ocppUrl
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!additionalInput) {
-      setError('Serial number is required for connection check')
-      return
-    }
-
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const response = await checkConnection(additionalInput)
-
-      if (response.statusCode === 200 && response.data.status !== 'Failed') {
-        setShowSuccessDialog(true)
-      } else {
-        const responseData = response.data as CheckConnectionData
-        const errorMessage =
-          responseData?.detail ||
-          response.message ||
-          `Connection failed: ${responseData?.status || 'Unknown error'}`
-        setError(errorMessage)
-      }
-    } catch (error) {
-      console.error('Error checking charger connection:', error)
-      setError('Failed to check charger connection. Please try again.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleSuccessClose = () => {
-    setShowSuccessDialog(false)
-    setError(null)
-    onOpenChange(false)
-  }
-
-  React.useEffect(() => {
-    if (open) {
-      setError(null)
-    }
-  }, [open])
+  const { dialog, successDialog, completeUrl, error, isLoading, copied } = controller
 
   return (
     <>
-      {/* Loading Overlay - Outside of Dialog to cover everything */}
       {isLoading && (
         <div className="z-9999 fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="flex flex-col items-center gap-3 text-white">
@@ -99,7 +47,7 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
         </div>
       )}
 
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={dialog.open} onOpenChange={dialog.onOpenChange}>
         <DialogContent className="flex w-full max-w-xl flex-col items-center justify-center rounded-2xl px-3 py-6 sm:px-4 md:px-10 md:py-8">
           <DialogTitle className="sr-only">OCPP URL Configuration</DialogTitle>
           <DialogDescription className="sr-only">
@@ -119,17 +67,15 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
               OCPP Url Configuration
             </h2>
             <p className="mt-2 text-center text-xs font-light text-[#767676] sm:text-left sm:text-sm">
-              Configure your EV charger with the OCPP URL below and the charger code you registered.
-              The serial number will automatically appear in your charger list once your physical EV
-              charger connects successfully via OCPP protocol.
+              Configure your EV charger with the OCPP URL below and the charger code you registered. The serial number will
+              automatically appear in your charger list once your physical EV charger connects successfully via OCPP protocol.
             </p>
             <p className="mt-6 text-center text-xs font-light text-[#767676] sm:mt-10 sm:text-left sm:text-sm">
-              If you don&apos;t have a physical charger yet, you can use an OCPP simulator for
-              testing. The connection status and serial number will update once the device connects.
+              If you don&apos;t have a physical charger yet, you can use an OCPP simulator for testing. The connection status and
+              serial number will update once the device connects.
             </p>
             <span className="mt-6 text-center text-xs text-[#6E82A5] sm:mt-10 sm:text-left sm:text-sm">
-              *Not all chargers support setting an OCPP URL. If this is the case with your charger,
-              them skip this step.
+              *Not all chargers support setting an OCPP URL. If this is the case with your charger, then skip this step.
             </span>
           </div>
           <form className="flex w-full flex-col gap-4">
@@ -140,8 +86,8 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
                   id="ocppUrl"
                   ref={ocppUrlInputRef}
                   value={completeUrl}
-                  onChange={(e) => setOcppUrl(e.target.value)}
-                  placeholder={OCPP_BASE_URL}
+                  onChange={(event) => setOcppUrl(event.target.value)}
+                  placeholder={controller.ocppBaseUrl}
                   className="h-10 rounded-lg pr-16 text-xs sm:h-11 sm:pr-20 sm:text-sm"
                   readOnly={!!additionalInput}
                 />
@@ -150,12 +96,7 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
                   size="sm"
                   className="absolute right-1 top-1/2 h-7 w-8 -translate-y-1/2 rounded-lg sm:right-2 sm:h-8 sm:w-10"
                   onClick={() => {
-                    navigator.clipboard.writeText(completeUrl)
-                    setCopied(true)
-                    if (ocppUrlInputRef.current) {
-                      ocppUrlInputRef.current.select()
-                    }
-                    setTimeout(() => setCopied(false), 1500)
+                    void controller.handleCopy()
                   }}
                 >
                   {copied ? (
@@ -173,10 +114,12 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
             )}
             <div className="flex w-full items-center justify-center gap-3 pt-4">
               <Button
-                variant={'default'}
+                variant="default"
                 className="h-10 w-full rounded-2xl text-sm font-medium sm:h-11 sm:w-1/2"
                 type="submit"
-                onClick={handleSubmit}
+                onClick={(event) => {
+                  void controller.handleSubmit(event)
+                }}
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -194,12 +137,16 @@ const OcppUrlDialog: React.FC<OcppUrlDialogProps> = ({
       </Dialog>
 
       <SuccessDialog
-        open={showSuccessDialog}
-        onOpenChange={setShowSuccessDialog}
+        open={successDialog.open}
+        onOpenChange={(nextOpen) => {
+          if (nextOpen) {
+            successDialog.setOpen(true)
+          } else {
+            successDialog.handleClose()
+          }
+        }}
         title="Success"
         message="Charger pairing completed successfully! The charger connection has been established."
-        buttonText="Continue"
-        onButtonClick={handleSuccessClose}
       />
     </>
   )

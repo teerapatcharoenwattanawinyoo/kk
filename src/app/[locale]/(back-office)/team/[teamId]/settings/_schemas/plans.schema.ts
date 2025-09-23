@@ -8,9 +8,16 @@ export const pricingPlanSchema = z.object({
   description: z.string(),
   price: z.union([z.string(), z.number()]),
   detail: z.array(z.string()),
-  discount: z.string().optional(),
-  commission: z.string().optional(),
+  discount: z.union([z.string(), z.number()]).optional(),
+  commission: z.union([z.string(), z.number()]).optional(),
   is_default: z.boolean().optional(),
 })
 
+export const pricingPlansResponseSchema = z.object({
+  statusCode: z.number(),
+  data: z.array(pricingPlanSchema),
+  message: z.string(),
+})
+
 export type PricingPlan = z.infer<typeof pricingPlanSchema>
+export type PricingPlansResponse = z.infer<typeof pricingPlansResponseSchema>

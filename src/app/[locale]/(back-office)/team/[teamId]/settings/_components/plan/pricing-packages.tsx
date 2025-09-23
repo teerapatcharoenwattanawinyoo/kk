@@ -49,21 +49,7 @@ export function PricingPackages({
     )
   }
 
-  const visiblePlans = (() => {
-    if (currentPlanId) {
-      const currentPlan = plans.find((plan) => plan.id === currentPlanId)
-
-      return currentPlan ? [currentPlan] : []
-    }
-
-    const defaultPlan = plans.find((plan) => plan.is_default)
-
-    if (defaultPlan) {
-      return [defaultPlan]
-    }
-
-    return plans.length > 0 ? [plans[0]] : []
-  })()
+  const visiblePlans = plans.length > 0 ? plans : []
 
   const gridColumnsClass =
     visiblePlans.length >= 3

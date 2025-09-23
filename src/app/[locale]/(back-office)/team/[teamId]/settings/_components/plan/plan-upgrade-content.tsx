@@ -7,6 +7,7 @@ import { Database } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { pricingPlanSchema, type PricingPlan } from '../../_schemas/plans.schema'
+import { useCurrentTeamPlan } from '../../_hooks/use-plans'
 import { type BillingData } from './billing-information'
 import { PricingPackages } from './pricing-packages'
 
@@ -65,24 +66,33 @@ export function PlanUpgradeContent({
   viewBillingHistoryAction,
 }: PlanUpgradeContentProps) {
   const [isPending, startTransition] = useTransition()
+  const {
+    plans: fetchedPlans,
+    currentPlan: fetchedCurrentPlan,
+    isLoading: isPlansLoading,
+    isFetching: isPlansFetching,
+  } = useCurrentTeamPlan(teamId, plans)
 
   const stationsPct = Math.round((usage.stations.used / usage.stations.limit) * 100)
   const membersPct = Math.round((usage.members.used / usage.members.limit) * 100)
 
-  const pricingPlans: PricingPlan[] = pricingPlanSchema.array().parse(plans)
+  const pricingPlans: PricingPlan[] = fetchedPlans.length
+    ? pricingPlanSchema.array().parse(fetchedPlans)
+    : pricingPlanSchema.array().parse(plans)
 
   const fallbackPlan = pricingPlans.find((plan) => plan.is_default) ?? pricingPlans[0] ?? undefined
 
-  const activePlan =
+  const planFromProps =
     (currentPlanId ? pricingPlans.find((plan) => plan.id === currentPlanId) : undefined) ??
-    (currentPlan ? pricingPlans.find((plan) => plan.package_name === currentPlan) : undefined) ??
-    fallbackPlan
+    (currentPlan ? pricingPlans.find((plan) => plan.package_name === currentPlan) : undefined)
+
+  const activePlan = fetchedCurrentPlan ?? planFromProps ?? fallbackPlan
 
   const activePlanName =
     activePlan?.package_name ?? currentPlan ?? fallbackPlan?.package_name ?? '—'
   const activePlanId = activePlan?.id ?? currentPlanId ?? fallbackPlan?.id
 
-  const visiblePlans: PricingPlan[] = activePlan ? [activePlan] : []
+  const visiblePlans: PricingPlan[] = pricingPlans.length > 0 ? pricingPlans : activePlan ? [activePlan] : []
 
   const handleUpgrade = (planId: string) => {
     startTransition(async () => {
@@ -151,7 +161,7 @@ export function PlanUpgradeContent({
         plans={visiblePlans}
         currentPlanId={activePlanId}
         onUpgrade={handleUpgrade}
-        isLoading={isPending}
+        isLoading={isPending || isPlansLoading || isPlansFetching}
       />
 
       {/* Billing Information Section */}

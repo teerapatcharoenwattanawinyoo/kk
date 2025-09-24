@@ -434,6 +434,7 @@ export default function MembersPriceGroupForm({
                         onValueChange={handlePriceTypeChange}
                         className="flex w-full flex-wrap gap-6"
                       >
+                        {/* บาท/kWh */}
                         <div
                           className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
                             priceType === 'PER_KWH'
@@ -458,79 +459,29 @@ export default function MembersPriceGroupForm({
                             บาท/kWh
                           </Label>
                         </div>
+                        {/* Tiered Credit Pricing */}
                         <div
                           className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'PER_MINUTE'
+                            priceType === 'TIERED_CREDIT'
                               ? 'bg-white/20 text-white'
                               : 'bg-[#2B58F7] text-white'
                           }`}
                         >
                           <RadioGroupItem
-                            value="PER_MINUTE"
-                            id="radio-hrs"
+                            value="TIERED_CREDIT"
+                            id="radio-tiered-credit"
                             className={`${
-                              priceType === 'PER_MINUTE'
+                              priceType === 'TIERED_CREDIT'
                                 ? 'border-2 border-white text-white'
                                 : 'border-2 border-white/20'
                             }`}
                           />
                           <Label
-                            htmlFor="radio-hrs"
                             className={`cursor-pointer ${
-                              priceType === 'PER_MINUTE' ? 'text-white' : 'text-white'
+                              priceType === 'TIERED_CREDIT' ? 'text-card' : 'text-white'
                             }`}
                           >
-                            ฿/Hrs.
-                          </Label>
-                        </div>
-                        <div
-                          className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'PEAK'
-                              ? 'bg-white/20 font-semibold text-white'
-                              : 'bg-[#2B58F7] text-white'
-                          }`}
-                        >
-                          <RadioGroupItem
-                            value="PEAK"
-                            id="radio-onpeak"
-                            className={`${
-                              priceType === 'PEAK'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
-                            }`}
-                          />
-                          <Label
-                            htmlFor="radio-onpeak"
-                            className={`cursor-pointer ${
-                              priceType === 'PEAK' ? 'text-white' : 'text-white'
-                            }`}
-                          >
-                            On Peak Off Peak
-                          </Label>
-                        </div>
-                        <div
-                          className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'free'
-                              ? 'bg-white/20 text-[#4361ee]'
-                              : 'bg-[#2B58F7] text-white'
-                          }`}
-                        >
-                          <RadioGroupItem
-                            value="free"
-                            id="radio-free"
-                            className={`${
-                              priceType === 'free'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
-                            }`}
-                          />
-                          <Label
-                            htmlFor="radio-free"
-                            className={`cursor-pointer ${
-                              priceType === 'free' ? 'text-white' : 'text-white'
-                            }`}
-                          >
-                            Free Charge Promotion
+                            Tiered Credit Pricing
                           </Label>
                         </div>
                       </RadioGroup>
@@ -570,7 +521,7 @@ export default function MembersPriceGroupForm({
                         <Select value={billingDay} onValueChange={setBillingDay}>
                           <SelectTrigger
                             id="billingDay"
-                            className={`mt-2 w-full border-none bg-[#F2F2F2] ${billingDay ? 'text-oc-title-secondary' : 'text-[#CACACA]'}`}
+                            className={`mt-2 w-28 ${billingDay ? 'text-oc-title-secondary' : 'text-[#CACACA]'}`}
                             aria-label="Billing cycle day"
                             // Disable when paying by usage
                             disabled={billingType !== 'CREDIT'}
@@ -588,10 +539,6 @@ export default function MembersPriceGroupForm({
                             })}
                           </SelectContent>
                         </Select>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          เลือกวันที่ตัดรอบบิลสำหรับการชำระแบบเครดิต (1–31).{' '}
-                          {/* shown only whenเลือกเครดิต */}
-                        </p>
                       </div>
                     </div>
                   )}
@@ -604,7 +551,7 @@ export default function MembersPriceGroupForm({
                       </div>
 
                       {/* Starting Fee */}
-                      <div className="mb-6 rounded-xl border bg-white p-6">
+                      <div className="mb-6 rounded-xl border p-6">
                         <div className="text-oc-title-secondary font-medium">Starting fee</div>
                         <div className="mb-2 text-xs text-[#8a94a6]">
                           A one-time fee will be applied when starting the charge session.

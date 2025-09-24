@@ -9,7 +9,7 @@ const trimmedInput = z
     return String(value).trim()
   })
 
-export const PriceTypeSchema = z.enum(['PER_KWH', 'PER_MINUTE', 'PEAK', 'free'])
+export const PriceTypeSchema = z.enum(['PER_KWH', 'PER_MINUTE', 'PEAK', 'free', 'TIERED_CREDIT'])
 export type PriceType = z.infer<typeof PriceTypeSchema>
 
 export const StatusTypeSchema = z.enum(['GENERAL', 'MEMBER'])
@@ -19,12 +19,8 @@ export const ModeSchema = z.enum(['add', 'edit'])
 export type Mode = z.infer<typeof ModeSchema>
 
 export const FormSchema = z.object({
-  groupName: trimmedInput.pipe(
-    z.string().min(1, { message: 'กรุณากรอกชื่อ Price Group' })
-  ),
-  status: trimmedInput.pipe(
-    z.string().min(1, { message: 'กรุณาเลือกสถานะ' })
-  ),
+  groupName: trimmedInput.pipe(z.string().min(1, { message: 'กรุณากรอกชื่อ Price Group' })),
+  status: trimmedInput.pipe(z.string().min(1, { message: 'กรุณาเลือกสถานะ' })),
 })
 export type FormData = z.infer<typeof FormSchema>
 
@@ -73,6 +69,7 @@ const priceTypeRequirements: Record<
     { field: 'freeKw', label: 'Free kW' },
     { field: 'freeKwh', label: 'หลังจากชาร์จฟรี บาท/kWh' },
   ],
+  TIERED_CREDIT: [],
 }
 
 export const PriceGroupFormSubmissionSchema = z
@@ -84,23 +81,19 @@ export const PriceGroupFormSubmissionSchema = z
   })
   .superRefine((data, ctx) => {
     const missingFields = priceTypeRequirements[data.priceType].filter(
-      ({ field }) => !data.priceForm[field]
+      ({ field }) => !data.priceForm[field],
     )
 
     if (missingFields.length > 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['priceForm'],
-        message: `กรุณากรอกข้อมูลให้ครบถ้วน: ${missingFields
-          .map(({ label }) => label)
-          .join(', ')}`,
+        message: `กรุณากรอกข้อมูลให้ครบถ้วน: ${missingFields.map(({ label }) => label).join(', ')}`,
       })
     }
   })
 
-export type PriceGroupFormSubmission = z.infer<
-  typeof PriceGroupFormSubmissionSchema
->
+export type PriceGroupFormSubmission = z.infer<typeof PriceGroupFormSubmissionSchema>
 
 export interface PriceGroupFormInitialData {
   form?: Partial<FormData>

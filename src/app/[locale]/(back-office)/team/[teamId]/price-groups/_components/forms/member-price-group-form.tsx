@@ -12,9 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from '@/hooks/use-toast'
-import { ChevronLeft, Loader2 } from 'lucide-react'
+import { ChevronLeft, CreditCard, Loader2, Zap } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 import {
   FeeFormData,
@@ -38,6 +38,12 @@ export default function MembersPriceGroupForm({
   teamGroupId,
 }: PriceGroupFormProps) {
   const [priceType, setPriceType] = useState<PriceType>(initialData?.priceType ?? 'PER_KWH')
+  const [billingType, setBillingType] = useState<'USAGE' | 'CREDIT'>('USAGE')
+
+  // Billing cycle day (1-31) for credit billing
+  const [billingDay, setBillingDay] = useState<string>(
+    initialData?.billingDay ? String(initialData.billingDay) : '1',
+  )
 
   // Main form state
   const [form, setForm] = useState<FormData>({
@@ -55,7 +61,7 @@ export default function MembersPriceGroupForm({
       offPeakPrice: initialData?.priceForm?.offPeakPrice,
       freeKw: initialData?.priceForm?.freeKw,
       freeKwh: initialData?.priceForm?.freeKwh,
-    })
+    }),
   )
 
   // Fee form state
@@ -74,7 +80,7 @@ export default function MembersPriceGroupForm({
       feePerMinIdle: initialData?.feeForm?.feePerMinIdle,
       timeBeforeIdleFeeApplied: initialData?.feeForm?.timeBeforeIdleFeeApplied,
       maxTotalIdleFee: initialData?.feeForm?.maxTotalIdleFee,
-    })
+    }),
   )
 
   // Update form states when initialData changes
@@ -98,18 +104,25 @@ export default function MembersPriceGroupForm({
 
     if (initialData.priceForm) {
       setPriceForm((prevPriceForm) =>
-        PriceFormSchema.parse({ ...prevPriceForm, ...initialData.priceForm })
+        PriceFormSchema.parse({ ...prevPriceForm, ...initialData.priceForm }),
       )
     }
 
     if (initialData.feeForm) {
-      setFeeForm((prevFeeForm) =>
-        FeeFormSchema.parse({ ...prevFeeForm, ...initialData.feeForm })
-      )
+      setFeeForm((prevFeeForm) => FeeFormSchema.parse({ ...prevFeeForm, ...initialData.feeForm }))
     }
 
     if (initialData.priceType) {
       setPriceType(initialData.priceType)
+    }
+    // default billing type
+    setBillingType('USAGE')
+    // hydrate billing day if provided
+    if (
+      typeof (initialData as any)?.billingDay !== 'undefined' &&
+      (initialData as any).billingDay !== null
+    ) {
+      setBillingDay(String((initialData as any).billingDay))
     }
   }, [initialData])
 
@@ -184,26 +197,18 @@ export default function MembersPriceGroupForm({
 
     if (!validationResult.success) {
       const errorMessage = Array.from(
-        new Set(validationResult.error.issues.map((issue) => issue.message))
+        new Set(validationResult.error.issues.map((issue) => issue.message)),
       )
         .filter(Boolean)
         .join('\n')
 
-      toast({
-        title: 'Error',
-        description: errorMessage || 'Please fill in all required fields.',
-        variant: 'destructive',
-      })
+      toast.error(errorMessage || 'กรุณากรอกข้อมูลให้ครบถ้วน')
       return
     }
 
     // ตรวจสอบ teamGroupId สำหรับ mode add
     if (mode === 'add' && !teamGroupId) {
-      toast({
-        title: 'Error',
-        description: 'Team information not loaded. Please try again.',
-        variant: 'destructive',
-      })
+      toast.error('Team group ID not found. Please try again.')
       return
     }
 
@@ -287,7 +292,7 @@ export default function MembersPriceGroupForm({
               <div className="flex flex-col lg:flex-row">
                 {/* Left Column - Form inputs */}
                 <div
-                  className="flex flex-1 flex-col gap-6 border-b pb-6 pt-6 md:pb-0 md:pt-8 lg:w-1/4 lg:flex-none lg:border-b-0 lg:border-r lg:pr-8"
+                  className="lg:w-lg flex flex-1 flex-col gap-6 border-b pb-6 pt-6 md:pb-0 md:pt-8 lg:flex-none lg:border-b-0 lg:border-r lg:pr-8"
                   style={{ minHeight: 'max(300px, 100%)' }}
                 >
                   <div>
@@ -318,7 +323,7 @@ export default function MembersPriceGroupForm({
                       defaultValue="publish"
                     >
                       <SelectTrigger
-                        className={`mt-2 border-none bg-[#F2F2F2] ${
+                        className={`mt-2 w-full border-none bg-[#F2F2F2] ${
                           form.status ? 'text-[#CACACA]' : 'text-oc-title-secondary'
                         }`}
                       >
@@ -329,6 +334,90 @@ export default function MembersPriceGroupForm({
                         <SelectItem value="draft">Draft</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div>
+                    <Label className="text-oc-title-secondary text-sm font-semibold">
+                      รูปแบบชำระเงิน<span className="text-destructive">*</span>
+                    </Label>
+                    <div className="mt-3">
+                      <RadioGroup
+                        value={billingType}
+                        onValueChange={(v) => setBillingType(v as 'USAGE' | 'CREDIT')}
+                        className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                      >
+                        {/* Usage card */}
+                        <div>
+                          <RadioGroupItem
+                            id="billing-usage"
+                            value="USAGE"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="billing-usage"
+                            className={`block cursor-pointer rounded-xl border p-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:p-4 ${
+                              billingType === 'USAGE'
+                                ? 'border-primary/60 bg-primary/5 ring-2 ring-primary'
+                                : 'border-border hover:bg-muted/40'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex items-center justify-center rounded-md p-2">
+                                <Zap
+                                  aria-hidden
+                                  className={
+                                    billingType === 'USAGE'
+                                      ? 'h-4 w-4 text-primary sm:h-5 sm:w-5'
+                                      : 'h-4 w-4 text-muted-foreground sm:h-5 sm:w-5'
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium">จ่ายตามการใช้งาน</div>
+                                <p className="text-xs text-muted-foreground">
+                                  คิดเงินตามหน่วยที่ใช้จริง เช่น บาท/kWh หรือรายชั่วโมง
+                                </p>
+                              </div>
+                            </div>
+                          </Label>
+                        </div>
+
+                        {/* Credit card */}
+                        <div>
+                          <RadioGroupItem
+                            id="billing-credit"
+                            value="CREDIT"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="billing-credit"
+                            className={`block cursor-pointer rounded-xl border p-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:p-4 ${
+                              billingType === 'CREDIT'
+                                ? 'border-primary/60 bg-primary/5 ring-2 ring-primary'
+                                : 'border-border hover:bg-muted/40'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex items-center justify-center rounded-md p-2">
+                                <CreditCard
+                                  aria-hidden
+                                  className={
+                                    billingType === 'CREDIT'
+                                      ? 'h-4 w-4 text-primary sm:h-5 sm:w-5'
+                                      : 'h-4 w-4 text-muted-foreground sm:h-5 sm:w-5'
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium">เครดิต</div>
+                                <p className="text-xs text-muted-foreground">
+                                  ตัดเครดิต/แพ็กเกจล่วงหน้า เหมาะกับการให้สิทธิ์สมาชิก
+                                </p>
+                              </div>
+                            </div>
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
                   </div>
                 </div>
 
@@ -452,9 +541,9 @@ export default function MembersPriceGroupForm({
                   {priceType === 'PER_KWH' && (
                     <div className="mt-4 rounded-xl border p-6">
                       <Label htmlFor="price" className="text-oc-title-secondary font-medium">
-                        บาท/kWh <span className="text-destructive">*</span>
+                        บาท <span className="text-destructive">*</span>
                       </Label>
-                      <div className="relative mt-2 w-1/2">
+                      <div className="relative mt-2 w-full sm:w-2/3 md:w-1/2">
                         <Input
                           id="pricePerKwh"
                           placeholder="ระบุ"
@@ -470,237 +559,45 @@ export default function MembersPriceGroupForm({
                           ฿
                         </span>
                       </div>
-                    </div>
-                  )}
-
-                  {priceType === 'PER_MINUTE' && (
-                    <div className="mt-4 grid grid-cols-2 gap-4 rounded-xl border p-6">
-                      <div>
-                        <Label htmlFor="price-kwh" className="text-oc-title-secondary font-medium">
-                          บาท/kWh <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative mt-2">
-                          <Input
-                            id="pricePerKwhMinute"
-                            placeholder="ระบุ"
-                            className="pr-8"
-                            type="number"
-                            inputMode="decimal"
-                            min={0}
-                            step="0.01"
-                            value={priceForm.pricePerKwhMinute}
-                            onChange={handlePriceInputChange}
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
-                            ฿
-                          </span>
-                        </div>
-                      </div>
-                      <div>
+                      {/* Billing cycle day (only relevant for CREDIT) */}
+                      <div className="mt-4">
                         <Label
-                          htmlFor="price_per_minute"
-                          className="text-oc-title-secondary font-medium"
+                          htmlFor="billingDay"
+                          className="text-oc-title-secondary text-sm font-semibold"
                         >
-                          /ชั่วโมง <span className="text-destructive">*</span>
+                          รอบวันที่วางบิล
                         </Label>
-                        <div className="relative mt-2">
-                          <Input
-                            id="price_per_minute"
-                            placeholder="ระบุ"
-                            className="pr-12"
-                            type="number"
-                            inputMode="decimal"
-                            min={0}
-                            step="0.01"
-                            value={priceForm.price_per_minute}
-                            onChange={handlePriceInputChange}
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
-                            Hrs.
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {priceType === 'PEAK' && (
-                    <div className="mt-4 flex flex-col gap-4">
-                      <div className="grid grid-cols-1 overflow-hidden rounded-xl border md:grid-cols-10 md:divide-x">
-                        {/* Left Labels */}
-                        <div className="flex flex-col divide-y md:col-span-2 md:justify-center">
-                          <div className="flex h-28 items-center justify-center px-4">
-                            <span className="text-oc-title-secondary font-semibold">On Peak</span>
-                          </div>
-                          <div className="flex h-28 items-center justify-center px-4">
-                            <span className="text-oc-title-secondary font-semibold">Off Peak</span>
-                          </div>
-                        </div>
-
-                        {/* Price Inputs */}
-                        <div className="flex flex-col divide-y md:col-span-4">
-                          <div className="px-4 py-6">
-                            <Label
-                              htmlFor="onPeakPrice"
-                              className="text-oc-title-secondary font-medium"
-                            >
-                              บาท/kWh <span className="text-destructive">*</span>
-                            </Label>
-                            <div className="relative mt-2">
-                              <Input
-                                id="onPeakPrice"
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                placeholder="ระบุ"
-                                className="pr-8"
-                                value={priceForm.onPeakPrice}
-                                onChange={handlePriceInputChange}
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
-                                ฿
-                              </span>
-                            </div>
-                          </div>
-                          <div className="px-4 py-6">
-                            <Label
-                              htmlFor="offPeakPrice"
-                              className="text-oc-title-secondary font-medium"
-                            >
-                              บาท/kWh <span className="text-destructive">*</span>
-                            </Label>
-                            <div className="relative mt-2">
-                              <Input
-                                id="offPeakPrice"
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                placeholder="ระบุ"
-                                className="pr-8"
-                                value={priceForm.offPeakPrice}
-                                onChange={handlePriceInputChange}
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
-                                ฿
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Info Box */}
-                        <div className="flex flex-col justify-center p-4 md:col-span-4">
-                          <div className="dark:bg-primary/7 mx-4 flex items-start gap-2 rounded-lg bg-[#EDF1FF] p-3 text-xs text-[#355FF5] dark:border dark:border-primary dark:text-primary">
-                            <div className="text-prim flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="h-3 w-3"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-                                />
-                              </svg>
-                            </div>
-                            <div className="leading-tight">
-                              <p className="mb-1">
-                                อัตราค่าไฟฟ้า TOU ปัจจุบัน คือ อัตราการจัดเก็บค่าไฟฟ้า
-                                ที่ขึ้นอยู่กับช่วงเวลาการใช้ โดยแบ่งออกเป็น 2 ช่วง คือ
-                              </p>
-                              <div className="grid grid-cols-1 gap-x-3 gap-y-0.5">
-                                <div className="flex items-baseline gap-1">
-                                  <span className="whitespace-nowrap font-semibold">
-                                    On Peak: จันทร์–ศุกร์ 09:00–22:00 น.
-                                  </span>
-                                </div>
-                                <div className="flex items-baseline gap-1">
-                                  <span className="whitespace-nowrap font-semibold">
-                                    Off Peak: จันทร์–ศุกร์ 22:00–09:00 น.
-                                  </span>
-                                </div>
-                                <div className="mt-0.5">
-                                  <span className="whitespace-nowrap font-semibold">
-                                    และวันเสาร์–อาทิตย์/วันหยุดราชการทั้งวัน
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {priceType === 'free' && (
-                    <div className="mt-4 overflow-hidden rounded-xl border">
-                      <div className="grid grid-cols-5 border-b">
-                        <div className="col-span-1 flex items-center justify-center border-r p-4">
-                          <span className="text-oc-title-secondary font-medium">Free</span>
-                        </div>
-                        <div className="col-span-4 p-4">
-                          <Label
-                            htmlFor="freeKw"
-                            className="text-oc-title-secondary mb-2 block font-medium"
+                        <Select value={billingDay} onValueChange={setBillingDay}>
+                          <SelectTrigger
+                            id="billingDay"
+                            className={`mt-2 w-full border-none bg-[#F2F2F2] ${billingDay ? 'text-oc-title-secondary' : 'text-[#CACACA]'}`}
+                            aria-label="Billing cycle day"
+                            // Disable when paying by usage
+                            disabled={billingType !== 'CREDIT'}
                           >
-                            kW <span className="text-destructive">*</span>
-                          </Label>
-                          <div className="relative mt-2">
-                            <Input
-                              id="freeKw"
-                              placeholder="ระบุ"
-                              className="pr-10"
-                              type="number"
-                              min={0}
-                              value={priceForm.freeKw}
-                              onChange={handlePriceInputChange}
-                            />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                              kW
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-5">
-                        <div className="col-span-1 flex items-center justify-center border-r p-4">
-                          <span className="text-oc-title-secondary text-base font-medium">
-                            หลังจากชาร์จฟรี
-                          </span>
-                        </div>
-                        <div className="col-span-4 p-4">
-                          <Label
-                            htmlFor="freeKwh"
-                            className="text-oc-title-secondary mb-2 block font-medium"
-                          >
-                            บาท/kWh <span className="text-destructive">*</span>
-                          </Label>
-                          <div className="relative mt-2">
-                            <Input
-                              id="freeKwh"
-                              placeholder="ระบุ"
-                              className="pr-8"
-                              type="number"
-                              inputMode="decimal"
-                              min={0}
-                              step="0.01"
-                              value={priceForm.freeKwh}
-                              onChange={handlePriceInputChange}
-                            />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                              ฿
-                            </span>
-                          </div>
-                        </div>
+                            <SelectValue placeholder="เลือกวันที่ (1–31)" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 31 }, (_, i) => {
+                              const val = String(i + 1)
+                              return (
+                                <SelectItem key={val} value={val}>
+                                  {i + 1}
+                                </SelectItem>
+                              )
+                            })}
+                          </SelectContent>
+                        </Select>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          เลือกวันที่ตัดรอบบิลสำหรับการชำระแบบเครดิต (1–31).{' '}
+                          {/* shown only whenเลือกเครดิต */}
+                        </p>
                       </div>
                     </div>
                   )}
 
                   {/* Additional Fee Section */}
-                  {false && (
+                  {true && (
                     <div>
                       <div className="text-oc-title-secondary mb-2 text-base font-semibold">
                         Additional Fee

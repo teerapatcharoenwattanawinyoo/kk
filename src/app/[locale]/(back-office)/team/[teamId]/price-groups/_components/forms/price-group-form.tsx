@@ -16,61 +16,17 @@ import { toast } from '@/hooks/use-toast'
 import { ChevronLeft, Loader2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
-// Types
-export type PriceType = 'PER_KWH' | 'PER_MINUTE' | 'PEAK' | 'free'
-export type StatusType = 'GENERAL' | 'MEMBER'
-export type Mode = 'add' | 'edit'
-
-export interface FormData {
-  groupName: string
-  status: string
-}
-
-export interface PriceFormData {
-  pricePerKwh: string
-  pricePerKwhMinute: string
-  price_per_minute: string
-  onPeakPrice: string
-  offPeakPrice: string
-  freeKw: string
-  freeKwh: string
-}
-
-export interface FeeFormData {
-  startingFeeDescription: string
-  fee: string
-  chargingFeeDescription: string
-  feePrice: string
-  applyAfterMinute: string
-  minuteFeeDescription: string
-  feePerMin: string
-  applyFeeAfterMinute: string
-  feeStopsAfterMinute: string
-  idleFeeDescription: string
-  feePerMinIdle: string
-  timeBeforeIdleFeeApplied: string
-  maxTotalIdleFee: string
-}
-
-export interface PriceGroupFormProps {
-  mode: Mode
-  statusType: StatusType
-  initialData?: {
-    form?: Partial<FormData>
-    priceForm?: Partial<PriceFormData>
-    feeForm?: Partial<FeeFormData>
-    priceType?: PriceType
-  }
-  isLoading?: boolean
-  onSubmit: (data: {
-    form: FormData
-    priceForm: PriceFormData
-    feeForm: FeeFormData
-    priceType: PriceType
-  }) => Promise<void>
-  onBack: () => void
-  teamGroupId?: string | null
-}
+import {
+  FeeFormData,
+  FeeFormSchema,
+  FormData,
+  FormSchema,
+  PriceFormData,
+  PriceFormSchema,
+  PriceGroupFormProps,
+  PriceGroupFormSubmissionSchema,
+  PriceType,
+} from '../../_schemas/price-group-form.schema'
 
 export default function PriceGroupForm({
   mode,
@@ -81,71 +37,84 @@ export default function PriceGroupForm({
   onBack,
   teamGroupId,
 }: PriceGroupFormProps) {
-  const [priceType, setPriceType] = useState<PriceType>(initialData?.priceType || 'PER_KWH')
+  const [priceType, setPriceType] = useState<PriceType>(initialData?.priceType ?? 'PER_KWH')
 
   // Main form state
   const [form, setForm] = useState<FormData>({
-    groupName: initialData?.form?.groupName || '',
-    status: initialData?.form?.status || 'publish',
+    groupName: initialData?.form?.groupName ?? '',
+    status: initialData?.form?.status ?? 'publish',
   })
 
   // Price-specific form state
-  const [priceForm, setPriceForm] = useState<PriceFormData>({
-    pricePerKwh: initialData?.priceForm?.pricePerKwh || '',
-    pricePerKwhMinute: initialData?.priceForm?.pricePerKwhMinute || '',
-    price_per_minute: initialData?.priceForm?.price_per_minute || '',
-    onPeakPrice: initialData?.priceForm?.onPeakPrice || '',
-    offPeakPrice: initialData?.priceForm?.offPeakPrice || '',
-    freeKw: initialData?.priceForm?.freeKw || '',
-    freeKwh: initialData?.priceForm?.freeKwh || '',
-  })
+  const [priceForm, setPriceForm] = useState<PriceFormData>(() =>
+    PriceFormSchema.parse({
+      pricePerKwh: initialData?.priceForm?.pricePerKwh,
+      pricePerKwhMinute: initialData?.priceForm?.pricePerKwhMinute,
+      price_per_minute: initialData?.priceForm?.price_per_minute,
+      onPeakPrice: initialData?.priceForm?.onPeakPrice,
+      offPeakPrice: initialData?.priceForm?.offPeakPrice,
+      freeKw: initialData?.priceForm?.freeKw,
+      freeKwh: initialData?.priceForm?.freeKwh,
+    })
+  )
 
   // Fee form state
-  const [feeForm, setFeeForm] = useState<FeeFormData>({
-    fee: initialData?.feeForm?.fee || '',
-    startingFeeDescription: initialData?.feeForm?.startingFeeDescription || '',
-    chargingFeeDescription: initialData?.feeForm?.chargingFeeDescription || '',
-    feePrice: initialData?.feeForm?.feePrice || '',
-    applyAfterMinute: initialData?.feeForm?.applyAfterMinute || '',
-    minuteFeeDescription: initialData?.feeForm?.minuteFeeDescription || '',
-    feePerMin: initialData?.feeForm?.feePerMin || '',
-    applyFeeAfterMinute: initialData?.feeForm?.applyFeeAfterMinute || '',
-    feeStopsAfterMinute: initialData?.feeForm?.feeStopsAfterMinute || '',
-    idleFeeDescription: initialData?.feeForm?.idleFeeDescription || '',
-    feePerMinIdle: initialData?.feeForm?.feePerMinIdle || '',
-    timeBeforeIdleFeeApplied: initialData?.feeForm?.timeBeforeIdleFeeApplied || '',
-    maxTotalIdleFee: initialData?.feeForm?.maxTotalIdleFee || '',
-  })
+  const [feeForm, setFeeForm] = useState<FeeFormData>(() =>
+    FeeFormSchema.parse({
+      fee: initialData?.feeForm?.fee,
+      startingFeeDescription: initialData?.feeForm?.startingFeeDescription,
+      chargingFeeDescription: initialData?.feeForm?.chargingFeeDescription,
+      feePrice: initialData?.feeForm?.feePrice,
+      applyAfterMinute: initialData?.feeForm?.applyAfterMinute,
+      minuteFeeDescription: initialData?.feeForm?.minuteFeeDescription,
+      feePerMin: initialData?.feeForm?.feePerMin,
+      applyFeeAfterMinute: initialData?.feeForm?.applyFeeAfterMinute,
+      feeStopsAfterMinute: initialData?.feeForm?.feeStopsAfterMinute,
+      idleFeeDescription: initialData?.feeForm?.idleFeeDescription,
+      feePerMinIdle: initialData?.feeForm?.feePerMinIdle,
+      timeBeforeIdleFeeApplied: initialData?.feeForm?.timeBeforeIdleFeeApplied,
+      maxTotalIdleFee: initialData?.feeForm?.maxTotalIdleFee,
+    })
+  )
 
   // Update form states when initialData changes
   useEffect(() => {
-    if (initialData) {
-      if (initialData.form) {
-        setForm((prevForm) => ({
-          ...prevForm,
-          ...initialData.form,
-        }))
-      }
-      if (initialData.priceForm) {
-        setPriceForm((prevPriceForm) => ({
-          ...prevPriceForm,
-          ...initialData.priceForm,
-        }))
-      }
-      if (initialData.feeForm) {
-        setFeeForm((prevFeeForm) => ({
-          ...prevFeeForm,
-          ...initialData.feeForm,
-        }))
-      }
-      if (initialData.priceType) {
-        setPriceType(initialData.priceType)
-      }
+    if (!initialData) {
+      return
+    }
+
+    if (initialData.form) {
+      setForm((prevForm) => ({
+        groupName:
+          initialData.form?.groupName !== undefined && initialData.form?.groupName !== null
+            ? String(initialData.form.groupName).trim()
+            : prevForm.groupName,
+        status:
+          initialData.form?.status !== undefined && initialData.form?.status !== null
+            ? String(initialData.form.status).trim()
+            : prevForm.status,
+      }))
+    }
+
+    if (initialData.priceForm) {
+      setPriceForm((prevPriceForm) =>
+        PriceFormSchema.parse({ ...prevPriceForm, ...initialData.priceForm })
+      )
+    }
+
+    if (initialData.feeForm) {
+      setFeeForm((prevFeeForm) =>
+        FeeFormSchema.parse({ ...prevFeeForm, ...initialData.feeForm })
+      )
+    }
+
+    if (initialData.priceType) {
+      setPriceType(initialData.priceType)
     }
   }, [initialData])
 
   // Form validation - แยกการตรวจสอบ teamGroupId ออกจาก isFormValid เพื่อให้ user กรอกข้อมูลได้ก่อน
-  const isFormValid = form.groupName.trim() !== ''
+  const isFormValid = FormSchema.safeParse(form).success
 
   // removed debug logs
 
@@ -205,77 +174,42 @@ export default function PriceGroupForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // removed debug logs
 
-    if (!isFormValid) {
-      // validation failed
+    // removed debug logs
+    const validationResult = PriceGroupFormSubmissionSchema.safeParse({
+      form,
+      priceForm,
+      feeForm,
+      priceType,
+    })
+
+    if (!validationResult.success) {
+      const errorMessage = Array.from(
+        new Set(validationResult.error.issues.map((issue) => issue.message))
+      )
+        .filter(Boolean)
+        .join('\n')
+
       toast({
         title: 'Error',
-        description: 'Please fill in all required fields.',
+        description: errorMessage || 'Please fill in all required fields.',
         variant: 'destructive',
       })
       return
     }
 
     // ตรวจสอบ teamGroupId สำหรับ mode add
-    if (mode === 'add') {
-      if (!teamGroupId) {
-        toast({
-          title: 'Error',
-          description: 'Team information not loaded. Please try again.',
-          variant: 'destructive',
-        })
-        return
-      }
-    }
-
-    // Validate price type specific fields
-
-    const missingFields: string[] = []
-
-    if (priceType === 'PER_KWH') {
-      if (!priceForm.pricePerKwh.trim()) {
-        missingFields.push('บาท/kWh')
-      }
-    } else if (priceType === 'PER_MINUTE') {
-      if (!priceForm.pricePerKwhMinute.trim()) {
-        missingFields.push('บาท/kWh')
-      }
-      if (!priceForm.price_per_minute.trim()) {
-        missingFields.push('/ชั่วโมง')
-      }
-    } else if (priceType === 'PEAK') {
-      if (!priceForm.onPeakPrice.trim()) {
-        missingFields.push('On Peak บาท/kWh')
-      }
-      if (!priceForm.offPeakPrice.trim()) {
-        missingFields.push('Off Peak บาท/kWh')
-      }
-    } else if (priceType === 'free') {
-      if (!priceForm.freeKw.trim()) {
-        missingFields.push('Free kW')
-      }
-      if (!priceForm.freeKwh.trim()) {
-        missingFields.push('หลังจากชาร์จฟรี บาท/kWh')
-      }
-    }
-
-    if (missingFields.length > 0) {
+    if (mode === 'add' && !teamGroupId) {
       toast({
         title: 'Error',
-        description: `กรุณากรอกข้อมูลให้ครบถ้วน: ${missingFields.join(', ')}`,
+        description: 'Team information not loaded. Please try again.',
         variant: 'destructive',
       })
       return
     }
 
     try {
-      await onSubmit({
-        form,
-        priceForm,
-        feeForm,
-        priceType,
-      })
+      await onSubmit(validationResult.data)
     } catch (error) {
       console.error('❌ Form submission error:', error)
     }

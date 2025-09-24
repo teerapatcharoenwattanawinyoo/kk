@@ -3,7 +3,7 @@
 import { useTeam } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
 
 import {
-  PriceGroupForm,
+  MemberPriceGroupForm,
   type FeeFormData,
   type FormData,
   type PriceFormData,
@@ -208,9 +208,8 @@ export default function EditMemberPriceGroup() {
 
   return (
     <>
-      <PriceGroupForm
+      <MemberPriceGroupForm
         mode="edit"
-        statusType="MEMBER"
         initialData={initialData}
         isLoading={isLoading}
         onSubmit={handleSubmit}

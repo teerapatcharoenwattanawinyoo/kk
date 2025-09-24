@@ -10,12 +10,12 @@ import { toast } from '@/hooks/use-toast'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import {
-  PriceGroupForm,
+  GeneralPriceGroupForm,
   type FeeFormData,
   type FormData,
   type PriceFormData,
   type PriceType,
-} from '../../member-group/price-groups'
+} from '../../general-group/price-groups'
 
 export default function EditPriceGroup() {
   const router = useRouter()
@@ -197,9 +197,8 @@ export default function EditPriceGroup() {
 
   return (
     <>
-      <PriceGroupForm
+      <GeneralPriceGroupForm
         mode="edit"
-        statusType="GENERAL"
         initialData={initialData}
         isLoading={isLoading}
         onSubmit={handleSubmit}

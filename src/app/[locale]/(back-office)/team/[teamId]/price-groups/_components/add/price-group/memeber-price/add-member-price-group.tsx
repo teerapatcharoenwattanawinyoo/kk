@@ -9,7 +9,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
-  PriceGroupForm,
+  MemberPriceGroupForm,
   type FeeFormData,
   type FormData,
   type PriceFormData,
@@ -110,9 +110,8 @@ export default function AddMemberPriceGroup() {
 
   return (
     <>
-      <PriceGroupForm
+      <MemberPriceGroupForm
         mode="add"
-        statusType="MEMBER"
         isLoading={isLoading}
         onSubmit={handleSubmit}
         onBack={handleBack}

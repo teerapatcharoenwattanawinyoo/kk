@@ -1,5 +1,5 @@
-export { default as MemberPriceGroupForm } from './price-group-form'
-export type { MemberPriceGroupFormProps } from './price-group-form'
+export { default as GeneralPriceGroupForm } from './price-group-form'
+export type { GeneralPriceGroupFormProps } from './price-group-form'
 export type {
   FeeFormData,
   FormData,
@@ -8,5 +8,4 @@ export type {
   PriceGroupFormInitialData,
   PriceGroupFormSubmitData,
   PriceType,
-  StatusType,
 } from '../../shared/price-group-form'

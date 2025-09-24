@@ -8,12 +8,12 @@ import { toast } from '@/hooks/use-toast'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import {
-  PriceGroupForm,
+  GeneralPriceGroupForm,
   type FeeFormData,
   type FormData,
   type PriceFormData,
   type PriceType,
-} from '../../member-group/price-groups/'
+} from '../../general-group/price-groups'
 
 export default function AddPriceGroup() {
   const router = useRouter()
@@ -131,9 +131,8 @@ export default function AddPriceGroup() {
 
   return (
     <>
-      <PriceGroupForm
+      <GeneralPriceGroupForm
         mode="add"
-        statusType="GENERAL"
         isLoading={isLoading}
         onSubmit={handleSubmit}
         onBack={handleBack}

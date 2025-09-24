@@ -72,7 +72,7 @@ export interface PriceGroupFormProps {
   teamGroupId?: string | null
 }
 
-export default function PriceGroupForm({
+export default function MembersPriceGroupForm({
   mode,
   statusType,
   initialData,

@@ -1,5 +1,5 @@
-export { default as PriceGroupForm } from './price-group-form'
 export { default as MemberPriceGroupForm } from './member-price-group-form'
+export { default as PriceGroupForm } from './price-group-form'
 export type {
   FeeFormData,
   FormData,

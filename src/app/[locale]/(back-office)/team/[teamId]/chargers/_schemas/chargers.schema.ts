@@ -26,16 +26,6 @@ const stringFromAny = z.preprocess((value) => {
   return String(value)
 }, z.string())
 
-const numberFromAny = z.preprocess((value) => {
-  if (value === null || value === undefined || value === '') return undefined
-  if (typeof value === 'string') {
-    const parsed = Number(value)
-    return Number.isNaN(parsed) ? undefined : parsed
-  }
-  if (typeof value === 'number') return value
-  return undefined
-}, z.number())
-
 const nullableNumberFromAny = z.preprocess((value) => {
   if (value === null || value === undefined || value === '') return null
   if (typeof value === 'string') {
@@ -60,69 +50,6 @@ const optionalNumberFromAny = z.preprocess((value) => {
   if (typeof value === 'number') return value
   return undefined
 }, z.number().optional())
-
-const booleanFromAny = z.preprocess((value) => {
-  if (value === undefined || value === null || value === '') {
-    return false
-  }
-
-  if (typeof value === 'boolean') {
-    return value
-  }
-
-  if (typeof value === 'number') {
-    if (Number.isNaN(value)) {
-      return false
-    }
-
-    if (value === 1) return true
-    if (value === 0) return false
-  }
-
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase()
-
-    if (!normalized) {
-      return false
-    }
-
-    const truthyValues = [
-      'true',
-      '1',
-      'yes',
-      'y',
-      'connected',
-      'success',
-      'succeeded',
-      'online',
-      'paired',
-      'pairing success',
-    ]
-
-    if (truthyValues.includes(normalized)) {
-      return true
-    }
-
-    const falsyValues = [
-      'false',
-      '0',
-      'no',
-      'n',
-      'disconnected',
-      'failed',
-      'failure',
-      'offline',
-      'pairing failed',
-      'pairing failure',
-    ]
-
-    if (falsyValues.includes(normalized)) {
-      return false
-    }
-  }
-
-  return false
-}, z.boolean())
 
 export const ChargerFormSchema = z.object({
   chargerName: z.string().min(1, 'Charger name is required'),
@@ -223,74 +150,22 @@ export const CreateChargerRequestSchema = z.object({
 
 export type CreateChargerRequest = z.infer<typeof CreateChargerRequestSchema>
 
-const CreateChargerInnerDataSchema = z
-  .object({
-    id: optionalNumberFromAny,
-    charger_id: optionalNumberFromAny,
-    chargerId: optionalNumberFromAny,
-  })
-  .catchall(z.unknown())
-  .transform((value, ctx) => {
-    const resolvedId = value.id ?? value.charger_id ?? value.chargerId
-
-    if (typeof resolvedId !== 'number' || Number.isNaN(resolvedId)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Charger id is required',
-        path: ['id'],
-      })
-
-      return z.NEVER
-    }
-
-    return {
-      id: resolvedId,
-    }
-  })
-
 export const CreateChargerResponseSchema = z.object({
-  statusCode: numberFromAny,
+  statusCode: z.number(),
   data: z
     .object({
-      data: CreateChargerInnerDataSchema,
-      message: optionalStringFromAny,
+      data: z
+        .object({
+          id: z.number(),
+        })
+        .catchall(z.unknown()),
+      message: z.string().optional(),
     })
     .catchall(z.unknown()),
-  message: stringFromAny,
+  message: z.string(),
 })
 
 export type CreateChargerResponse = z.infer<typeof CreateChargerResponseSchema>
-
-const UpdateChargerPayloadSchema = z
-  .union([
-    z
-      .object({
-        data: z.unknown().optional(),
-        message: optionalStringFromAny,
-      })
-      .catchall(z.unknown()),
-    stringFromAny,
-    z.null(),
-  ])
-  .transform((value) => {
-    if (value === null || value === undefined) {
-      return {}
-    }
-
-    if (typeof value === 'string') {
-      return { message: value }
-    }
-
-    return value
-  })
-
-export const UpdateChargerResponseSchema = z.object({
-  statusCode: numberFromAny,
-  data: UpdateChargerPayloadSchema.optional(),
-  message: stringFromAny,
-})
-
-export type UpdateChargerResponse = z.infer<typeof UpdateChargerResponseSchema>
 
 export const ChargerDetailSchema = z.object({
   id: z.number(),
@@ -334,7 +209,10 @@ export type UpdateSerialNumberRequest = z.infer<typeof UpdateSerialNumberRequest
 
 export const UpdateSerialNumberResponseSchema = z.object({
   statusCode: z.number(),
-  data: z.string(),
+  data: z.object({
+    success: z.boolean(),
+    charger_id: z.number(),
+  }),
   message: z.string(),
 })
 
@@ -344,7 +222,7 @@ export const CheckConnectionResponseSchema = z.object({
   statusCode: z.number(),
   data: z.object({
     status: z.string(),
-    connected: booleanFromAny,
+    connected: z.boolean(),
   }),
   message: z.string(),
 })

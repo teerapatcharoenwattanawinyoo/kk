@@ -1,10 +1,6 @@
 // src/app/api/auth/sign-in/route.ts
 import { COOKIE_KEYS } from '@/lib/constants'
-import {
-  BackendLoginSchema,
-  SignInSchema,
-  type BackendLoginData,
-} from '@/modules/auth/models/sign-in.schema'
+import { BackendLoginSchema, SignInSchema } from '@/modules/auth/models/sign-in.schema'
 import { NextRequest, NextResponse } from 'next/server'
 
 const API_BASE_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL
@@ -73,21 +69,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Invalid response schema' }, { status: 502 })
     }
 
-    const loginData = result.data.data
-
-    if (!loginData || typeof loginData === 'string') {
-      const fallbackMessage =
-        (typeof loginData === 'string' && loginData.trim().length > 0
-          ? loginData
-          : result.data.message) || 'Invalid response payload'
-      console.error('[API] /api/auth/sign-in: unexpected data payload', {
-        payloadType: typeof loginData,
-        hasMessage: !!result.data.message,
-      })
-      return NextResponse.json({ message: fallbackMessage }, { status: 502 })
-    }
-
-    const { access_token, refresh_token, user } = loginData as BackendLoginData
+    const { access_token, refresh_token, user } = result.data.data
 
     // Build user_data payload example for client visibility (non-sensitive)
     const user_data = {

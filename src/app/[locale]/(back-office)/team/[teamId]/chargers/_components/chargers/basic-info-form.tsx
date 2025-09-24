@@ -1,5 +1,11 @@
 'use client'
 
+import type {
+  ChargerBrand,
+  ChargerType,
+  ChargingStation,
+} from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/chargers.schema'
+import { TeamHostData } from '@/app/[locale]/(back-office)/team/_schemas/team.schema'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
@@ -10,12 +16,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import type {
-  ChargerBrand,
-  ChargerType,
-  ChargingStation,
-} from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/chargers.schema'
-import { TeamHostData } from '@/app/[locale]/(back-office)/team/_schemas/team.schema'
 import { UseFormReturn } from 'react-hook-form'
 
 interface BasicInfoFormProps {

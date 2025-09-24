@@ -5,9 +5,9 @@ import { useTeam } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
 import { useCreatePriceSet } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks/use-price-group'
 import { CreatePriceRequest } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_servers/price-groups'
 import { SuccessDialog } from '@/components/notifications'
-import { toast } from '@/hooks/use-toast'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import {
   PriceGroupForm,
   type FeeFormData,
@@ -38,11 +38,7 @@ export default function AddMemberPriceGroup() {
     priceType: PriceType
   }) => {
     if (!teamData?.team_group_id) {
-      toast({
-        title: 'Error',
-        description: 'Team group ID not found. Please try again.',
-        variant: 'destructive',
-      })
+      toast.error('Team group ID is missing')
       return
     }
 
@@ -108,11 +104,7 @@ export default function AddMemberPriceGroup() {
       setIsSuccess(true)
     } catch (error) {
       console.error('Error creating price set:', error)
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to create price set',
-        variant: 'destructive',
-      })
+      toast.error(error instanceof Error ? error.message : 'Failed to create price set')
     }
   }
 

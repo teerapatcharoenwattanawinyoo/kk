@@ -12,9 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from '@/hooks/use-toast'
 import { ChevronLeft, Loader2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 // Types
 export type PriceType = 'PER_KWH' | 'PER_MINUTE' | 'PEAK' | 'free'
@@ -209,22 +209,14 @@ export default function PriceGroupForm({
 
     if (!isFormValid) {
       // validation failed
-      toast({
-        title: 'Error',
-        description: 'Please fill in all required fields.',
-        variant: 'destructive',
-      })
+      toast.error('กรุณากรอกข้อมูลให้ครบถ้วน')
       return
     }
 
     // ตรวจสอบ teamGroupId สำหรับ mode add
     if (mode === 'add') {
       if (!teamGroupId) {
-        toast({
-          title: 'Error',
-          description: 'Team information not loaded. Please try again.',
-          variant: 'destructive',
-        })
+        toast.error('Team group ID is missing')
         return
       }
     }
@@ -261,11 +253,7 @@ export default function PriceGroupForm({
     }
 
     if (missingFields.length > 0) {
-      toast({
-        title: 'Error',
-        description: `กรุณากรอกข้อมูลให้ครบถ้วน: ${missingFields.join(', ')}`,
-        variant: 'destructive',
-      })
+      toast.error(`กรุณากรอกข้อมูล: ${missingFields.join(', ')}`)
       return
     }
 

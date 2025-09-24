@@ -16,61 +16,15 @@ import { toast } from '@/hooks/use-toast'
 import { ChevronLeft, Loader2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
-// Types
-export type PriceType = 'PER_KWH' | 'PER_MINUTE' | 'PEAK' | 'free'
-export type StatusType = 'GENERAL' | 'MEMBER'
-export type Mode = 'add' | 'edit'
-
-export interface FormData {
-  groupName: string
-  status: string
-}
-
-export interface PriceFormData {
-  pricePerKwh: string
-  pricePerKwhMinute: string
-  price_per_minute: string
-  onPeakPrice: string
-  offPeakPrice: string
-  freeKw: string
-  freeKwh: string
-}
-
-export interface FeeFormData {
-  startingFeeDescription: string
-  fee: string
-  chargingFeeDescription: string
-  feePrice: string
-  applyAfterMinute: string
-  minuteFeeDescription: string
-  feePerMin: string
-  applyFeeAfterMinute: string
-  feeStopsAfterMinute: string
-  idleFeeDescription: string
-  feePerMinIdle: string
-  timeBeforeIdleFeeApplied: string
-  maxTotalIdleFee: string
-}
-
-export interface PriceGroupFormProps {
-  mode: Mode
-  statusType: StatusType
-  initialData?: {
-    form?: Partial<FormData>
-    priceForm?: Partial<PriceFormData>
-    feeForm?: Partial<FeeFormData>
-    priceType?: PriceType
-  }
-  isLoading?: boolean
-  onSubmit: (data: {
-    form: FormData
-    priceForm: PriceFormData
-    feeForm: FeeFormData
-    priceType: PriceType
-  }) => Promise<void>
-  onBack: () => void
-  teamGroupId?: string | null
-}
+import {
+  type FeeFormData,
+  formSchema,
+  type FormData,
+  type PriceFormData,
+  priceGroupSubmissionSchema,
+  type PriceGroupFormProps,
+  type PriceType,
+} from './_schemas/price-group'
 
 export default function PriceGroupForm({
   mode,
@@ -145,7 +99,7 @@ export default function PriceGroupForm({
   }, [initialData])
 
   // Form validation - แยกการตรวจสอบ teamGroupId ออกจาก isFormValid เพื่อให้ user กรอกข้อมูลได้ก่อน
-  const isFormValid = form.groupName.trim() !== ''
+  const isFormValid = formSchema.safeParse(form).success
 
   console.log('isFormValid calculation:', {
     'form.groupName.trim()': form.groupName.trim(),
@@ -286,13 +240,25 @@ export default function PriceGroupForm({
     }
 
     console.log('✅ All validations passed, calling onSubmit...')
-    try {
-      await onSubmit({
-        form,
-        priceForm,
-        feeForm,
-        priceType,
+    const parsedSubmission = priceGroupSubmissionSchema.safeParse({
+      form,
+      priceForm,
+      feeForm,
+      priceType,
+    })
+
+    if (!parsedSubmission.success) {
+      console.error('❌ Zod validation failed:', parsedSubmission.error.flatten())
+      toast({
+        title: 'Error',
+        description: 'Form validation failed. Please review your input.',
+        variant: 'destructive',
       })
+      return
+    }
+
+    try {
+      await onSubmit(parsedSubmission.data)
       console.log('✅ onSubmit completed successfully')
     } catch (error) {
       console.error('❌ Form submission error:', error)

@@ -107,6 +107,7 @@ export interface PriceGroupFormInitialData {
   priceForm?: Partial<PriceFormData>
   feeForm?: Partial<FeeFormData>
   priceType?: PriceType
+  billingDay?: number | string | null
 }
 
 export interface PriceGroupFormProps {

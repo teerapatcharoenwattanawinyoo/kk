@@ -1,2 +1,2 @@
-export { default as EditPriceGroup } from './price-group/edit-price-group'
-export { default as EditMemberPriceGroup } from './price-group/memeber-price/edit-member-price-group'
+export { default as EditPriceGroup } from './general-price/edit-price-group'
+export { default as EditMemberPriceGroup } from './memeber-price/edit-member-price-group'

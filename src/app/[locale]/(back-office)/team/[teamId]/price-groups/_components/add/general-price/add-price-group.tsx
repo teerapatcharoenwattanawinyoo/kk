@@ -1,9 +1,8 @@
 'use client'
 
-import { useTeam } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
-
 import { useCreatePriceSet } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks/use-price-group'
 import { CreatePriceRequest } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_servers/price-groups'
+import { useTeamHostId } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
 import { SuccessDialog } from '@/components/notifications'
 import { toast } from '@/hooks/use-toast'
 import { useParams, useRouter } from 'next/navigation'
@@ -14,9 +13,9 @@ import {
   type FormData,
   type PriceFormData,
   type PriceType,
-} from '../../../member-group/price-groups'
+} from '../../forms'
 
-export default function AddMemberPriceGroup() {
+export default function AddPriceGroup() {
   const router = useRouter()
   const params = useParams()
   const teamId = params.teamId as string
@@ -25,7 +24,7 @@ export default function AddMemberPriceGroup() {
   // Hooks for API calls
   const createPriceSetMutation = useCreatePriceSet()
   const isLoading = createPriceSetMutation.isPending
-  const { data: teamData } = useTeam(teamId)
+  const teamHostId = useTeamHostId()
 
   const handleBack = () => {
     router.back()
@@ -37,10 +36,10 @@ export default function AddMemberPriceGroup() {
     feeForm: FeeFormData
     priceType: PriceType
   }) => {
-    if (!teamData?.team_group_id) {
+    if (!teamHostId) {
       toast({
         title: 'Error',
-        description: 'Team group ID not found. Please try again.',
+        description: 'Team host ID not found. Please try again.',
         variant: 'destructive',
       })
       return
@@ -50,14 +49,17 @@ export default function AddMemberPriceGroup() {
       // Prepare the request data based on the form
       const requestData: CreatePriceRequest = {
         type: data.priceType === 'free' ? 'PER_KWH' : data.priceType,
-        team_group_id: teamData.team_group_id,
+        team_group_id: Number(teamHostId),
         name: data.form.groupName,
-        status_type: 'MEMBER', // Different from regular price group
+        status_type: 'GENERAL',
       }
 
       // Add pricing fields based on type
-      if (data.priceType === 'PER_KWH' || data.priceType === 'free') {
+      if (data.priceType === 'PER_KWH') {
         requestData.price_per_kwh = parseFloat(data.priceForm.pricePerKwh)
+      } else if (data.priceType === 'free') {
+        // For free charge promotion, set price_per_kwh to the value after free kWh
+        requestData.price_per_kwh = parseFloat(data.priceForm.freeKwh)
       } else if (data.priceType === 'PER_MINUTE') {
         requestData.price_per_kwh = parseFloat(data.priceForm.pricePerKwhMinute)
         requestData.price_per_minute = parseFloat(data.priceForm.price_per_minute)
@@ -67,7 +69,18 @@ export default function AddMemberPriceGroup() {
       }
 
       // Add fees if provided
-      if (data.feeForm.fee) {
+      if (data.priceType === 'free') {
+        // For free charge promotion, add free kW info
+        const freeDescription = `Free ${data.priceForm.freeKw} kW charge`
+        const existingStartingFee = data.feeForm.startingFeeDescription
+
+        requestData.starting_fee = {
+          description: existingStartingFee
+            ? `${freeDescription}, ${existingStartingFee}`
+            : freeDescription,
+          fee: data.feeForm.fee || '0',
+        }
+      } else if (data.feeForm.fee) {
         requestData.starting_fee = {
           description: data.feeForm.startingFeeDescription,
           fee: data.feeForm.fee,
@@ -120,18 +133,18 @@ export default function AddMemberPriceGroup() {
     <>
       <PriceGroupForm
         mode="add"
-        statusType="MEMBER"
+        statusType="GENERAL"
         isLoading={isLoading}
         onSubmit={handleSubmit}
         onBack={handleBack}
-        teamGroupId={teamData?.team_group_id?.toString()}
+        teamGroupId={teamHostId?.toString()}
       />
 
       <SuccessDialog
         open={isSuccess}
         onOpenChange={setIsSuccess}
         title="Success"
-        message="Member Price Group has created completed"
+        message="Public Price Group has created completed"
         buttonText="Done"
         onButtonClick={() => {
           setIsSuccess(false)

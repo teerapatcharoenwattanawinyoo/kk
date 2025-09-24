@@ -8,7 +8,7 @@ import {
   type FormData,
   type PriceFormData,
   type PriceType,
-} from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_components/member-group/price-groups'
+} from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_components/forms'
 import {
   usePriceGroupDetail,
   useUpdatePriceSet,

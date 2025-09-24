@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ChevronLeft, CreditCard, Loader2, Plus, X, Zap } from 'lucide-react'
+import { ChevronLeft, CreditCard, Loader2, Plus, Zap } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -782,13 +782,12 @@ export default function MembersPriceGroupForm({
                                   <Button
                                     type="button"
                                     variant="destructive"
-                                    size="sm"
+                                    size="icon"
                                     onClick={() => handleRemoveTieredCreditItem(item.id)}
-                                    className="gap-1 rounded-full px-4"
+                                    className="size-4 gap-1 rounded-full"
                                     aria-label={`ลบขั้นที่ ${index + 1}`}
                                   >
-                                    <X className="h-4 w-4" />
-                                    ลบ
+                                    -
                                   </Button>
                                 )}
                               </div>

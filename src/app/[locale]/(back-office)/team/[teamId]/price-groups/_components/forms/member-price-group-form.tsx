@@ -39,20 +39,18 @@ export default function MembersPriceGroupForm({
 }: PriceGroupFormProps) {
   type TieredCreditItem = {
     id: string
-    packageName: string
-    creditAmount: string
-    bonusCredit: string
-    price: string
+    startKwh: string
+    endKwh: string
+    priceBahtPerKwh: string
   }
 
   const maxTieredCreditItems = 5
 
   const createEmptyTieredItem = (overrides: Partial<TieredCreditItem> = {}): TieredCreditItem => ({
     id: `tier-${Math.random().toString(36).slice(2, 10)}-${Date.now()}`,
-    packageName: '',
-    creditAmount: '',
-    bonusCredit: '',
-    price: '',
+    startKwh: '',
+    endKwh: '',
+    priceBahtPerKwh: '',
     ...overrides,
   })
 
@@ -102,12 +100,26 @@ export default function MembersPriceGroupForm({
     }),
   )
 
+  const tieredCreditAliases: Record<keyof Omit<TieredCreditItem, 'id'>, string[]> = {
+    startKwh: ['startKwh', 'start', 'startCredit', 'creditAmount'],
+    endKwh: ['endKwh', 'end', 'endCredit'],
+    priceBahtPerKwh: ['priceBahtPerKwh', 'price', 'pricePerKwh'],
+  }
+
   const getInitialTieredValue = (
     item: Record<string, unknown>,
     key: keyof Omit<TieredCreditItem, 'id'>,
   ) => {
-    const value = item[key]
-    return typeof value === 'string' ? value : ''
+    for (const alias of [key, ...(tieredCreditAliases[key] ?? [])]) {
+      const value = item[alias]
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return String(value)
+      }
+      if (typeof value === 'string' && value.trim() !== '') {
+        return value
+      }
+    }
+    return ''
   }
 
   const [tieredCreditItems, setTieredCreditItems] = useState<TieredCreditItem[]>(() => {
@@ -117,10 +129,9 @@ export default function MembersPriceGroupForm({
         .slice(0, maxTieredCreditItems)
         .map((item: Record<string, unknown>) =>
           createEmptyTieredItem({
-            packageName: getInitialTieredValue(item, 'packageName'),
-            creditAmount: getInitialTieredValue(item, 'creditAmount'),
-            bonusCredit: getInitialTieredValue(item, 'bonusCredit'),
-            price: getInitialTieredValue(item, 'price'),
+            startKwh: getInitialTieredValue(item, 'startKwh'),
+            endKwh: getInitialTieredValue(item, 'endKwh'),
+            priceBahtPerKwh: getInitialTieredValue(item, 'priceBahtPerKwh'),
           }),
         )
     }
@@ -166,14 +177,15 @@ export default function MembersPriceGroupForm({
         if (incomingTieredItems.length === 0) {
           return [createEmptyTieredItem()]
         }
-        return incomingTieredItems.slice(0, maxTieredCreditItems).map((item: Record<string, unknown>) =>
-          createEmptyTieredItem({
-            packageName: getInitialTieredValue(item, 'packageName'),
-            creditAmount: getInitialTieredValue(item, 'creditAmount'),
-            bonusCredit: getInitialTieredValue(item, 'bonusCredit'),
-            price: getInitialTieredValue(item, 'price'),
-          }),
-        )
+        return incomingTieredItems
+          .slice(0, maxTieredCreditItems)
+          .map((item: Record<string, unknown>) =>
+            createEmptyTieredItem({
+              startKwh: getInitialTieredValue(item, 'startKwh'),
+              endKwh: getInitialTieredValue(item, 'endKwh'),
+              priceBahtPerKwh: getInitialTieredValue(item, 'priceBahtPerKwh'),
+            }),
+          )
       })
     }
     // default billing type
@@ -255,13 +267,18 @@ export default function MembersPriceGroupForm({
     field: keyof Omit<TieredCreditItem, 'id'>,
     value: string,
   ) => {
-    const numericFields: Array<keyof Omit<TieredCreditItem, 'id'>> = [
-      'creditAmount',
-      'bonusCredit',
-      'price',
-    ]
+    const decimalFields: Array<keyof Omit<TieredCreditItem, 'id'>> = ['priceBahtPerKwh']
 
-    const nextValue = numericFields.includes(field) ? formatDecimal(value) : value
+    const sanitizeValue = (input: string) => {
+      if (decimalFields.includes(field)) {
+        return formatDecimal(input)
+      }
+      const cleaned = input.replace(/[^\d.]/g, '')
+      const [intPart, decPart = ''] = cleaned.split('.')
+      return decPart ? `${intPart}.${decPart.slice(0, 2)}` : intPart
+    }
+
+    const nextValue = sanitizeValue(value)
 
     setTieredCreditItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, [field]: nextValue } : item)),
@@ -644,122 +661,136 @@ export default function MembersPriceGroupForm({
                     </div>
                   )}
                   {priceType === 'TIERED_CREDIT' && (
-                    <div className="mt-4 space-y-4">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="mt-4 space-y-5">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <Label className="text-oc-title-secondary font-medium">
-                            ตั้งค่าแพ็กเกจเครดิต
+                          <Label className="text-oc-title-secondary text-sm font-semibold">
+                            รูปแบบขั้นราคาเครดิต
                           </Label>
                           <p className="text-xs text-muted-foreground">
-                            เพิ่มแพ็กเกจได้สูงสุด {maxTieredCreditItems} รายการ
+                            เพิ่มขั้นราคาได้สูงสุด {maxTieredCreditItems} ขั้น
                           </p>
                         </div>
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="default"
                           size="sm"
                           onClick={handleAddTieredCreditItem}
                           disabled={tieredCreditItems.length >= maxTieredCreditItems}
-                          className="flex items-center gap-1"
+                          className="gap-2 rounded-full px-4"
                         >
                           <Plus className="h-4 w-4" />
-                          เพิ่มแพ็กเกจ
+                          เพิ่มขั้นราคาใหม่
                         </Button>
                       </div>
 
                       <div className="space-y-4">
                         {tieredCreditItems.map((item, index) => (
-                          <div key={item.id} className="rounded-xl border p-4">
-                            <div className="mb-3 flex items-center justify-between">
-                              <p className="text-sm font-semibold text-oc-title-secondary">
-                                แพ็กเกจที่ {index + 1}
-                              </p>
-                              {tieredCreditItems.length > 1 && (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleRemoveTieredCreditItem(item.id)}
-                                  className="text-muted-foreground hover:text-destructive"
-                                  aria-label={`ลบแพ็กเกจที่ ${index + 1}`}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-
-                            <div className="grid gap-4 md:grid-cols-2">
+                          <div
+                            key={item.id}
+                            className="rounded-2xl border border-[#E8EAF1] bg-background p-4 shadow-sm"
+                          >
+                            <div className="grid gap-3 md:grid-cols-[minmax(0,0.2fr)_repeat(3,minmax(0,1fr))_auto] md:items-end">
                               <div className="space-y-1">
-                                <Label
-                                  htmlFor={`packageName-${item.id}`}
-                                  className="text-oc-title-secondary text-xs"
-                                >
-                                  ชื่อแพ็กเกจ
+                                <Label className="text-xs font-medium text-muted-foreground">
+                                  ขั้นที่
                                 </Label>
-                                <Input
-                                  id={`packageName-${item.id}`}
-                                  value={item.packageName}
-                                  onChange={(event) =>
-                                    handleTieredCreditChange(item.id, 'packageName', event.target.value)
-                                  }
-                                  placeholder="เช่น Silver Package"
-                                />
+                                <div className="flex h-11 items-center justify-center rounded-lg border border-dashed border-primary/40 bg-primary/10 text-base font-semibold text-primary">
+                                  {index + 1}
+                                </div>
                               </div>
                               <div className="space-y-1">
                                 <Label
-                                  htmlFor={`creditAmount-${item.id}`}
-                                  className="text-oc-title-secondary text-xs"
+                                  htmlFor={`startKwh-${item.id}`}
+                                  className="text-xs font-medium text-muted-foreground"
                                 >
-                                  จำนวนเครดิต (kWh)
-                                </Label>
-                                <Input
-                                  id={`creditAmount-${item.id}`}
-                                  value={item.creditAmount}
-                                  onChange={(event) =>
-                                    handleTieredCreditChange(item.id, 'creditAmount', event.target.value)
-                                  }
-                                  placeholder="ระบุจำนวนเครดิต"
-                                  inputMode="decimal"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <Label
-                                  htmlFor={`bonusCredit-${item.id}`}
-                                  className="text-oc-title-secondary text-xs"
-                                >
-                                  โบนัสเครดิต (ถ้ามี)
-                                </Label>
-                                <Input
-                                  id={`bonusCredit-${item.id}`}
-                                  value={item.bonusCredit}
-                                  onChange={(event) =>
-                                    handleTieredCreditChange(item.id, 'bonusCredit', event.target.value)
-                                  }
-                                  placeholder="ระบุโบนัสเครดิต"
-                                  inputMode="decimal"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <Label
-                                  htmlFor={`price-${item.id}`}
-                                  className="text-oc-title-secondary text-xs"
-                                >
-                                  ราคา (บาท)
+                                  เริ่มต้น (kWh)
                                 </Label>
                                 <div className="relative">
                                   <Input
-                                    id={`price-${item.id}`}
-                                    value={item.price}
+                                    id={`startKwh-${item.id}`}
+                                    value={item.startKwh}
                                     onChange={(event) =>
-                                      handleTieredCreditChange(item.id, 'price', event.target.value)
+                                      handleTieredCreditChange(
+                                        item.id,
+                                        'startKwh',
+                                        event.target.value,
+                                      )
                                     }
                                     placeholder="0"
                                     inputMode="decimal"
                                   />
-                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                                    kWh
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="space-y-1">
+                                <Label
+                                  htmlFor={`endKwh-${item.id}`}
+                                  className="text-xs font-medium text-muted-foreground"
+                                >
+                                  สิ้นสุด (kWh)
+                                </Label>
+                                <div className="relative">
+                                  <Input
+                                    id={`endKwh-${item.id}`}
+                                    value={item.endKwh}
+                                    onChange={(event) =>
+                                      handleTieredCreditChange(
+                                        item.id,
+                                        'endKwh',
+                                        event.target.value,
+                                      )
+                                    }
+                                    placeholder="0"
+                                    inputMode="decimal"
+                                  />
+                                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                                    kWh
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="space-y-1">
+                                <Label
+                                  htmlFor={`priceBahtPerKwh-${item.id}`}
+                                  className="text-xs font-medium text-muted-foreground"
+                                >
+                                  ราคา (บาท/kWh)
+                                </Label>
+                                <div className="relative">
+                                  <Input
+                                    id={`priceBahtPerKwh-${item.id}`}
+                                    value={item.priceBahtPerKwh}
+                                    onChange={(event) =>
+                                      handleTieredCreditChange(
+                                        item.id,
+                                        'priceBahtPerKwh',
+                                        event.target.value,
+                                      )
+                                    }
+                                    placeholder="0"
+                                    inputMode="decimal"
+                                  />
+                                  <span className="text-success pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold">
                                     ฿
                                   </span>
                                 </div>
+                              </div>
+                              <div className="flex items-end justify-end">
+                                {tieredCreditItems.length > 1 && (
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleRemoveTieredCreditItem(item.id)}
+                                    className="gap-1 rounded-full px-4"
+                                    aria-label={`ลบขั้นที่ ${index + 1}`}
+                                  >
+                                    <X className="h-4 w-4" />
+                                    ลบ
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           </div>

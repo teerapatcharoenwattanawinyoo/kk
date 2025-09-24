@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ChevronLeft, CreditCard, Loader2, Zap } from 'lucide-react'
+import { ChevronLeft, CreditCard, Loader2, Plus, X, Zap } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -37,6 +37,25 @@ export default function MembersPriceGroupForm({
   onBack,
   teamGroupId,
 }: PriceGroupFormProps) {
+  type TieredCreditItem = {
+    id: string
+    packageName: string
+    creditAmount: string
+    bonusCredit: string
+    price: string
+  }
+
+  const maxTieredCreditItems = 5
+
+  const createEmptyTieredItem = (overrides: Partial<TieredCreditItem> = {}): TieredCreditItem => ({
+    id: `tier-${Math.random().toString(36).slice(2, 10)}-${Date.now()}`,
+    packageName: '',
+    creditAmount: '',
+    bonusCredit: '',
+    price: '',
+    ...overrides,
+  })
+
   const [priceType, setPriceType] = useState<PriceType>(initialData?.priceType ?? 'PER_KWH')
   const [billingType, setBillingType] = useState<'USAGE' | 'CREDIT'>('USAGE')
 
@@ -83,6 +102,31 @@ export default function MembersPriceGroupForm({
     }),
   )
 
+  const getInitialTieredValue = (
+    item: Record<string, unknown>,
+    key: keyof Omit<TieredCreditItem, 'id'>,
+  ) => {
+    const value = item[key]
+    return typeof value === 'string' ? value : ''
+  }
+
+  const [tieredCreditItems, setTieredCreditItems] = useState<TieredCreditItem[]>(() => {
+    const initialTieredItems = (initialData as any)?.priceForm?.tieredCreditPricing
+    if (Array.isArray(initialTieredItems) && initialTieredItems.length > 0) {
+      return initialTieredItems
+        .slice(0, maxTieredCreditItems)
+        .map((item: Record<string, unknown>) =>
+          createEmptyTieredItem({
+            packageName: getInitialTieredValue(item, 'packageName'),
+            creditAmount: getInitialTieredValue(item, 'creditAmount'),
+            bonusCredit: getInitialTieredValue(item, 'bonusCredit'),
+            price: getInitialTieredValue(item, 'price'),
+          }),
+        )
+    }
+    return [createEmptyTieredItem()]
+  })
+
   // Update form states when initialData changes
   useEffect(() => {
     if (!initialData) {
@@ -114,6 +158,23 @@ export default function MembersPriceGroupForm({
 
     if (initialData.priceType) {
       setPriceType(initialData.priceType)
+    }
+
+    const incomingTieredItems = (initialData as any)?.priceForm?.tieredCreditPricing
+    if (Array.isArray(incomingTieredItems)) {
+      setTieredCreditItems(() => {
+        if (incomingTieredItems.length === 0) {
+          return [createEmptyTieredItem()]
+        }
+        return incomingTieredItems.slice(0, maxTieredCreditItems).map((item: Record<string, unknown>) =>
+          createEmptyTieredItem({
+            packageName: getInitialTieredValue(item, 'packageName'),
+            creditAmount: getInitialTieredValue(item, 'creditAmount'),
+            bonusCredit: getInitialTieredValue(item, 'bonusCredit'),
+            price: getInitialTieredValue(item, 'price'),
+          }),
+        )
+      })
     }
     // default billing type
     setBillingType('USAGE')
@@ -182,6 +243,46 @@ export default function MembersPriceGroupForm({
       offPeakPrice: '',
       freeKw: '',
       freeKwh: '',
+    })
+
+    if (newPriceType === 'TIERED_CREDIT' && tieredCreditItems.length === 0) {
+      setTieredCreditItems([createEmptyTieredItem()])
+    }
+  }
+
+  const handleTieredCreditChange = (
+    id: string,
+    field: keyof Omit<TieredCreditItem, 'id'>,
+    value: string,
+  ) => {
+    const numericFields: Array<keyof Omit<TieredCreditItem, 'id'>> = [
+      'creditAmount',
+      'bonusCredit',
+      'price',
+    ]
+
+    const nextValue = numericFields.includes(field) ? formatDecimal(value) : value
+
+    setTieredCreditItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: nextValue } : item)),
+    )
+  }
+
+  const handleAddTieredCreditItem = () => {
+    setTieredCreditItems((prev) => {
+      if (prev.length >= maxTieredCreditItems) {
+        return prev
+      }
+      return [...prev, createEmptyTieredItem()]
+    })
+  }
+
+  const handleRemoveTieredCreditItem = (id: string) => {
+    setTieredCreditItems((prev) => {
+      if (prev.length <= 1) {
+        return prev
+      }
+      return prev.filter((item) => item.id !== id)
     })
   }
 
@@ -539,6 +640,130 @@ export default function MembersPriceGroupForm({
                             })}
                           </SelectContent>
                         </Select>
+                      </div>
+                    </div>
+                  )}
+                  {priceType === 'TIERED_CREDIT' && (
+                    <div className="mt-4 space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <Label className="text-oc-title-secondary font-medium">
+                            ตั้งค่าแพ็กเกจเครดิต
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            เพิ่มแพ็กเกจได้สูงสุด {maxTieredCreditItems} รายการ
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleAddTieredCreditItem}
+                          disabled={tieredCreditItems.length >= maxTieredCreditItems}
+                          className="flex items-center gap-1"
+                        >
+                          <Plus className="h-4 w-4" />
+                          เพิ่มแพ็กเกจ
+                        </Button>
+                      </div>
+
+                      <div className="space-y-4">
+                        {tieredCreditItems.map((item, index) => (
+                          <div key={item.id} className="rounded-xl border p-4">
+                            <div className="mb-3 flex items-center justify-between">
+                              <p className="text-sm font-semibold text-oc-title-secondary">
+                                แพ็กเกจที่ {index + 1}
+                              </p>
+                              {tieredCreditItems.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleRemoveTieredCreditItem(item.id)}
+                                  className="text-muted-foreground hover:text-destructive"
+                                  aria-label={`ลบแพ็กเกจที่ ${index + 1}`}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                              <div className="space-y-1">
+                                <Label
+                                  htmlFor={`packageName-${item.id}`}
+                                  className="text-oc-title-secondary text-xs"
+                                >
+                                  ชื่อแพ็กเกจ
+                                </Label>
+                                <Input
+                                  id={`packageName-${item.id}`}
+                                  value={item.packageName}
+                                  onChange={(event) =>
+                                    handleTieredCreditChange(item.id, 'packageName', event.target.value)
+                                  }
+                                  placeholder="เช่น Silver Package"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label
+                                  htmlFor={`creditAmount-${item.id}`}
+                                  className="text-oc-title-secondary text-xs"
+                                >
+                                  จำนวนเครดิต (kWh)
+                                </Label>
+                                <Input
+                                  id={`creditAmount-${item.id}`}
+                                  value={item.creditAmount}
+                                  onChange={(event) =>
+                                    handleTieredCreditChange(item.id, 'creditAmount', event.target.value)
+                                  }
+                                  placeholder="ระบุจำนวนเครดิต"
+                                  inputMode="decimal"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label
+                                  htmlFor={`bonusCredit-${item.id}`}
+                                  className="text-oc-title-secondary text-xs"
+                                >
+                                  โบนัสเครดิต (ถ้ามี)
+                                </Label>
+                                <Input
+                                  id={`bonusCredit-${item.id}`}
+                                  value={item.bonusCredit}
+                                  onChange={(event) =>
+                                    handleTieredCreditChange(item.id, 'bonusCredit', event.target.value)
+                                  }
+                                  placeholder="ระบุโบนัสเครดิต"
+                                  inputMode="decimal"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label
+                                  htmlFor={`price-${item.id}`}
+                                  className="text-oc-title-secondary text-xs"
+                                >
+                                  ราคา (บาท)
+                                </Label>
+                                <div className="relative">
+                                  <Input
+                                    id={`price-${item.id}`}
+                                    value={item.price}
+                                    onChange={(event) =>
+                                      handleTieredCreditChange(item.id, 'price', event.target.value)
+                                    }
+                                    placeholder="0"
+                                    inputMode="decimal"
+                                  />
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                    ฿
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}

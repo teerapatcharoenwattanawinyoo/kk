@@ -21,9 +21,11 @@ export type PriceType = 'PER_KWH' | 'PER_MINUTE' | 'PEAK' | 'free'
 export type StatusType = 'GENERAL' | 'MEMBER'
 export type Mode = 'add' | 'edit'
 
+export type FormStatus = 'publish' | 'draft' | 'duplicate'
+
 export interface FormData {
   groupName: string
-  status: string
+  status: FormStatus
 }
 
 export interface PriceFormData {
@@ -84,9 +86,16 @@ export default function PriceGroupForm({
   const [priceType, setPriceType] = useState<PriceType>(initialData?.priceType || 'PER_KWH')
 
   // Main form state
+  const getDefaultStatus = (): FormStatus => {
+    if (initialData?.form?.status) {
+      return initialData.form.status
+    }
+    return statusType === 'MEMBER' ? 'duplicate' : 'publish'
+  }
+
   const [form, setForm] = useState<FormData>({
     groupName: initialData?.form?.groupName || '',
-    status: initialData?.form?.status || 'publish',
+    status: getDefaultStatus(),
   })
 
   // Price-specific form state
@@ -184,7 +193,7 @@ export default function PriceGroupForm({
   }
 
   const handleStatusChange = (value: string) => {
-    setForm({ ...form, status: value })
+    setForm({ ...form, status: value as FormStatus })
   }
 
   const handlePriceTypeChange = (value: string) => {
@@ -379,11 +388,7 @@ export default function PriceGroupForm({
                     >
                       Status <span className="text-destructive">*</span>
                     </Label>
-                    <Select
-                      value={form.status}
-                      onValueChange={handleStatusChange}
-                      defaultValue="publish"
-                    >
+                    <Select value={form.status} onValueChange={handleStatusChange}>
                       <SelectTrigger
                         className={`mt-2 border-none bg-[#F2F2F2] ${
                           form.status ? 'text-[#CACACA]' : 'text-oc-title-secondary'
@@ -394,6 +399,9 @@ export default function PriceGroupForm({
                       <SelectContent>
                         <SelectItem value="publish">Publish</SelectItem>
                         <SelectItem value="draft">Draft</SelectItem>
+                        {statusType === 'MEMBER' && (
+                          <SelectItem value="duplicate">Duplicate</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>

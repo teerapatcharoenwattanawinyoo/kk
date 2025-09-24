@@ -177,13 +177,15 @@ export default function MembersPriceGroupForm({
         if (incomingTieredItems.length === 0) {
           return [createEmptyTieredItem()]
         }
-        return incomingTieredItems.slice(0, maxTieredCreditItems).map((item: Record<string, unknown>) =>
-          createEmptyTieredItem({
-            startKwh: getInitialTieredValue(item, 'startKwh'),
-            endKwh: getInitialTieredValue(item, 'endKwh'),
-            priceBahtPerKwh: getInitialTieredValue(item, 'priceBahtPerKwh'),
-          }),
-        )
+        return incomingTieredItems
+          .slice(0, maxTieredCreditItems)
+          .map((item: Record<string, unknown>) =>
+            createEmptyTieredItem({
+              startKwh: getInitialTieredValue(item, 'startKwh'),
+              endKwh: getInitialTieredValue(item, 'endKwh'),
+              priceBahtPerKwh: getInitialTieredValue(item, 'priceBahtPerKwh'),
+            }),
+          )
       })
     }
     // default billing type
@@ -690,7 +692,9 @@ export default function MembersPriceGroupForm({
                           >
                             <div className="grid gap-3 md:grid-cols-[minmax(0,0.2fr)_repeat(3,minmax(0,1fr))_auto] md:items-end">
                               <div className="space-y-1">
-                                <Label className="text-xs font-medium text-muted-foreground">ขั้นที่</Label>
+                                <Label className="text-xs font-medium text-muted-foreground">
+                                  ขั้นที่
+                                </Label>
                                 <div className="flex h-11 items-center justify-center rounded-lg border border-dashed border-primary/40 bg-primary/10 text-base font-semibold text-primary">
                                   {index + 1}
                                 </div>
@@ -707,7 +711,11 @@ export default function MembersPriceGroupForm({
                                     id={`startKwh-${item.id}`}
                                     value={item.startKwh}
                                     onChange={(event) =>
-                                      handleTieredCreditChange(item.id, 'startKwh', event.target.value)
+                                      handleTieredCreditChange(
+                                        item.id,
+                                        'startKwh',
+                                        event.target.value,
+                                      )
                                     }
                                     placeholder="0"
                                     inputMode="decimal"
@@ -729,7 +737,11 @@ export default function MembersPriceGroupForm({
                                     id={`endKwh-${item.id}`}
                                     value={item.endKwh}
                                     onChange={(event) =>
-                                      handleTieredCreditChange(item.id, 'endKwh', event.target.value)
+                                      handleTieredCreditChange(
+                                        item.id,
+                                        'endKwh',
+                                        event.target.value,
+                                      )
                                     }
                                     placeholder="0"
                                     inputMode="decimal"
@@ -760,7 +772,7 @@ export default function MembersPriceGroupForm({
                                     placeholder="0"
                                     inputMode="decimal"
                                   />
-                                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-success">
+                                  <span className="text-success pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold">
                                     ฿
                                   </span>
                                 </div>

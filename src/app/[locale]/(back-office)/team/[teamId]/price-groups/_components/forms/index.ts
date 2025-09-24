@@ -6,6 +6,15 @@ export type {
   Mode,
   PriceFormData,
   PriceGroupFormProps,
+  PriceGroupFormSubmission,
   PriceType,
   StatusType,
-} from './price-group-form'
+} from '../../_schemas/price-group-form.schema'
+export {
+  PriceGroupFormSubmissionSchema,
+  FeeFormSchema,
+  FormSchema,
+  PriceFormSchema,
+  PriceTypeSchema,
+  StatusTypeSchema,
+} from '../../_schemas/price-group-form.schema'

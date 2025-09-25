@@ -787,19 +787,101 @@ export default function MembersPriceGroupForm({
                                     className="size-4 gap-1 rounded-full"
                                     aria-label={`ลบขั้นที่ ${index + 1}`}
                                   >
-                                    -
-                                  </Button>
-                                )}
+                                    เริ่มต้น (kWh)
+                                  </Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`startKwh-${item.id}`}
+                                      value={item.startKwh}
+                                      onChange={(event) =>
+                                        handleTieredCreditChange(
+                                          item.id,
+                                          'startKwh',
+                                          event.target.value,
+                                        )
+                                      }
+                                      placeholder="0"
+                                      inputMode="decimal"
+                                    />
+                                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                                      kWh
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="space-y-1">
+                                  <Label
+                                    htmlFor={`endKwh-${item.id}`}
+                                    className="text-xs font-medium text-muted-foreground"
+                                  >
+                                    สิ้นสุด (kWh)
+                                  </Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`endKwh-${item.id}`}
+                                      value={item.endKwh}
+                                      onChange={(event) =>
+                                        handleTieredCreditChange(
+                                          item.id,
+                                          'endKwh',
+                                          event.target.value,
+                                        )
+                                      }
+                                      placeholder="0"
+                                      inputMode="decimal"
+                                    />
+                                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                                      kWh
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="space-y-1">
+                                  <Label
+                                    htmlFor={`priceBahtPerKwh-${item.id}`}
+                                    className="text-xs font-medium text-muted-foreground"
+                                  >
+                                    ราคา (บาท/kWh)
+                                  </Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`priceBahtPerKwh-${item.id}`}
+                                      value={item.priceBahtPerKwh}
+                                      onChange={(event) =>
+                                        handleTieredCreditChange(
+                                          item.id,
+                                          'priceBahtPerKwh',
+                                          event.target.value,
+                                        )
+                                      }
+                                      placeholder="0"
+                                      inputMode="decimal"
+                                    />
+                                    <span className="text-success pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold">
+                                      ฿
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex items-end justify-end">
+                                  {tieredCreditItems.length > 1 && (
+                                    <Button
+                                      type="button"
+                                      variant="destructive"
+                                      size="icon"
+                                      onClick={() => handleRemoveTieredCreditItem(item.id)}
+                                      className="size-4 gap-1 rounded-full"
+                                      aria-label={`ลบขั้นที่ ${index + 1}`}
+                                    >
+                                      -
+                                    </Button>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
                         ))}
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Additional Fee Section */}
-                  {true && (
+                    {/* Additional Fee Section */}
                     <div>
                       <div className="text-oc-title-secondary mb-2 text-base font-semibold">
                         Additional Fee
@@ -1111,8 +1193,8 @@ export default function MembersPriceGroupForm({
                         </div>
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
 import { ChevronLeft, Loader2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
@@ -36,7 +37,10 @@ export default function PriceGroupForm({
   onSubmit,
   onBack,
   teamGroupId,
+  billingType,
 }: PriceGroupFormProps) {
+  const resolvedBillingType = billingType ?? initialData?.billingType ?? 'USAGE'
+  const isUsageBilling = resolvedBillingType === 'USAGE'
   const [priceType, setPriceType] = useState<PriceType>(initialData?.priceType ?? 'PER_KWH')
 
   // Main form state
@@ -288,7 +292,10 @@ export default function PriceGroupForm({
               <div className="flex flex-col lg:flex-row">
                 {/* Left Column - Form inputs */}
                 <div
-                  className="flex flex-1 flex-col gap-6 border-b pb-6 pt-6 md:pb-0 md:pt-8 lg:w-1/4 lg:flex-none lg:border-b-0 lg:border-r lg:pr-8"
+                  className={cn(
+                    'flex flex-1 flex-col gap-6 border-b pb-6 pt-6 md:pb-0 md:pt-8 lg:flex-none',
+                    isUsageBilling ? 'lg:w-1/4 lg:border-b-0 lg:border-r lg:pr-8' : 'lg:w-full lg:border-b-0',
+                  )}
                   style={{ minHeight: 'max(300px, 100%)' }}
                 >
                   <div>
@@ -334,25 +341,26 @@ export default function PriceGroupForm({
                 </div>
 
                 {/* Right Column - Form inputs */}
-                <div className="flex-1 space-y-6 px-4 pb-6 pt-6 md:px-4 md:pb-8 md:pt-8 lg:w-3/4 lg:pl-8 lg:pr-0">
-                  {/* Price Type Selection */}
-                  <div>
-                    <Label className="text-oc-title-secondary text-base font-semibold">
-                      การตั้งรูปแบบราคา <span className="text-destructive">*</span>
-                    </Label>
-                    <div className="mt-3 flex flex-wrap gap-3 rounded-lg bg-[#355FF5] p-4">
-                      <RadioGroup
-                        value={priceType}
-                        onValueChange={handlePriceTypeChange}
-                        className="flex w-full flex-wrap gap-6"
-                      >
-                        <div
-                          className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'PER_KWH'
-                              ? 'bg-white/20 text-white'
-                              : 'bg-[#2B58F7] text-white'
-                          }`}
+                {isUsageBilling && (
+                  <div className="flex-1 space-y-6 px-4 pb-6 pt-6 md:px-4 md:pb-8 md:pt-8 lg:w-3/4 lg:pl-8 lg:pr-0">
+                    {/* Price Type Selection */}
+                    <div>
+                      <Label className="text-oc-title-secondary text-base font-semibold">
+                        การตั้งรูปแบบราคา <span className="text-destructive">*</span>
+                      </Label>
+                      <div className="mt-3 flex flex-wrap gap-3 rounded-lg bg-[#355FF5] p-4">
+                        <RadioGroup
+                          value={priceType}
+                          onValueChange={handlePriceTypeChange}
+                          className="flex w-full flex-wrap gap-6"
                         >
+                          <div
+                            className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
+                              priceType === 'PER_KWH'
+                                ? 'bg-white/20 text-white'
+                                : 'bg-[#2B58F7] text-white'
+                            }`}
+                          >
                           <RadioGroupItem
                             value="PER_KWH"
                             id="radio-kwh"
@@ -1015,6 +1023,7 @@ export default function PriceGroupForm({
                     </div>
                   )}
                 </div>
+                )}
               </div>
             </CardContent>
           </Card>

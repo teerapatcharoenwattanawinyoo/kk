@@ -1,6 +1,7 @@
 export { default as MemberPriceGroupForm } from './member-price-group-form'
 export { default as PriceGroupForm } from './price-group-form'
 export type {
+  BillingType,
   FeeFormData,
   FormData,
   Mode,
@@ -12,6 +13,7 @@ export type {
 } from '../../_schemas/price-group-form.schema'
 export {
   PriceGroupFormSubmissionSchema,
+  BillingTypeSchema,
   FeeFormSchema,
   FormSchema,
   PriceFormSchema,

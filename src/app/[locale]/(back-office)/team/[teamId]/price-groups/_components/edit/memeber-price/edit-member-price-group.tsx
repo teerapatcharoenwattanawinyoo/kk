@@ -3,7 +3,6 @@
 import { useTeam } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
 
 import {
-  PriceGroupForm,
   type FeeFormData,
   type FormData,
   type PriceFormData,
@@ -18,6 +17,7 @@ import { SuccessDialog } from '@/components/notifications'
 import { toast } from '@/hooks/use-toast'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
+import MembersPriceGroupForm from '../../forms/member-price-group-form'
 
 export default function EditMemberPriceGroup() {
   const router = useRouter()
@@ -209,7 +209,7 @@ export default function EditMemberPriceGroup() {
 
   return (
     <>
-      <PriceGroupForm
+      <MembersPriceGroupForm
         mode="edit"
         statusType="MEMBER"
         initialData={initialData}

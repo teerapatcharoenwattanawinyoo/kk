@@ -55,7 +55,7 @@ export default function PriceGroupForm({
       offPeakPrice: initialData?.priceForm?.offPeakPrice,
       freeKw: initialData?.priceForm?.freeKw,
       freeKwh: initialData?.priceForm?.freeKwh,
-    })
+    }),
   )
 
   // Fee form state
@@ -74,7 +74,7 @@ export default function PriceGroupForm({
       feePerMinIdle: initialData?.feeForm?.feePerMinIdle,
       timeBeforeIdleFeeApplied: initialData?.feeForm?.timeBeforeIdleFeeApplied,
       maxTotalIdleFee: initialData?.feeForm?.maxTotalIdleFee,
-    })
+    }),
   )
 
   // Update form states when initialData changes
@@ -98,14 +98,12 @@ export default function PriceGroupForm({
 
     if (initialData.priceForm) {
       setPriceForm((prevPriceForm) =>
-        PriceFormSchema.parse({ ...prevPriceForm, ...initialData.priceForm })
+        PriceFormSchema.parse({ ...prevPriceForm, ...initialData.priceForm }),
       )
     }
 
     if (initialData.feeForm) {
-      setFeeForm((prevFeeForm) =>
-        FeeFormSchema.parse({ ...prevFeeForm, ...initialData.feeForm })
-      )
+      setFeeForm((prevFeeForm) => FeeFormSchema.parse({ ...prevFeeForm, ...initialData.feeForm }))
     }
 
     if (initialData.priceType) {
@@ -185,7 +183,7 @@ export default function PriceGroupForm({
 
     if (!validationResult.success) {
       const errorMessage = Array.from(
-        new Set(validationResult.error.issues.map((issue) => issue.message))
+        new Set(validationResult.error.issues.map((issue) => issue.message)),
       )
         .filter(Boolean)
         .join('\n')

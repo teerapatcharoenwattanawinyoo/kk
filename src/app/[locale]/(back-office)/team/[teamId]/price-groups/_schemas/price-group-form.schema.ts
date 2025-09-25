@@ -12,6 +12,9 @@ const trimmedInput = z
 export const PriceTypeSchema = z.enum(['PER_KWH', 'PER_MINUTE', 'PEAK', 'free', 'TIERED_CREDIT'])
 export type PriceType = z.infer<typeof PriceTypeSchema>
 
+export const BillingTypeSchema = z.enum(['USAGE', 'CREDIT'])
+export type BillingType = z.infer<typeof BillingTypeSchema>
+
 export const StatusTypeSchema = z.enum(['GENERAL', 'MEMBER'])
 export type StatusType = z.infer<typeof StatusTypeSchema>
 
@@ -101,6 +104,7 @@ export interface PriceGroupFormInitialData {
   feeForm?: Partial<FeeFormData>
   priceType?: PriceType
   billingDay?: number | string | null
+  billingType?: BillingType | null
 }
 
 export interface PriceGroupFormProps {
@@ -111,4 +115,5 @@ export interface PriceGroupFormProps {
   onSubmit: (data: PriceGroupFormSubmission) => Promise<void>
   onBack: () => void
   teamGroupId?: string | null
+  billingType?: BillingType
 }

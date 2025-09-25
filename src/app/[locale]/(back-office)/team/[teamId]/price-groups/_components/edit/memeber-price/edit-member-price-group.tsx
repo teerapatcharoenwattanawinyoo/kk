@@ -76,6 +76,7 @@ export default function EditMemberPriceGroup() {
         maxTotalIdleFee: toStringSafe(priceGroup.idle_fee?.max_total_idle_fee),
       },
       priceType: castedPriceType,
+      billingType: priceGroup.type === 'TIERED_CREDIT' ? 'CREDIT' : 'USAGE',
     }
   }, [priceGroup])
 
@@ -215,6 +216,7 @@ export default function EditMemberPriceGroup() {
         isLoading={isLoading}
         onSubmit={handleSubmit}
         onBack={handleBack}
+        billingType={initialData?.billingType ?? 'USAGE'}
       />
 
       <SuccessDialog

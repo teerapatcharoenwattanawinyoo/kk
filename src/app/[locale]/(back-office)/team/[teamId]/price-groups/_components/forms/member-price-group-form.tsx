@@ -538,172 +538,6 @@ export default function MembersPriceGroupForm({
                 </div>
 
                 {/* Right Column - Form inputs */}
-<<<<<<< HEAD
-                {billingType === 'USAGE' && (
-                  <div className="flex-1 space-y-6 px-4 pb-6 pt-6 md:px-4 md:pb-8 md:pt-8 lg:w-3/4 lg:pl-8 lg:pr-0">
-                    {/* Price Type Selection */}
-                    <div>
-                      <Label className="text-oc-title-secondary text-base font-semibold">
-                        การตั้งรูปแบบราคา <span className="text-destructive">*</span>
-                      </Label>
-                      <div className="mt-3 flex flex-wrap gap-3 rounded-lg bg-[#355FF5] p-4">
-                        <RadioGroup
-                          value={priceType}
-                          onValueChange={handlePriceTypeChange}
-                          className="flex w-full flex-wrap gap-6"
-                        >
-                          {/* บาท/kWh */}
-                          <div
-                            className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                              priceType === 'PER_KWH'
-                                ? 'bg-white/20 text-white'
-                                : 'bg-[#2B58F7] text-white'
-                            }`}
-                          >
-                            <RadioGroupItem
-                              value="PER_KWH"
-                              id="radio-kwh"
-                              className={`${
-                                priceType === 'PER_KWH'
-                                  ? 'border-2 border-white text-white'
-                                  : 'border-2 border-white/20'
-                              }`}
-                            />
-                            <Label
-                              className={`cursor-pointer ${
-                                priceType === 'PER_KWH' ? 'text-card' : 'text-white'
-                              }`}
-                            >
-                              บาท/kWh
-                            </Label>
-                          </div>
-                          {/* Tiered Credit Pricing */}
-                          <div
-                            className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                              priceType === 'TIERED_CREDIT'
-                                ? 'bg-white/20 text-white'
-                                : 'bg-[#2B58F7] text-white'
-                            }`}
-                          >
-                            <RadioGroupItem
-                              value="TIERED_CREDIT"
-                              id="radio-tiered-credit"
-                              className={`${
-                                priceType === 'TIERED_CREDIT'
-                                  ? 'border-2 border-white text-white'
-                                  : 'border-2 border-white/20'
-                              }`}
-                            />
-                            <Label
-                              className={`cursor-pointer ${
-                                priceType === 'TIERED_CREDIT' ? 'text-card' : 'text-white'
-                              }`}
-                            >
-                              Tiered Credit Pricing
-                            </Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
-                    </div>
-
-                    {/* Price Input Sections */}
-                    {priceType === 'PER_KWH' && (
-                      <div className="mt-4 rounded-xl border p-6">
-                        <Label htmlFor="price" className="text-oc-title-secondary font-medium">
-                          บาท <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative mt-2 w-full sm:w-2/3 md:w-1/2">
-                          <Input
-                            id="pricePerKwh"
-                            placeholder="ระบุ"
-                            className="pr-8"
-                            type="number"
-                            inputMode="decimal"
-                            min={0}
-                            step="0.01"
-                            value={priceForm.pricePerKwh}
-                            onChange={handlePriceInputChange}
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
-                            ฿
-                          </span>
-                        </div>
-                        {/* Billing cycle day (only relevant for CREDIT) */}
-                        <div className="mt-4">
-                          <Label
-                            htmlFor="billingDay"
-                            className="text-oc-title-secondary text-sm font-semibold"
-                          >
-                            รอบวันที่วางบิล
-                          </Label>
-                          <Select value={billingDay} onValueChange={setBillingDay}>
-                            <SelectTrigger
-                              id="billingDay"
-                              className={`mt-2 w-28 ${billingDay ? 'text-oc-title-secondary' : 'text-[#CACACA]'}`}
-                              aria-label="Billing cycle day"
-                              // Disable when paying by usage
-                              disabled={billingType !== 'CREDIT'}
-                            >
-                              <SelectValue placeholder="เลือกวันที่ (1–31)" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Array.from({ length: 31 }, (_, i) => {
-                                const val = String(i + 1)
-                                return (
-                                  <SelectItem key={val} value={val}>
-                                    {i + 1}
-                                  </SelectItem>
-                                )
-                              })}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    )}
-                    {priceType === 'TIERED_CREDIT' && (
-                      <div className="mt-4 space-y-5">
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <div>
-                            <Label className="text-oc-title-secondary text-sm font-semibold">
-                              รูปแบบขั้นราคาเครดิต
-                            </Label>
-                            <p className="text-xs text-muted-foreground">
-                              เพิ่มขั้นราคาได้สูงสุด {maxTieredCreditItems} ขั้น
-                            </p>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="default"
-                            size="sm"
-                            onClick={handleAddTieredCreditItem}
-                            disabled={tieredCreditItems.length >= maxTieredCreditItems}
-                            className="gap-2 rounded-full px-4"
-                          >
-                            <Plus className="h-4 w-4" />
-                            เพิ่มขั้นราคาใหม่
-                          </Button>
-                        </div>
-
-                        <div className="space-y-4">
-                          {tieredCreditItems.map((item, index) => (
-                            <div
-                              key={item.id}
-                              className="rounded-2xl border border-[#E8EAF1] bg-background p-4 shadow-sm"
-                            >
-                              <div className="grid gap-3 md:grid-cols-[minmax(0,0.2fr)_repeat(3,minmax(0,1fr))_auto] md:items-end">
-                                <div className="space-y-1">
-                                  <Label className="text-xs font-medium text-muted-foreground">
-                                    ขั้นที่
-                                  </Label>
-                                  <div className="flex h-11 items-center justify-center rounded-lg border border-dashed border-primary/40 bg-primary/10 text-base font-semibold text-primary">
-                                    {index + 1}
-                                  </div>
-                                </div>
-                                <div className="space-y-1">
-                                  <Label
-                                    htmlFor={`startKwh-${item.id}`}
-                                    className="text-xs font-medium text-muted-foreground"
-=======
                 <div className="flex-1 space-y-6 px-3 pb-6 pt-6 sm:px-4 md:pb-8 md:pt-8 lg:w-[calc(100%-28rem)] lg:pl-8 lg:pr-0">
                   {/* Price Type Selection */}
                   <div>
@@ -923,7 +757,6 @@ export default function MembersPriceGroupForm({
                                     className="m-2 size-5 rounded-full"
                                     aria-label={`ลบขั้นที่ ${index + 1}`}
                                     title={`ลบขั้นที่ ${index + 1}`}
->>>>>>> parent of 7150a3b (Revert "add ,")
                                   >
                                     เริ่มต้น (kWh)
                                   </Label>
@@ -1014,10 +847,6 @@ export default function MembersPriceGroupForm({
                                 </div>
                               </div>
                             </div>
-<<<<<<< HEAD
-                          ))}
-                        </div>
-=======
                           </div>
                         ))}
                         {/* Billing cycle day (only relevant for CREDIT/TIERED_CREDIT) */}
@@ -1050,7 +879,6 @@ export default function MembersPriceGroupForm({
                             </Select>
                           </div>
                         )}
->>>>>>> parent of 7150a3b (Revert "add ,")
                       </div>
                     )}
 

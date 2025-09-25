@@ -132,18 +132,18 @@ export function PricingPage({ teamId }: PricingPageProps) {
                     className={`pb-2 text-2xl font-medium tracking-[-0.84px] ${
                       activeSubTab === 'public-price'
                         ? 'text-oc-title-secondary border-b-2 border-primary py-1 font-medium'
-                        : 'py-1 text-[#A1B1D1]'
+                        : 'text-oc-title py-1'
                     }`}
                   >
                     {t('pricing.general_price')}
                   </button>
-                  <div className="h-8 w-px bg-[#CDD5DE]" />
+                  <div className="h-8 w-px bg-border" />
                   <button
                     onClick={() => setActiveSubTab('member-price')}
                     className={`pb-2 text-2xl font-medium tracking-[-0.84px] ${
                       activeSubTab === 'member-price'
                         ? 'text-oc-title-secondary border-b-2 border-primary py-1 font-medium'
-                        : 'py-1 text-[#A1B1D1]'
+                        : 'text-oc-title py-1'
                     }`}
                   >
                     {t('pricing.members_price')}
@@ -199,7 +199,7 @@ export function PricingPage({ teamId }: PricingPageProps) {
                           </div>
                         ) : (
                           <div className="flex h-8 w-8 items-center justify-center">
-                            <MemberPriceIcon />
+                            <MemberPriceIcon className="text-primary" />
                           </div>
                         )}
                         <div>

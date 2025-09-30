@@ -1,7 +1,7 @@
-
 'use client'
 
 import { TeamWalletIcon } from '@/components/icons/TeamWalletIcon'
+import { Skeleton } from '@/components/ui/skeleton'
 import Image from 'next/image'
 
 interface WalletCardProps {
@@ -25,9 +25,9 @@ export function WalletCard({ walletBalance, teamId, isLoading = false }: WalletC
         fill
         className="object-cover"
       />
-      <div className="relative z-10 h-full p-6 pr-4 text-white">
+      <div className="relative z-10 h-full p-6 pr-4 text-primary-foreground">
         <div className="mb-2 flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted/20">
             <TeamWalletIcon />
           </div>
           <span className="text-sm font-medium">Team Wallet</span>
@@ -37,11 +37,7 @@ export function WalletCard({ walletBalance, teamId, isLoading = false }: WalletC
         </div>
         <div className="mt-6">
           <div className="text-3xl font-bold">
-            {isLoading ? (
-              <div className="h-8 w-40 animate-pulse rounded-full bg-white/40" />
-            ) : (
-              `${formattedBalance} ฿`
-            )}
+            {isLoading ? <Skeleton className="h-10 w-40 bg-muted/20" /> : `${formattedBalance} ฿`}
           </div>
           <div className="text-xs font-light">Team ID : {teamId}</div>
         </div>

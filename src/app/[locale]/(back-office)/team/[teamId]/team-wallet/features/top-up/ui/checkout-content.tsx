@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { PaymentMethod } from '../../../types/top-up'
 import { PaymentMethodSelector } from './payment-method-selector'
 
 interface CheckoutContentProps {
@@ -12,7 +13,7 @@ interface CheckoutContentProps {
 export function CheckoutContent({ amount, teamId, locale }: CheckoutContentProps) {
   const router = useRouter()
 
-  const handlePaymentSelect = (methodId: string, methodData: any) => {
+  const handlePaymentSelect = (methodId: string, methodData: PaymentMethod) => {
     // Navigate to summary page with method data
     const methodParams = encodeURIComponent(JSON.stringify(methodData))
     router.push(

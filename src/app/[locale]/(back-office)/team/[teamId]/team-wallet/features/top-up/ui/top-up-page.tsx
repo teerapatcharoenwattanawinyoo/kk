@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { ChevronLeft, Download, Smartphone } from 'lucide-react'
 import Link from 'next/link'
+import { topUpTransactionGroupsMock } from '../../../mock/top-up'
 
 interface PaymentPageProps {
   teamId: string
@@ -49,39 +50,7 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
     router.push(`/${locale}/team/${teamId}/team-wallet/top-up/checkout?amount=${amount}`)
   }
 
-  const txGroups = [
-    {
-      date: '20 Nov 2025',
-      items: [
-        {
-          id: '0x0000030',
-          title: 'Top up',
-          datetime: '20/11/2025 17:35 PM',
-          amount: 3220,
-          channel: 'PromptPay',
-        },
-        {
-          id: '0x0000029',
-          title: 'Top up',
-          datetime: '20/11/2025 13:36 PM',
-          amount: 220,
-          channel: 'PromptPay',
-        },
-      ],
-    },
-    {
-      date: '19 Nov 2025',
-      items: [
-        {
-          id: '0x0000028',
-          title: 'Top up',
-          datetime: '19/11/2025 17:35 PM',
-          amount: 220,
-          channel: 'PromptPay',
-        },
-      ],
-    },
-  ] as const
+  const txGroups = topUpTransactionGroupsMock
 
   return (
     <div className="space-y-6 p-4">

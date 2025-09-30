@@ -2,7 +2,7 @@ import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-gu
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
-import { ProcessContent } from '../../../_components/top-up/process-content'
+import { ProcessContent } from '../../../features/top-up/ui/process-content'
 
 interface ProcessPageProps {
   params: Promise<{

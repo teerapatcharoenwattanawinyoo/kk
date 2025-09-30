@@ -5,13 +5,7 @@ import { Card, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import Image from 'next/image'
 import { useMemo } from 'react'
-
-interface PaymentMethod {
-  id: string
-  name: string
-  icon: string
-  description: string
-}
+import { PaymentMethod } from '../../../types/top-up'
 
 interface OrderSummaryProps {
   amount: string

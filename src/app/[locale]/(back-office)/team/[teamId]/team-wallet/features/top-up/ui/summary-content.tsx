@@ -1,12 +1,13 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { PaymentMethod } from '../../../types/top-up'
 import { OrderSummary } from './order-summary'
 
 interface SummaryContentProps {
   amount: string
   paymentMethod: string
-  paymentMethodData?: any
+  paymentMethodData?: PaymentMethod
   teamId: string
   locale: string
 }

@@ -2,7 +2,7 @@ import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-gu
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
-import { CheckoutContent } from '../../_components/top-up/checkout-content'
+import { CheckoutContent } from '../../features/top-up/ui/checkout-content'
 
 interface CheckoutPageProps {
   params: Promise<{

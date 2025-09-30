@@ -1,19 +1,20 @@
 import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
-import { PaymentPage } from './_components/team-wallet/payment-page'
 
-interface PaymentPageProps {
+import { TeamWalletPage } from './_layers/presentation/team-wallet-page'
+
+interface TeamWalletRouteProps {
   params: Promise<{
     locale: string
     teamId: string
   }>
 }
 
-export default async function TeamWallet({ params }: PaymentPageProps) {
+export default async function TeamWallet({ params }: TeamWalletRouteProps) {
   const { teamId, locale } = await params
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
-      <PaymentPage teamId={teamId} />
+      <TeamWalletPage teamId={teamId} />
     </TeamGuard>
   )
 }

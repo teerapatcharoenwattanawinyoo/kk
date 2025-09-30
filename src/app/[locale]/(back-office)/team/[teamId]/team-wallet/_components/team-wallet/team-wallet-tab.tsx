@@ -1,7 +1,8 @@
 'use client'
 
 import { Separator } from '@/components/ui/separator'
-import { ChargeSession } from '../../_schemas/team-wallet-types'
+
+import { ChargeSession } from '../../_schemas/team-wallet.schema'
 import { ChargeSessionsTable } from './charge-sessions-table'
 import { TableHeader } from './table-header'
 import { TopUpCard } from './top-up-card'

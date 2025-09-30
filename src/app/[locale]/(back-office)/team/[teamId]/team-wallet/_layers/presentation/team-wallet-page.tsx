@@ -1,20 +1,16 @@
-
 'use client'
 
 import { TeamHeader } from '@/app/[locale]/(back-office)/team/_components/team-header'
 import { TeamTabMenu } from '@/app/[locale]/(back-office)/team/_components/team-tab-menu'
 import { useI18n } from '@/lib/i18n'
-import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-import {
-  chargeCardsMock,
-  chargeSessionsMock,
-} from '../../mock/team-wallet.mock'
+import { ChargeCardsTab } from '../../_components/team-wallet/charge-cards-tab'
 import { useTeamWalletQuery } from '../../_hooks/use-team-wallet-query'
 import { ChargeCard, ChargeSession } from '../../_schemas/team-wallet.schema'
-import { ChargeCardsTab } from '../../_components/team-wallet/charge-cards-tab'
-import { Pagination } from '../../_components/team-wallet/pagination'
+import { chargeCardsMock, chargeSessionsMock } from '../../mock/team-wallet.mock'
+
 import { TeamWalletTab } from '../../_components/team-wallet/team-wallet-tab'
 
 type TeamWalletSubTab = 'team-wallet' | 'charge-cards'
@@ -69,7 +65,7 @@ export function TeamWalletPage({ teamId }: TeamWalletPageProps) {
                 >
                   Team Wallet
                 </button>
-                <div className="h-8 w-px bg-[#CDD5DE]" />
+                <div className="h-8 w-px bg-border" />
                 <button
                   onClick={() => setActiveSubTab('charge-cards')}
                   className={`pb-2 text-2xl font-medium tracking-[-0.84px] ${
@@ -95,8 +91,6 @@ export function TeamWalletPage({ teamId }: TeamWalletPageProps) {
             ) : (
               <ChargeCardsTab chargeCards={chargeCards} />
             )}
-
-            <Pagination />
           </div>
         </div>
       </div>

@@ -1,9 +1,9 @@
 'use client'
 
-import { DevelopmentPlaceholder } from '@/components/back-office/team/settings/development-placeholder'
-import { SettingsLayout } from '@/components/back-office/team/settings/settings-layout'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import { use } from 'react'
+import { DevelopmentPlaceholder } from '../_components/development-placeholder'
+import { SettingsLayout } from '../_components/settings-layout'
 
 interface TeamSettingPageProps {
   params: Promise<{

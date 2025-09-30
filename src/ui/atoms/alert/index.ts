@@ -1,1 +1,0 @@
-export { CustomAlert } from './Alert'

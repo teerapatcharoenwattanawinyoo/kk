@@ -1,5 +1,5 @@
 'use client'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -32,7 +32,7 @@ export default function EditMemberGroup({ params }: EditMemberGroupPageProps) {
               >
                 <ChevronLeft className="h-5 w-5 text-muted-foreground" />
               </Button>
-              <h1 className="text-title text-xl font-semibold">Edit Member Group</h1>
+              <h1 className="text-oc-title-secondary text-xl font-semibold">Edit Member Group</h1>
             </div>
 
             {/* Submit Button */}

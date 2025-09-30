@@ -5,6 +5,8 @@ import { Toaster } from '@/components/ui/sonner'
 
 import { I18nProvider } from '@/lib/i18n/provider'
 import ReactQueryProvider from '@/lib/providers/react-query-provider'
+import { UserProvider } from '@/lib/providers/user-provider'
+import { getUser } from '@/lib/server/auth'
 import '@/styles/globals.css'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import type { Metadata } from 'next'
@@ -25,24 +27,27 @@ export const metadata: Metadata = {
   generator: 'v0.dev',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const user = await getUser()
   return (
     <html suppressHydrationWarning>
       <body className={`${kanit.className} antialiased`} suppressHydrationWarning>
         <ReactQueryProvider>
           <I18nProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {children}
-            </ThemeProvider>
+            <UserProvider user={user}>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+              </ThemeProvider>
+            </UserProvider>
           </I18nProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </ReactQueryProvider>

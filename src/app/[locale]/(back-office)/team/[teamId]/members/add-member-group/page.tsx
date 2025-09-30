@@ -1,9 +1,10 @@
 'use client'
 
-import MemberGroupForm from '@/components/back-office/team/form/member-group/member-form'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import MemberGroupForm from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_components/member-group/member-form'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import SuccessDialog from '@/components/notifications/success-dialog'
 import { Button } from '@/components/ui/button'
+import { localApi } from '@/lib/api/config/axios-server'
 import { ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { use, useState } from 'react'
@@ -23,17 +24,7 @@ export default function AddMemberGroup({ params }: AddMemberGroupPageProps) {
     try {
       setIsSubmitting(true)
       // Call create member group API
-      const res = await fetch(`/api/teams/${teamId}/member-groups`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        // NOTE: The form is currently self-contained; send minimal payload.
-        body: JSON.stringify({}),
-        cache: 'no-store',
-      })
-
-      if (!res.ok) {
-        throw new Error('Failed to create member group')
-      }
+      await localApi.post(`/api/teams/${teamId}/member-groups`, {})
 
       setOpenSuccess(true)
     } finally {
@@ -60,7 +51,7 @@ export default function AddMemberGroup({ params }: AddMemberGroupPageProps) {
               >
                 <ChevronLeft className="h-5 w-5 text-muted-foreground" />
               </Button>
-              <h1 className="text-title text-xl font-semibold">Add Member Group</h1>
+              <h1 className="text-oc-title-secondary text-xl font-semibold">Add Member Group</h1>
             </div>
 
             {/* Submit Button */}

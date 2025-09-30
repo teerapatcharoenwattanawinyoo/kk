@@ -1,5 +1,5 @@
-import { EditMemberPriceGroup } from '@/components/back-office/team/edit'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
+import { EditMemberPriceGroup } from '../_components/edit'
 
 interface EditMemberPriceGroupPageProps {
   params: Promise<{

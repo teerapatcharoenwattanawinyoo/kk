@@ -1,7 +1,7 @@
 import { SearchIcon } from '@/components/icons'
+import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { colors } from '@/lib/utils/colors'
-import { Input } from '@/ui/atoms/input'
 import React from 'react'
 
 interface SearchInputProps {

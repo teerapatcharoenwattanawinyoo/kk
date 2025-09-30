@@ -1,5 +1,5 @@
-import { AddPriceGroup } from '@/components/back-office/team/add/'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
+import { AddPriceGroup } from '../_components/add'
 
 interface AddPriceGroupPageProps {
   params: Promise<{

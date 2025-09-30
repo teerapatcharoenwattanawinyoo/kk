@@ -27,14 +27,6 @@ export function TeamGroupAvatar({
 }: TeamGroupAvatarProps) {
   const avatarProps = getAvatarProps(name || '', id)
 
-  // Debug log
-  console.log('TeamGroupAvatar Debug:', {
-    name,
-    id,
-    imageUrl,
-    avatarProps,
-  })
-
   return (
     <Avatar className={cn(sizeClasses[size], className)}>
       {imageUrl && <AvatarImage src={imageUrl} alt={name || ''} />}

@@ -1,15 +1,17 @@
-import {
+import type {
   ChargerListResponse,
   ChargerTypeResponse,
   CreateChargerRequest,
   CreateChargerResponse,
+  UpdateSerialNumberRequest,
+  UpdateSerialNumberResponse,
+} from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/chargers.schema'
+import {
   getChargersList,
   getChargerTypes,
   updateCharger,
   updateSerialNumber,
-  UpdateSerialNumberRequest,
-  UpdateSerialNumberResponse,
-} from '@/lib/api/team-group/charger'
+} from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/charger'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function useChargersList(

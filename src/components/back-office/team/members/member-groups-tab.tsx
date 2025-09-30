@@ -136,14 +136,14 @@ export function MemberGroupsTab({}: MemberGroupsTabProps) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <CardTitle className="text-title">{g.name}</CardTitle>
-              <CardDescription className="text-muted-blue border-b pb-4 text-xs">
+              <CardTitle className="text-oc-title-secondary">{g.name}</CardTitle>
+              <CardDescription className="text-oc-sidebar border-b pb-4 text-xs">
                 {g.description}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between border-b pb-4 text-xs">
-                <span className="text-muted-blue">{g.priceGroup.label}</span>
+                <span className="text-oc-sidebar">{g.priceGroup.label}</span>
                 <Link href={g.priceGroup.href} className="text-primary hover:underline">
                   {g.priceGroup.linkText}
                 </Link>
@@ -152,7 +152,7 @@ export function MemberGroupsTab({}: MemberGroupsTabProps) {
               <div className="space-y-2 pt-1">
                 {g.permissions.map((p, idx) => (
                   <div key={idx} className="flex items-center justify-between text-xs">
-                    <span className="text-muted-blue">{p.label}</span>
+                    <span className="text-oc-sidebar">{p.label}</span>
                     {p.enabled ? (
                       <CheckIcon className="bg-success size-4 rounded-full text-white" />
                     ) : (

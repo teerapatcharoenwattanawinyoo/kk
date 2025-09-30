@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from '@/lib/constants'
+
 import {
   ITeamListResponse,
   TeamData,
@@ -6,7 +7,7 @@ import {
   TeamHostListResponse,
   TeamListParams,
   TeamListResponse,
-} from '@/modules/teams/schemas/team.schema'
+} from '@/app/[locale]/(back-office)/team/_schemas'
 import { api } from '../config/axios'
 import { IResponse } from '../config/model'
 
@@ -72,11 +73,7 @@ export async function getTeamHostList(params?: TeamHostListParams): Promise<Team
 }
 
 export async function getTeamById(teamId: string): Promise<TeamData | null> {
-  console.log('=== getTeamById called ===')
-  console.log('teamId:', teamId, 'type:', typeof teamId)
-
   try {
-    console.log('Making API request to:', API_ENDPOINTS.AUTH.TEAM)
     const response = await api.get<TeamListResponse>(API_ENDPOINTS.AUTH.TEAM, {
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -85,24 +82,12 @@ export async function getTeamById(teamId: string): Promise<TeamData | null> {
       },
     })
 
-    console.log('API response received:', response)
-    console.log('Teams in response:', response.data.data)
-    console.log('Looking for team with team_group_id:', teamId)
-
     const team = response.data.data.find((teamItem: TeamData) => {
-      console.log(
-        `Comparing team.team_group_id (${teamItem.team_group_id}) with teamId (${teamId})`,
-      )
-      console.log(
-        `team.team_group_id.toString() === teamId: ${teamItem.team_group_id.toString() === teamId}`,
-      )
       return teamItem.team_group_id.toString() === teamId
     })
 
-    console.log('Found team:', team)
     return team || null
   } catch (error) {
-    console.error('Error fetching team by ID:', error)
     return null
   }
 }

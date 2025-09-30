@@ -1,15 +1,17 @@
-import {
-  createConnector,
+import type {
   CreateConnectorRequest,
   CreateConnectorResponse,
-  deleteConnector,
   DeleteConnectorResponse,
+  UpdateConnectorRequest,
+  UpdateConnectorResponse,
+} from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_schemas/connector.schema'
+import {
+  createConnector,
+  deleteConnector,
   getChargerTypes,
   getConnectorsList,
   updateConnector,
-  UpdateConnectorRequest,
-  UpdateConnectorResponse,
-} from '@/lib/api/team-group/connectors'
+} from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/connectors'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function useChargerTypes() {
@@ -87,7 +89,7 @@ export function useCreateConnector() {
         queryKey: ['chargers-list'],
       })
 
-      console.log('Connector created successfully:', data)
+      // connector created successfully (log removed)
     },
     onError: (error) => {
       console.error('Failed to create connector:', error)
@@ -115,7 +117,7 @@ export function useUpdateConnector() {
         queryKey: ['chargers-list'],
       })
 
-      console.log('Connector updated successfully:', data)
+      // connector updated successfully (log removed)
     },
     onError: (error) => {
       console.error('Failed to update connector:', error)
@@ -139,7 +141,7 @@ export function useDeleteConnector() {
         queryKey: ['chargers-list'],
       })
 
-      console.log('Connector deleted successfully:', data)
+      // connector deleted successfully (log removed)
     },
     onError: (error) => {
       console.error('Failed to delete connector:', error)

@@ -1,10 +1,6 @@
-import {
-  PlanUpgradeContent,
-  type BillingData,
-  type UsageData,
-} from '@/components/back-office/team/settings/plan'
-import { SettingsLayout } from '@/components/back-office/team/settings/settings-layout'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
+import { PlanUpgradeContent, type BillingData, type UsageData } from '../_components/plan'
+import { SettingsLayout } from '../_components/settings-layout'
 import { upgradePlanAction } from './actions'
 
 interface PlanUpgradePageProps {
@@ -51,19 +47,19 @@ async function getBillingData(teamId: string): Promise<BillingData> {
 async function updatePaymentMethodAction(teamId: string) {
   'use server'
   // TODO: Implement payment method update
-  console.log('Update payment method for team:', teamId)
+  // update payment method (log removed)
 }
 
 async function downloadInvoiceAction(teamId: string) {
   'use server'
   // TODO: Implement invoice download
-  console.log('Download invoice for team:', teamId)
+  // download invoice (log removed)
 }
 
 async function viewBillingHistoryAction(teamId: string) {
   'use server'
   // TODO: Implement billing history view
-  console.log('View billing history for team:', teamId)
+  // view billing history (log removed)
 }
 
 const PlanUpgradePage = async ({ params }: PlanUpgradePageProps) => {

@@ -61,7 +61,7 @@ const mockMembers: Member[] = [
   },
 ]
 
-export function MembersTable({}: MembersTableProps) {
+export function MembersTable() {
   const [selectAll] = useState(false)
   const [selectedMembers] = useState<string[]>([])
 
@@ -171,10 +171,10 @@ export function MembersTable({}: MembersTableProps) {
                       </div>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-title text-[12px] font-medium leading-[16px] tracking-[0.15px] sm:text-[14px] sm:leading-[18px]">
+                      <div className="text-oc-title-secondary text-[12px] font-medium leading-[16px] tracking-[0.15px] sm:text-[14px] sm:leading-[18px]">
                         {member.name}
                       </div>
-                      <div className="font-open-sans text-muted-blue text-[10px] leading-[14px] sm:text-[11px] sm:leading-[16px]">
+                      <div className="font-open-sans text-oc-sidebar text-[10px] leading-[14px] sm:text-[11px] sm:leading-[16px]">
                         {member.role}
                       </div>
                       {/* Show member group and price group on mobile */}
@@ -196,7 +196,7 @@ export function MembersTable({}: MembersTableProps) {
                 <TableCell className="hidden text-center sm:table-cell">
                   <span
                     className={`text-[10px] font-medium leading-[16px] tracking-[0.15px] sm:text-[12px] sm:leading-[18px] ${
-                      member.memberGroup ? 'text-title' : 'text-[#DADADA]'
+                      member.memberGroup ? 'text-oc-title-secondary' : 'text-[#DADADA]'
                     }`}
                   >
                     {member.memberGroup || 'No Member Group'}
@@ -205,7 +205,7 @@ export function MembersTable({}: MembersTableProps) {
                 <TableCell className="hidden text-center md:table-cell">
                   <span
                     className={`text-[10px] font-medium leading-[16px] tracking-[0.15px] sm:text-[12px] sm:leading-[18px] ${
-                      member.priceGroup ? 'text-title' : 'text-[#DADADA]'
+                      member.priceGroup ? 'text-oc-title-secondary' : 'text-[#DADADA]'
                     }`}
                   >
                     {member.priceGroup || 'No Price Group'}
@@ -229,7 +229,9 @@ export function MembersTable({}: MembersTableProps) {
                 <TableCell className="hidden text-center lg:table-cell">
                   <span
                     className={`text-[10px] leading-[12px] tracking-[0.15px] sm:text-[11px] sm:leading-[14px] ${
-                      member.joinedDate ? 'text-title whitespace-pre-line' : 'text-[#DADADA]'
+                      member.joinedDate
+                        ? 'text-oc-title-secondary whitespace-pre-line'
+                        : 'text-[#DADADA]'
                     }`}
                   >
                     {member.joinedDate || 'N/A'}
@@ -241,7 +243,7 @@ export function MembersTable({}: MembersTableProps) {
                     size={'icon'}
                     className="h-6 w-6 rounded-full p-1 sm:h-8 sm:w-8 sm:p-1.5"
                   >
-                    <MoreHorizontal className="text-title h-3 w-3 sm:h-4 sm:w-4" />
+                    <MoreHorizontal className="text-oc-title-secondary h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </TableCell>
               </TableRow>

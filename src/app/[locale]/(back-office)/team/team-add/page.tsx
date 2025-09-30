@@ -3,26 +3,24 @@
 import { SuccessDialog } from '@/components/notifications'
 import { Button } from '@/components/ui/button'
 import { ROUTES } from '@/lib/constants'
-import { buildLocalizedPath } from '@/lib/helpers/localized-path'
 import { useI18n } from '@/lib/i18n'
-import { colors } from '@/lib/utils/colors'
-import TeamAddForm from '@/modules/teams/components/team-add-form'
-import { TeamFormData } from '@/modules/teams/schemas/team.schema'
-import { useCreateTeam, useTeamHostId } from '@modules/teams/hooks'
 import { ChevronLeft, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useCreateTeam, useTeamHostId } from '../_hooks/use-teams'
+import { TeamFormData } from '../_schemas/team.schema'
+import TeamAddForm from './_components/team-add-form'
 
 const TeamAddPage = () => {
   const router = useRouter()
   const teamHostId = useTeamHostId()
   const createTeamMutation = useCreateTeam()
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const [isFormValid, setIsFormValid] = useState(false)
 
   const handleBack = () => {
-    router.push(buildLocalizedPath(locale, ROUTES.TEAM))
+    router.push(ROUTES.TEAM)
   }
 
   const handleSubmit = async (data: TeamFormData) => {
@@ -33,20 +31,10 @@ const TeamAddPage = () => {
       formData.append('team_phone', data.team_phone)
       formData.append('team_status', data.team_status)
 
-      // เพิ่มไฟล์กลับมา - ลองใช้ field name ที่แตกต่างกัน
       if (data.file && data.file instanceof File) {
         formData.append('icon_group', data.file)
-        console.log(
-          "File will be sent as 'icon_group':",
-          data.file.name,
-          data.file.type,
-          data.file.size,
-        )
       }
 
-      console.log('Sending FormData with file:', data.file ? 'included' : 'not included')
-
-      // ส่ง FormData ไปให้ mutation
       await createTeamMutation.mutateAsync(formData)
 
       setShowSuccessDialog(true)
@@ -64,7 +52,7 @@ const TeamAddPage = () => {
 
   const handleDialogClose = () => {
     setShowSuccessDialog(false)
-    router.push(buildLocalizedPath(locale, ROUTES.TEAM))
+    router.push(ROUTES.TEAM)
   }
 
   return (
@@ -81,12 +69,7 @@ const TeamAddPage = () => {
             >
               <ChevronLeft className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <h1
-              className="text-xl font-medium md:text-2xl"
-              style={{ color: colors.teamCard.header.title }}
-            >
-              {t('team.add_team')}
-            </h1>
+            <h1 className="text-title text-xl font-medium md:text-2xl">{t('team.add_team')}</h1>
           </div>
 
           {/* Submit Button */}
@@ -94,9 +77,9 @@ const TeamAddPage = () => {
             type="submit"
             form="add-team-form"
             size="sm"
-            variant={'success'}
             disabled={createTeamMutation.isPending || !isFormValid}
-            className="w-40 text-white"
+            className="w-40"
+            variant={'success'}
           >
             {createTeamMutation.isPending ? (
               <div className="flex items-center gap-2">

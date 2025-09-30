@@ -10,7 +10,7 @@ import { useI18n } from '@/lib/i18n'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { Info, Loader2 } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 interface MapClientProps {
   width?: string
@@ -25,6 +25,10 @@ const defaultIcon = L.icon({
   iconUrl: '/assets/images/icons/pinmaps.svg',
   iconRetinaUrl: '/assets/images/icons/pinmaps.svg',
   shadowUrl: '/assets/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
 })
 
 export default function MapClient({
@@ -36,13 +40,18 @@ export default function MapClient({
   initialAddress,
 }: MapClientProps) {
   const { t } = useI18n()
+
   // Refs
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<L.Map | null>(null)
   const markerRef = useRef<L.Marker | null>(null)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const geocodeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
   const isCleaningUpRef = useRef(false)
+  const isMapInitializedRef = useRef(false)
+  const lastGeocodedCoordsRef = useRef<string>('')
 
   // State
   const [latitude, setLatitude] = useState<number | null>(initialCoordinates?.lat ?? null)
@@ -67,6 +76,13 @@ export default function MapClient({
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
   const [isPinMode, setIsPinMode] = useState(false)
+  const [locationError, setLocationError] = useState<string | null>(null)
+
+  // Memoized coordinates to prevent unnecessary re-renders
+  const currentCoordinates = useMemo(() => {
+    if (latitude === null || longitude === null) return null
+    return { lat: latitude, lng: longitude }
+  }, [latitude, longitude])
 
   // Safe cleanup function
   const cleanupMap = useCallback(() => {
@@ -83,6 +99,8 @@ export default function MapClient({
         mapInstanceRef.current.remove()
         mapInstanceRef.current = null
       }
+
+      isMapInitializedRef.current = false
     } catch (error) {
       console.error('Error during map cleanup:', error)
     } finally {
@@ -90,67 +108,124 @@ export default function MapClient({
     }
   }, [])
 
-  // Reverse geocode when coordinates change manually
-  const handleCoordinateChange = useCallback(
+  // Optimized marker update function
+  const updateMarker = useCallback((lat: number, lng: number, popupText: string) => {
+    if (!mapInstanceRef.current) return
+
+    try {
+      // Remove existing marker
+      if (markerRef.current && mapInstanceRef.current.hasLayer(markerRef.current)) {
+        mapInstanceRef.current.removeLayer(markerRef.current)
+      }
+
+      // Add new marker with animation
+      const newMarker = L.marker([lat, lng], {
+        icon: defaultIcon,
+        riseOnHover: true,
+      }).addTo(mapInstanceRef.current)
+
+      markerRef.current = newMarker
+      newMarker.bindPopup(popupText)
+
+      // Show popup briefly for feedback
+      newMarker.openPopup()
+      setTimeout(() => {
+        if (newMarker && mapInstanceRef.current && mapInstanceRef.current.hasLayer(newMarker)) {
+          newMarker.closePopup()
+        }
+      }, 2000)
+    } catch (error) {
+      console.error('Error updating marker:', error)
+    }
+  }, [])
+
+  // Debounced reverse geocoding with caching
+  const debouncedReverseGeocode = useCallback(
     async (lat: number, lng: number) => {
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,
-        )
-        const data = await response.json()
-        if (data && data.display_name) {
-          setCurrentLocationName(data.display_name)
-          setAddress(data.display_name)
+      const coordKey = `${lat.toFixed(4)},${lng.toFixed(4)}`
 
-          // Call callbacks if provided
-          onCoordinatesChange?.(parseFloat(lat.toFixed(4)), parseFloat(lng.toFixed(4)))
-          onAddressChange?.(data.display_name)
+      // Skip if same coordinates as last geocoded
+      if (lastGeocodedCoordsRef.current === coordKey) return
 
-          // Update marker popup if exists
-          if (
-            markerRef.current &&
-            mapInstanceRef.current &&
-            mapInstanceRef.current.hasLayer(markerRef.current)
-          ) {
-            markerRef.current.bindPopup(data.display_name).openPopup()
+      // Clear existing timeout
+      if (geocodeTimeoutRef.current) {
+        clearTimeout(geocodeTimeoutRef.current)
+      }
+
+      geocodeTimeoutRef.current = setTimeout(async () => {
+        try {
+          setIsGeocodingLoading(true)
+          lastGeocodedCoordsRef.current = coordKey
+
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,
+          )
+          const data = await response.json()
+
+          if (data && data.display_name) {
+            setCurrentLocationName(data.display_name)
+            setAddress(data.display_name)
+            onAddressChange?.(data.display_name)
+
+            // Update marker popup
+            updateMarker(lat, lng, data.display_name)
+          } else {
+            const fallbackName = 'ตำแหน่งที่ระบุ'
+            setCurrentLocationName(fallbackName)
+            setAddress(fallbackName)
+            onAddressChange?.(fallbackName)
+
+            updateMarker(lat, lng, fallbackName)
           }
-        } else {
+        } catch (error) {
+          console.error('Reverse geocoding error:', error)
           const fallbackName = 'ตำแหน่งที่ระบุ'
           setCurrentLocationName(fallbackName)
           setAddress(fallbackName)
-
-          // Call callbacks if provided
-          onCoordinatesChange?.(parseFloat(lat.toFixed(4)), parseFloat(lng.toFixed(4)))
           onAddressChange?.(fallbackName)
 
-          if (
-            markerRef.current &&
-            mapInstanceRef.current &&
-            mapInstanceRef.current.hasLayer(markerRef.current)
-          ) {
-            markerRef.current.bindPopup(fallbackName).openPopup()
-          }
+          updateMarker(lat, lng, fallbackName)
+        } finally {
+          setIsGeocodingLoading(false)
         }
-      } catch (error) {
-        console.error('Reverse geocoding error:', error)
-        const fallbackName = 'ตำแหน่งที่ระบุ'
-        setCurrentLocationName(fallbackName)
-        setAddress(fallbackName)
+      }, 300) // 300ms debounce for real-time feel
+    },
+    [onAddressChange, updateMarker],
+  )
 
-        // Call callbacks if provided
-        onCoordinatesChange?.(lat, lng)
-        onAddressChange?.(fallbackName)
+  // Optimized coordinate change handler
+  const handleCoordinateChange = useCallback(
+    async (lat: number, lng: number, skipGeocode = false) => {
+      const roundedLat = parseFloat(lat.toFixed(4))
+      const roundedLng = parseFloat(lng.toFixed(4))
 
-        if (
-          markerRef.current &&
-          mapInstanceRef.current &&
-          mapInstanceRef.current.hasLayer(markerRef.current)
-        ) {
-          markerRef.current.bindPopup(fallbackName).openPopup()
+      // Update coordinates immediately for real-time feedback
+      setLatitude(roundedLat)
+      setLongitude(roundedLng)
+
+      // Call parent callbacks immediately
+      onCoordinatesChange?.(roundedLat, roundedLng)
+
+      // Update map view if needed
+      if (mapInstanceRef.current) {
+        const currentCenter = mapInstanceRef.current.getCenter()
+        const distance = currentCenter.distanceTo([roundedLat, roundedLng])
+
+        // Only pan if significant movement (> 100m) to avoid jittery movement
+        if (distance > 100) {
+          mapInstanceRef.current.panTo([roundedLat, roundedLng], {
+            animate: true,
+            duration: 0.5,
+          })
         }
       }
+
+      // Debounced reverse geocoding
+      if (!skipGeocode) {
+        debouncedReverseGeocode(roundedLat, roundedLng)
+      }
     },
-    [onCoordinatesChange, onAddressChange],
+    [onCoordinatesChange, debouncedReverseGeocode],
   )
 
   // Get current location on component mount
@@ -168,10 +243,13 @@ export default function MapClient({
     }
 
     if (!navigator.geolocation) {
+      const errorMsg = 'เบราว์เซอร์ไม่รองรับการหาตำแหน่ง'
       console.error('Geolocation is not supported by this browser.')
+      setLocationError(errorMsg)
+
       // Fallback to Bangkok coordinates
-      const fallbackLat = 14.036819554634077
-      const fallbackLng = 100.72799595062057
+      const fallbackLat = 13.7563
+      const fallbackLng = 100.5018
       const fallbackAddress = 'กรุงเทพมหานคร (ตำแหน่งเริ่มต้น)'
 
       setLatitude(fallbackLat)
@@ -183,6 +261,9 @@ export default function MapClient({
       // Call callbacks with fallback coordinates
       onCoordinatesChange?.(parseFloat(fallbackLat.toFixed(4)), parseFloat(fallbackLng.toFixed(4)))
       onAddressChange?.(fallbackAddress)
+
+      // Clear error after 5 seconds
+      setTimeout(() => setLocationError(null), 5000)
       return
     }
 
@@ -222,9 +303,26 @@ export default function MapClient({
       },
       (error) => {
         console.error('Error getting location:', error)
+
+        let errorMessage = 'ไม่สามารถเข้าถึงตำแหน่งได้'
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'ผู้ใช้ปฏิเสธการเข้าถึงตำแหน่ง'
+            break
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'ข้อมูลตำแหน่งไม่พร้อมใช้งาน'
+            break
+          case error.TIMEOUT:
+            errorMessage = 'หมดเวลาการค้นหาตำแหน่ง'
+            break
+        }
+
+        console.warn(`Geolocation error: ${errorMessage}. Using Bangkok fallback.`)
+        setLocationError(errorMessage)
+
         // Fallback to Bangkok coordinates if location access fails
-        const fallbackLat = 14.036819554634077
-        const fallbackLng = 100.72799595062057
+        const fallbackLat = 13.7563
+        const fallbackLng = 100.5018
         const fallbackAddress = 'กรุงเทพมหานคร (ตำแหน่งเริ่มต้น)'
 
         setLatitude(fallbackLat)
@@ -239,6 +337,9 @@ export default function MapClient({
           parseFloat(fallbackLng.toFixed(4)),
         )
         onAddressChange?.(fallbackAddress)
+
+        // Clear error after 5 seconds
+        setTimeout(() => setLocationError(null), 5000)
       },
       {
         enableHighAccuracy: true,
@@ -248,72 +349,80 @@ export default function MapClient({
     )
   }, [initialCoordinates, initialAddress, onCoordinatesChange, onAddressChange])
 
-  // Initialize map and handle location
+  // Initialize map once and update content
   useEffect(() => {
-    if (!mapRef.current || latitude === null || longitude === null) return
+    if (!mapRef.current || isMapInitializedRef.current || !currentCoordinates) return
 
-    // Cleanup any existing map first
-    cleanupMap()
-
-    // Add small delay to ensure DOM is ready
     const timeoutId = setTimeout(() => {
-      if (!mapRef.current || isCleaningUpRef.current) return
+      if (!mapRef.current || isCleaningUpRef.current || !currentCoordinates) return
 
       try {
-        // Create map instance
-        const map = L.map(mapRef.current).setView([latitude, longitude], 13)
+        // Create map instance once with valid coordinates
+        const map = L.map(mapRef.current, {
+          center: [currentCoordinates.lat, currentCoordinates.lng],
+          zoom: 15,
+          zoomControl: true,
+          scrollWheelZoom: true,
+          doubleClickZoom: false,
+          dragging: true,
+          touchZoom: true,
+          preferCanvas: true, // Better performance
+        })
+
         mapInstanceRef.current = map
+        isMapInitializedRef.current = true
 
         // Add tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution:
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19,
+          minZoom: 3,
         }).addTo(map)
 
         // Set default cursor
         map.getContainer().style.cursor = 'grab'
 
-        // Add marker
-        const marker = L.marker([latitude, longitude], {
-          icon: defaultIcon,
-        }).addTo(map)
-        markerRef.current = marker
+        // Handle map clicks for pin mode with improved state handling
+        let lastClickTime = 0
+        const mapClickHandler = async (e: L.LeafletMouseEvent) => {
+          // Check current pin mode from DOM attribute to avoid stale closure
+          const container = map.getContainer()
+          const currentPinMode = container.getAttribute('data-pin-mode') === 'true'
 
-        // Bind popup
-        const popupContent = address || currentLocationName
-        marker.bindPopup(popupContent).openPopup()
+          if (!currentPinMode) return
 
-        // Handle map clicks for pin mode
-        map.on('click', async (e: L.LeafletMouseEvent) => {
-          if (!isPinMode) return
+          const now = Date.now()
+          if (now - lastClickTime < 300) return // Throttle clicks
+          lastClickTime = now
 
           const { lat, lng } = e.latlng
 
-          // Remove existing marker
-          if (markerRef.current && map.hasLayer(markerRef.current)) {
-            map.removeLayer(markerRef.current)
-          }
+          // Update coordinates immediately
+          const roundedLat = parseFloat(lat.toFixed(4))
+          const roundedLng = parseFloat(lng.toFixed(4))
 
-          // Add new marker
-          const newMarker = L.marker([lat, lng], { icon: defaultIcon }).addTo(map)
-          markerRef.current = newMarker
-          newMarker.bindPopup('กำลังค้นหาที่อยู่...').openPopup()
+          setLatitude(roundedLat)
+          setLongitude(roundedLng)
 
-          // Update coordinates and address
-          setLatitude(parseFloat(lat.toFixed(4)))
-          setLongitude(parseFloat(lng.toFixed(4)))
-          await handleCoordinateChange(parseFloat(lat.toFixed(4)), parseFloat(lng.toFixed(4)))
+          // Call handlers
+          onCoordinatesChange?.(roundedLat, roundedLng)
 
-          // Exit pin mode
+          // Start reverse geocoding
+          debouncedReverseGeocode(roundedLat, roundedLng)
+
+          // Exit pin mode after successful pin
           setIsPinMode(false)
-          map.getContainer().style.cursor = 'grab'
-        })
+          container.style.cursor = 'grab'
+          container.removeAttribute('data-pin-mode')
+        }
 
-        setTimeout(() => {
-          if (mapInstanceRef.current) {
-            mapInstanceRef.current.invalidateSize()
-          }
-        }, 100)
+        map.on('click', mapClickHandler)
+
+        // Handle map ready
+        map.whenReady(() => {
+          map.invalidateSize()
+        })
       } catch (error) {
         console.error('Error initializing map:', error)
       }
@@ -321,21 +430,54 @@ export default function MapClient({
 
     return () => {
       clearTimeout(timeoutId)
-      cleanupMap()
     }
-  }, [
-    latitude,
-    longitude,
-    address,
-    currentLocationName,
-    isPinMode,
-    handleCoordinateChange,
-    cleanupMap,
-  ])
+  }, [currentCoordinates]) // Depend on coordinates to ensure map waits for valid location
 
+  // Update map view and marker when coordinates change
   useEffect(() => {
-    L.Marker.prototype.options.icon = defaultIcon
-  }, [])
+    if (!currentCoordinates || !mapInstanceRef.current || !isMapInitializedRef.current) return
+
+    const { lat, lng } = currentCoordinates
+
+    try {
+      // Set view if first time or significant movement
+      const currentCenter = mapInstanceRef.current.getCenter()
+      const distance = currentCenter ? currentCenter.distanceTo([lat, lng]) : Infinity
+
+      if (distance > 1000 || !currentCenter || !currentCenter.lat) {
+        // Initial load or major change
+        mapInstanceRef.current.setView([lat, lng], 15, { animate: true })
+      }
+
+      // Update marker
+      const displayText = address || currentLocationName
+      updateMarker(lat, lng, displayText)
+    } catch (error) {
+      console.error('Error updating map view:', error)
+      // Fallback: try to set view without animation
+      try {
+        mapInstanceRef.current.setView([lat, lng], 15, { animate: false })
+        updateMarker(lat, lng, address || currentLocationName)
+      } catch (fallbackError) {
+        console.error('Fallback map update also failed:', fallbackError)
+      }
+    }
+  }, [currentCoordinates, address, currentLocationName, updateMarker])
+
+  // Handle pin mode cursor change with DOM attribute sync
+  useEffect(() => {
+    if (!mapInstanceRef.current) return
+
+    const container = mapInstanceRef.current.getContainer()
+    container.style.cursor = isPinMode ? 'crosshair' : 'grab'
+
+    // Set DOM attribute for click handler reference
+    if (isPinMode) {
+      container.setAttribute('data-pin-mode', 'true')
+    } else {
+      container.removeAttribute('data-pin-mode')
+    }
+  }, [isPinMode])
 
   // Cleanup on component unmount
   useEffect(() => {
@@ -343,6 +485,14 @@ export default function MapClient({
       // Clear any pending search timeouts
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current)
+      }
+      if (geocodeTimeoutRef.current) {
+        clearTimeout(geocodeTimeoutRef.current)
+      }
+
+      // Cancel any pending requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
       }
 
       cleanupMap()
@@ -366,153 +516,160 @@ export default function MapClient({
     }
   }, [])
 
-  // Search addresses function for live suggestions
-  const searchAddresses = async (addressText: string) => {
-    if (!addressText.trim() || addressText.length < 2) {
-      setSearchResults([])
-      setShowSuggestions(false)
-      return
-    }
-
-    setIsGeocodingLoading(true)
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          addressText,
-        )}&limit=5&addressdetails=1`,
-      )
-      const data = await response.json()
-
-      if (data && data.length > 0) {
-        const results = data.map(
-          (result: {
-            lat: string
-            lon: string
-            display_name: string
-            type?: string
-            importance?: number
-            place_id?: string
-            addresstype?: string
-            class?: string
-            boundingbox?: string[]
-          }) => {
-            const {
-              lat,
-              lon,
-              display_name,
-              type,
-              importance,
-              place_id,
-              addresstype,
-              class: placeClass,
-              boundingbox,
-            } = result
-
-            return {
-              display_name,
-              lat: parseFloat(lat),
-              lon: parseFloat(lon),
-              type,
-              importance,
-              place_id,
-              addresstype,
-              class: placeClass,
-              boundingbox,
-            }
-          },
-        )
-        setSearchResults(results)
-        setShowSuggestions(true)
-        setSelectedSuggestionIndex(-1)
-      } else {
+  // Optimized search with request cancellation and instant search
+  const searchAddresses = useCallback(
+    async (addressText: string, abortController?: AbortController) => {
+      if (!addressText.trim() || addressText.length < 1) {
         setSearchResults([])
         setShowSuggestions(false)
-        setSelectedSuggestionIndex(-1)
+        return
       }
-    } catch (error) {
-      console.error('Search error:', error)
-      setSearchResults([])
+
+      setIsGeocodingLoading(true)
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            addressText,
+          )}&limit=5&addressdetails=1`,
+          { signal: abortController?.signal },
+        )
+
+        if (abortController?.signal.aborted) return
+
+        const data = await response.json()
+
+        // Check again after async operation
+        if (abortController?.signal.aborted) return
+
+        if (data && data.length > 0) {
+          const results = data.map(
+            (result: {
+              lat: string
+              lon: string
+              display_name: string
+              type?: string
+              importance?: number
+              place_id?: string
+              addresstype?: string
+              class?: string
+              boundingbox?: string[]
+            }) => {
+              const {
+                lat,
+                lon,
+                display_name,
+                type,
+                importance,
+                place_id,
+                addresstype,
+                class: placeClass,
+                boundingbox,
+              } = result
+
+              return {
+                display_name,
+                lat: parseFloat(lat),
+                lon: parseFloat(lon),
+                type,
+                importance,
+                place_id,
+                addresstype,
+                class: placeClass,
+                boundingbox,
+              }
+            },
+          )
+          setSearchResults(results)
+          setShowSuggestions(true)
+          setSelectedSuggestionIndex(-1)
+        } else {
+          setSearchResults([])
+          setShowSuggestions(false)
+          setSelectedSuggestionIndex(-1)
+        }
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('Search error:', error)
+          setSearchResults([])
+          setShowSuggestions(false)
+          setSelectedSuggestionIndex(-1)
+        }
+      } finally {
+        if (!abortController?.signal.aborted) {
+          setIsGeocodingLoading(false)
+        }
+      }
+    },
+    [],
+  )
+
+  // Select a search result with smooth animation
+  const selectSearchResult = useCallback(
+    (result: (typeof searchResults)[0]) => {
+      const roundedLat = parseFloat(result.lat.toFixed(4))
+      const roundedLng = parseFloat(result.lon.toFixed(4))
+
+      // Update state immediately for responsive UI
       setShowSuggestions(false)
       setSelectedSuggestionIndex(-1)
-    } finally {
-      setIsGeocodingLoading(false)
-    }
-  }
 
-  // Select a search result
-  const selectSearchResult = (result: (typeof searchResults)[0]) => {
-    const roundedLat = parseFloat(result.lat.toFixed(4))
-    const roundedLng = parseFloat(result.lon.toFixed(4))
+      // Call coordinate change handler with skip geocode flag (we already have the address)
+      handleCoordinateChange(roundedLat, roundedLng, true)
 
-    setLatitude(roundedLat)
-    setLongitude(roundedLng)
-    setAddress(result.display_name)
-    setCurrentLocationName(result.display_name) // Update current location name
-    setShowSuggestions(false)
-    setSelectedSuggestionIndex(-1)
+      // Update address immediately
+      setAddress(result.display_name)
+      setCurrentLocationName(result.display_name)
+      onAddressChange?.(result.display_name)
 
-    // Call callbacks if provided
-    onCoordinatesChange?.(roundedLat, roundedLng)
-    onAddressChange?.(result.display_name)
-
-    // Update map view and marker
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.setView([roundedLat, roundedLng], 15)
-
-      // Remove existing marker
-      if (
-        markerRef.current &&
-        mapInstanceRef.current &&
-        mapInstanceRef.current.hasLayer(markerRef.current)
-      ) {
-        mapInstanceRef.current.removeLayer(markerRef.current)
-      }
-
-      // Add new marker
-      const newMarker = L.marker([roundedLat, roundedLng], {
-        icon: defaultIcon,
-      }).addTo(mapInstanceRef.current)
-
-      markerRef.current = newMarker
-      newMarker.bindPopup(result.display_name).openPopup()
-    }
-  }
-
-  // Geocoding function to convert address to coordinates
-  const geocodeAddress = async (addressText: string) => {
-    if (!addressText.trim()) return
-
-    setIsGeocodingLoading(true)
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          addressText,
-        )}&limit=1`,
-      )
-      const data = await response.json()
-      if (data && data.length > 0) {
-        const result = data[0]
-        selectSearchResult({
-          display_name: result.display_name,
-          lat: parseFloat(result.lat),
-          lon: parseFloat(result.lon),
-          type: result.type,
-          importance: result.importance,
-          place_id: result.place_id,
-          addresstype: result.addresstype,
-          class: result.class,
-          boundingbox: result.boundingbox,
+      // Smooth map animation to new location
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.flyTo([roundedLat, roundedLng], 15, {
+          animate: true,
+          duration: 1.5,
         })
-      } else {
-        alert('ไม่พบที่อยู่ที่ระบุ กรุณาลองใหม่อีกครั้ง')
       }
-    } catch (error) {
-      console.error('Geocoding error:', error)
-      alert('เกิดข้อผิดพลาดในการค้นหาที่อยู่')
-    } finally {
-      setIsGeocodingLoading(false)
-    }
-  }
+    },
+    [handleCoordinateChange, onAddressChange],
+  )
+
+  // Optimized geocoding function
+  const geocodeAddress = useCallback(
+    async (addressText: string) => {
+      if (!addressText.trim()) return
+
+      setIsGeocodingLoading(true)
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            addressText,
+          )}&limit=1`,
+        )
+        const data = await response.json()
+        if (data && data.length > 0) {
+          const result = data[0]
+          selectSearchResult({
+            display_name: result.display_name,
+            lat: parseFloat(result.lat),
+            lon: parseFloat(result.lon),
+            type: result.type,
+            importance: result.importance,
+            place_id: result.place_id,
+            addresstype: result.addresstype,
+            class: result.class,
+            boundingbox: result.boundingbox,
+          })
+        } else {
+          alert('ไม่พบที่อยู่ที่ระบุ กรุณาลองใหม่อีกครั้ง')
+        }
+      } catch (error) {
+        console.error('Geocoding error:', error)
+        alert('เกิดข้อผิดพลาดในการค้นหาที่อยู่')
+      } finally {
+        setIsGeocodingLoading(false)
+      }
+    },
+    [selectSearchResult],
+  )
 
   // Handle address search with keyboard navigation
   const handleAddressSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -540,34 +697,96 @@ export default function MapClient({
     }
   }
 
-  // Handle address input change with longer debounce
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setAddress(value)
+  // Handle address input change with proper request cancellation
+  const handleAddressChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      setAddress(value)
 
-    // Clear previous timeout
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-
-    // Clear suggestions immediately if input is too short
-    if (value.length < 3) {
-      setSearchResults([])
-      setShowSuggestions(false)
-      setSelectedSuggestionIndex(-1)
-      return
-    }
-
-    // Set longer timeout for search to allow more typing
-    searchTimeoutRef.current = setTimeout(() => {
-      if (value.trim()) {
-        searchAddresses(value)
+      // Cancel previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+        abortControllerRef.current = null
       }
-    }, 800) // 800ms debounce - longer delay for more typing freedom
-  }
+
+      // Clear previous timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+
+      // Clear suggestions immediately if input is empty
+      if (value.length === 0) {
+        setSearchResults([])
+        setShowSuggestions(false)
+        setSelectedSuggestionIndex(-1)
+        setIsGeocodingLoading(false)
+        return
+      }
+
+      // Start searching from first character with very short debounce
+      searchTimeoutRef.current = setTimeout(() => {
+        if (value.trim()) {
+          // Create new abort controller for this request
+          const newAbortController = new AbortController()
+          abortControllerRef.current = newAbortController
+          searchAddresses(value, newAbortController)
+        }
+      }, 150) // Reduced to 150ms for almost instant search
+    },
+    [searchAddresses],
+  )
+
+  // Optimized coordinate input handlers with real-time updates
+  const handleLatitudeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      if (value === '') {
+        setLatitude(null)
+        return
+      }
+
+      const newLat = parseFloat(value)
+      if (!isNaN(newLat) && newLat >= -90 && newLat <= 90) {
+        setLatitude(parseFloat(newLat.toFixed(4)))
+        if (longitude !== null) {
+          handleCoordinateChange(parseFloat(newLat.toFixed(4)), longitude)
+        }
+      }
+    },
+    [longitude, handleCoordinateChange],
+  )
+
+  const handleLongitudeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      if (value === '') {
+        setLongitude(null)
+        return
+      }
+
+      const newLng = parseFloat(value)
+      if (!isNaN(newLng) && newLng >= -180 && newLng <= 180) {
+        setLongitude(parseFloat(newLng.toFixed(4)))
+        if (latitude !== null) {
+          handleCoordinateChange(latitude, parseFloat(newLng.toFixed(4)))
+        }
+      }
+    },
+    [latitude, handleCoordinateChange],
+  )
 
   return (
     <div className="space-y-6">
+      {/* Location Error Notification */}
+      {locationError && (
+        <Alert className="border-amber-300 bg-amber-50">
+          <Info className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="font-medium text-amber-800">
+            {locationError} - ใช้ตำแหน่งกรุงเทพฯ เป็นค่าเริ่มต้น
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Address Search Section */}
 
       <div className="relative space-y-4">
@@ -583,14 +802,22 @@ export default function MapClient({
               onChange={handleAddressChange}
               onKeyDown={handleAddressSearch}
               onFocus={() => {
-                if (searchResults.length > 0) {
+                // Show existing suggestions on focus from first character
+                if (searchResults.length > 0 && address.length >= 1) {
                   setShowSuggestions(true)
                 }
               }}
               placeholder={t('charging-stations.address_placeholder')}
-              disabled={isGeocodingLoading}
-              className="h-10 w-full border-none bg-[#f2f2f2] sm:h-11"
+              disabled={false} // Never disable input field
+              className="h-10 w-full border-none bg-[#f2f2f2] pr-10 transition-all duration-200 sm:h-11"
             />
+
+            {/* Loading indicator inside input */}
+            {isGeocodingLoading && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
+            )}
 
             {/* Search Suggestions Dropdown */}
             {showSuggestions && searchResults.length > 0 && (
@@ -656,24 +883,13 @@ export default function MapClient({
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-
-                      const newPinMode = !isPinMode
-                      setIsPinMode(newPinMode)
-
-                      if (mapInstanceRef.current) {
-                        const container = mapInstanceRef.current.getContainer()
-                        container.style.cursor = newPinMode ? 'crosshair' : 'grab'
-                      }
+                      setIsPinMode(!isPinMode)
                     }}
-                    variant={isPinMode ? 'default' : 'secondary'}
+                    variant={isPinMode ? 'default' : 'default'}
                     size="sm"
-                    className={`rounded-xl transition-all duration-200 ${
-                      isPinMode
-                        ? 'bg-green-600 text-white hover:bg-green-700'
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
-                    }`}
+                    className={`rounded-lg ${isPinMode ? '' : ''}`}
                   >
-                    {isPinMode ? 'Pin Mode ON' : 'Pin on map'}
+                    {isPinMode ? '📍 Pin Mode ON' : '📍 Pin on map'}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -688,10 +904,10 @@ export default function MapClient({
           </div>
         )}
 
-        {/* Pin mode instruction */}
+        {/* Pin mode instruction with smooth animation */}
         {isPinMode && !isLoadingLocation && (
-          <div className="z-1000 absolute right-3 top-16 max-w-xs">
-            <Alert className="border-green-300 bg-green-50">
+          <div className="z-1000 absolute right-3 top-16 max-w-xs duration-300 animate-in slide-in-from-top-2">
+            <Alert className="border-green-300 bg-green-50 shadow-lg">
               <Info className="h-4 w-4 text-green-600" />
               <AlertDescription className="font-medium text-green-800">
                 คลิกที่แผนที่เพื่อวางหมุด
@@ -712,16 +928,10 @@ export default function MapClient({
             type="number"
             step="any"
             value={latitude ? latitude.toFixed(4) : ''}
-            onChange={(e) => {
-              const newLat = parseFloat(parseFloat(e.target.value).toFixed(4)) || 0
-              setLatitude(newLat)
-              if (longitude) {
-                handleCoordinateChange(newLat, longitude)
-              }
-            }}
+            onChange={handleLatitudeChange}
             placeholder={t('charging-stations.latitude_placeholder')}
             disabled={isLoadingLocation}
-            className="h-10 border-0 bg-[#f2f2f2] sm:h-11"
+            className="h-10 border-0 bg-[#f2f2f2] transition-all duration-200 sm:h-11"
           />
         </div>
         <div className="space-y-2">
@@ -733,16 +943,10 @@ export default function MapClient({
             type="number"
             step="any"
             value={longitude ? longitude.toFixed(4) : ''}
-            onChange={(e) => {
-              const newLng = parseFloat(parseFloat(e.target.value).toFixed(4)) || 0
-              setLongitude(newLng)
-              if (latitude) {
-                handleCoordinateChange(latitude, newLng)
-              }
-            }}
+            onChange={handleLongitudeChange}
             placeholder={t('charging-stations.longitude_placeholder')}
             disabled={isLoadingLocation}
-            className="h-10 border-0 bg-[#f2f2f2] sm:h-11"
+            className="h-10 border-0 bg-[#f2f2f2] transition-all duration-200 sm:h-11"
           />
         </div>
       </div>

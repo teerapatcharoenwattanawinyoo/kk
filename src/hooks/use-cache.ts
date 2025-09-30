@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@/lib/constants'
-import { TeamHostListResponse } from '@/modules/teams/schemas/team.schema'
+import { TeamHostListResponse } from '@/lib/schemas/team.schema'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 

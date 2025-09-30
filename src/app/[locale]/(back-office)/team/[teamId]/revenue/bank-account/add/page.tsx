@@ -1,8 +1,8 @@
 'use client'
 
-import { AddBankAccountForm } from '@/components/back-office/team/revenue/bank-account'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import { useParams } from 'next/navigation'
+import { BankAccountFormAddPage } from '../_components/bank-account-form-add-page'
 
 export default function AddBankAccountPage() {
   const params = useParams()
@@ -11,7 +11,7 @@ export default function AddBankAccountPage() {
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
-      <AddBankAccountForm teamId={teamId} locale={locale} />
+      <BankAccountFormAddPage teamId={teamId} locale={locale} />
     </TeamGuard>
   )
 }

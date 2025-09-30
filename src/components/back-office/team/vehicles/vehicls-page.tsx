@@ -1,6 +1,6 @@
 'use client'
-import { TeamTabMenu } from '@/components/back-office/team/settings/TeamTabMenu'
-import { TeamHeader } from '@/components/back-office/team/team-header'
+import { TeamHeader } from '@/app/[locale]/(back-office)/team/_components/team-header'
+import { TeamTabMenu } from '@/app/[locale]/(back-office)/team/_components/team-tab-menu'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
@@ -96,17 +96,17 @@ export default function VehiclesPage({ teamId }: VehiclesPageProps) {
   ]
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col">
+    <div className="space-y-6 p-4">
       {/* Header Section */}
       <TeamHeader teamId={teamId} pageTitle={t('team_tabs.vehicles')} />
 
       {/* Navigation Tabs Section */}
-      <div className="px-4 md:px-6">
+      <div className="">
         <TeamTabMenu active="vehicles" locale={String(params.locale)} teamId={teamId} />
       </div>
 
       {/* Main Content Section */}
-      <div className="flex-1 px-4 py-4 md:px-6">
+      <div className="flex-1">
         <div className="shadow-xs rounded-lg bg-card">
           {/* Search and Filter Section */}
           <div className="p-4 md:p-6">

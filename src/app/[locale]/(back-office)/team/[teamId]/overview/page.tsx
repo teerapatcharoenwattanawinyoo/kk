@@ -1,5 +1,5 @@
-import { TeamOverview } from '@/components/back-office/team/overview/team-overview'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
+import { OverviewTeamPage } from './_components/overview-team-page'
 
 interface TeamOverviewPageProps {
   params: Promise<{
@@ -13,7 +13,7 @@ const TeamOverviewPage = async ({ params }: TeamOverviewPageProps) => {
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
-      <TeamOverview teamId={teamId} />
+      <OverviewTeamPage teamId={teamId} />
     </TeamGuard>
   )
 }

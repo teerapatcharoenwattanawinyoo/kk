@@ -18,7 +18,7 @@ export function DashboardContent() {
 
   return (
     <div className="flex flex-col gap-4 p-3 md:gap-6 md:p-4 lg:p-6">
-      <header className="shadow-2xs hover:shadow-xs mb-2 flex flex-col gap-3 rounded-lg border bg-card p-4 transition-shadow md:mb-4 md:flex-row md:items-center md:gap-6 md:p-6">
+      <header className="mb-2 flex flex-col gap-3 rounded-lg border bg-card p-4 md:mb-4 md:flex-row md:items-center md:gap-6 md:p-6">
         <h1 className="text-xl font-semibold text-primary md:text-2xl lg:text-3xl">Overview</h1>
         <div className="hidden h-6 w-px bg-border md:block"></div>
         <div className="flex flex-wrap items-center gap-4 text-muted-foreground md:gap-6">
@@ -50,7 +50,9 @@ export function DashboardContent() {
         <Card className="shadow-xs transition-shadow hover:shadow-md">
           <CardContent className="p-4 text-center sm:p-6">
             <div className="text-2xl font-bold sm:text-3xl">3,958</div>
-            <div className="mt-2 text-xs text-[#EE791A] sm:text-sm">Total Energy Consumption</div>
+            <div className="text-oc-construction mt-2 text-xs sm:text-sm">
+              Total Energy Consumption
+            </div>
             <span className="text-xs text-muted-foreground">kWh</span>
           </CardContent>
         </Card>
@@ -70,22 +72,22 @@ export function DashboardContent() {
             <span className="text-xs text-muted-foreground">Transaction</span>
           </CardContent>
         </Card>
-        <Card className="shadow-xs transition-shadow hover:shadow-md">
+        <Card className="shadow-none">
           <CardContent className="p-4 text-center sm:p-6">
             <div className="text-2xl font-bold sm:text-3xl">฿39,580.30</div>
-            <div className="mt-2 text-xs text-[#189B58] sm:text-sm">Revenue</div>
+            <div className="text-success-dark mt-2 text-xs sm:text-sm">Revenue</div>
             <span className="text-xs text-muted-foreground">Charging Fee</span>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:gap-6 xl:grid-cols-3">
-        <Card className="shadow-xs col-span-1 rounded-xl transition-shadow hover:shadow-md xl:col-span-2">
+        <Card className="col-span-1 rounded-xl shadow-none transition-shadow xl:col-span-2">
           <CardHeader className="p-4 sm:p-6">
             <div className="space-y-3 sm:space-y-4">
               {/* Title + Subtitle */}
               <div>
-                <CardTitle className="text-title text-base font-medium sm:text-lg">
+                <CardTitle className="text-oc-title text-base font-medium sm:text-lg">
                   Total Charge Session
                 </CardTitle>
                 <p className="text-xs text-muted-foreground sm:text-sm">All Station</p>
@@ -122,11 +124,11 @@ export function DashboardContent() {
                 {/* Legend */}
                 <div className="mt-4 flex flex-col gap-3 px-4 pb-4 sm:mt-6 sm:flex-row sm:items-center sm:justify-center sm:gap-6 xl:mt-4 xl:flex-col xl:gap-3">
                   <div className="flex items-center justify-center gap-2">
-                    <span className="h-1.5 w-4 rounded-full bg-blue-500 sm:w-6" />
+                    <span className="h-1.5 w-4 rounded-full bg-primary sm:w-6" />
                     <span className="text-xs text-muted-foreground sm:text-sm">Total Charge</span>
                   </div>
                   <div className="flex items-center justify-center gap-2">
-                    <span className="h-1.5 w-4 rounded-full border border-dashed border-slate-300 sm:w-6" />
+                    <span className="h-1.5 w-4 rounded-full border border-dashed border-primary sm:w-6" />
                     <span className="text-xs text-muted-foreground sm:text-sm">
                       AVG for the period
                     </span>
@@ -153,7 +155,9 @@ export function DashboardContent() {
             <Link href={'/#'} className="text-primary hover:underline">
               <div className="flex items-center gap-1">
                 <p className="text-xs text-primary sm:text-sm">View Station map</p>
-                <ChevronRight className="h-3 w-3 rounded-full bg-secondary text-[#969696] sm:h-4 sm:w-4" />
+                <div className="flex size-6 items-center justify-center rounded-full bg-muted">
+                  <ChevronRight className="text-oc-neutral size-4 rounded-full" />
+                </div>
               </div>
             </Link>
           </CardFooter>
@@ -166,15 +170,15 @@ export function DashboardContent() {
           <CardHeader className="h-fit min-h-0 border-b p-4">
             <div className="flex">
               {/* Left side - Icon */}
-              <div className="mr-3 mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-[#E4E9F8] dark:bg-primary/15 sm:h-10 sm:w-10">
+              <div className="bg-primary-soft mr-3 mt-1 flex h-8 w-8 items-center justify-center rounded-lg sm:h-10 sm:w-10">
                 <RevenueHeaderIcon className="h-6 w-6 text-primary" />
               </div>
               {/* Right side - Text */}
               <div className="flex flex-col justify-center">
-                <CardTitle className="text-titlesm:text-xl text-base font-medium">
+                <CardTitle className="text-title text-base font-medium sm:text-xl">
                   Revenue
                 </CardTitle>
-                <p className="mt-1 text-xs font-normal text-muted-foreground sm:text-sm">
+                <p className="mt-1 text-xs font-light text-muted-foreground sm:text-sm">
                   All Station in LEADWAY
                 </p>
               </div>
@@ -196,13 +200,13 @@ export function DashboardContent() {
                 >
                   <path
                     d="M21.9166 1.29199L14.2294 8.93227C13.1902 9.96517 12.6706 10.4816 12.0261 10.4816C11.3816 10.4815 10.862 9.96491 9.82305 8.93176L9.57373 8.68385C8.53381 7.64979 8.01385 7.13277 7.3689 7.133C6.72394 7.13324 6.20436 7.65064 5.1652 8.68546L1.08325 12.7503M21.9166 1.29199V7.0689M21.9166 1.29199H16.1019"
-                    stroke="#25C870"
+                    stroke="oklch(74.6% 0.231 143.49)"
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 </svg>
-                <span className="rounded bg-green-50 px-2 py-1 text-xs font-medium text-green-600 dark:bg-green-500/10">
+                <span className="text-success bg-success-soft rounded px-2 py-1 text-xs font-medium">
                   +15%
                 </span>
               </div>
@@ -212,7 +216,10 @@ export function DashboardContent() {
             <Link href={'/#'} className="text-primary hover:underline">
               <div className="flex items-center gap-1">
                 <p className="text-xs text-primary sm:text-sm">View Station Statistic</p>
-                <ChevronRight className="h-3 w-3 rounded-full bg-secondary text-[#969696] sm:h-4 sm:w-4" />
+                <div className="flex size-6 items-center justify-center rounded-full bg-muted">
+                  {' '}
+                  <ChevronRight className="text-oc-neutral size-4 rounded" />
+                </div>
               </div>
             </Link>
           </CardFooter>
@@ -221,7 +228,9 @@ export function DashboardContent() {
         {/* Station List Card - Right Side */}
         <Card className="flex flex-1 flex-col">
           <CardHeader className="flex flex-row items-center justify-between p-6 sm:p-6">
-            <CardTitle className="text-title text-xl sm:text-lg">Station List</CardTitle>
+            <CardTitle className="text-oc-title-secondary text-xl sm:text-lg">
+              Station List
+            </CardTitle>
           </CardHeader>
           <div className="px-4 sm:px-6">
             <Separator className="my-0" />
@@ -268,7 +277,7 @@ export function DashboardContent() {
                     <div className="flex-1">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                          <h3 className="text-ink text-base font-semibold sm:text-lg">
+                          <h3 className="text-oc-neutral text-base font-semibold sm:text-lg">
                             {station.name}
                           </h3>
                           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground sm:gap-x-4 sm:text-sm">

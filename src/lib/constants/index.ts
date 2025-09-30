@@ -1,13 +1,10 @@
-const FALLBACK_API_BASE_URL = '/api'
-
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL && process.env.NEXT_PUBLIC_API_BASE_URL.trim().length > 0
-    ? process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, '')
-    : FALLBACK_API_BASE_URL
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: '/auth/login',
+    // External BE endpoint: '/auth/login' (handled server-side)
+    SIGN_IN: '/auth/sign-in',
+    SIGN_OUT: '/auth/sign-out',
     REGISTER_EMAIL: '/auth/register',
     REGISTER_PHONE: '/auth/register/phone',
     POLICY: '/policy',
@@ -16,16 +13,15 @@ export const API_ENDPOINTS = {
     DASHBOARD: '/dashboard',
     TEAM: '/team-host/list',
     ADD_TEAM: '/team-groups/create',
-    // VERIFY_EMAIL: "/auth/verify-email",
-    // VERIFY_PHONE: "/auth/verify-phone-otp",
     UPDATE_TEAM: '/team-groups',
     DELETE_TEAM: '/team-groups',
     REFRESH: '/auth/refresh-token',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
     VERIFY_EMAIL: '/auth/verify-email',
-    VERIFY_PHONE: '/auth/verify-phone',
+    VERIFY_PHONE: '/auth/verify-phone-otp',
   },
+
   STATION: {
     CATEGORIES: '/station-types',
     LIST: '/partner-station/station/list',
@@ -52,6 +48,7 @@ export const API_ENDPOINTS = {
     DETAIL: '/team-groups/charging/connector/detail',
     UPDATE: '/plug/update/',
     DELETE: '/plug',
+    TYPE_LIST: '/plug/type/list',
   },
   SET_PRICE: {
     LIST: '/price-set',
@@ -59,6 +56,7 @@ export const API_ENDPOINTS = {
     CREATE_PRICE: '/price-set/create',
     EDIT: '/price-set/edit',
     UPDATE: '/price-set',
+    DETAIL: '/price-set/get',
   },
   TEAM_GROUPS: {
     TEAMS: {
@@ -92,7 +90,7 @@ export const API_ENDPOINTS = {
     },
     REVENUE: {
       BANK: {
-        LIST: '/partner/bank-account',
+        LIST: '/partner/bank-account/list/team/{team_group_id}',
         CREATE: '/partner/bank-account',
         UPDATE: '/partner/bank-account/{id}',
         DELETE: '/partner/bank-account/{id}',
@@ -105,6 +103,24 @@ export const API_ENDPOINTS = {
         CONFIRM: '/partner/revenue/payout/confirm',
       },
     },
+  },
+} as const
+
+export const API_PROXY = {
+  // Internal route for httpOnly cookies
+  AUTH: {
+    REFRESH: '/api/auth/refresh',
+    FORGOT_PASSWORD: '/api/auth/forgot-password',
+    RESET_PASSWORD: '/api/auth/reset-password',
+    VERIFY_EMAIL: '/api/auth/verify-email',
+    VERIFY_PHONE: '/api/auth/verify-phone',
+    CREATE_PROFILE: '/api/auth/create-profile',
+    SIGN_UP_PHONE: '/api/auth/sign-up/phone',
+    SIGN_UP_EMAIL: '/api/auth/sign-up/email',
+    SIGN_IN_EMAIL: '/api/auth/sign-in',
+    SIGN_OUT: '/api/auth/sign-out',
+    POLICY: '/api/policy',
+    TERM: '/api/terms',
   },
 } as const
 
@@ -133,10 +149,13 @@ export const ROUTES = {
 export const COOKIE_KEYS = {
   ACCESS_TOKEN: 'access_token',
   REFRESH_TOKEN: 'refresh_token',
+  CLIENT_ACCESS_TOKEN: 'client_access_token',
+  CLIENT_REFRESH_TOKEN: 'client_refresh_token',
 } as const
 
 export const QUERY_KEYS = {
   USER: ['user'],
+  USER_DATA: ['user_data'],
   AUTH: ['auth'],
   TEAMS: ['teams'],
   TEAM: ['team'],
@@ -151,4 +170,5 @@ export const QUERY_KEYS = {
   BANK_LISTS: ['bank_lists'],
   REVENUE_BALANCE: ['revenue_balance'],
   PAYOUT: ['payout'],
+  PRICING_PLANS: ['pricing_plans'],
 } as const

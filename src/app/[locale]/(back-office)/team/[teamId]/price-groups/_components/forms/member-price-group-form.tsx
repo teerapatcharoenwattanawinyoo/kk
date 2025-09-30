@@ -1,0 +1,1227 @@
+'use client'
+
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
+import { ChevronLeft, CreditCard, Info, Loader2, Plus, Zap } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+
+import {
+  FeeFormData,
+  FeeFormSchema,
+  FormData,
+  FormSchema,
+  PriceFormData,
+  PriceFormSchema,
+  PriceGroupFormProps,
+  PriceGroupFormSubmissionSchema,
+  PriceType,
+} from '../../_schemas/price-group-form.schema'
+
+export default function MembersPriceGroupForm({
+  mode,
+  statusType,
+  initialData,
+  isLoading = false,
+  onSubmit,
+  onBack,
+  teamGroupId,
+}: PriceGroupFormProps) {
+  type TieredCreditItem = {
+    id: string
+    startKwh: string
+    endKwh: string
+    priceBahtPerKwh: string
+  }
+
+  const maxTieredCreditItems = 5
+
+  const createEmptyTieredItem = (overrides: Partial<TieredCreditItem> = {}): TieredCreditItem => ({
+    id: `tier-${Math.random().toString(36).slice(2, 10)}-${Date.now()}`,
+    startKwh: '',
+    endKwh: '',
+    priceBahtPerKwh: '',
+    ...overrides,
+  })
+
+  const [priceType, setPriceType] = useState<PriceType>(initialData?.priceType ?? 'PER_KWH')
+  const [billingType, setBillingType] = useState<'USAGE' | 'CREDIT'>('USAGE')
+
+  // Billing cycle day (1-31) for credit billing
+  const [billingDay, setBillingDay] = useState<string>(
+    initialData?.billingDay ? String(initialData.billingDay) : '1',
+  )
+
+  // Main form state
+  const [form, setForm] = useState<FormData>({
+    groupName: initialData?.form?.groupName ?? '',
+    status: initialData?.form?.status ?? 'publish',
+  })
+
+  // Price-specific form state
+  const [priceForm, setPriceForm] = useState<PriceFormData>(() =>
+    PriceFormSchema.parse({
+      pricePerKwh: initialData?.priceForm?.pricePerKwh,
+      pricePerKwhMinute: initialData?.priceForm?.pricePerKwhMinute,
+      price_per_minute: initialData?.priceForm?.price_per_minute,
+      onPeakPrice: initialData?.priceForm?.onPeakPrice,
+      offPeakPrice: initialData?.priceForm?.offPeakPrice,
+      freeKw: initialData?.priceForm?.freeKw,
+      freeKwh: initialData?.priceForm?.freeKwh,
+    }),
+  )
+
+  // Fee form state
+  const [feeForm, setFeeForm] = useState<FeeFormData>(() =>
+    FeeFormSchema.parse({
+      fee: initialData?.feeForm?.fee,
+      startingFeeDescription: initialData?.feeForm?.startingFeeDescription,
+      chargingFeeDescription: initialData?.feeForm?.chargingFeeDescription,
+      feePrice: initialData?.feeForm?.feePrice,
+      applyAfterMinute: initialData?.feeForm?.applyAfterMinute,
+      minuteFeeDescription: initialData?.feeForm?.minuteFeeDescription,
+      feePerMin: initialData?.feeForm?.feePerMin,
+      applyFeeAfterMinute: initialData?.feeForm?.applyFeeAfterMinute,
+      feeStopsAfterMinute: initialData?.feeForm?.feeStopsAfterMinute,
+      idleFeeDescription: initialData?.feeForm?.idleFeeDescription,
+      feePerMinIdle: initialData?.feeForm?.feePerMinIdle,
+      timeBeforeIdleFeeApplied: initialData?.feeForm?.timeBeforeIdleFeeApplied,
+      maxTotalIdleFee: initialData?.feeForm?.maxTotalIdleFee,
+    }),
+  )
+
+  const tieredCreditAliases: Record<keyof Omit<TieredCreditItem, 'id'>, string[]> = {
+    startKwh: ['startKwh', 'start', 'startCredit', 'creditAmount'],
+    endKwh: ['endKwh', 'end', 'endCredit'],
+    priceBahtPerKwh: ['priceBahtPerKwh', 'price', 'pricePerKwh'],
+  }
+
+  const getInitialTieredValue = (
+    item: Record<string, unknown>,
+    key: keyof Omit<TieredCreditItem, 'id'>,
+  ) => {
+    for (const alias of [key, ...(tieredCreditAliases[key] ?? [])]) {
+      const value = item[alias]
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return String(value)
+      }
+      if (typeof value === 'string' && value.trim() !== '') {
+        return value
+      }
+    }
+    return ''
+  }
+
+  const [tieredCreditItems, setTieredCreditItems] = useState<TieredCreditItem[]>(() => {
+    const initialTieredItems = (initialData as any)?.priceForm?.tieredCreditPricing
+    if (Array.isArray(initialTieredItems) && initialTieredItems.length > 0) {
+      return initialTieredItems
+        .slice(0, maxTieredCreditItems)
+        .map((item: Record<string, unknown>) =>
+          createEmptyTieredItem({
+            startKwh: getInitialTieredValue(item, 'startKwh'),
+            endKwh: getInitialTieredValue(item, 'endKwh'),
+            priceBahtPerKwh: getInitialTieredValue(item, 'priceBahtPerKwh'),
+          }),
+        )
+    }
+    return [createEmptyTieredItem()]
+  })
+
+  const initializeState = (data?: PriceGroupFormProps['initialData']) => {
+    if (!data) {
+      return
+    }
+
+    if (data.form) {
+      setForm((prevForm) => ({
+        groupName:
+          data.form?.groupName !== undefined && data.form?.groupName !== null
+            ? String(data.form.groupName).trim()
+            : prevForm.groupName,
+        status:
+          data.form?.status !== undefined && data.form?.status !== null
+            ? String(data.form.status).trim()
+            : prevForm.status,
+      }))
+    }
+
+    if (data.priceForm) {
+      setPriceForm((prevPriceForm) =>
+        PriceFormSchema.parse({ ...prevPriceForm, ...data.priceForm }),
+      )
+    }
+
+    if (data.feeForm) {
+      setFeeForm((prevFeeForm) => FeeFormSchema.parse({ ...prevFeeForm, ...data.feeForm }))
+    }
+
+    if (data.priceType) {
+      setPriceType(data.priceType)
+    }
+
+    const incomingTieredItems = (data as any)?.priceForm?.tieredCreditPricing
+    if (Array.isArray(incomingTieredItems)) {
+      setTieredCreditItems(() => {
+        if (incomingTieredItems.length === 0) {
+          return [createEmptyTieredItem()]
+        }
+        return incomingTieredItems
+          .slice(0, maxTieredCreditItems)
+          .map((item: Record<string, unknown>) =>
+            createEmptyTieredItem({
+              startKwh: getInitialTieredValue(item, 'startKwh'),
+              endKwh: getInitialTieredValue(item, 'endKwh'),
+              priceBahtPerKwh: getInitialTieredValue(item, 'priceBahtPerKwh'),
+            }),
+          )
+      })
+    }
+    // default billing type
+    setBillingType('USAGE')
+    // hydrate billing day if provided
+    if (typeof (data as any)?.billingDay !== 'undefined' && (data as any).billingDay !== null) {
+      setBillingDay(String((data as any).billingDay))
+    }
+  }
+
+  // Update form states when initialData changes
+  useEffect(() => {
+    initializeState(initialData)
+  }, [initialData])
+
+  // Form validation - แยกการตรวจสอบ teamGroupId ออกจาก isFormValid เพื่อให้ user กรอกข้อมูลได้ก่อน
+  const isFormValid = FormSchema.safeParse(form).success
+
+  // removed debug logs
+
+  // Format number to 2 decimal places
+  const formatDecimal = (value: string) => {
+    let val = value.replace(/[^\d.]/g, '')
+    const parts = val.split('.')
+    if (parts.length > 2) {
+      val = parts[0] + '.' + parts.slice(1).join('')
+    }
+    if (val.includes('.')) {
+      const [intPart, decPart] = val.split('.')
+      val = intPart + '.' + decPart.slice(0, 2)
+    }
+    return val
+  }
+
+  // Handle input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.id]: e.target.value })
+  }
+
+  const handlePriceInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = formatDecimal(e.target.value)
+    setPriceForm({ ...priceForm, [e.target.id]: value })
+  }
+
+  const handleFeeDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFeeForm({ ...feeForm, [e.target.id]: e.target.value })
+  }
+
+  const handleFeeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isDescriptionField = e.target.id.toLowerCase().includes('description')
+    const value = isDescriptionField ? e.target.value : formatDecimal(e.target.value)
+    setFeeForm({ ...feeForm, [e.target.id]: value })
+  }
+
+  const handleStatusChange = (value: string) => {
+    setForm({ ...form, status: value })
+  }
+
+  const handlePriceTypeChange = (value: string) => {
+    const newPriceType = value as PriceType
+    setPriceType(newPriceType)
+
+    // Reset price form values when switching price types
+    setPriceForm({
+      pricePerKwh: '',
+      pricePerKwhMinute: '',
+      price_per_minute: '',
+      onPeakPrice: '',
+      offPeakPrice: '',
+      freeKw: '',
+      freeKwh: '',
+    })
+
+    if (newPriceType === 'TIERED_CREDIT' && tieredCreditItems.length === 0) {
+      setTieredCreditItems([createEmptyTieredItem()])
+    }
+  }
+
+  const handleTieredCreditChange = (
+    id: string,
+    field: keyof Omit<TieredCreditItem, 'id'>,
+    value: string,
+  ) => {
+    const decimalFields: Array<keyof Omit<TieredCreditItem, 'id'>> = ['priceBahtPerKwh']
+
+    const sanitizeValue = (input: string) => {
+      if (decimalFields.includes(field)) {
+        return formatDecimal(input)
+      }
+      const cleaned = input.replace(/[^\d.]/g, '')
+      const [intPart, decPart = ''] = cleaned.split('.')
+      return decPart ? `${intPart}.${decPart.slice(0, 2)}` : intPart
+    }
+
+    const nextValue = sanitizeValue(value)
+
+    setTieredCreditItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: nextValue } : item)),
+    )
+  }
+
+  const handleAddTieredCreditItem = () => {
+    setTieredCreditItems((prev) => {
+      if (prev.length >= maxTieredCreditItems) {
+        return prev
+      }
+      return [...prev, createEmptyTieredItem()]
+    })
+  }
+
+  const handleRemoveTieredCreditItem = (id: string) => {
+    setTieredCreditItems((prev) => {
+      if (prev.length <= 1) {
+        return prev
+      }
+      return prev.filter((item) => item.id !== id)
+    })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    // removed debug logs
+    const validationResult = PriceGroupFormSubmissionSchema.safeParse({
+      form,
+      priceForm,
+      feeForm,
+      priceType,
+    })
+
+    if (!validationResult.success) {
+      const errorMessage = Array.from(
+        new Set(validationResult.error.issues.map((issue) => issue.message)),
+      )
+        .filter(Boolean)
+        .join('\n')
+
+      toast.error(errorMessage || 'กรุณากรอกข้อมูลให้ครบถ้วน')
+      return
+    }
+
+    // ตรวจสอบ teamGroupId สำหรับ mode add
+    if (mode === 'add' && !teamGroupId) {
+      toast.error('Team group ID not found. Please try again.')
+      return
+    }
+
+    try {
+      await onSubmit(validationResult.data)
+    } catch (error) {
+      console.error('❌ Form submission error:', error)
+    }
+  }
+
+  const getTitle = () => {
+    if (mode === 'add') {
+      return statusType === 'MEMBER' ? 'Add Member Price Group' : 'Add Price Group'
+    }
+    return statusType === 'MEMBER' ? 'Edit Member Price Group' : 'Edit Price Group'
+  }
+
+  const getFormId = () => {
+    if (mode === 'add') {
+      return statusType === 'MEMBER' ? 'add-member-price-group-form' : 'add-price-group-form'
+    }
+    return statusType === 'MEMBER' ? 'edit-member-price-group-form' : 'edit-price-group-form'
+  }
+
+  const getButtonText = () => {
+    return mode === 'add' ? 'submit' : 'Update'
+  }
+
+  const getLoadingText = () => {
+    return mode === 'add' ? 'Submitting...' : 'Updating...'
+  }
+
+  const getLabelText = () => {
+    return statusType === 'MEMBER'
+      ? `ชื่อ ${statusType === 'MEMBER' ? 'Member ' : ''}Price Group`
+      : 'ชื่อ Price Group'
+  }
+
+  return (
+    <div className="p-3 md:p-6">
+      <div className="bg-sidebar mx-auto flex w-auto flex-col rounded-lg md:p-8">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b pb-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={onBack}
+              className="h-7 w-7 rounded-full"
+            >
+              <ChevronLeft className="h-5 w-5 text-muted-foreground" />
+            </Button>
+            <h1 className="text-oc-title-secondary text-xl font-medium md:text-2xl">
+              {getTitle()}
+            </h1>
+          </div>
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            form={getFormId()}
+            variant={'success'}
+            size="sm"
+            disabled={isLoading || !isFormValid}
+            className={`w-40 disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100`}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm font-light uppercase">{getLoadingText()}</span>
+              </div>
+            ) : (
+              <p className="text-sm font-medium uppercase">{getButtonText()}</p>
+            )}
+          </Button>
+        </div>
+
+        {/* Form */}
+        <form id={getFormId()} onSubmit={handleSubmit}>
+          <Card className="border-none shadow-none">
+            <CardContent className="p-4">
+              <div className="flex flex-col lg:flex-row">
+                {/* Left Column - Form inputs */}
+                <div className="lg:w-lg flex flex-1 flex-col gap-6 border-b pb-6 pt-6 md:pb-0 md:pt-8 lg:flex-none lg:border-b-0 lg:border-r lg:pr-8">
+                  <div>
+                    <Label
+                      htmlFor="groupName"
+                      className="text-oc-title-secondary text-sm font-semibold"
+                    >
+                      {getLabelText()} <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="groupName"
+                      value={form.groupName}
+                      onChange={handleInputChange}
+                      placeholder="โปรดระบุ"
+                      className="text-oc-title-secondary mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="status"
+                      className="text-oc-title-secondary text-sm font-semibold"
+                    >
+                      Status <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={form.status}
+                      onValueChange={handleStatusChange}
+                      defaultValue="publish"
+                    >
+                      <SelectTrigger
+                        className={`mt-2 w-full ${form.status ? '' : 'text-oc-title-secondary'}`}
+                      >
+                        <SelectValue placeholder="Publish" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="publish">Publish</SelectItem>
+                        <SelectItem value="draft">Draft</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-oc-title-secondary text-sm font-semibold">
+                      รูปแบบชำระเงิน<span className="text-destructive">*</span>
+                    </Label>
+                    <div className="mt-3">
+                      <RadioGroup
+                        value={billingType}
+                        onValueChange={(v) => setBillingType(v as 'USAGE' | 'CREDIT')}
+                        className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                      >
+                        {/* Usage card */}
+                        <div>
+                          <RadioGroupItem
+                            id="billing-usage"
+                            value="USAGE"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="billing-usage"
+                            className={`block cursor-pointer rounded-xl border p-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:p-4 ${
+                              billingType === 'USAGE'
+                                ? 'border-primary/60 bg-primary/5 text-primary ring-2 ring-primary'
+                                : 'border-border hover:bg-muted/40'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex items-center justify-center rounded-md p-2">
+                                <Zap
+                                  aria-hidden
+                                  className={
+                                    billingType === 'USAGE'
+                                      ? 'h-4 w-4 text-primary sm:h-5 sm:w-5'
+                                      : 'h-4 w-4 text-muted-foreground sm:h-5 sm:w-5'
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium">จ่ายตามการใช้งาน</div>
+                                <p className="text-xs text-muted-foreground">
+                                  คิดเงินตามหน่วยที่ใช้จริง เช่น บาท/kWh หรือรายชั่วโมง
+                                </p>
+                              </div>
+                            </div>
+                          </Label>
+                        </div>
+
+                        {/* Credit card */}
+                        <div>
+                          <RadioGroupItem
+                            id="billing-credit"
+                            value="CREDIT"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="billing-credit"
+                            className={`block cursor-pointer rounded-xl border p-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:p-4 ${
+                              billingType === 'CREDIT'
+                                ? 'border-primary/60 bg-primary/5 ring-2 ring-primary'
+                                : 'border-border hover:bg-muted/40'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex items-center justify-center rounded-md p-2">
+                                <CreditCard
+                                  aria-hidden
+                                  className={
+                                    billingType === 'CREDIT'
+                                      ? 'h-4 w-4 text-primary sm:h-5 sm:w-5'
+                                      : 'h-4 w-4 text-muted-foreground sm:h-5 sm:w-5'
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium">เครดิต</div>
+                                <p className="text-xs text-muted-foreground">
+                                  ตัดเครดิต/แพ็กเกจล่วงหน้า เหมาะกับการให้สิทธิ์สมาชิก
+                                </p>
+                              </div>
+                            </div>
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - Form inputs */}
+                <div className="flex-1 space-y-6 px-4 pb-6 pt-6 md:px-4 md:pb-8 md:pt-8 lg:w-3/4 lg:pl-8 lg:pr-0">
+                  {/* CREDIT */}
+                  {billingType === 'CREDIT' && (
+                    <>
+                      {/* Price Type Selection */}
+                      <div>
+                        <Label className="text-oc-title-secondary text-base font-semibold">
+                          การตั้งรูปแบบราคา <span className="text-destructive">*</span>
+                        </Label>
+                        <div className="mt-3 flex flex-wrap gap-3 rounded-lg bg-[#355FF5] p-4">
+                          <RadioGroup
+                            value={priceType}
+                            onValueChange={handlePriceTypeChange}
+                            className="flex w-full flex-wrap gap-6"
+                          >
+                            {/* บาท/kWh */}
+                            <div
+                              className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
+                                priceType === 'PER_KWH'
+                                  ? 'bg-white/20 text-white'
+                                  : 'bg-[#2B58F7] text-white'
+                              }`}
+                            >
+                              <RadioGroupItem
+                                value="PER_KWH"
+                                id="radio-kwh"
+                                className={`${
+                                  priceType === 'PER_KWH'
+                                    ? 'border-2 border-white text-white'
+                                    : 'border-2 border-white/20'
+                                }`}
+                              />
+                              <Label
+                                className={`cursor-pointer ${
+                                  priceType === 'PER_KWH' ? 'text-primary-foreground' : 'text-white'
+                                }`}
+                              >
+                                บาท/kWh
+                              </Label>
+                            </div>
+                            {/* Tiered Credit Pricing */}
+                            <div
+                              className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
+                                priceType === 'TIERED_CREDIT'
+                                  ? 'bg-white/20 text-white'
+                                  : 'bg-[#2B58F7] text-white'
+                              }`}
+                            >
+                              <RadioGroupItem
+                                value="TIERED_CREDIT"
+                                id="radio-tiered-credit"
+                                className={`${
+                                  priceType === 'TIERED_CREDIT'
+                                    ? 'border-2 border-white text-white'
+                                    : 'border-2 border-white/20'
+                                }`}
+                              />
+                              <Label
+                                className={`cursor-pointer ${
+                                  priceType === 'TIERED_CREDIT'
+                                    ? 'text-primary-foreground'
+                                    : 'text-white'
+                                }`}
+                              >
+                                Tiered Credit Pricing
+                              </Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+                      </div>
+
+                      {/* Price Input Sections */}
+                      {priceType === 'PER_KWH' && (
+                        <div className="mt-4 rounded-xl border p-6">
+                          <Label htmlFor="price" className="text-oc-title-secondary font-medium">
+                            บาท <span className="text-destructive">*</span>
+                          </Label>
+                          <div className="relative mt-2 w-full sm:w-2/3 md:w-1/2">
+                            <Input
+                              id="pricePerKwh"
+                              placeholder="ระบุ"
+                              className="pr-8"
+                              type="number"
+                              inputMode="decimal"
+                              min={0}
+                              step="0.01"
+                              value={priceForm.pricePerKwh}
+                              onChange={handlePriceInputChange}
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
+                              ฿
+                            </span>
+                          </div>
+                          {/* Billing cycle day */}
+                          <div className="mt-4">
+                            <Label
+                              htmlFor="billingDay"
+                              className="text-oc-title-secondary text-sm font-semibold"
+                            >
+                              รอบวันที่วางบิล
+                            </Label>
+                            <Select value={billingDay} onValueChange={setBillingDay}>
+                              <SelectTrigger
+                                id="billingDay"
+                                className={`mt-2 w-28 ${billingDay ? 'text-oc-title-secondary' : 'text-[#CACACA]'}`}
+                                aria-label="Billing cycle day"
+                              >
+                                <SelectValue placeholder="เลือกวันที่ (1–31)" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Array.from({ length: 31 }, (_, i) => {
+                                  const val = String(i + 1)
+                                  return (
+                                    <SelectItem key={val} value={val}>
+                                      {i + 1}
+                                    </SelectItem>
+                                  )
+                                })}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      )}
+
+                      {priceType === 'TIERED_CREDIT' && (
+                        <div className="mt-4 space-y-5">
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                              <Label className="text-oc-title-secondary text-sm font-semibold">
+                                รูปแบบขั้นราคาเครดิต
+                              </Label>
+                              <p className="text-xs text-muted-foreground">
+                                เพิ่มขั้นราคาได้สูงสุด {maxTieredCreditItems} ขั้น
+                              </p>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="darkwhite"
+                              size="lg"
+                              onClick={handleAddTieredCreditItem}
+                              disabled={tieredCreditItems.length >= maxTieredCreditItems}
+                              className="gap-2 rounded-full px-4"
+                            >
+                              <Plus className="h-4 w-4" />
+                              เพิ่มขั้นราคาใหม่
+                            </Button>
+                          </div>
+
+                          <div className="space-y-3 rounded-xl border p-4">
+                            {tieredCreditItems.map((item, index) => (
+                              <div
+                                key={item.id}
+                                className="rounded-xl border bg-background p-3 md:p-0"
+                              >
+                                <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-12 md:gap-0 md:divide-x">
+                                  <div className="space-y-1 md:col-span-2 md:px-3 md:py-4">
+                                    <Label className="text-xs font-medium text-muted-foreground">
+                                      ขั้นที่
+                                    </Label>
+                                    <div className="flex size-9 items-center justify-center rounded-lg border border-dashed border-primary/40 bg-primary/10 text-base font-semibold text-primary">
+                                      {index + 1}
+                                    </div>
+                                  </div>
+                                  <div className="space-y-1 md:col-span-3 md:px-3 md:py-4">
+                                    <Label
+                                      htmlFor={`startKwh-${item.id}`}
+                                      className="text-xs font-medium text-muted-foreground"
+                                    >
+                                      เริ่มต้น (kWh)
+                                    </Label>
+                                    <div className="relative">
+                                      <Input
+                                        id={`startKwh-${item.id}`}
+                                        value={item.startKwh}
+                                        onChange={(event) =>
+                                          handleTieredCreditChange(
+                                            item.id,
+                                            'startKwh',
+                                            event.target.value,
+                                          )
+                                        }
+                                        placeholder="0"
+                                        inputMode="decimal"
+                                        className="w-full"
+                                      />
+                                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                                        kWh
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-1 md:col-span-3 md:px-3 md:py-4">
+                                    <Label
+                                      htmlFor={`endKwh-${item.id}`}
+                                      className="text-xs font-medium text-muted-foreground"
+                                    >
+                                      สิ้นสุด (kWh)
+                                    </Label>
+                                    <div className="relative">
+                                      <Input
+                                        id={`endKwh-${item.id}`}
+                                        value={item.endKwh}
+                                        onChange={(event) =>
+                                          handleTieredCreditChange(
+                                            item.id,
+                                            'endKwh',
+                                            event.target.value,
+                                          )
+                                        }
+                                        placeholder="0"
+                                        inputMode="decimal"
+                                        className="w-full"
+                                      />
+                                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                                        kWh
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-1 md:col-span-3 md:px-3 md:py-4">
+                                    <Label
+                                      htmlFor={`priceBahtPerKwh-${item.id}`}
+                                      className="text-xs font-medium text-muted-foreground"
+                                    >
+                                      ราคา (บาท/kWh)
+                                    </Label>
+                                    <div className="relative">
+                                      <Input
+                                        id={`priceBahtPerKwh-${item.id}`}
+                                        value={item.priceBahtPerKwh}
+                                        onChange={(event) =>
+                                          handleTieredCreditChange(
+                                            item.id,
+                                            'priceBahtPerKwh',
+                                            event.target.value,
+                                          )
+                                        }
+                                        placeholder="0"
+                                        inputMode="decimal"
+                                        className="w-full"
+                                      />
+                                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                                        ฿
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center justify-center md:col-span-1 md:px-3 md:py-4">
+                                    {tieredCreditItems.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="icon"
+                                        onClick={() => handleRemoveTieredCreditItem(item.id)}
+                                        className="size-4 rounded-full"
+                                        aria-label={`ลบขั้นที่ ${index + 1}`}
+                                        title={`ลบขั้นที่ ${index + 1}`}
+                                      >
+                                        -
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                            {billingType === 'CREDIT' && (
+                              <div className="mt-2">
+                                <Label
+                                  htmlFor="billingDay"
+                                  className="text-oc-title-secondary text-sm font-semibold"
+                                >
+                                  รอบวันที่วางบิล
+                                </Label>
+                                <Select value={billingDay} onValueChange={setBillingDay}>
+                                  <SelectTrigger
+                                    id="billingDay"
+                                    className={`mt-2 w-28 ${billingDay ? 'text-oc-title-secondary' : 'text-[#CACACA]'}`}
+                                    aria-label="Billing cycle day"
+                                  >
+                                    <SelectValue placeholder="เลือกวันที่ (1–31)" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {Array.from({ length: 31 }, (_, i) => {
+                                      const val = String(i + 1)
+                                      return (
+                                        <SelectItem key={val} value={val}>
+                                          {i + 1}
+                                        </SelectItem>
+                                      )
+                                    })}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* USAGE */}
+                  {billingType === 'USAGE' && (
+                    <>
+                      {/* Price Type Selection */}
+                      <div>
+                        <Label className="text-oc-title-secondary text-base font-semibold">
+                          การตั้งรูปแบบราคา <span className="text-destructive">*</span>
+                        </Label>
+                        <div className="mt-3 flex flex-wrap gap-3 rounded-lg bg-[#355FF5] p-4">
+                          <RadioGroup
+                            value={priceType}
+                            onValueChange={handlePriceTypeChange}
+                            className="flex w-full flex-wrap gap-6"
+                          >
+                            {/* บาท/kWh */}
+                            <div
+                              className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
+                                priceType === 'PER_KWH'
+                                  ? 'bg-white/20 text-white'
+                                  : 'bg-[#2B58F7] text-white'
+                              }`}
+                            >
+                              <RadioGroupItem
+                                value="PER_KWH"
+                                id="radio-kwh"
+                                className={`${
+                                  priceType === 'PER_KWH'
+                                    ? 'border-2 border-white text-white'
+                                    : 'border-2 border-white/20'
+                                }`}
+                              />
+                              <Label
+                                className={`cursor-pointer ${
+                                  priceType === 'PER_KWH' ? 'text-card' : 'text-white'
+                                }`}
+                              >
+                                บาท/kWh
+                              </Label>
+                            </div>
+                            {/* บาท/ชั่วโมง */}
+                            <div
+                              className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
+                                priceType === 'PER_MINUTE'
+                                  ? 'bg-white/20 text-white'
+                                  : 'bg-[#2B58F7] text-white'
+                              }`}
+                            >
+                              <RadioGroupItem
+                                value="PER_MINUTE"
+                                id="radio-hrs"
+                                className={`${
+                                  priceType === 'PER_MINUTE'
+                                    ? 'border-2 border-white text-white'
+                                    : 'border-2 border-white/20'
+                                }`}
+                              />
+                              <Label
+                                htmlFor="radio-hrs"
+                                className={`cursor-pointer ${
+                                  priceType === 'PER_MINUTE' ? 'text-white' : 'text-white'
+                                }`}
+                              >
+                                ฿/Hrs.
+                              </Label>
+                            </div>
+                            {/* On Peak Off Peak */}
+                            <div
+                              className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
+                                priceType === 'PEAK'
+                                  ? 'bg-white/20 font-semibold text-white'
+                                  : 'bg-[#2B58F7] text-white'
+                              }`}
+                            >
+                              <RadioGroupItem
+                                value="PEAK"
+                                id="radio-onpeak"
+                                className={`${
+                                  priceType === 'PEAK'
+                                    ? 'border-2 border-white text-white'
+                                    : 'border-2 border-white/20'
+                                }`}
+                              />
+                              <Label
+                                htmlFor="radio-onpeak"
+                                className={`cursor-pointer ${
+                                  priceType === 'PEAK' ? 'text-white' : 'text-white'
+                                }`}
+                              >
+                                On Peak Off Peak
+                              </Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+                      </div>
+
+                      {/* Price Input Sections */}
+                      {priceType === 'PER_KWH' && (
+                        <div className="mt-4 rounded-xl border p-6">
+                          <Label htmlFor="price" className="text-oc-title-secondary font-medium">
+                            บาท/kWh <span className="text-destructive">*</span>
+                          </Label>
+                          <div className="relative mt-2 w-1/2">
+                            <Input
+                              id="pricePerKwh"
+                              placeholder="ระบุ"
+                              className="pr-8"
+                              type="number"
+                              inputMode="decimal"
+                              min={0}
+                              step="0.01"
+                              value={priceForm.pricePerKwh}
+                              onChange={handlePriceInputChange}
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
+                              ฿
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {priceType === 'PER_MINUTE' && (
+                        <div className="mt-4 grid grid-cols-2 gap-4 rounded-xl border p-6">
+                          <div>
+                            <Label
+                              htmlFor="price-kwh"
+                              className="text-oc-title-secondary font-medium"
+                            >
+                              บาท/kWh <span className="text-destructive">*</span>
+                            </Label>
+                            <div className="relative mt-2">
+                              <Input
+                                id="pricePerKwhMinute"
+                                placeholder="ระบุ"
+                                className="pr-8"
+                                type="number"
+                                inputMode="decimal"
+                                min={0}
+                                step="0.01"
+                                value={priceForm.pricePerKwhMinute}
+                                onChange={handlePriceInputChange}
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
+                                ฿
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <Label
+                              htmlFor="price_per_minute"
+                              className="text-oc-title-secondary font-medium"
+                            >
+                              /ชั่วโมง <span className="text-destructive">*</span>
+                            </Label>
+                            <div className="relative mt-2">
+                              <Input
+                                id="price_per_minute"
+                                placeholder="ระบุ"
+                                className="pr-12"
+                                type="number"
+                                inputMode="decimal"
+                                min={0}
+                                step="0.01"
+                                value={priceForm.price_per_minute}
+                                onChange={handlePriceInputChange}
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
+                                Hrs.
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {priceType === 'PEAK' && (
+                        <div className="mt-4">
+                          <div className="grid grid-cols-1 overflow-hidden rounded-xl border md:grid-cols-10 md:divide-x">
+                            {/* Left group: labels (span 2 rows) */}
+                            <div className="hidden md:col-span-2 md:grid">
+                              <div className="flex items-center justify-center border-b px-3 py-4 md:border-b">
+                                <span className="text-oc-title-secondary font-semibold">
+                                  On Peak
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-center px-3 py-4">
+                                <span className="text-oc-title-secondary font-semibold">
+                                  Off Peak
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Middle group: inputs (span 2 rows) */}
+                            <div className="md:col-span-4">
+                              <div className="border-b px-4 py-4 md:border-b">
+                                <Label
+                                  htmlFor="onPeakPrice"
+                                  className="text-oc-title-secondary font-medium"
+                                >
+                                  บาท/kWh <span className="text-destructive">*</span>
+                                </Label>
+                                <div className="relative mt-2">
+                                  <Input
+                                    id="onPeakPrice"
+                                    type="number"
+                                    inputMode="decimal"
+                                    min={0}
+                                    step="0.01"
+                                    placeholder="Enter your On Peak Price"
+                                    className="w-full pr-8"
+                                    value={priceForm.onPeakPrice}
+                                    onChange={handlePriceInputChange}
+                                  />
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
+                                    ฿
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="px-4 py-4">
+                                <Label
+                                  htmlFor="offPeakPrice"
+                                  className="text-oc-title-secondary font-medium"
+                                >
+                                  บาท/kWh <span className="text-destructive">*</span>
+                                </Label>
+                                <div className="relative mt-2">
+                                  <Input
+                                    id="offPeakPrice"
+                                    type="number"
+                                    inputMode="decimal"
+                                    min={0}
+                                    step="0.01"
+                                    placeholder="Enter your Off Peak Price"
+                                    className="w-full pr-8"
+                                    value={priceForm.offPeakPrice}
+                                    onChange={handlePriceInputChange}
+                                  />
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
+                                    ฿
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right group: info box (span 2 rows) */}
+                            <div className="hidden p-4 md:col-span-4 md:block">
+                              <div className="dark:bg-primary/7 mx-4 flex items-start gap-2 rounded-lg bg-primary/10 p-3 text-xs text-primary dark:border dark:border-primary">
+                                <div className="text-prim flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
+                                  <Info className="size-3" />
+                                </div>
+                                <div className="leading-tight">
+                                  <p className="mb-1">
+                                    อัตราค่าไฟฟ้า TOU ปัจจุบัน คือ อัตราการจัดเก็บค่าไฟฟ้า
+                                    ที่ขึ้นอยู่กับช่วงเวลาการใช้ โดยแบ่งออกเป็น 2 ช่วง คือ
+                                  </p>
+                                  <div className="grid grid-cols-1 gap-x-3 gap-y-0.5">
+                                    <div className="flex items-baseline gap-1">
+                                      <span className="whitespace-nowrap font-semibold">
+                                        On Peak: จันทร์–ศุกร์ 09:00–22:00 น.
+                                      </span>
+                                    </div>
+                                    <div className="flex items-baseline gap-1">
+                                      <span className="whitespace-nowrap font-semibold">
+                                        Off Peak: จันทร์–ศุกร์ 22:00–09:00 น.
+                                      </span>
+                                    </div>
+                                    <div className="mt-0.5">
+                                      <span className="whitespace-nowrap font-semibold">
+                                        และวันเสาร์–อาทิตย์/วันหยุดราชการทั้งวัน
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Additional Fee Section (แสดงได้ทั้ง USAGE และ CREDIT) */}
+                  <div>
+                    <div className="text-oc-title-secondary mb-2 text-base font-semibold">
+                      Additional Fee
+                    </div>
+                    {/* Idle Fee */}
+                    <div className="my-6 rounded-xl border bg-card p-6">
+                      <div className="text-oc-title-secondary font-medium">Idle fee</div>
+                      <div className="mb-2 text-xs text-[#8a94a6]">
+                        Will be applied after charging if car remains connected to charger.
+                      </div>
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <Label
+                            htmlFor="idleFeeDescription"
+                            className="text-oc-title-secondary text-xs"
+                          >
+                            Description
+                          </Label>
+                          <Input
+                            id="idleFeeDescription"
+                            placeholder="ระบุ"
+                            className="mt-1"
+                            value={feeForm.idleFeeDescription}
+                            onChange={handleFeeDescriptionChange}
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <Label
+                            htmlFor="feePerMinIdle"
+                            className="text-oc-title-secondary text-xs"
+                          >
+                            Fee per min
+                          </Label>
+                          <div className="relative">
+                            <Input
+                              id="feePerMinIdle"
+                              placeholder="0"
+                              className="mt-1"
+                              type="number"
+                              inputMode="decimal"
+                              min={0}
+                              step="0.01"
+                              value={feeForm.feePerMinIdle}
+                              onChange={handleFeeInputChange}
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                              ฿/min
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-2 flex gap-4">
+                        <div className="flex-1">
+                          <Label
+                            htmlFor="timeBeforeIdleFeeApplied"
+                            className="text-oc-title-secondary text-xs"
+                          >
+                            Time before idle fee applied
+                          </Label>
+                          <div className="relative">
+                            <Input
+                              id="timeBeforeIdleFeeApplied"
+                              placeholder="0"
+                              className="mt-1"
+                              type="number"
+                              min={0}
+                              value={feeForm.timeBeforeIdleFeeApplied}
+                              onChange={handleFeeInputChange}
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                              Min.
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <Label
+                            htmlFor="maxTotalIdleFee"
+                            className="text-oc-title-secondary text-xs"
+                          >
+                            Maximum total idle fee
+                          </Label>
+                          <div className="relative">
+                            <Input
+                              id="maxTotalIdleFee"
+                              placeholder="0"
+                              className="mt-1 pr-8"
+                              type="number"
+                              inputMode="decimal"
+                              min={0}
+                              step="0.01"
+                              value={feeForm.maxTotalIdleFee}
+                              onChange={handleFeeInputChange}
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                              ฿
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <Separator className="my-6" />
+            </CardContent>
+          </Card>
+        </form>
+      </div>
+    </div>
+  )
+}

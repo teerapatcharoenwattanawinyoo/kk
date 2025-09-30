@@ -1,4 +1,4 @@
-import { AuthLayout } from '@modules/auth/components'
+import { AuthLayout } from '@/app/[locale]/(auth)/_components'
 import type React from 'react'
 
 export default function AuthPageLayout({

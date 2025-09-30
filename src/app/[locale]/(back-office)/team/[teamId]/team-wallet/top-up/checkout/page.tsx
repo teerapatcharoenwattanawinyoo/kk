@@ -1,8 +1,8 @@
-import { TeamGuard } from '@/components/back-office/team/team-guard'
-import { CheckoutContent } from '@/components/back-office/team/team-wallet'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
+import { CheckoutContent } from '../../_components/top-up/checkout-content'
 
 interface CheckoutPageProps {
   params: Promise<{
@@ -34,7 +34,7 @@ export default async function CheckoutPage({ params, searchParams }: CheckoutPag
                     <ChevronLeft className="size-4" />
                   </Button>
                 </Link>
-                <h2 className="text-title text-2xl font-semibold">Back</h2>
+                <h2 className="text-oc-title-secondary text-2xl font-semibold">Back</h2>
               </div>
             </div>
             {/* content payment Method UI */}

@@ -1,4 +1,6 @@
 'use client'
+import { usePriceSet } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks'
+import { PriceGroup, PriceSetTypeSchema } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_schemas'
 import { LocationPinIcon } from '@/components/icons/location-pin-icon'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,30 +12,37 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { usePriceSet } from '@/hooks/use-price-group'
-import { PriceGroup } from '@/lib/api/team-group/price-groups'
 import { Check, Loader2, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { SelectConnectorDialog } from '@/components/back-office/team/connectors'
+import { SelectConnectorDialog } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_components/connectors'
 import { SuccessDialog } from '@/components/notifications'
 
 interface SetPriceDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onConfirm?: (selectedPriceGroup: PriceGroup) => void
+  teamGroupId?: string | number | null
 }
 
 export default function SetPriceDialogFormAdd({
   open,
   onOpenChange,
   onConfirm,
+  teamGroupId,
 }: SetPriceDialogProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [showConnectorDialog, setShowConnectorDialog] = useState(false)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
 
-  const { data: priceSetResponse, isLoading, error } = usePriceSet('general', 1, 100)
+  const { data: priceSetResponse, isLoading, error } = usePriceSet(
+    PriceSetTypeSchema.enum.general,
+    1,
+    100,
+    teamGroupId,
+  )
+  const isQueryPending =
+    isLoading || teamGroupId === undefined || teamGroupId === null
 
   // Extract deduplicated groups and total count from API response
   const dedupedGroups = priceSetResponse?.data?.data || []
@@ -132,7 +141,6 @@ export default function SetPriceDialogFormAdd({
   }
 
   const handleConnectorConfirm = (connectors: unknown[]) => {
-    console.log('Selected connectors:', connectors)
     setShowConnectorDialog(false)
   }
 
@@ -177,7 +185,7 @@ export default function SetPriceDialogFormAdd({
                   placeholder="Search by Price Name"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  disabled={isLoading}
+                  disabled={isQueryPending}
                   className="h-10 w-[240px] rounded-lg border-[#D9D8DF] bg-[#F8F9FA] pr-10 text-sm placeholder:text-[#A1B1D1]"
                 />
                 <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A1B1D1]" />
@@ -188,7 +196,7 @@ export default function SetPriceDialogFormAdd({
 
             {/* Price Group Cards in Grid */}
             <div className="custom-scroll-area my-10 grid max-h-[340px] grid-cols-1 gap-4 overflow-y-auto sm:grid-cols-2 sm:gap-6">
-              {isLoading ? (
+              {isQueryPending ? (
                 <div className="col-span-2 py-8 text-center">
                   <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin text-[#355FF5]" />
                   <div className="text-sm text-gray-500">Loading price groups...</div>
@@ -279,7 +287,7 @@ export default function SetPriceDialogFormAdd({
               <Button
                 className="h-11 bg-[#355FF5] px-6 hover:bg-[#355FF5]/90"
                 onClick={handleContinue}
-                disabled={!selectedPriceGroup || isLoading}
+                disabled={!selectedPriceGroup || isQueryPending}
               >
                 Continue
               </Button>

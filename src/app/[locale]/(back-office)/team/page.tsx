@@ -2,15 +2,14 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
+import { Pagination } from '@/components/ui/pagination-v2'
 import { useI18n } from '@/lib/i18n'
-import { useTeams } from '@/modules/teams/hooks/use-teams'
-import { ITeamList, Team } from '@/modules/teams/schemas/team.schema'
-import { Pagination } from '@/ui/organisms/pagination'
-import { TeamCard } from '@modules/teams/components'
 import { Loader2, Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
+import { TeamCard } from './_components/team-card'
+import { useTeams } from './_hooks/use-teams'
+import { ITeamList, Team } from './_schemas/team.schema'
 
 const TeamPage = () => {
   const { t } = useI18n()
@@ -57,8 +56,8 @@ const TeamPage = () => {
     }))
   }, [teamsResponse])
 
-  const totalTeams = teamsResponse?.data?.item_total || 0
-  const totalPages = teamsResponse?.data?.page_total || 1
+  const totalTeams = teamsResponse?.data?.data?.item_total || 0
+  const totalPages = teamsResponse?.data?.data?.page_total || 1
 
   const paginatedTeams = teams
 
@@ -70,16 +69,19 @@ const TeamPage = () => {
     <div className="container mx-auto h-full">
       <div className="m-5 space-y-4 rounded-lg bg-card px-4 py-4 sm:px-6 sm:py-8">
         <div className="flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
-          <h1 className="text-title text-xl font-semibold sm:text-2xl">{t('team.your_team')}</h1>
+          <h1 className="text-oc-title-secondary text-xl font-semibold sm:text-2xl">
+            {t('team.your_team')}
+          </h1>
           <Button
             className="w-full rounded-lg px-3 py-2 text-sm font-medium sm:w-auto sm:px-4 sm:text-base"
+            variant={'success'}
             onClick={handleAddTeam}
           >
             <Plus className="mr-2 h-4 w-4" />
             {t('team.add_team')}
           </Button>
         </div>
-        <Separator className="text-muted-foreground" />
+        <hr className="border-border" />
 
         <div className="mb-4 sm:mb-6">
           <Input

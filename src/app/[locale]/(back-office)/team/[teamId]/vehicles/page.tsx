@@ -1,4 +1,4 @@
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import VehiclesPage from '@/components/back-office/team/vehicles/vehicls-page'
 
 interface VehiclesPageProps {

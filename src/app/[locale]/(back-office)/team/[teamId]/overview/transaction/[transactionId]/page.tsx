@@ -1,7 +1,7 @@
 'use client'
 
-import { TransactionDetail } from '@/components/back-office/team/overview/transaction-detail'
 import { useParams } from 'next/navigation'
+import { TransactionDetail } from '../../_components/transaction-detail'
 
 export default function TransactionDetailPage() {
   const params = useParams()

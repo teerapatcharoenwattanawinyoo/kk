@@ -1,10 +1,10 @@
 'use client'
 
-import { SettingsLayout } from '@/components/back-office/team/settings/settings-layout'
-import { TaxSetting } from '@/components/back-office/team/settings/tab/tax-information-tab/tax-setting'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import { useRouter } from 'next/navigation'
 import { use } from 'react'
+import { SettingsLayout } from '../_components/settings-layout'
+import { TaxSetting } from '../_components/tab/tax-information-tab/tax-setting'
 
 interface TaxSettingsPageProps {
   params: Promise<{

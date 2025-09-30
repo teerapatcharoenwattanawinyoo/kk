@@ -1,8 +1,8 @@
 'use client'
 
-import { EditBankAccountForm } from '@/components/back-office/team/revenue/bank-account'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import { useParams } from 'next/navigation'
+import { BankAccountFormEditPage } from '../../_components/bank-account-form-edit-page'
 
 export default function EditBankAccountPage() {
   const params = useParams()
@@ -22,7 +22,7 @@ export default function EditBankAccountPage() {
 
   return (
     <TeamGuard teamId={teamId} locale={locale}>
-      <EditBankAccountForm teamId={teamId} locale={locale} accountId={accountId} />
+      <BankAccountFormEditPage teamId={teamId} locale={locale} accountId={accountId} />
     </TeamGuard>
   )
 }

@@ -1,4 +1,8 @@
+import { COOKIE_KEYS } from '@/lib/constants'
 import Cookies from 'js-cookie'
+
+const CLIENT_ACCESS_TOKEN_KEY = COOKIE_KEYS.CLIENT_ACCESS_TOKEN
+const CLIENT_REFRESH_TOKEN_KEY = COOKIE_KEYS.CLIENT_REFRESH_TOKEN
 
 export interface TokenData {
   accessToken: string | undefined
@@ -6,18 +10,30 @@ export interface TokenData {
 }
 
 export const setAuthTokens = (accessToken: string, refreshToken: string) => {
-  Cookies.set('access_token', accessToken, { expires: 1 }) // 1 day
-  Cookies.set('refresh_token', refreshToken, { expires: 7 }) // 7 days
+  const secure = process.env.NODE_ENV === 'production'
+  const baseOptions = {
+    sameSite: 'lax' as const,
+    path: '/',
+    secure,
+  }
+  Cookies.set(CLIENT_ACCESS_TOKEN_KEY, accessToken, {
+    expires: 1, // 1 day
+    ...baseOptions,
+  })
+  Cookies.set(CLIENT_REFRESH_TOKEN_KEY, refreshToken, {
+    expires: 7, // 7 days
+    ...baseOptions,
+  })
 }
 
 export const getAuthTokens = (): TokenData => ({
-  accessToken: Cookies.get('access_token'),
-  refreshToken: Cookies.get('refresh_token'),
+  accessToken: Cookies.get(CLIENT_ACCESS_TOKEN_KEY),
+  refreshToken: Cookies.get(CLIENT_REFRESH_TOKEN_KEY),
 })
 
 export const removeAuthTokens = () => {
-  Cookies.remove('access_token')
-  Cookies.remove('refresh_token')
+  Cookies.remove(CLIENT_ACCESS_TOKEN_KEY, { path: '/' })
+  Cookies.remove(CLIENT_REFRESH_TOKEN_KEY, { path: '/' })
 }
 
 export const hasValidTokens = (): boolean => {

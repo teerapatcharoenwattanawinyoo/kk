@@ -1,4 +1,11 @@
 'use client'
+import { PriceGroup, PriceSetTypeSchema } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_schemas'
+import {
+  applyPriceSetToParent,
+  fetchPriceSet,
+  type CreateByParentRequest,
+} from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_services'
+import { useTeamHostId } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
 import { LocationPinIcon } from '@/components/icons/location-pin-icon'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,15 +17,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { Charger } from '@/lib/api/team-group/connectors'
-import {
-  CreateByParentRequest,
-  PriceGroup,
-  createPriceSetByParent,
-  getPriceSet,
-} from '@/lib/api/team-group/price-groups'
 import { QUERY_KEYS } from '@/lib/constants'
-import { useTeamHostId } from '@/modules/teams/hooks/use-teams'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Check, Loader2, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -26,14 +25,16 @@ import { useEffect, useState } from 'react'
 import {
   SelectConnectorDialog,
   SelectedConnectorsDisplay,
-} from '@/components/back-office/team/connectors'
+} from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_components/connectors'
+import type { ConnectorSelectItem } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/connectors'
 import { SuccessDialog } from '@/components/notifications'
 
 interface SetPriceDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onConfirm?: (selectedPriceGroup: PriceGroup) => void
-  initialSelectedConnectors?: Charger[]
+  initialSelectedConnectors?: ConnectorSelectItem[]
+  teamGroupId?: string | number | null
 }
 
 export default function SetPriceDialog({
@@ -41,19 +42,19 @@ export default function SetPriceDialog({
   onOpenChange,
   onConfirm,
   initialSelectedConnectors,
+  teamGroupId,
 }: SetPriceDialogProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [showConnectorDialog, setShowConnectorDialog] = useState(false)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
-  const [selectedConnectors, setSelectedConnectors] = useState<Charger[]>([])
+  const [selectedConnectors, setSelectedConnectors] = useState<ConnectorSelectItem[]>([])
   const [isApplying, setIsApplying] = useState(false)
   const teamHostId = useTeamHostId()
 
   // Mutation for creating price set by parent
   const createPriceSetMutation = useMutation({
-    mutationFn: (requestData: CreateByParentRequest) => createPriceSetByParent(requestData),
-    onSuccess: (response) => {
-      console.log('Price application response:', response)
+    mutationFn: (requestData: CreateByParentRequest) => applyPriceSetToParent(requestData),
+    onSuccess: (_response) => {
       setIsApplying(false)
       setShowSuccessDialog(true)
       setSelectedConnectors([])
@@ -71,14 +72,20 @@ export default function SetPriceDialog({
     isLoading,
     error,
   } = useQuery({
-    queryKey: [...QUERY_KEYS.PRICE_SET, 'general', 1, 100],
-    queryFn: () => {
-      return getPriceSet('general', 1, 100)
-    },
-    enabled: !!teamHostId,
+    queryKey: [
+      ...QUERY_KEYS.PRICE_SET,
+      PriceSetTypeSchema.enum.general,
+      1,
+      100,
+      teamGroupId ?? null,
+    ],
+    queryFn: () => fetchPriceSet(PriceSetTypeSchema.enum.general, 1, 100, teamGroupId),
+    enabled: !!teamHostId && teamGroupId !== undefined && teamGroupId !== null,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   })
+  const isQueryPending =
+    isLoading || teamGroupId === undefined || teamGroupId === null
 
   // Extract deduplicated groups and total count from API response
   const dedupedGroups = priceSetResponse?.data?.data || []
@@ -202,13 +209,6 @@ export default function SetPriceDialog({
       plug_id: selectedConnectors.map((connector) => connector.id),
     }
 
-    console.log('Applying price with data:', {
-      timestamp: new Date().toISOString(),
-      requestBody: requestData,
-      priceGroup: selectedPriceGroup,
-      connectorCount: selectedConnectors.length,
-    })
-
     setIsApplying(true)
     // Execute the mutation
     createPriceSetMutation.mutate(requestData)
@@ -218,8 +218,7 @@ export default function SetPriceDialog({
     setShowConnectorDialog(false)
   }
 
-  const handleConnectorConfirm = (connectors: Charger[]) => {
-    console.log('Selected connectors:', connectors)
+  const handleConnectorConfirm = (connectors: ConnectorSelectItem[]) => {
     setSelectedConnectors(connectors)
     setShowConnectorDialog(false)
   }
@@ -267,7 +266,7 @@ export default function SetPriceDialog({
                   placeholder="Search by Price Name"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  disabled={isLoading}
+              disabled={isQueryPending}
                   className="h-10 w-[240px] rounded-lg border-[#D9D8DF] bg-[#F8F9FA] pr-10 text-sm placeholder:text-[#A1B1D1]"
                 />
                 <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A1B1D1]" />
@@ -278,7 +277,7 @@ export default function SetPriceDialog({
 
             {/* Price Group Cards in Grid */}
             <div className="custom-scroll-area my-10 grid max-h-[340px] grid-cols-1 gap-4 overflow-y-auto sm:grid-cols-2 sm:gap-6">
-              {isLoading ? (
+          {isQueryPending ? (
                 <div className="col-span-2 py-8 text-center">
                   <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin text-[#355FF5]" />
                   <div className="text-sm text-gray-500">Loading price groups...</div>
@@ -369,7 +368,7 @@ export default function SetPriceDialog({
               <Button
                 className="h-11 bg-[#355FF5] px-6 hover:bg-[#355FF5]/90"
                 onClick={handleContinue}
-                disabled={!selectedPriceGroup || isLoading || isApplying}
+                disabled={!selectedPriceGroup || isQueryPending || isApplying}
               >
                 {isApplying ? (
                   <>

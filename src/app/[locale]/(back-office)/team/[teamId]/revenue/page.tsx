@@ -1,5 +1,5 @@
-import { RevenueTab } from '@/components/back-office/team/revenue'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
+import { RevenuePage as RevenueContent } from './_components/revenue-page'
 
 interface RevenuePageProps {
   params: Promise<{
@@ -12,7 +12,7 @@ const RevenuePage = async ({ params }: RevenuePageProps) => {
   const { teamId, locale } = await params
   return (
     <TeamGuard teamId={teamId} locale={locale}>
-      <RevenueTab teamId={teamId} locale={locale} />
+      <RevenueContent teamId={teamId} locale={locale} />
     </TeamGuard>
   )
 }

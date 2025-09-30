@@ -1,5 +1,5 @@
-import { TeamGuard } from '@/components/back-office/team/team-guard'
-import { ChargingStationsPage } from '@/modules/charging-stations/components/charging-stations-page'
+import { ChargingStationsPage } from '@/app/[locale]/(back-office)/team/[teamId]/charging-stations'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 
 interface ChargingStationsPageProps {
   params: Promise<{

@@ -1,7 +1,8 @@
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { QUERY_KEYS } from '@/lib/constants'
 
 export default function ReactQueryProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -42,5 +43,32 @@ export default function ReactQueryProvider({ children }: { children: React.React
       }),
   )
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <AuthRefreshListener queryClient={queryClient} />
+    </QueryClientProvider>
+  )
+}
+
+function AuthRefreshListener({ queryClient }: { queryClient: QueryClient }) {
+  useEffect(() => {
+    const handler = () => {
+      try {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USER })
+      } catch {}
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('auth:refreshed', handler)
+      const storageHandler = (e: StorageEvent) => {
+        if (e.key === 'auth_last_refreshed') handler()
+      }
+      window.addEventListener('storage', storageHandler)
+      return () => {
+        window.removeEventListener('auth:refreshed', handler)
+        window.removeEventListener('storage', storageHandler)
+      }
+    }
+  }, [queryClient])
+  return null
 }

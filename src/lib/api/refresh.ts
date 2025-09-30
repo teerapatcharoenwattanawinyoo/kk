@@ -1,24 +1,32 @@
-import { API_BASE_URL, API_ENDPOINTS } from '@/lib/constants'
-import axios from 'axios'
-import type { ApiResponse, LoginResponse } from '../../modules/auth/api/auth'
+import type { LoginResponse } from '@/app/[locale]/(auth)'
+import { localApi } from './config/axios-server'
 
 // Use direct axios instance to avoid interceptor conflicts
-export async function refreshAccessToken(refreshToken: string | undefined): Promise<LoginResponse> {
-  if (!refreshToken) {
-    throw new Error('No refresh token available')
+export async function refreshAccessToken(_refreshToken?: string): Promise<LoginResponse> {
+  // Step 7: Refresh token request to authorization server
+  // Call internal API which reads httpOnly refresh token cookie and makes request to auth server
+  console.log('[refreshAccessToken] Attempting token refresh')
+
+  try {
+    const data = await localApi.get<LoginResponse>('/api/auth/refresh')
+
+    // Step 8: Access token and Refresh token received
+    console.log('[refreshAccessToken] Token refresh successful')
+
+    if (typeof window !== 'undefined') {
+      try {
+        // Dispatch event to notify other parts of the app that tokens were refreshed
+        window.dispatchEvent(new CustomEvent('auth:refreshed'))
+        // Optional: multi-tab sync marker
+        localStorage.setItem('auth_last_refreshed', String(Date.now()))
+      } catch (e) {
+        console.warn('[refreshAccessToken] Failed to dispatch refresh event:', e)
+      }
+    }
+
+    return data
+  } catch (error) {
+    console.error('[refreshAccessToken] Token refresh failed:', error)
+    throw error
   }
-
-  const response = await axios.get<ApiResponse<LoginResponse>>(
-    `${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH}`,
-    {
-      headers: {
-        Authorization: `Bearer ${refreshToken}`,
-        'Content-Type': 'application/json',
-        'lang-id': '2',
-      },
-      timeout: 10000,
-    },
-  )
-
-  return response.data.data
 }

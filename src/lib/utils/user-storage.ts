@@ -1,10 +1,24 @@
-import type { UserData } from '../schemas/user'
+export interface UserData {
+  user: {
+    customer_id: number
+    email: string
+    phone: string
+    profilename: string
+    avatar: string | null
+    platform_type: string
+    company_id: number | null
+    team_id: number | null
+    device: string
+    team_host_id: string
+  }
+  timestamp: number
+}
 
 /**
  * Get the partner_id (customer_id) from localStorage
  * @returns The customer_id if available, null otherwise
  */
-export function getPartnerIdFromStorage(): string | null {
+export function getPartnerIdFromStorage(): number | null {
   if (typeof window === 'undefined') {
     return null
   }
@@ -16,13 +30,7 @@ export function getPartnerIdFromStorage(): string | null {
     }
 
     const userData: UserData = JSON.parse(savedData)
-    const customerId = userData.user?.customer_id
-
-    if (!customerId) {
-      return null
-    }
-
-    return customerId.toString()
+    return userData.user?.customer_id || null
   } catch (error) {
     console.error('Error getting partner_id from localStorage:', error)
     return null
@@ -72,12 +80,10 @@ export function getTeamHostIdFromStorage(): string | null {
   try {
     const userData = getUserDataFromStorage()
     const teamHostId = userData?.user?.team_host_id
-
-    if (!teamHostId) {
+    if (!teamHostId || teamHostId.trim().length === 0) {
       return null
     }
-
-    return teamHostId.toString()
+    return teamHostId
   } catch (error) {
     console.error('Error getting team_host_id from localStorage:', error)
     return null

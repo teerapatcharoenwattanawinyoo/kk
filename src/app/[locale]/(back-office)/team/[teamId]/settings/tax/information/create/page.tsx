@@ -1,9 +1,9 @@
 'use client'
 
-import { TaxInformationForm } from '@/components/back-office/team/settings/tab/tax-information-form'
-import { TeamGuard } from '@/components/back-office/team/team-guard'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import { useRouter } from 'next/navigation'
 import { use } from 'react'
+import { TaxInformationForm } from '../../../_components/tab/tax-information-form'
 
 interface TaxInformationCreatePageProps {
   params: Promise<{

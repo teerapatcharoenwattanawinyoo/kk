@@ -18,7 +18,7 @@ export default async function BackOfficeLayout({
       {/* Make Header a sibling of Sidebar so peer-data variants apply */}
       <Header />
       <SidebarInset className="flex min-h-screen min-w-0 flex-col overflow-x-hidden pt-12 sm:pt-14">
-        <main className="bg-mute-background w-full min-w-0 max-w-full flex-1 overflow-x-hidden">
+        <main className="bg-oc-muted-background w-full min-w-0 max-w-full flex-1 overflow-x-hidden">
           {children}
         </main>
         <Footer />

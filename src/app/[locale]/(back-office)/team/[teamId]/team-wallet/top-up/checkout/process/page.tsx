@@ -1,8 +1,8 @@
-import { TeamGuard } from '@/components/back-office/team/team-guard'
-import { ProcessContent } from '@/components/back-office/team/team-wallet/top-up/process-content'
+import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
+import { ProcessContent } from '../../../_components/top-up/process-content'
 
 interface ProcessPageProps {
   params: Promise<{
@@ -39,7 +39,9 @@ export default async function ProcessPage({ params, searchParams }: ProcessPageP
                     <ChevronLeft className="size-4" />
                   </Button>
                 </Link>
-                <h2 className="text-title text-2xl font-semibold">ประมวลผลการชำระเงิน</h2>
+                <h2 className="text-oc-title-secondary text-2xl font-semibold">
+                  ประมวลผลการชำระเงิน
+                </h2>
               </div>
             </div>
 

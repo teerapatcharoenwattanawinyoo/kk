@@ -1,6 +1,8 @@
 
 'use client'
 
+import * as React from 'react'
+
 import { Separator } from '@/components/ui/separator'
 
 import { ChargeSession } from '../../_schemas/team-wallet.schema'
@@ -26,6 +28,13 @@ export function TeamWalletTab({
   onSearchChange,
   isWalletLoading = false,
 }: TeamWalletTabProps) {
+  const [statusFilter, setStatusFilter] = React.useState<string>('all')
+
+  const statuses = React.useMemo(
+    () => Array.from(new Set(chargeSessions.map((session) => session.status))).sort(),
+    [chargeSessions],
+  )
+
   return (
     <>
       <div className="mt-4 flex items-stretch gap-4">
@@ -43,9 +52,16 @@ export function TeamWalletTab({
           searchQuery={searchQuery}
           onSearchChange={onSearchChange}
           searchPlaceholder="Search by ID Announcement"
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          statuses={statuses}
         />
 
-        <ChargeSessionsTable sessions={chargeSessions} />
+        <ChargeSessionsTable
+          sessions={chargeSessions}
+          searchQuery={searchQuery}
+          statusFilter={statusFilter}
+        />
       </div>
     </>
   )

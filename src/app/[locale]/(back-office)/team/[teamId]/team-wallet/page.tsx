@@ -1,5 +1,5 @@
 import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
-import { PaymentPage } from './_components/team-wallet/payment-page'
+import { PaymentPage } from './features/team-wallet/ui/payment-page'
 
 interface PaymentPageProps {
   params: Promise<{

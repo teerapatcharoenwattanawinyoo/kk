@@ -2,7 +2,7 @@ import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-gu
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
-import { SummaryContent } from '../../../_components/top-up/summary-content'
+import { SummaryContent } from '../../../features/top-up/ui/summary-content'
 
 interface SummaryPageProps {
   params: Promise<{

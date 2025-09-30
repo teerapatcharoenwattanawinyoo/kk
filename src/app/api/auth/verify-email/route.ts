@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   const parsed = VerifyEmailSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ message: 'Validation error' }, { status: 422 })
   const { otpRef, ...rest } = parsed.data
-  const payload = otpRef ? { ...rest, refCode: otpRef } : rest
+  const payload = otpRef ? { ...rest, otpRef, refCode: otpRef } : rest
 
   const url = `${API_BASE_URL}${API_ENDPOINTS.AUTH.VERIFY_EMAIL}`
   const be = await fetch(url, {

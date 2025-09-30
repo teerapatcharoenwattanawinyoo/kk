@@ -1,6 +1,5 @@
 import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
-import { MembersPage } from '@/components/back-office/team/team-wallet/members-page'
-
+import { MembersPage } from './_components/members-page'
 interface MembersPageProps {
   params: Promise<{
     locale: string

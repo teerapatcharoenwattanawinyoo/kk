@@ -6,7 +6,7 @@ import React from 'react'
 export interface RadioOption {
   value: string
   label: string
-  description?: string
+  description?: string | React.ReactNode
   disabled?: boolean
   icon?: React.ReactNode
 }
@@ -88,7 +88,11 @@ const RadioGroup = React.forwardRef<
                   color: option.disabled ? colors.neutral[400] : colors.neutral[500],
                 }}
               >
-                <span>{option.description}</span>
+                {typeof option.description === 'string' ? (
+                  <span>{option.description}</span>
+                ) : (
+                  option.description
+                )}
               </div>
             )}
           </div>

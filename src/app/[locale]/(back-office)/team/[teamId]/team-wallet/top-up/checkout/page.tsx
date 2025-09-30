@@ -1,8 +1,8 @@
 import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-guard'
-import { CheckoutContent } from '@/components/back-office/team/team-wallet'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
+import { CheckoutContent } from '../../_components/top-up/checkout-content'
 
 interface CheckoutPageProps {
   params: Promise<{

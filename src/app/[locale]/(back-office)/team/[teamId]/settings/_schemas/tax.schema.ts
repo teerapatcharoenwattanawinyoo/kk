@@ -145,6 +145,7 @@ export const taxInvoiceReceiptResponseSchema = z.object({
   customer_id: z.string().nullable(),
 
   // ส่วนของ invoice-number-prefix-tab
+  prefix_document: z.string().nullable().optional(),
   format_document: z.number(),
   header_document: z.string(),
   center_document: z.string(),

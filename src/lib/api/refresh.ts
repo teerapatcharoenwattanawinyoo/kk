@@ -1,4 +1,4 @@
-import type { LoginResponse } from '@modules/auth'
+import type { LoginResponse } from '@/app/[locale]/(auth)'
 import { localApi } from './config/axios-server'
 
 // Use direct axios instance to avoid interceptor conflicts

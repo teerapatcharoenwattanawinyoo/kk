@@ -139,40 +139,39 @@ export default function MembersPriceGroupForm({
     return [createEmptyTieredItem()]
   })
 
-  // Update form states when initialData changes
-  useEffect(() => {
-    if (!initialData) {
+  const initializeState = (data?: PriceGroupFormProps['initialData']) => {
+    if (!data) {
       return
     }
 
-    if (initialData.form) {
+    if (data.form) {
       setForm((prevForm) => ({
         groupName:
-          initialData.form?.groupName !== undefined && initialData.form?.groupName !== null
-            ? String(initialData.form.groupName).trim()
+          data.form?.groupName !== undefined && data.form?.groupName !== null
+            ? String(data.form.groupName).trim()
             : prevForm.groupName,
         status:
-          initialData.form?.status !== undefined && initialData.form?.status !== null
-            ? String(initialData.form.status).trim()
+          data.form?.status !== undefined && data.form?.status !== null
+            ? String(data.form.status).trim()
             : prevForm.status,
       }))
     }
 
-    if (initialData.priceForm) {
+    if (data.priceForm) {
       setPriceForm((prevPriceForm) =>
-        PriceFormSchema.parse({ ...prevPriceForm, ...initialData.priceForm }),
+        PriceFormSchema.parse({ ...prevPriceForm, ...data.priceForm }),
       )
     }
 
-    if (initialData.feeForm) {
-      setFeeForm((prevFeeForm) => FeeFormSchema.parse({ ...prevFeeForm, ...initialData.feeForm }))
+    if (data.feeForm) {
+      setFeeForm((prevFeeForm) => FeeFormSchema.parse({ ...prevFeeForm, ...data.feeForm }))
     }
 
-    if (initialData.priceType) {
-      setPriceType(initialData.priceType)
+    if (data.priceType) {
+      setPriceType(data.priceType)
     }
 
-    const incomingTieredItems = (initialData as any)?.priceForm?.tieredCreditPricing
+    const incomingTieredItems = (data as any)?.priceForm?.tieredCreditPricing
     if (Array.isArray(incomingTieredItems)) {
       setTieredCreditItems(() => {
         if (incomingTieredItems.length === 0) {
@@ -192,12 +191,14 @@ export default function MembersPriceGroupForm({
     // default billing type
     setBillingType('USAGE')
     // hydrate billing day if provided
-    if (
-      typeof (initialData as any)?.billingDay !== 'undefined' &&
-      (initialData as any).billingDay !== null
-    ) {
-      setBillingDay(String((initialData as any).billingDay))
+    if (typeof (data as any)?.billingDay !== 'undefined' && (data as any).billingDay !== null) {
+      setBillingDay(String((data as any).billingDay))
     }
+  }
+
+  // Update form states when initialData changes
+  useEffect(() => {
+    initializeState(initialData)
   }, [initialData])
 
   // Form validation - แยกการตรวจสอบ teamGroupId ออกจาก isFormValid เพื่อให้ user กรอกข้อมูลได้ก่อน

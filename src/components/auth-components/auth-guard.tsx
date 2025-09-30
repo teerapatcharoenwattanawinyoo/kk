@@ -1,7 +1,7 @@
 'use client'
 
+import { useAuth } from '@/app/[locale]/(auth)/_hooks/use-auth-query'
 import { ROUTES } from '@/lib/constants'
-import { useAuth } from '@/modules/auth/hooks/use-auth'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 

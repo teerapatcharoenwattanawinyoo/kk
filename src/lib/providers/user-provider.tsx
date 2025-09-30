@@ -1,6 +1,6 @@
 'use client'
 
-import type { User } from '@/modules/auth/api/auth'
+import type { User } from '@/lib/schemas/user.schema'
 import React, { createContext, useContext } from 'react'
 
 type InitialUserContextValue = {

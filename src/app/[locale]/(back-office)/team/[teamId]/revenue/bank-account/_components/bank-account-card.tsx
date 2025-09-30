@@ -20,6 +20,7 @@ import type { BankAccount } from './bank-account-item'
 interface BankAccountCardProps {
   account: BankAccount
   isSelected: boolean
+  teamId: string
   onToggle: (accountId: number, isEnabled: boolean) => void
   onEdit: (accountId: number) => void
   onDelete: (accountId: number) => void
@@ -68,10 +69,10 @@ const StatusBadge = memo(({ status }: { status: string }) => {
 StatusBadge.displayName = 'StatusBadge'
 
 export const BankAccountCard = memo(
-  ({ account, onToggle, onEdit, onDelete }: BankAccountCardProps) => {
+  ({ account, teamId, onToggle, onEdit, onDelete }: BankAccountCardProps) => {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-    const updateBankAccountMutation = useUpdateBankAccount()
-    const deleteBankAccountMutation = useDeleteBankAccount()
+    const updateBankAccountMutation = useUpdateBankAccount(teamId)
+    const deleteBankAccountMutation = useDeleteBankAccount(teamId)
 
     const handleToggle = useCallback(
       (checked: boolean) => {
@@ -79,12 +80,13 @@ export const BankAccountCard = memo(
           id: account.id,
           data: {
             is_primary: checked,
+            team_group_id: parseInt(teamId),
           },
         })
 
         onToggle(account.id, checked)
       },
-      [account.id, onToggle, updateBankAccountMutation],
+      [account.id, teamId, onToggle, updateBankAccountMutation],
     )
 
     const handleEdit = useCallback(() => {

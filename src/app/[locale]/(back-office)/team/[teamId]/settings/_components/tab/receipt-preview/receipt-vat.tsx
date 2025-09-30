@@ -9,6 +9,8 @@ interface ReceiptVatProps {
       address: string
       taxId: string
       logo?: string
+      headerDocument?: string
+      prefixDocument?: string
     }
     receiptInfo: {
       receiptId: string
@@ -81,7 +83,7 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
               )}
             </div>
             <button className="rounded-lg border-0 bg-gray-100 px-4 py-2 text-sm font-semibold text-blue-600">
-              ใบกำกับภาษี / ใบเสร็จรับเงิน
+              {receiptData.companyInfo.headerDocument || 'ใบกำกับภาษี / ใบเสร็จรับเงิน'}
             </button>
           </div>
 
@@ -96,7 +98,9 @@ export const ReceiptVat = ({ receiptData }: ReceiptVatProps) => {
             </div>
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
-                <span className="font-light">เลขที่</span>
+                <span className="font-light">
+                  {receiptData.companyInfo.prefixDocument || 'เลขที่'}
+                </span>
                 <span className="text-right font-light">{receiptData.receiptInfo.receiptId}</span>
               </div>
               <div className="flex justify-between text-xs">

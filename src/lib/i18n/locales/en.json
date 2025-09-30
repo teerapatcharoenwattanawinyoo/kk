@@ -80,7 +80,13 @@
     "invalid_expired_otp": "Invalid or expired OTP",
     "resend_code": "Resend Code",
     "verification_code": "Verification Code",
-    "enter_verification_code": "Enter the verification code sent to your email/phone"
+    "enter_verification_code": "Enter the verification code sent to your email/phone",
+    "error": "Something went wrong",
+    "errors": {
+      "generic": "We couldn't sign you in. Please try again.",
+      "network": "Network issue detected. Check your connection and try again.",
+      "invalid_credentials": "Incorrect email, phone number, or password."
+    }
   },
   "buttons": {
     "save": "Save",

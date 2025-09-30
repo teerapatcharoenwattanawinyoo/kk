@@ -1,5 +1,5 @@
 // src/lib/server/auth.ts
-import type { User } from '@/modules/auth/api/auth'
+import type { User } from '@/lib/schemas/user.schema'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import 'server-only'

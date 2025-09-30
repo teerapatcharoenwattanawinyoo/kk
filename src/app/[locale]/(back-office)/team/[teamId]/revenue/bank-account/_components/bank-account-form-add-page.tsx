@@ -12,8 +12,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { useToast } from '@/hooks/use-toast'
-import type { IBankListItem } from '@/lib/schemas/bank.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft } from 'lucide-react'
@@ -21,8 +19,10 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { BANK_QUERY_KEYS, useBankLists, useCreateBankAccount } from '../_hooks/use-bank'
+import { IBankListItem } from '../_schemas/bank.schema'
 
 const bankAccountSchema = z.object({
   bank_id: z.string().min(1, 'กรุณาเลือกธนาคาร'),
@@ -40,10 +40,10 @@ interface BankAccountFormAddPageProps {
 
 export const BankAccountFormAddPage = ({ teamId, locale }: BankAccountFormAddPageProps) => {
   const router = useRouter()
-  const { toast } = useToast()
+
   const queryClient = useQueryClient()
   const { data: bankListsResponse, isLoading: bankListsLoading } = useBankLists()
-  const createBankAccountMutation = useCreateBankAccount()
+  const createBankAccountMutation = useCreateBankAccount(teamId)
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const isSubmittingRef = useRef(false)
@@ -86,28 +86,17 @@ export const BankAccountFormAddPage = ({ teamId, locale }: BankAccountFormAddPag
       const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
 
       if (file.size > maxSize) {
-        toast({
-          title: 'ข้อผิดพลาด',
-          description: 'ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง',
-          variant: 'destructive',
-        })
+        toast.error('ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง')
         return
       }
 
       if (!allowedTypes.includes(file.type)) {
-        toast({
-          title: 'ข้อผิดพลาด',
-          description: 'รองรับเฉพาะไฟล์ JPG, PNG และ PDF เท่านั้น',
-          variant: 'destructive',
-        })
+        toast.error('รองรับเฉพาะไฟล์ JPG, PNG และ PDF เท่านั้น')
         return
       }
 
       setSelectedFile(file)
-      toast({
-        title: 'สำเร็จ',
-        description: 'อัพโหลดไฟล์เรียบร้อย',
-      })
+      toast.success('อัพโหลดไฟล์เรียบร้อย')
     },
     [toast],
   )
@@ -127,11 +116,7 @@ export const BankAccountFormAddPage = ({ teamId, locale }: BankAccountFormAddPag
       }
 
       if (selectedFile && selectedFile.size > 5 * 1024 * 1024) {
-        toast({
-          title: 'ข้อผิดพลาด',
-          description: 'ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง',
-          variant: 'destructive',
-        })
+        toast.error('ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง')
         return
       }
 
@@ -140,6 +125,7 @@ export const BankAccountFormAddPage = ({ teamId, locale }: BankAccountFormAddPag
       const formData = {
         ...data,
         bank_id: parseInt(data.bank_id),
+        team_group_id: parseInt(teamId),
         file: selectedFile || undefined,
       }
 
@@ -162,7 +148,7 @@ export const BankAccountFormAddPage = ({ teamId, locale }: BankAccountFormAddPag
         },
       })
     },
-    [selectedFile, createBankAccountMutation, queryClient, toast, router, locale, teamId],
+    [selectedFile, createBankAccountMutation, queryClient, router, locale, teamId],
   )
 
   if (bankListsLoading) {

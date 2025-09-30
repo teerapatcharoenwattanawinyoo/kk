@@ -201,6 +201,9 @@ export const ReceiptPreviewDialog = ({
           ? files.tax_logo
           : URL.createObjectURL(files.tax_logo)
         : undefined,
+      headerDocument:
+        taxInvoiceReceiptData?.data?.header_document || 'ใบกำกับภาษี / ใบเสร็จรับเงิน',
+      prefixDocument: taxInvoiceReceiptData?.data?.prefix_document || 'เลขที่',
     },
     receiptInfo: {
       receiptId: generateReceiptId(),

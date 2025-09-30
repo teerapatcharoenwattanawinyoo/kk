@@ -46,20 +46,25 @@ export const InvoiceNumberPrefixTab = ({ teamId }: InvoiceNumberPrefixTabProps) 
     if (hasExistingData && taxInvoiceReceiptData?.data) {
       const data = taxInvoiceReceiptData.data
       setHeaderDocument(data.header_document || '')
-      setPrefixDocument('')
-      setCenterDocument(data.center_document || '')
-      setEndDocument(data.end_document || '')
+      setPrefixDocument(data.prefix_document || 'เลขที่')
+      setCenterDocument(data.center_document || 'INV')
+      setEndDocument(data.end_document || '000001')
       setSelectedDocumentType(data.format_document || 1)
       setOriginalData({
         header_document: data.header_document || '',
-        prefix_document: '',
-        center_document: data.center_document || '',
-        end_document: data.end_document || '',
+        prefix_document: data.prefix_document || 'เลขที่',
+        center_document: data.center_document || 'INV',
+        end_document: data.end_document || '000001',
         format_document: data.format_document || 1,
       })
       setHasChanges(false)
+    } else if (!hasExistingData && !isLoading) {
+      // Set default values for new records
+      setPrefixDocument('เลขที่')
+      setCenterDocument('INV')
+      setEndDocument('000001')
     }
-  }, [hasExistingData, taxInvoiceReceiptData])
+  }, [hasExistingData, taxInvoiceReceiptData, isLoading])
 
   // Check for changes
   useEffect(() => {
@@ -96,8 +101,8 @@ export const InvoiceNumberPrefixTab = ({ teamId }: InvoiceNumberPrefixTabProps) 
 
   const handleResetStartingNumber = useCallback(() => {
     setPrefixDocument('')
-    setCenterDocument('')
-    setEndDocument('')
+    setCenterDocument('INV')
+    setEndDocument('000001')
   }, [])
 
   const handleSave = async () => {
@@ -223,30 +228,43 @@ export const InvoiceNumberPrefixTab = ({ teamId }: InvoiceNumberPrefixTabProps) 
       {/* Starting Number */}
       <div className="mb-8">
         <h4 className="text-oc-title-secondary mb-4 text-base font-semibold">Starting Number</h4>
-        <div className="flex items-center space-x-4">
-          <div className="flex-1">
-            <Input
-              value={prefixDocument}
-              onChange={(e) => setPrefixDocument(e.target.value)}
-              className="text-title w-full bg-input"
-              placeholder="Prefix Document"
-            />
+
+        {/* First Row - Prefix */}
+        <div className="mb-4">
+          <label className="mb-2 block text-sm font-medium text-gray-700">Prefix</label>
+          <div className="flex items-center space-x-4">
+            <div className="flex-1">
+              <Input
+                value={prefixDocument}
+                onChange={(e) => setPrefixDocument(e.target.value)}
+                className="text-title w-full bg-input"
+                placeholder="เลขที่"
+              />
+            </div>
           </div>
-          <div className="flex-1">
-            <Input
-              value={centerDocument}
-              onChange={(e) => setCenterDocument(e.target.value)}
-              className="text-title w-full bg-input"
-              placeholder="Center Document"
-            />
-          </div>
-          <div className="flex-1">
-            <Input
-              value={endDocument}
-              onChange={(e) => setEndDocument(e.target.value)}
-              className="w-full bg-input text-right"
-              placeholder="End Document"
-            />
+        </div>
+
+        {/* Second Row - Starting Number */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">Starting Number</label>
+          <div className="flex items-center space-x-4">
+            <div className="flex-1">
+              <Input
+                value={centerDocument}
+                onChange={(e) => setCenterDocument(e.target.value)}
+                className="text-title w-full bg-input"
+                placeholder="INV"
+              />
+            </div>
+            <div className="flex-1">
+              <Input
+                type="number"
+                value={endDocument}
+                onChange={(e) => setEndDocument(e.target.value)}
+                className="w-full bg-input text-right"
+                placeholder="000001"
+              />
+            </div>
           </div>
         </div>
 

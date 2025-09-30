@@ -2,15 +2,19 @@
 import {
   usePriceGroupDetail,
   useUpdatePriceSet,
-} from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks/use-price-group'
-import { UpdatePriceRequest } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_servers/price-groups'
-import { useTeamHostId } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
+} from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks'
+import {
+  PriceSetTypeSchema,
+  submissionToPriceGroupPayload,
+} from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_schemas'
 import { SuccessDialog } from '@/components/notifications'
-import { toast } from '@/hooks/use-toast'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import {
   PriceGroupForm,
+  PriceTypeSchema,
+  StatusTypeSchema,
   type FeeFormData,
   type FormData,
   type PriceFormData,
@@ -27,13 +31,15 @@ export default function EditPriceGroup() {
 
   // Hooks for API calls
   const updatePriceSetMutation = useUpdatePriceSet()
-  const teamHostId = useTeamHostId()
   const {
     data: priceGroup,
     isLoading: isPriceGroupLoading,
     status: priceGroupStatus,
     error: priceGroupError,
-  } = usePriceGroupDetail(priceId, { type: 'general', pageSize: 100 })
+  } = usePriceGroupDetail(priceId, {
+    type: PriceSetTypeSchema.enum.general,
+    pageSize: 100,
+  })
   const isLoading = updatePriceSetMutation.isPending || isPriceGroupLoading
 
   const initialData = useMemo(() => {
@@ -42,7 +48,7 @@ export default function EditPriceGroup() {
     const toStringSafe = (value: number | string | null | undefined) =>
       value !== null && value !== undefined ? String(value) : ''
 
-    const castedPriceType = (priceGroup.type as PriceType) || 'PER_KWH'
+    const castedPriceType = (priceGroup.type as PriceType) || PriceTypeSchema.enum.PER_KWH
 
     return {
       form: {
@@ -80,21 +86,13 @@ export default function EditPriceGroup() {
   useEffect(() => {
     if (!priceGroupError) return
 
-    toast({
-      title: 'Error',
-      description: priceGroupError.message,
-      variant: 'destructive',
-    })
+    toast.error('Failed to load price group. Please try again.')
   }, [priceGroupError])
 
   useEffect(() => {
     if (!priceId || priceGroupStatus !== 'success' || priceGroup) return
 
-    toast({
-      title: 'Error',
-      description: 'Price group not found. Please try again.',
-      variant: 'destructive',
-    })
+    toast.error('Price group not found. Please try again.')
   }, [priceGroup, priceGroupStatus, priceId])
 
   const handleBack = () => {
@@ -107,91 +105,33 @@ export default function EditPriceGroup() {
     feeForm: FeeFormData
     priceType: PriceType
   }) => {
-    if (!teamHostId || !priceId) {
-      toast({
-        title: 'Error',
-        description: 'Team host ID or priceId not found. Please try again.',
-        variant: 'destructive',
-      })
+    if (!priceId) {
+      toast.error('Price ID not found. Please try again.')
+      return
+    }
+
+    const teamGroupCandidate =
+      typeof priceGroup?.team_group_id === 'number' && Number.isFinite(priceGroup.team_group_id)
+        ? priceGroup.team_group_id
+        : Number(teamId)
+    const numericTeamGroupId = Number(teamGroupCandidate)
+    if (!Number.isFinite(numericTeamGroupId) || numericTeamGroupId <= 0) {
+      toast.error('Team group ID not found. Please try again.')
       return
     }
 
     try {
-      // แก้ไข type ให้ตรงกับ API (free ต้องเป็น PER_KWH)
-      const requestData: UpdatePriceRequest = {
-        type: data.priceType === 'free' ? 'PER_KWH' : data.priceType,
-        name: data.form.groupName,
-      }
+      const payload = submissionToPriceGroupPayload(
+        data,
+        StatusTypeSchema.enum.GENERAL,
+        numericTeamGroupId,
+      )
 
-      // Main price fields
-      if (data.priceType === 'PER_KWH' || data.priceType === 'free') {
-        if (data.priceForm.pricePerKwh)
-          requestData.price_per_kwh = Number(data.priceForm.pricePerKwh)
-        // free: ใช้ freeKwh เป็น price_per_kwh, freeKw ไม่ต้องส่ง
-        if (data.priceType === 'free' && data.priceForm.freeKwh)
-          requestData.price_per_kwh = Number(data.priceForm.freeKwh)
-      } else if (data.priceType === 'PER_MINUTE') {
-        if (data.priceForm.pricePerKwhMinute)
-          requestData.price_per_kwh = Number(data.priceForm.pricePerKwhMinute)
-        if (data.priceForm.price_per_minute)
-          requestData.price_per_minute = Number(data.priceForm.price_per_minute)
-      } else if (data.priceType === 'PEAK') {
-        if (data.priceForm.onPeakPrice)
-          requestData.price_on_peak = Number(data.priceForm.onPeakPrice)
-        if (data.priceForm.offPeakPrice)
-          requestData.price_off_peak = Number(data.priceForm.offPeakPrice)
-      }
-
-      // Additional fees: mapping ให้ตรงกับ API
-      if (data.feeForm.fee) {
-        requestData.starting_fee = {
-          description: data.feeForm.startingFeeDescription,
-          fee: data.feeForm.fee,
-        }
-      }
-      if (data.feeForm.feePrice) {
-        requestData.charging_fee = {
-          description: data.feeForm.chargingFeeDescription,
-          feePrice: data.feeForm.feePrice,
-          apply_after_minute: data.feeForm.applyAfterMinute
-            ? Number(data.feeForm.applyAfterMinute)
-            : 0,
-        }
-      }
-      if (data.feeForm.feePerMin) {
-        requestData.minute_fee = {
-          description: data.feeForm.minuteFeeDescription,
-          feePerMin: data.feeForm.feePerMin,
-          apply_fee_after_minute: data.feeForm.applyFeeAfterMinute
-            ? Number(data.feeForm.applyFeeAfterMinute)
-            : 0,
-          fee_stops_after_minute: data.feeForm.feeStopsAfterMinute
-            ? Number(data.feeForm.feeStopsAfterMinute)
-            : undefined,
-        }
-      }
-      if (data.feeForm.feePerMinIdle) {
-        requestData.idle_fee = {
-          description: data.feeForm.idleFeeDescription,
-          feePerMin: data.feeForm.feePerMinIdle,
-          time_before_idle_fee_applied: data.feeForm.timeBeforeIdleFeeApplied
-            ? Number(data.feeForm.timeBeforeIdleFeeApplied)
-            : 0,
-          max_total_idle_fee: data.feeForm.maxTotalIdleFee
-            ? Number(data.feeForm.maxTotalIdleFee)
-            : undefined,
-        }
-      }
-
-      await updatePriceSetMutation.mutateAsync({ priceId, data: requestData })
+      await updatePriceSetMutation.mutateAsync({ priceId, data: payload })
       setIsSuccess(true)
     } catch (error) {
       console.error('Error updating price set:', error)
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to update price set',
-        variant: 'destructive',
-      })
+      toast.error('Failed to update price group. Please try again.')
     }
   }
 
@@ -199,7 +139,7 @@ export default function EditPriceGroup() {
     <>
       <PriceGroupForm
         mode="edit"
-        statusType="GENERAL"
+        statusType={StatusTypeSchema.enum.GENERAL}
         initialData={initialData}
         isLoading={isLoading}
         onSubmit={handleSubmit}

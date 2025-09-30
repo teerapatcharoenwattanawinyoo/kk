@@ -4,8 +4,8 @@ import {
   ConnectorListItem,
   getConnectorDetail,
 } from '@/app/[locale]/(back-office)/team/[teamId]/chargers/_servers/connectors'
-import { useCreatePriceSetByParent } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks/use-price-group'
-import { PriceGroup } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_servers/price-groups'
+import { useCreatePriceSetByParent } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks'
+import { PriceGroup } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_schemas'
 import { SetPriceDialogFormAdd } from '@/components/back-office/team/set-price'
 import { SuccessDialog } from '@/components/notifications'
 import { Button } from '@/components/ui/button'
@@ -268,6 +268,7 @@ export default function EditConnectorDialog({
         open={setPriceOpen}
         onOpenChange={setSetPriceOpen}
         onConfirm={handlePriceGroupSelect}
+        teamGroupId={teamId}
       />
     </>
   )

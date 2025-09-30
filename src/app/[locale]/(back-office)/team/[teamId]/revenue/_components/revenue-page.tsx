@@ -1,22 +1,34 @@
 'use client'
 
+import { useAuth } from '@/app/[locale]/(auth)/_hooks/use-auth-query'
+import { DateTimePicker } from '@/components/datetime-picker'
+import FetchLoader from '@/components/FetchLoader'
 import { CardIcon, WarningIcon } from '@/components/icons'
 import SuccessDialog from '@/components/notifications/success-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { DataTable, TableColumn } from '@/components/ui/data-table'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioOption } from '@/components/ui/radio-group-v2'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { useI18n } from '@/lib/i18n'
 import { colors } from '@/lib/utils/colors'
-import { useAuth } from '@/modules/auth/hooks/use-auth'
 import { Download } from 'lucide-react'
 import Link from 'next/link'
+import { useParams, useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useMemo, useState, type MouseEvent } from 'react'
 import { toast } from 'sonner'
 import { TeamHeader } from '../../../_components/team-header'
 import { TeamTabMenu } from '../../../_components/team-tab-menu'
+import { useTransactionList } from '../../overview/_hooks/use-transaction'
 import { useConfirmPayout, useInitPayout } from '../_hooks/use-payout'
 import { useRevenueBalance } from '../_hooks/use-revenue'
 import { BankAccountItem } from '../bank-account/_components/bank-account-item'
@@ -30,38 +42,6 @@ interface RevenuePageProps {
 }
 
 type OTPMethod = 'phone' | 'email'
-
-const tableColumns: TableColumn[] = [
-  { key: 'no', header: 'NO', width: '6%' },
-  { key: 'transaction', header: 'ยอดเงินขาเข้า', width: '25%' },
-  { key: 'amount', header: 'จำนวนเงิน', width: '12%' },
-  { key: 'customer', header: 'บัญชีรับเงิน', width: '18%' },
-  { key: 'method', header: 'ทำรายการโดย', width: '12%' },
-  { key: 'date', header: 'วันที่ทำรายการ', width: '15%' },
-  { key: 'status', header: 'สถานะ', width: '8%' },
-  { key: 'action', header: 'ACTION', width: '4%' },
-]
-
-const transactionData = [
-  {
-    no: '1',
-    transaction: 'ค่าบริการชาร์จแบตเตอรี่ (OneCharge)',
-    amount: '3,390,000.00 ฿',
-    customer: 'โชวเซกซ์ย้า 339****192**1',
-    method: 'ค่าบริการก่อนนี้',
-    date: '13/02/2024 11:00:00',
-    status: 'สำเร็จ',
-  },
-  {
-    no: '2',
-    transaction: 'ค่าบริการชาร์จแบตเตอรี่ (OneCharge)',
-    amount: '50,000.00 ฿',
-    customer: 'โชวเซกซ์ย้า 338****192**1',
-    method: 'ค่าบริการธนาคาร',
-    date: '13/02/2024 13:00:00',
-    status: 'สำเร็จ',
-  },
-]
 
 const CalendarIcon = memo(() => (
   <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,8 +77,20 @@ ActionButton.displayName = 'ActionButton'
 
 export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
   const { t } = useI18n()
+  const router = useRouter()
+  const params = useParams()
+
   const [selectedAccount, setSelectedAccount] = useState('monthly')
   const [autoWithdraw, setAutoWithdraw] = useState(true)
+
+  // Date picker states
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+  const [selectedTime, setSelectedTime] = useState('00:00')
+
+  // Table states
+  const [currentPage, setCurrentPage] = useState(1)
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Separate dialog states for each step
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false)
@@ -124,6 +116,165 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
 
   const initPayoutMutation = useInitPayout()
   const confirmPayoutMutation = useConfirmPayout()
+
+  // Transaction data hooks
+  const {
+    data: transactionData,
+    isLoading: isLoadingTransactions,
+    error: transactionError,
+  } = useTransactionList({
+    teamId,
+    page: currentPage,
+    pageSize: 10,
+    search: searchQuery,
+  })
+
+  const tableData = (transactionData?.data?.data || []) as unknown as Record<string, unknown>[]
+
+  const handleRowClick = (row: Record<string, unknown>) => {
+    const transactionId = String(row.id || row.order_number)
+    router.push(`/${params.locale}/team/${teamId}/revenue/transaction/${transactionId}`)
+  }
+
+  // Table columns configuration
+  const tableColumns: TableColumn<Record<string, unknown>>[] = [
+    {
+      key: 'order_number',
+      header: t('table.order_number'),
+      width: '15%',
+      render: (value: string) => <span style={{ color: '#6E82A5' }}>{value}</span>,
+    },
+    {
+      key: 'charging_station',
+      header: t('table.charging_station'),
+      width: '15%',
+    },
+    { key: 'charger_id', header: t('table.charger'), width: '10%' },
+    {
+      key: 'rate',
+      header: t('table.rate'),
+      width: '8%',
+      render: (value: string) => `฿${value ?? '-'}/kWh`,
+    },
+    {
+      key: 'start_charge_date',
+      header: t('table.start_charge'),
+      width: '12%',
+      render: (value: string, row: Record<string, unknown>) => (
+        <div className="text-center">
+          <div>{value}</div>
+          <div style={{ color: '#6E82A5' }}>{String(row.start_charge_time || '')}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'stop_charge_date',
+      header: t('table.stop_charge'),
+      width: '12%',
+      render: (value: string, row: Record<string, unknown>) => (
+        <div className="text-center">
+          <div>{value}</div>
+          <div style={{ color: '#6E82A5' }}>{String(row.stop_charge_time || '')}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'time',
+      header: t('table.time'),
+      width: '8%',
+      render: (value: string) => {
+        if (!value) return '-'
+        if (/^\d{2}:\d{2}:\d{2}$/.test(value)) return value
+        const num = Number(value)
+        if (!isNaN(num)) {
+          const h = Math.floor(num / 60)
+          const m = Math.floor(num % 60)
+          return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:00`
+        }
+        return value
+      },
+    },
+    {
+      key: 'kwh',
+      header: t('table.kwh'),
+      width: '8%',
+      render: (value: string) => {
+        const num = Number(value)
+        return isNaN(num) ? '-' : `${num.toFixed(2)} kWh`
+      },
+    },
+    {
+      key: 'price',
+      header: t('table.cost'),
+      width: '8%',
+      render: (value: string) => {
+        // Format as currency (Baht)
+        const num = Number(value)
+        return isNaN(num)
+          ? value
+          : `฿${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      },
+    },
+    { key: 'payment_method', header: t('table.payment'), width: '10%' },
+    {
+      key: 'status',
+      header: t('table.status'),
+      width: '10%',
+      render: (value: string) => {
+        let bg = '#DFF8F3',
+          color = '#0D8A72',
+          text = value
+        if (value === 'pending') {
+          bg = '#FEF3C7'
+          color = '#92400E'
+          text = t('status.pending')
+        } else if (value === 'failed' || value === 'cancelled') {
+          bg = '#FEE2E2'
+          color = '#DC2626'
+          text = t('status.failed')
+        } else if (value === 'processing') {
+          bg = '#DBEAFE'
+          color = '#1D4ED8'
+          text = t('status.processing')
+        } else if (!value || value === 'completed') {
+          bg = '#DFF8F3'
+          color = '#0D8A72'
+          text = t('status.completed')
+        }
+        return (
+          <span
+            className="rounded-full px-2 py-1 text-xs font-medium"
+            style={{ backgroundColor: bg, color }}
+          >
+            {text}
+          </span>
+        )
+      },
+    },
+    {
+      key: 'action',
+      header: t('table.action'),
+      width: '10%',
+      render: (value: string, row: Record<string, unknown>) => (
+        <button
+          className="text-gray-400 hover:text-gray-600"
+          onClick={() => {
+            const transactionId = String(row.id || row.order_number)
+            router.push(`/${params.locale}/team/${teamId}/revenue/transaction/${transactionId}`)
+          }}
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+            />
+          </svg>
+        </button>
+      ),
+    },
+  ]
 
   const { transferBalance, lastWithdraw, revenueBankAccount } = useMemo(() => {
     // Get revenue balance data
@@ -232,51 +383,35 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
     }
   }, [confirmPayoutMutation.isSuccess, showSuccessDialog])
 
-  const accountOptions = useMemo<RadioOption[]>(
-    () => [
-      {
-        value: 'monthly',
-        label: 'ทุกสิ้นเดือน',
-        description: 'ทุกวันที่ 29 ของเดือน',
-        disabled: false,
-      },
-      {
-        value: 'specific-date',
-        label: 'ทุกวันที่ ระบุวันที่',
-        description: 'ตั้งค่าวันที่เอง',
-        disabled: true,
-        icon: <CalendarIcon />,
-      },
-    ],
-    [],
-  )
-
-  const enhancedColumns = useMemo(
-    () =>
-      tableColumns.map((col) => {
-        if (col.key === 'status') {
-          return {
-            ...col,
-            render: (value: string) => <StatusBadge value={value} />,
-          }
-        }
-        if (col.key === 'action') {
-          return {
-            ...col,
-            render: () => <ActionButton />,
-          }
-        }
-        return col
-      }),
-    [],
-  )
-
   const handleAccountChange = useCallback((value: string) => {
     setSelectedAccount(value)
   }, [])
 
   const handleAutoWithdrawChange = useCallback((checked: boolean) => {
     setAutoWithdraw(checked)
+
+    if (checked) {
+      setSelectedAccount('monthly')
+      setSelectedDate(undefined)
+      setSelectedTime('00:00')
+    }
+  }, [])
+
+  // Handler สำหรับ date picker
+  const handleDateChange = useCallback((date: Date | undefined) => {
+    setSelectedDate(date)
+    if (date) {
+      setSelectedAccount('specific-date')
+      setAutoWithdraw(false)
+    }
+  }, [])
+
+  const handleTimeChange = useCallback((time: string) => {
+    setSelectedTime(time)
+  }, [])
+
+  const handleDatePickerOpenChange = useCallback((open: boolean) => {
+    setShowDatePicker(open)
   }, [])
 
   const handleWithdrawClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
@@ -417,6 +552,47 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
   const handleWithdrawCancel = useCallback(() => {
     handleWithdrawClose()
   }, [handleWithdrawClose])
+
+  // Account options for radio group
+  const accountOptions = useMemo<RadioOption[]>(
+    () => [
+      {
+        value: 'monthly',
+        label: 'ทุกสิ้นเดือน',
+        description: 'ทุกวันที่ 1 ของเดือน',
+        disabled: false,
+      },
+      {
+        value: 'specific-date',
+        label: selectedDate
+          ? `ทุกวันที่ : ${selectedDate.getDate()}/${selectedDate.getMonth() + 1}/${selectedDate.getFullYear()}`
+          : 'ทุกวันที่ : ระบุวันที่',
+        description: (
+          <div className="mt-1">
+            <DateTimePicker
+              selectedDate={selectedDate}
+              selectedTime={selectedTime}
+              onDateChange={handleDateChange}
+              onTimeChange={handleTimeChange}
+              isOpen={showDatePicker}
+              onOpenChange={handleDatePickerOpenChange}
+              isEnabled={true}
+            />
+          </div>
+        ),
+        disabled: false,
+        icon: <CalendarIcon />,
+      },
+    ],
+    [
+      selectedDate,
+      selectedTime,
+      showDatePicker,
+      handleDateChange,
+      handleTimeChange,
+      handleDatePickerOpenChange,
+    ],
+  )
 
   // Format currency
   const formatCurrency = useCallback((amount: number) => {
@@ -587,6 +763,7 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
 
             {/* Auto Withdraw Toggle and Radio Options */}
             <div className="mb-6 border-b border-gray-200 pb-6">
+              {/* Auto Withdraw Toggle */}
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 {/* Auto Withdraw Toggle */}
                 <div className="flex items-start space-x-3 border-b border-gray-200 pb-4 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-6">
@@ -758,67 +935,116 @@ export const RevenuePage = memo(({ teamId, locale }: RevenuePageProps) => {
 
             <CardContent className="p-6">
               {/* Filters */}
-              <div className="mb-6 flex flex-wrap items-center gap-4">
+              <div className="mb-4 flex flex-wrap items-center gap-4">
                 <div className="flex items-center space-x-2">
-                  <input
+                  <span className="text-sm text-muted-foreground">
+                    {t('overview.search_by_id')}
+                  </span>
+                  <Input
                     type="text"
-                    placeholder="ค้นหา"
-                    className="w-48 rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm"
+                    placeholder=""
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-40"
                   />
-                  <svg
-                    className="h-4 w-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
                 </div>
-
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">กรองตาม :</span>
-                  <select className="w-32 rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm">
-                    <option value="">ทั้งหมด</option>
-                    <option value="success">สำเร็จ</option>
-                    <option value="pending">รอดำเนินการ</option>
-                  </select>
+                  <span className="text-sm text-muted-foreground">
+                    {t('overview.filter_by_status')}
+                  </span>
+                  <Select defaultValue="all">
+                    <SelectTrigger className="w-32">
+                      <SelectValue placeholder={t('overview.all')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t('overview.all')}</SelectItem>
+                      <SelectItem value="completed">{t('status.completed')}</SelectItem>
+                      <SelectItem value="pending">{t('status.pending')}</SelectItem>
+                      <SelectItem value="failed">{t('buttons.cancel')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground">{t('overview.date_by')}</span>
+                  <Select defaultValue="all_dates">
+                    <SelectTrigger className="w-32">
+                      <SelectValue placeholder={t('overview.all_dates')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all_dates">{t('overview.all_dates')}</SelectItem>
+                      <SelectItem value="today">{t('overview.today')}</SelectItem>
+                      <SelectItem value="week">{t('overview.this_week')}</SelectItem>
+                      <SelectItem value="month">{t('overview.this_month')}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
               {/* Table */}
-              <DataTable columns={enhancedColumns} data={transactionData} />
+              {isLoadingTransactions ? (
+                <FetchLoader />
+              ) : transactionError ? (
+                <div className="flex items-center justify-center py-8 text-red-500">
+                  <p>Error loading transaction data</p>
+                </div>
+              ) : (
+                <DataTable columns={tableColumns} data={tableData} onRowClick={handleRowClick} />
+              )}
 
               {/* Pagination */}
-              <div className="mt-6 flex items-center justify-between text-sm text-gray-600">
-                <span>Showing 1 to 10 of 130 Results</span>
-                <div className="flex items-center space-x-1">
-                  <span>10 List</span>
-                  <div className="ml-4 flex items-center space-x-2">
-                    {[1, 2, 3, 4, 5].map((page) => (
-                      <button
-                        key={page}
-                        className={`h-8 w-8 rounded ${
-                          page === 1
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+              <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+                <span>
+                  {transactionData?.data
+                    ? `Showing ${(transactionData.data.page_current - 1) * transactionData.data.page_size + 1}-${Math.min(transactionData.data.page_current * transactionData.data.page_size, transactionData.data.item_total)} of ${transactionData.data.item_total} results`
+                    : t('overview.showing_results')}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!transactionData?.data || currentPage === 1}
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                  >
+                    Previous
+                  </Button>
+                  {transactionData?.data &&
+                    [...Array(Math.min(5, transactionData.data.page_total))].map((_, index) => {
+                      const page = index + 1
+                      return (
+                        <Button
+                          key={page}
+                          variant={page === currentPage ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                        >
+                          {page}
+                        </Button>
+                      )
+                    })}
+                  {transactionData?.data && transactionData.data.page_total > 5 && (
+                    <>
+                      <span>...</span>
+                      <Button
+                        variant={
+                          currentPage === transactionData.data.page_total ? 'default' : 'outline'
+                        }
+                        size="sm"
+                        onClick={() => setCurrentPage(transactionData.data.page_total)}
                       >
-                        {page}
-                      </button>
-                    ))}
-                    <span>...</span>
-                    <button className="h-8 w-8 rounded bg-gray-100 text-gray-700 hover:bg-gray-200">
-                      10
-                    </button>
-                    <button className="h-8 w-8 rounded bg-gray-100 text-gray-700 hover:bg-gray-200">
-                      →
-                    </button>
-                  </div>
+                        {transactionData.data.page_total}
+                      </Button>
+                    </>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={
+                      !transactionData?.data || currentPage === transactionData.data.page_total
+                    }
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                  >
+                    Next
+                  </Button>
                 </div>
               </div>
             </CardContent>

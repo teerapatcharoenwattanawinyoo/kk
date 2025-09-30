@@ -12,12 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { ChevronLeft, Loader2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 import {
+  BillingType,
   FeeFormData,
   FeeFormSchema,
   FormData,
@@ -39,7 +40,7 @@ export default function PriceGroupForm({
   teamGroupId,
   billingType,
 }: PriceGroupFormProps) {
-  const resolvedBillingType = billingType ?? initialData?.billingType ?? 'USAGE'
+  const resolvedBillingType: BillingType = billingType ?? initialData?.billingType ?? 'USAGE'
   const isUsageBilling = resolvedBillingType === 'USAGE'
   const [priceType, setPriceType] = useState<PriceType>(initialData?.priceType ?? 'PER_KWH')
 
@@ -59,7 +60,7 @@ export default function PriceGroupForm({
       offPeakPrice: initialData?.priceForm?.offPeakPrice,
       freeKw: initialData?.priceForm?.freeKw,
       freeKwh: initialData?.priceForm?.freeKwh,
-    })
+    }),
   )
 
   // Fee form state
@@ -78,43 +79,45 @@ export default function PriceGroupForm({
       feePerMinIdle: initialData?.feeForm?.feePerMinIdle,
       timeBeforeIdleFeeApplied: initialData?.feeForm?.timeBeforeIdleFeeApplied,
       maxTotalIdleFee: initialData?.feeForm?.maxTotalIdleFee,
-    })
+    }),
   )
 
-  // Update form states when initialData changes
-  useEffect(() => {
-    if (!initialData) {
+  const initializeState = (data?: PriceGroupFormProps['initialData']) => {
+    if (!data) {
       return
     }
 
-    if (initialData.form) {
+    if (data.form) {
       setForm((prevForm) => ({
         groupName:
-          initialData.form?.groupName !== undefined && initialData.form?.groupName !== null
-            ? String(initialData.form.groupName).trim()
+          data.form?.groupName !== undefined && data.form?.groupName !== null
+            ? String(data.form.groupName).trim()
             : prevForm.groupName,
         status:
-          initialData.form?.status !== undefined && initialData.form?.status !== null
-            ? String(initialData.form.status).trim()
+          data.form?.status !== undefined && data.form?.status !== null
+            ? String(data.form.status).trim()
             : prevForm.status,
       }))
     }
 
-    if (initialData.priceForm) {
+    if (data.priceForm) {
       setPriceForm((prevPriceForm) =>
-        PriceFormSchema.parse({ ...prevPriceForm, ...initialData.priceForm })
+        PriceFormSchema.parse({ ...prevPriceForm, ...data.priceForm }),
       )
     }
 
-    if (initialData.feeForm) {
-      setFeeForm((prevFeeForm) =>
-        FeeFormSchema.parse({ ...prevFeeForm, ...initialData.feeForm })
-      )
+    if (data.feeForm) {
+      setFeeForm((prevFeeForm) => FeeFormSchema.parse({ ...prevFeeForm, ...data.feeForm }))
     }
 
-    if (initialData.priceType) {
-      setPriceType(initialData.priceType)
+    if (data.priceType) {
+      setPriceType(data.priceType)
     }
+  }
+
+  // Update form states when initialData changes
+  useEffect(() => {
+    initializeState(initialData)
   }, [initialData])
 
   // Form validation - แยกการตรวจสอบ teamGroupId ออกจาก isFormValid เพื่อให้ user กรอกข้อมูลได้ก่อน
@@ -189,26 +192,18 @@ export default function PriceGroupForm({
 
     if (!validationResult.success) {
       const errorMessage = Array.from(
-        new Set(validationResult.error.issues.map((issue) => issue.message))
+        new Set(validationResult.error.issues.map((issue) => issue.message)),
       )
         .filter(Boolean)
         .join('\n')
 
-      toast({
-        title: 'Error',
-        description: errorMessage || 'Please fill in all required fields.',
-        variant: 'destructive',
-      })
+      toast.error(errorMessage || 'Please check the form fields and try again.')
       return
     }
 
     // ตรวจสอบ teamGroupId สำหรับ mode add
     if (mode === 'add' && !teamGroupId) {
-      toast({
-        title: 'Error',
-        description: 'Team information not loaded. Please try again.',
-        variant: 'destructive',
-      })
+      toast.error('Team group ID not found. Please try again.')
       return
     }
 
@@ -253,13 +248,8 @@ export default function PriceGroupForm({
         {/* Header */}
         <div className="flex items-center justify-between border-b pb-4">
           <div className="flex items-center gap-4">
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={onBack}
-              className="h-7 w-7 rounded-full"
-            >
-              <ChevronLeft className="h-5 w-5 text-muted-foreground" />
+            <Button variant="secondary" size="icon" onClick={onBack} className="rounded-full">
+              <ChevronLeft className="size-5 text-muted-foreground" />
             </Button>
             <h1 className="text-oc-title-secondary text-xl font-medium md:text-2xl">
               {getTitle()}
@@ -294,7 +284,9 @@ export default function PriceGroupForm({
                 <div
                   className={cn(
                     'flex flex-1 flex-col gap-6 border-b pb-6 pt-6 md:pb-0 md:pt-8 lg:flex-none',
-                    isUsageBilling ? 'lg:w-1/4 lg:border-b-0 lg:border-r lg:pr-8' : 'lg:w-full lg:border-b-0',
+                    isUsageBilling
+                      ? 'lg:w-1/4 lg:border-b-0 lg:border-r lg:pr-8'
+                      : 'lg:w-full lg:border-b-0',
                   )}
                   style={{ minHeight: 'max(300px, 100%)' }}
                 >
@@ -310,7 +302,7 @@ export default function PriceGroupForm({
                       value={form.groupName}
                       onChange={handleInputChange}
                       placeholder="โปรดระบุ"
-                      className="text-oc-title-secondary mt-2 border-none bg-[#F2F2F2] placeholder:text-[#CACACA]"
+                      className="text-oc-title-secondary mt-2"
                     />
                   </div>
                   <div>
@@ -326,9 +318,7 @@ export default function PriceGroupForm({
                       defaultValue="publish"
                     >
                       <SelectTrigger
-                        className={`mt-2 border-none bg-[#F2F2F2] ${
-                          form.status ? 'text-[#CACACA]' : 'text-oc-title-secondary'
-                        }`}
+                        className={`mt-2 ${form.status ? 'text-oc-title' : 'text-oc-title'}`}
                       >
                         <SelectValue placeholder="Publish" />
                       </SelectTrigger>
@@ -361,143 +351,118 @@ export default function PriceGroupForm({
                                 : 'bg-[#2B58F7] text-white'
                             }`}
                           >
-                          <RadioGroupItem
-                            value="PER_KWH"
-                            id="radio-kwh"
-                            className={`${
-                              priceType === 'PER_KWH'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
-                            }`}
-                          />
-                          <Label
-                            className={`cursor-pointer ${
-                              priceType === 'PER_KWH' ? 'text-card' : 'text-white'
-                            }`}
-                          >
-                            บาท/kWh
-                          </Label>
-                        </div>
-                        <div
-                          className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'PER_MINUTE'
-                              ? 'bg-white/20 text-white'
-                              : 'bg-[#2B58F7] text-white'
-                          }`}
-                        >
-                          <RadioGroupItem
-                            value="PER_MINUTE"
-                            id="radio-hrs"
-                            className={`${
+                            <RadioGroupItem
+                              value="PER_KWH"
+                              id="radio-kwh"
+                              className={`${
+                                priceType === 'PER_KWH'
+                                  ? 'border-2 border-white text-white'
+                                  : 'border-2 border-white/20'
+                              }`}
+                            />
+                            <Label
+                              className={`cursor-pointer ${
+                                priceType === 'PER_KWH' ? 'text-card' : 'text-white'
+                              }`}
+                            >
+                              บาท/kWh
+                            </Label>
+                          </div>
+                          <div
+                            className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
                               priceType === 'PER_MINUTE'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
-                            }`}
-                          />
-                          <Label
-                            htmlFor="radio-hrs"
-                            className={`cursor-pointer ${
-                              priceType === 'PER_MINUTE' ? 'text-white' : 'text-white'
+                                ? 'bg-white/20 text-white'
+                                : 'bg-[#2B58F7] text-white'
                             }`}
                           >
-                            ฿/Hrs.
-                          </Label>
-                        </div>
-                        <div
-                          className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'PEAK'
-                              ? 'bg-white/20 font-semibold text-white'
-                              : 'bg-[#2B58F7] text-white'
-                          }`}
-                        >
-                          <RadioGroupItem
-                            value="PEAK"
-                            id="radio-onpeak"
-                            className={`${
+                            <RadioGroupItem
+                              value="PER_MINUTE"
+                              id="radio-hrs"
+                              className={`${
+                                priceType === 'PER_MINUTE'
+                                  ? 'border-2 border-white text-white'
+                                  : 'border-2 border-white/20'
+                              }`}
+                            />
+                            <Label
+                              htmlFor="radio-hrs"
+                              className={`cursor-pointer ${
+                                priceType === 'PER_MINUTE' ? 'text-white' : 'text-white'
+                              }`}
+                            >
+                              ฿/Hrs.
+                            </Label>
+                          </div>
+                          <div
+                            className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
                               priceType === 'PEAK'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
-                            }`}
-                          />
-                          <Label
-                            htmlFor="radio-onpeak"
-                            className={`cursor-pointer ${
-                              priceType === 'PEAK' ? 'text-white' : 'text-white'
+                                ? 'bg-white/20 font-semibold text-white'
+                                : 'bg-[#2B58F7] text-white'
                             }`}
                           >
-                            On Peak Off Peak
-                          </Label>
-                        </div>
-                        <div
-                          className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
-                            priceType === 'free'
-                              ? 'bg-white/20 text-[#4361ee]'
-                              : 'bg-[#2B58F7] text-white'
-                          }`}
-                        >
-                          <RadioGroupItem
-                            value="free"
-                            id="radio-free"
-                            className={`${
+                            <RadioGroupItem
+                              value="PEAK"
+                              id="radio-onpeak"
+                              className={`${
+                                priceType === 'PEAK'
+                                  ? 'border-2 border-white text-white'
+                                  : 'border-2 border-white/20'
+                              }`}
+                            />
+                            <Label
+                              htmlFor="radio-onpeak"
+                              className={`cursor-pointer ${
+                                priceType === 'PEAK' ? 'text-white' : 'text-white'
+                              }`}
+                            >
+                              On Peak Off Peak
+                            </Label>
+                          </div>
+                          <div
+                            className={`flex items-center space-x-2 rounded-xl px-6 py-3 transition-colors ${
                               priceType === 'free'
-                                ? 'border-2 border-white text-white'
-                                : 'border-2 border-white/20'
-                            }`}
-                          />
-                          <Label
-                            htmlFor="radio-free"
-                            className={`cursor-pointer ${
-                              priceType === 'free' ? 'text-white' : 'text-white'
+                                ? 'bg-white/20 text-[#4361ee]'
+                                : 'bg-[#2B58F7] text-white'
                             }`}
                           >
-                            Free Charge Promotion
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                  </div>
-
-                  {/* Price Input Sections */}
-                  {priceType === 'PER_KWH' && (
-                    <div className="mt-4 rounded-xl border p-6">
-                      <Label htmlFor="price" className="text-oc-title-secondary font-medium">
-                        บาท/kWh <span className="text-destructive">*</span>
-                      </Label>
-                      <div className="relative mt-2 w-1/2">
-                        <Input
-                          id="pricePerKwh"
-                          placeholder="ระบุ"
-                          className="pr-8"
-                          type="number"
-                          inputMode="decimal"
-                          min={0}
-                          step="0.01"
-                          value={priceForm.pricePerKwh}
-                          onChange={handlePriceInputChange}
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
-                          ฿
-                        </span>
+                            <RadioGroupItem
+                              value="free"
+                              id="radio-free"
+                              className={`${
+                                priceType === 'free'
+                                  ? 'border-2 border-white text-white'
+                                  : 'border-2 border-white/20'
+                              }`}
+                            />
+                            <Label
+                              htmlFor="radio-free"
+                              className={`cursor-pointer ${
+                                priceType === 'free' ? 'text-white' : 'text-white'
+                              }`}
+                            >
+                              Free Charge Promotion
+                            </Label>
+                          </div>
+                        </RadioGroup>
                       </div>
                     </div>
-                  )}
 
-                  {priceType === 'PER_MINUTE' && (
-                    <div className="mt-4 grid grid-cols-2 gap-4 rounded-xl border p-6">
-                      <div>
-                        <Label htmlFor="price-kwh" className="text-oc-title-secondary font-medium">
+                    {/* Price Input Sections */}
+                    {priceType === 'PER_KWH' && (
+                      <div className="mt-4 rounded-xl border p-6">
+                        <Label htmlFor="price" className="text-oc-title-secondary font-medium">
                           บาท/kWh <span className="text-destructive">*</span>
                         </Label>
-                        <div className="relative mt-2">
+                        <div className="relative mt-2 w-1/2">
                           <Input
-                            id="pricePerKwhMinute"
+                            id="pricePerKwh"
                             placeholder="ระบุ"
                             className="pr-8"
                             type="number"
                             inputMode="decimal"
                             min={0}
                             step="0.01"
-                            value={priceForm.pricePerKwhMinute}
+                            value={priceForm.pricePerKwh}
                             onChange={handlePriceInputChange}
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
@@ -505,524 +470,557 @@ export default function PriceGroupForm({
                           </span>
                         </div>
                       </div>
-                      <div>
-                        <Label
-                          htmlFor="price_per_minute"
-                          className="text-oc-title-secondary font-medium"
-                        >
-                          /ชั่วโมง <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative mt-2">
-                          <Input
-                            id="price_per_minute"
-                            placeholder="ระบุ"
-                            className="pr-12"
-                            type="number"
-                            inputMode="decimal"
-                            min={0}
-                            step="0.01"
-                            value={priceForm.price_per_minute}
-                            onChange={handlePriceInputChange}
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
-                            Hrs.
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                  {priceType === 'PEAK' && (
-                    <div className="mt-4 flex flex-col gap-4">
-                      <div className="grid grid-cols-1 overflow-hidden rounded-xl border md:grid-cols-10 md:divide-x">
-                        {/* Left Labels */}
-                        <div className="flex flex-col divide-y md:col-span-2 md:justify-center">
-                          <div className="flex h-28 items-center justify-center px-4">
-                            <span className="text-oc-title-secondary font-semibold">On Peak</span>
-                          </div>
-                          <div className="flex h-28 items-center justify-center px-4">
-                            <span className="text-oc-title-secondary font-semibold">Off Peak</span>
-                          </div>
-                        </div>
-
-                        {/* Price Inputs */}
-                        <div className="flex flex-col divide-y md:col-span-4">
-                          <div className="px-4 py-6">
-                            <Label
-                              htmlFor="onPeakPrice"
-                              className="text-oc-title-secondary font-medium"
-                            >
-                              บาท/kWh <span className="text-destructive">*</span>
-                            </Label>
-                            <div className="relative mt-2">
-                              <Input
-                                id="onPeakPrice"
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                placeholder="ระบุ"
-                                className="pr-8"
-                                value={priceForm.onPeakPrice}
-                                onChange={handlePriceInputChange}
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
-                                ฿
-                              </span>
-                            </div>
-                          </div>
-                          <div className="px-4 py-6">
-                            <Label
-                              htmlFor="offPeakPrice"
-                              className="text-oc-title-secondary font-medium"
-                            >
-                              บาท/kWh <span className="text-destructive">*</span>
-                            </Label>
-                            <div className="relative mt-2">
-                              <Input
-                                id="offPeakPrice"
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                placeholder="ระบุ"
-                                className="pr-8"
-                                value={priceForm.offPeakPrice}
-                                onChange={handlePriceInputChange}
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
-                                ฿
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Info Box */}
-                        <div className="flex flex-col justify-center p-4 md:col-span-4">
-                          <div className="dark:bg-primary/7 mx-4 flex items-start gap-2 rounded-lg bg-[#EDF1FF] p-3 text-xs text-[#355FF5] dark:border dark:border-primary dark:text-primary">
-                            <div className="text-prim flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="h-3 w-3"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-                                />
-                              </svg>
-                            </div>
-                            <div className="leading-tight">
-                              <p className="mb-1">
-                                อัตราค่าไฟฟ้า TOU ปัจจุบัน คือ อัตราการจัดเก็บค่าไฟฟ้า
-                                ที่ขึ้นอยู่กับช่วงเวลาการใช้ โดยแบ่งออกเป็น 2 ช่วง คือ
-                              </p>
-                              <div className="grid grid-cols-1 gap-x-3 gap-y-0.5">
-                                <div className="flex items-baseline gap-1">
-                                  <span className="whitespace-nowrap font-semibold">
-                                    On Peak: จันทร์–ศุกร์ 09:00–22:00 น.
-                                  </span>
-                                </div>
-                                <div className="flex items-baseline gap-1">
-                                  <span className="whitespace-nowrap font-semibold">
-                                    Off Peak: จันทร์–ศุกร์ 22:00–09:00 น.
-                                  </span>
-                                </div>
-                                <div className="mt-0.5">
-                                  <span className="whitespace-nowrap font-semibold">
-                                    และวันเสาร์–อาทิตย์/วันหยุดราชการทั้งวัน
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {priceType === 'free' && (
-                    <div className="mt-4 overflow-hidden rounded-xl border">
-                      <div className="grid grid-cols-5 border-b">
-                        <div className="col-span-1 flex items-center justify-center border-r p-4">
-                          <span className="text-oc-title-secondary font-medium">Free</span>
-                        </div>
-                        <div className="col-span-4 p-4">
+                    {priceType === 'PER_MINUTE' && (
+                      <div className="mt-4 grid grid-cols-2 gap-4 rounded-xl border p-6">
+                        <div>
                           <Label
-                            htmlFor="freeKw"
-                            className="text-oc-title-secondary mb-2 block font-medium"
-                          >
-                            kW <span className="text-destructive">*</span>
-                          </Label>
-                          <div className="relative mt-2">
-                            <Input
-                              id="freeKw"
-                              placeholder="ระบุ"
-                              className="pr-10"
-                              type="number"
-                              min={0}
-                              value={priceForm.freeKw}
-                              onChange={handlePriceInputChange}
-                            />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                              kW
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-5">
-                        <div className="col-span-1 flex items-center justify-center border-r p-4">
-                          <span className="text-oc-title-secondary text-base font-medium">
-                            หลังจากชาร์จฟรี
-                          </span>
-                        </div>
-                        <div className="col-span-4 p-4">
-                          <Label
-                            htmlFor="freeKwh"
-                            className="text-oc-title-secondary mb-2 block font-medium"
+                            htmlFor="price-kwh"
+                            className="text-oc-title-secondary font-medium"
                           >
                             บาท/kWh <span className="text-destructive">*</span>
                           </Label>
                           <div className="relative mt-2">
                             <Input
-                              id="freeKwh"
+                              id="pricePerKwhMinute"
                               placeholder="ระบุ"
                               className="pr-8"
                               type="number"
                               inputMode="decimal"
                               min={0}
                               step="0.01"
-                              value={priceForm.freeKwh}
+                              value={priceForm.pricePerKwhMinute}
                               onChange={handlePriceInputChange}
                             />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
                               ฿
                             </span>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Additional Fee Section */}
-                  {false && (
-                    <div>
-                      <div className="text-oc-title-secondary mb-2 text-base font-semibold">
-                        Additional Fee
-                      </div>
-
-                      {/* Starting Fee */}
-                      <div className="mb-6 rounded-xl border bg-white p-6">
-                        <div className="text-oc-title-secondary font-medium">Starting fee</div>
-                        <div className="mb-2 text-xs text-[#8a94a6]">
-                          A one-time fee will be applied when starting the charge session.
-                        </div>
-                        <div className="flex gap-4">
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="startingFeeDescription"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Description
-                            </Label>
+                        <div>
+                          <Label
+                            htmlFor="price_per_minute"
+                            className="text-oc-title-secondary font-medium"
+                          >
+                            /ชั่วโมง <span className="text-destructive">*</span>
+                          </Label>
+                          <div className="relative mt-2">
                             <Input
-                              id="startingFeeDescription"
+                              id="price_per_minute"
                               placeholder="ระบุ"
-                              className="mt-1"
-                              value={feeForm.startingFeeDescription}
-                              onChange={handleFeeDescriptionChange}
+                              className="pr-12"
+                              type="number"
+                              inputMode="decimal"
+                              min={0}
+                              step="0.01"
+                              value={priceForm.price_per_minute}
+                              onChange={handlePriceInputChange}
                             />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
+                              Hrs.
+                            </span>
                           </div>
-                          <div className="flex-1">
-                            <Label htmlFor="fee" className="text-oc-title-secondary text-xs">
-                              Fee
+                        </div>
+                      </div>
+                    )}
+
+                    {priceType === 'PEAK' && (
+                      <div className="mt-4">
+                        <div className="grid grid-cols-1 overflow-hidden rounded-xl border md:grid-cols-10 md:divide-x">
+                          {/* Left Labels */}
+                          <div className="hidden md:col-span-2 md:grid">
+                            <div className="flex items-center justify-center border-b px-3 py-4 md:border-b">
+                              <span className="text-oc-title-secondary font-semibold">On Peak</span>
+                            </div>
+                            <div className="flex items-center justify-center px-3 py-4">
+                              <span className="text-oc-title-secondary font-semibold">
+                                Off Peak
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Price Inputs */}
+                          <div className="flex flex-col divide-y md:col-span-4">
+                            <div className="px-4 py-6">
+                              <Label
+                                htmlFor="onPeakPrice"
+                                className="text-oc-title-secondary font-medium"
+                              >
+                                บาท/kWh <span className="text-destructive">*</span>
+                              </Label>
+                              <div className="relative mt-2">
+                                <Input
+                                  id="onPeakPrice"
+                                  type="number"
+                                  inputMode="decimal"
+                                  min={0}
+                                  step="0.01"
+                                  placeholder="ระบุ"
+                                  className="pr-8"
+                                  value={priceForm.onPeakPrice}
+                                  onChange={handlePriceInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
+                                  ฿
+                                </span>
+                              </div>
+                            </div>
+                            <div className="px-4 py-6">
+                              <Label
+                                htmlFor="offPeakPrice"
+                                className="text-oc-title-secondary font-medium"
+                              >
+                                บาท/kWh <span className="text-destructive">*</span>
+                              </Label>
+                              <div className="relative mt-2">
+                                <Input
+                                  id="offPeakPrice"
+                                  type="number"
+                                  inputMode="decimal"
+                                  min={0}
+                                  step="0.01"
+                                  placeholder="ระบุ"
+                                  className="pr-8"
+                                  value={priceForm.offPeakPrice}
+                                  onChange={handlePriceInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b3b9c6]">
+                                  ฿
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Info Box */}
+                          <div className="flex flex-col justify-center p-4 md:col-span-4">
+                            <div className="dark:bg-primary/7 mx-4 flex items-start gap-2 rounded-lg bg-[#EDF1FF] p-3 text-xs text-[#355FF5] dark:border dark:border-primary dark:text-primary">
+                              <div className="text-prim flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={1.5}
+                                  stroke="currentColor"
+                                  className="h-3 w-3"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+                                  />
+                                </svg>
+                              </div>
+                              <div className="leading-tight">
+                                <p className="mb-1">
+                                  อัตราค่าไฟฟ้า TOU ปัจจุบัน คือ อัตราการจัดเก็บค่าไฟฟ้า
+                                  ที่ขึ้นอยู่กับช่วงเวลาการใช้ โดยแบ่งออกเป็น 2 ช่วง คือ
+                                </p>
+                                <div className="grid grid-cols-1 gap-x-3 gap-y-0.5">
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="whitespace-nowrap font-semibold">
+                                      On Peak: จันทร์–ศุกร์ 09:00–22:00 น.
+                                    </span>
+                                  </div>
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="whitespace-nowrap font-semibold">
+                                      Off Peak: จันทร์–ศุกร์ 22:00–09:00 น.
+                                    </span>
+                                  </div>
+                                  <div className="mt-0.5">
+                                    <span className="whitespace-nowrap font-semibold">
+                                      และวันเสาร์–อาทิตย์/วันหยุดราชการทั้งวัน
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {priceType === 'free' && (
+                      <div className="mt-4 overflow-hidden rounded-xl border">
+                        <div className="grid grid-cols-5 border-b">
+                          <div className="col-span-1 flex items-center justify-center border-r p-4">
+                            <span className="text-oc-title-secondary font-medium">Free</span>
+                          </div>
+                          <div className="col-span-4 p-4">
+                            <Label
+                              htmlFor="freeKw"
+                              className="text-oc-title-secondary mb-2 block font-medium"
+                            >
+                              kW <span className="text-destructive">*</span>
                             </Label>
-                            <div className="relative">
+                            <div className="relative mt-2">
                               <Input
-                                id="fee"
+                                id="freeKw"
+                                placeholder="ระบุ"
+                                className="pr-10"
+                                type="number"
+                                min={0}
+                                value={priceForm.freeKw}
+                                onChange={handlePriceInputChange}
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                kW
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-5">
+                          <div className="col-span-1 flex items-center justify-center border-r p-4">
+                            <span className="text-oc-title-secondary text-base font-medium">
+                              หลังจากชาร์จฟรี
+                            </span>
+                          </div>
+                          <div className="col-span-4 p-4">
+                            <Label
+                              htmlFor="freeKwh"
+                              className="text-oc-title-secondary mb-2 block font-medium"
+                            >
+                              บาท/kWh <span className="text-destructive">*</span>
+                            </Label>
+                            <div className="relative mt-2">
+                              <Input
+                                id="freeKwh"
+                                placeholder="ระบุ"
+                                className="pr-8"
+                                type="number"
+                                inputMode="decimal"
+                                min={0}
+                                step="0.01"
+                                value={priceForm.freeKwh}
+                                onChange={handlePriceInputChange}
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                ฿
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Additional Fee Section */}
+                    {false && (
+                      <div>
+                        <div className="text-oc-title-secondary mb-2 text-base font-semibold">
+                          Additional Fee
+                        </div>
+
+                        {/* Starting Fee */}
+                        <div className="mb-6 rounded-xl border bg-white p-6">
+                          <div className="text-oc-title-secondary font-medium">Starting fee</div>
+                          <div className="mb-2 text-xs text-[#8a94a6]">
+                            A one-time fee will be applied when starting the charge session.
+                          </div>
+                          <div className="flex gap-4">
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="startingFeeDescription"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Description
+                              </Label>
+                              <Input
+                                id="startingFeeDescription"
                                 placeholder="ระบุ"
                                 className="mt-1"
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                value={feeForm.fee}
-                                onChange={handleFeeInputChange}
+                                value={feeForm.startingFeeDescription}
+                                onChange={handleFeeDescriptionChange}
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                                ฿
-                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <Label htmlFor="fee" className="text-oc-title-secondary text-xs">
+                                Fee
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="fee"
+                                  placeholder="ระบุ"
+                                  className="mt-1"
+                                  type="number"
+                                  inputMode="decimal"
+                                  min={0}
+                                  step="0.01"
+                                  value={feeForm.fee}
+                                  onChange={handleFeeInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  ฿
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Charging Fee */}
-                      <div className="rounded-xl border bg-card p-6">
-                        <div className="text-oc-title-secondary font-medium">Charging fee</div>
-                        <div className="mb-2 text-xs text-[#8a94a6]">
-                          A one-time fee to be applied after a specified time of charging.
-                        </div>
-                        <div className="flex gap-4">
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="chargingFeeDescription"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Description
-                            </Label>
-                            <Input
-                              id="chargingFeeDescription"
-                              placeholder="ระบุ"
-                              className="mt-1"
-                              value={feeForm.chargingFeeDescription}
-                              onChange={handleFeeDescriptionChange}
-                            />
+                        {/* Charging Fee */}
+                        <div className="rounded-xl border bg-card p-6">
+                          <div className="text-oc-title-secondary font-medium">Charging fee</div>
+                          <div className="mb-2 text-xs text-[#8a94a6]">
+                            A one-time fee to be applied after a specified time of charging.
                           </div>
-                          <div className="flex-1">
-                            <Label htmlFor="feePrice" className="text-oc-title-secondary text-xs">
-                              Fee price
-                            </Label>
-                            <div className="relative">
+                          <div className="flex gap-4">
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="chargingFeeDescription"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Description
+                              </Label>
                               <Input
-                                id="feePrice"
-                                placeholder="0"
+                                id="chargingFeeDescription"
+                                placeholder="ระบุ"
                                 className="mt-1"
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                value={feeForm.feePrice}
-                                onChange={handleFeeInputChange}
+                                value={feeForm.chargingFeeDescription}
+                                onChange={handleFeeDescriptionChange}
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                                ฿
-                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <Label htmlFor="feePrice" className="text-oc-title-secondary text-xs">
+                                Fee price
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="feePrice"
+                                  placeholder="0"
+                                  className="mt-1"
+                                  type="number"
+                                  inputMode="decimal"
+                                  min={0}
+                                  step="0.01"
+                                  value={feeForm.feePrice}
+                                  onChange={handleFeeInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  ฿
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="mt-2 flex gap-4">
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="applyAfterMinute"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Apply fee after
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="applyAfterMinute"
-                                placeholder="0"
-                                className="mt-1"
-                                type="number"
-                                min={0}
-                                value={feeForm.applyAfterMinute}
-                                onChange={handleFeeInputChange}
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                                Min.
-                              </span>
+                          <div className="mt-2 flex gap-4">
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="applyAfterMinute"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Apply fee after
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="applyAfterMinute"
+                                  placeholder="0"
+                                  className="mt-1"
+                                  type="number"
+                                  min={0}
+                                  value={feeForm.applyAfterMinute}
+                                  onChange={handleFeeInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  Min.
+                                </span>
+                              </div>
                             </div>
+                            <div className="flex-1"></div>
                           </div>
-                          <div className="flex-1"></div>
                         </div>
-                      </div>
 
-                      {/* Minute Fee */}
-                      <div className="my-6 rounded-xl border bg-card p-6">
-                        <div className="text-oc-title-secondary font-medium">Minute fee</div>
-                        <div className="mb-2 text-xs text-[#8a94a6]">
-                          A minute fee too be applied after a specified time of charging.
-                        </div>
-                        <div className="flex gap-4">
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="minuteFeeDescription"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Description
-                            </Label>
-                            <Input
-                              id="minuteFeeDescription"
-                              placeholder="ระบุ"
-                              className="mt-1"
-                              value={feeForm.minuteFeeDescription}
-                              onChange={handleFeeDescriptionChange}
-                            />
+                        {/* Minute Fee */}
+                        <div className="my-6 rounded-xl border bg-card p-6">
+                          <div className="text-oc-title-secondary font-medium">Minute fee</div>
+                          <div className="mb-2 text-xs text-[#8a94a6]">
+                            A minute fee too be applied after a specified time of charging.
                           </div>
-                          <div className="flex-1">
-                            <Label htmlFor="feePerMin" className="text-oc-title-secondary text-xs">
-                              Fee per min
-                            </Label>
-                            <div className="relative">
+                          <div className="flex gap-4">
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="minuteFeeDescription"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Description
+                              </Label>
                               <Input
-                                id="feePerMin"
-                                placeholder="0"
+                                id="minuteFeeDescription"
+                                placeholder="ระบุ"
                                 className="mt-1"
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                value={feeForm.feePerMin}
-                                onChange={handleFeeInputChange}
+                                value={feeForm.minuteFeeDescription}
+                                onChange={handleFeeDescriptionChange}
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                                ฿/min
-                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="feePerMin"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Fee per min
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="feePerMin"
+                                  placeholder="0"
+                                  className="mt-1"
+                                  type="number"
+                                  inputMode="decimal"
+                                  min={0}
+                                  step="0.01"
+                                  value={feeForm.feePerMin}
+                                  onChange={handleFeeInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  ฿/min
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex gap-4">
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="applyFeeAfterMinute"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Apply fee after
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="applyFeeAfterMinute"
+                                  placeholder="0"
+                                  className="mt-1"
+                                  type="number"
+                                  min={0}
+                                  value={feeForm.applyFeeAfterMinute}
+                                  onChange={handleFeeInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  Min.
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="feeStopsAfterMinute"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Fee Stops after
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="feeStopsAfterMinute"
+                                  placeholder="0"
+                                  className="mt-1"
+                                  type="number"
+                                  min={0}
+                                  value={feeForm.feeStopsAfterMinute}
+                                  onChange={handleFeeInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  Min.
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className="mt-2 flex gap-4">
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="applyFeeAfterMinute"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Apply fee after
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="applyFeeAfterMinute"
-                                placeholder="0"
-                                className="mt-1"
-                                type="number"
-                                min={0}
-                                value={feeForm.applyFeeAfterMinute}
-                                onChange={handleFeeInputChange}
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                                Min.
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="feeStopsAfterMinute"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Fee Stops after
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="feeStopsAfterMinute"
-                                placeholder="0"
-                                className="mt-1"
-                                type="number"
-                                min={0}
-                                value={feeForm.feeStopsAfterMinute}
-                                onChange={handleFeeInputChange}
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                                Min.
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
 
-                      {/* Idle Fee */}
-                      <div className="my-6 rounded-xl border bg-card p-6">
-                        <div className="text-oc-title-secondary font-medium">Idle fee</div>
-                        <div className="mb-2 text-xs text-[#8a94a6]">
-                          Will be applied after charging if car remains connected to charger.
-                        </div>
-                        <div className="flex gap-4">
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="idleFeeDescription"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Description
-                            </Label>
-                            <Input
-                              id="idleFeeDescription"
-                              placeholder="ระบุ"
-                              className="mt-1"
-                              value={feeForm.idleFeeDescription}
-                              onChange={handleFeeDescriptionChange}
-                            />
+                        {/* Idle Fee */}
+                        <div className="my-6 rounded-xl border bg-card p-6">
+                          <div className="text-oc-title-secondary font-medium">Idle fee</div>
+                          <div className="mb-2 text-xs text-[#8a94a6]">
+                            Will be applied after charging if car remains connected to charger.
                           </div>
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="feePerMinIdle"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Fee per min
-                            </Label>
-                            <div className="relative">
+                          <div className="flex gap-4">
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="idleFeeDescription"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Description
+                              </Label>
                               <Input
-                                id="feePerMinIdle"
-                                placeholder="0"
+                                id="idleFeeDescription"
+                                placeholder="ระบุ"
                                 className="mt-1"
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                value={feeForm.feePerMinIdle}
-                                onChange={handleFeeInputChange}
+                                value={feeForm.idleFeeDescription}
+                                onChange={handleFeeDescriptionChange}
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                                ฿/min
-                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="feePerMinIdle"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Fee per min
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="feePerMinIdle"
+                                  placeholder="0"
+                                  className="mt-1"
+                                  type="number"
+                                  inputMode="decimal"
+                                  min={0}
+                                  step="0.01"
+                                  value={feeForm.feePerMinIdle}
+                                  onChange={handleFeeInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  ฿/min
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="mt-2 flex gap-4">
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="timeBeforeIdleFeeApplied"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Time before idle fee applied
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="timeBeforeIdleFeeApplied"
-                                placeholder="0"
-                                className="mt-1"
-                                type="number"
-                                min={0}
-                                value={feeForm.timeBeforeIdleFeeApplied}
-                                onChange={handleFeeInputChange}
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                                Min.
-                              </span>
+                          <div className="mt-2 flex gap-4">
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="timeBeforeIdleFeeApplied"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Time before idle fee applied
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="timeBeforeIdleFeeApplied"
+                                  placeholder="0"
+                                  className="mt-1"
+                                  type="number"
+                                  min={0}
+                                  value={feeForm.timeBeforeIdleFeeApplied}
+                                  onChange={handleFeeInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  Min.
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="maxTotalIdleFee"
-                              className="text-oc-title-secondary text-xs"
-                            >
-                              Maximum total idle fee
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="maxTotalIdleFee"
-                                placeholder="0"
-                                className="mt-1 pr-8"
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                value={feeForm.maxTotalIdleFee}
-                                onChange={handleFeeInputChange}
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
-                                ฿
-                              </span>
+                            <div className="flex-1">
+                              <Label
+                                htmlFor="maxTotalIdleFee"
+                                className="text-oc-title-secondary text-xs"
+                              >
+                                Maximum total idle fee
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="maxTotalIdleFee"
+                                  placeholder="0"
+                                  className="mt-1 pr-8"
+                                  type="number"
+                                  inputMode="decimal"
+                                  min={0}
+                                  step="0.01"
+                                  value={feeForm.maxTotalIdleFee}
+                                  onChange={handleFeeInputChange}
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#b3b9c6]">
+                                  ฿
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
                 )}
               </div>
             </CardContent>

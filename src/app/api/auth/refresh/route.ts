@@ -1,6 +1,6 @@
 // src/app/api/auth/refresh/route.ts
 import { COOKIE_KEYS } from '@/lib/constants'
-import { NextResponse, NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
@@ -16,12 +16,11 @@ const RefreshResponseSchema = z.object({
       user: z.unknown().optional(),
     })
     .optional(),
-  // Some backends might directly return the tokens without wrapping
   access_token: z.string().optional(),
   refresh_token: z.string().optional(),
 })
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   console.log('[API] /api/auth/refresh: incoming request')
 
   if (!API_BASE_URL) {
@@ -47,7 +46,6 @@ export async function GET(req: NextRequest) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        // Try using refresh token as bearer for backends that expect it
         Authorization: `Bearer ${refreshToken}`,
         'lang-id': langId,
       },

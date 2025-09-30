@@ -33,6 +33,7 @@ export const bankAccountCreateSchema = z.object({
   account_name: z.string().min(1, 'Account name is required'),
   account_number: z.string().min(1, 'Account number is required'),
   is_primary: z.boolean(),
+  team_group_id: z.number(),
   file: z.instanceof(File).optional(),
 })
 
@@ -42,6 +43,7 @@ export const bankAccountUpdateSchema = z.object({
   account_number: z.string().min(1, 'Account number is required').optional(),
   is_primary: z.boolean().optional(),
   bank_id: z.number().optional(),
+  team_group_id: z.number().optional(),
   file: z.instanceof(File).optional(),
 })
 

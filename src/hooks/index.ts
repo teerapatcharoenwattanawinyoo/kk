@@ -6,13 +6,8 @@ export { useSafeSearchParams } from './use-safe-search-params'
 export { useToast } from './use-toast'
 
 // API & Data Hooks - Auth
-export { useLogin, useLogout, useUser } from '../modules/auth/hooks/use-auth'
-export {
-  useForgotPassword,
-  useResetPassword,
-  useVerifyEmailOTP,
-  useVerifyPhoneOTP,
-} from '../modules/auth/hooks/use-forgot-password'
+export { useLogin, useLogout } from '../app/[locale]/(auth)/_hooks/use-auth-mutation'
+export { useUser } from '../app/[locale]/(auth)/_hooks/use-auth-query'
 
 // API & Data Hooks - Cache
 export { useHasCachedData, useTeamFromCache } from './use-cache'
@@ -34,7 +29,7 @@ export {
   useCreatePriceSetByParent,
   usePriceSet,
   useUpdatePriceSet,
-} from '../app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks/use-price-group'
+} from '../app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks'
 
 // API & Data Hooks - Station
 export {

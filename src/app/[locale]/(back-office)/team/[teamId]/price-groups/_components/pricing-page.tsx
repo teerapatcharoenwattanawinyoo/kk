@@ -1,30 +1,24 @@
 'use client'
-import { usePriceSet } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks/use-price-group'
-import { PriceGroup } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_servers/price-groups'
+import { usePriceSet } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_hooks'
+import { PriceGroup, PriceSetTypeSchema } from '@/app/[locale]/(back-office)/team/[teamId]/price-groups/_schemas'
 import { TeamHeader } from '@/app/[locale]/(back-office)/team/_components/team-header'
 import { TeamTabMenu } from '@/app/[locale]/(back-office)/team/_components/team-tab-menu'
 import { useTeam } from '@/app/[locale]/(back-office)/team/_hooks/use-teams'
-import { PublicPriceIcon } from '@/components/icons'
-import { MemberPriceIcon } from '@/components/icons/MemberPriceIcon'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { useI18n } from '@/lib/i18n'
-import { ChevronRight, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import type { PriceType } from '../_schemas'
+import type { PriceCardItem, PriceGroupCategory } from './price-group-card'
+import PriceGroupCard from './price-group-card'
 import { PricingSkeleton } from './pricing-skeleton'
 
 interface PricingPageProps {
   teamId: string
 }
 
-export function PricingPage({ teamId }: PricingPageProps) {
+const PricingPage = ({ teamId }: PricingPageProps) => {
   const { t } = useI18n()
   const params = useParams()
   const router = useRouter()
@@ -32,20 +26,33 @@ export function PricingPage({ teamId }: PricingPageProps) {
   const [activeSubTab, setActiveSubTab] = useState('public-price')
 
   const { data: teamData, isLoading: isTeamLoading, error: teamError } = useTeam(teamId)
+  const teamGroupId = teamData?.team_group_id ?? null
 
   const {
     data: pricingData,
     isLoading: isPricingLoading,
     isError: isPricingError,
-  } = usePriceSet(activeSubTab === 'public-price' ? 'general' : 'member', 1, 50)
+  } = usePriceSet(
+    activeSubTab === 'public-price'
+      ? PriceSetTypeSchema.enum.general
+      : PriceSetTypeSchema.enum.member,
+    1,
+    50,
+    teamGroupId,
+  )
+  const isPriceSetLoading = isPricingLoading || teamGroupId === null
 
-  const priceGroups = pricingData?.data?.data || []
+  const priceGroupsRaw = Array.isArray(pricingData?.data)
+    ? pricingData?.data
+    : pricingData?.data?.data
 
-  const isLoading = isTeamLoading || isPricingLoading
+  const priceGroups: PriceGroup[] = Array.isArray(priceGroupsRaw) ? priceGroupsRaw : []
+
+  const isLoading = isTeamLoading || isPriceSetLoading
   const isError = teamError || isPricingError
 
   // Transform API data to display format
-  const formatNumber = (value?: string) => {
+  const formatNumber = (value?: string | null) => {
     if (!value) return null
     const numeric = parseFloat(value)
     if (Number.isNaN(numeric)) return null
@@ -62,15 +69,21 @@ export function PricingPage({ teamId }: PricingPageProps) {
     return descriptors.some((desc) => desc?.toLowerCase().includes('free'))
   }
 
-  const transformPriceGroupToItem = (group: PriceGroup) => {
+  const PRICE_TYPES: readonly PriceType[] = ['PER_KWH', 'PER_MINUTE', 'PEAK', 'TIERED_CREDIT']
+
+  const transformPriceGroupToItem = (group: PriceGroup): PriceCardItem => {
     const pricePerKwh = formatNumber(group.price_per_kwh)
     const pricePerMinute = formatNumber(group.price_per_minute)
     const onPeak = formatNumber(group.price_on_peak)
     const offPeak = formatNumber(group.price_off_peak)
 
+    const resolvedType: PriceType = PRICE_TYPES.includes(group.type as PriceType)
+      ? (group.type as PriceType)
+      : 'PER_KWH'
+
     let unitLabel = '฿/kWh'
     let detailText = pricePerKwh ? `${pricePerKwh} ฿/kWh` : ''
-    let primaryPrice = pricePerKwh ? parseFloat(group.price_per_kwh) : 0
+    let primaryPrice = pricePerKwh ? Number(group.price_per_kwh ?? 0) : 0
 
     if (group.type === 'PER_MINUTE') {
       unitLabel = '฿/Hrs'
@@ -79,7 +92,7 @@ export function PricingPage({ teamId }: PricingPageProps) {
         pricePerMinute ? `${pricePerMinute} ฿/Hrs` : null,
       ].filter(Boolean)
       detailText = segments.join(' · ')
-      primaryPrice = pricePerMinute ? parseFloat(group.price_per_minute) : primaryPrice
+      primaryPrice = pricePerMinute ? Number(group.price_per_minute ?? 0) : primaryPrice
     } else if (group.type === 'PEAK') {
       unitLabel = 'On peak / Off peak'
       const segments = [
@@ -87,7 +100,7 @@ export function PricingPage({ teamId }: PricingPageProps) {
         offPeak ? `Off peak ${offPeak} ฿` : null,
       ].filter(Boolean)
       detailText = segments.join(' · ')
-      primaryPrice = onPeak ? parseFloat(group.price_on_peak) : primaryPrice
+      primaryPrice = onPeak ? Number(group.price_on_peak ?? 0) : primaryPrice
     } else if (isFreePromotion(group)) {
       unitLabel = 'Free Charge Promotion'
       detailText =
@@ -104,13 +117,14 @@ export function PricingPage({ teamId }: PricingPageProps) {
       price: primaryPrice,
       unit: unitLabel,
       appliedTo: '0',
-      type: group.type,
+      type: resolvedType,
       details: detailText,
     }
   }
 
-  const currentPrices =
-    priceGroups && priceGroups.length > 0 ? priceGroups.map(transformPriceGroupToItem) : []
+  const currentPrices = priceGroups.length > 0 ? priceGroups.map(transformPriceGroupToItem) : []
+
+  const activeCategory: PriceGroupCategory = activeSubTab === 'public-price' ? 'GENERAL' : 'MEMBER'
 
   // UI
   return (
@@ -137,7 +151,7 @@ export function PricingPage({ teamId }: PricingPageProps) {
                   >
                     {t('pricing.general_price')}
                   </button>
-                  <div className="h-8 w-px bg-[#CDD5DE]" />
+                  <div className="h-8 w-px bg-border" />
                   <button
                     onClick={() => setActiveSubTab('member-price')}
                     className={`pb-2 text-2xl font-medium tracking-[-0.84px] ${
@@ -187,91 +201,12 @@ export function PricingPage({ teamId }: PricingPageProps) {
               <span>No pricing data available.</span>
             </div>
           ) : (
-            <div className="grid gap-4 p-6 md:grid-cols-2 lg:grid-cols-3">
-              {currentPrices.map((price) => (
-                <Card key={price.id} className="overflow-hidden border shadow-none">
-                  <CardContent className="p-1">
-                    <div className="flex h-60 items-start justify-between px-4">
-                      <div className="flex items-start gap-2">
-                        {activeSubTab === 'public-price' ? (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full">
-                            <PublicPriceIcon />
-                          </div>
-                        ) : (
-                          <div className="flex h-8 w-8 items-center justify-center">
-                            <MemberPriceIcon />
-                          </div>
-                        )}
-                        <div>
-                          <h3 className="text-oc-title-secondary text-sm font-medium">
-                            {price.name}
-                          </h3>
-                          {price.unit && (
-                            <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-[#4361ee]">
-                              {price.unit}
-                            </p>
-                          )}
-                          {price.details && (
-                            <p className="mt-1 text-xs text-muted-foreground">{price.details}</p>
-                          )}
-                        </div>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-32">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              // handle edit
-                              router.push(
-                                activeSubTab === 'public-price'
-                                  ? `price-groups/edit-price-group?priceId=${price.id}`
-                                  : `price-groups/edit-member-price-group?priceId=${price.id}`,
-                              )
-                            }}
-                            className="flex items-center gap-2"
-                          >
-                            <Pencil className="h-4 w-4" /> {t('buttons.edit')}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              // handle delete
-                            }}
-                            className="flex items-center gap-2 text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                            <p className="text-destructive">{t('buttons.delete')}</p>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex items-center justify-between border-t p-3">
-                    <div className="flex items-center gap-2 px-2">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white">
-                        {price.appliedTo}
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {t('pricing.applied_to')} {price.appliedTo}{' '}
-                        {activeSubTab === 'public-price'
-                          ? t('chargers.chargers_name')
-                          : t('pricing.members_price')}
-                      </span>
-                    </div>
-                    <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs text-[#818894]">
-                      <span>{t('buttons.see_more')}</span>
-                      <ChevronRight className="h-12 w-12" />
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+            <PriceGroupCard prices={currentPrices} category={activeCategory} />
           )}
         </div>
       </div>
     </div>
   )
 }
+
+export { PricingPage }

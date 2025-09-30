@@ -1,8 +1,10 @@
 import { z } from 'zod'
 
 // Team API Response schemas
+const teamHostIdSchema = z.union([z.number(), z.string()])
+
 export const teamDataSchema = z.object({
-  team_host_id: z.number(),
+  team_host_id: teamHostIdSchema,
   team_group_id: z.number(),
   team_name: z.string(),
   team_icon_group: z.string(),
@@ -129,7 +131,7 @@ const fileSchema = z.custom<File>(
 
 // Team API schemas
 export const teamListItemSchema = z.object({
-  team_host_id: z.number().nullable(),
+  team_host_id: teamHostIdSchema.nullable(),
   team_group_id: z.number(),
   team_name: z.string(),
   team_icon_group: z.string(),

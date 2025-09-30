@@ -9,7 +9,7 @@ export interface UserData {
     company_id: number | null
     team_id: number | null
     device: string
-    team_host_id: number
+    team_host_id: string
   }
   timestamp: number
 }
@@ -72,14 +72,18 @@ export function getUserDataFromStorage(): UserData | null {
  * Get the team_host_id from localStorage
  * @returns The team_host_id if available, null otherwise
  */
-export function getTeamHostIdFromStorage(): number | null {
+export function getTeamHostIdFromStorage(): string | null {
   if (typeof window === 'undefined') {
     return null
   }
 
   try {
     const userData = getUserDataFromStorage()
-    return userData?.user?.team_host_id || null
+    const teamHostId = userData?.user?.team_host_id
+    if (!teamHostId || teamHostId.trim().length === 0) {
+      return null
+    }
+    return teamHostId
   } catch (error) {
     console.error('Error getting team_host_id from localStorage:', error)
     return null

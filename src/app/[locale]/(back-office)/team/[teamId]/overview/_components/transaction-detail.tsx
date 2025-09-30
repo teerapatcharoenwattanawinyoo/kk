@@ -13,9 +13,15 @@ interface TransactionDetailProps {
   transactionId: string
   teamId: string
   locale: string
+  backPath?: string // Optional back path, defaults to overview
 }
 
-export const TransactionDetail = ({ transactionId, teamId, locale }: TransactionDetailProps) => {
+export const TransactionDetail = ({
+  transactionId,
+  teamId,
+  locale,
+  backPath,
+}: TransactionDetailProps) => {
   const router = useRouter()
   const {
     data: transactionDetailResponse,
@@ -30,8 +36,9 @@ export const TransactionDetail = ({ transactionId, teamId, locale }: Transaction
   const transactionDetail = transactionDetailResponse?.data
 
   const handleBack = useCallback(() => {
-    router.push(`/${locale}/team/${teamId}/overview`)
-  }, [router, locale, teamId])
+    const path = backPath || `/${locale}/team/${teamId}/overview`
+    router.push(path)
+  }, [router, locale, teamId, backPath])
 
   const handleDownloadReceipt = useCallback(() => {
     downloadTransactionMutation.mutate(transactionId)

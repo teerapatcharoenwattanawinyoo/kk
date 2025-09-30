@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { PriceGroupPayload } from './price-groups-api.schema'
 
 const trimmedInput = z
   .union([z.string(), z.number(), z.undefined(), z.null()])
@@ -116,4 +117,156 @@ export interface PriceGroupFormProps {
   onBack: () => void
   teamGroupId?: string | null
   billingType?: BillingType
+}
+
+const hasText = (value?: string | null): value is string =>
+  typeof value === 'string' && value.trim().length > 0
+
+const parseNumber = (value?: string | null): number | undefined => {
+  if (!hasText(value)) {
+    return undefined
+  }
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
+const parseInteger = (value?: string | null, fallback = 0): number => {
+  if (!hasText(value)) {
+    return fallback
+  }
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) ? parsed : fallback
+}
+
+const resolvePayloadType = (priceType: PriceType): PriceGroupPayload['type'] =>
+  priceType === 'free' ? 'PER_KWH' : priceType
+
+const buildStartingFee = (
+  priceType: PriceType,
+  freeKw: string,
+  feeDescription: string,
+  feeValue: string,
+  freeKwhValue: string,
+): PriceGroupPayload['starting_fee'] | undefined => {
+  if (priceType === 'free') {
+    const freeDescription = hasText(freeKw) ? `Free ${freeKw.trim()} kW charge` : undefined
+    const combinedDescription = [
+      freeDescription,
+      hasText(feeDescription) ? feeDescription.trim() : undefined,
+    ]
+      .filter(Boolean)
+      .join(', ')
+
+    return {
+      ...(hasText(combinedDescription) ? { description: combinedDescription } : {}),
+      fee: parseNumber(freeKwhValue) ?? 0,
+    }
+  }
+
+  const fee = parseNumber(feeValue)
+  if (fee === undefined) {
+    return undefined
+  }
+
+  return {
+    ...(hasText(feeDescription) ? { description: feeDescription.trim() } : {}),
+    fee,
+  }
+}
+
+export const submissionToPriceGroupPayload = (
+  submission: PriceGroupFormSubmission,
+  statusType: StatusType,
+  teamGroupId: number,
+): PriceGroupPayload => {
+  const { form, priceForm, feeForm, priceType } = submission
+  const type = resolvePayloadType(priceType)
+
+  const payload: PriceGroupPayload = {
+    type,
+    name: form.groupName.trim(),
+    status_type: statusType,
+    team_group_id: teamGroupId,
+  }
+
+  if (type === 'PER_KWH' || type === 'TIERED_CREDIT') {
+    const source = priceType === 'free' ? priceForm.freeKwh : priceForm.pricePerKwh
+    const pricePerKwh = parseNumber(source)
+    if (pricePerKwh !== undefined) {
+      payload.price_per_kwh = pricePerKwh
+    }
+  }
+
+  if (type === 'PER_MINUTE') {
+    const pricePerKwh = parseNumber(priceForm.pricePerKwhMinute)
+    const pricePerMinute = parseNumber(priceForm.price_per_minute)
+    if (pricePerKwh !== undefined) {
+      payload.price_per_kwh = pricePerKwh
+    }
+    if (pricePerMinute !== undefined) {
+      payload.price_per_minute = pricePerMinute
+    }
+  }
+
+  if (type === 'PEAK') {
+    const onPeak = parseNumber(priceForm.onPeakPrice)
+    const offPeak = parseNumber(priceForm.offPeakPrice)
+    if (onPeak !== undefined) {
+      payload.price_on_peak = onPeak
+    }
+    if (offPeak !== undefined) {
+      payload.price_off_peak = offPeak
+    }
+  }
+
+  const startingFee = buildStartingFee(
+    priceType,
+    priceForm.freeKw,
+    feeForm.startingFeeDescription,
+    feeForm.fee,
+    priceForm.freeKwh,
+  )
+
+  if (startingFee) {
+    payload.starting_fee = startingFee
+  }
+
+  const chargingFeeValue = parseNumber(feeForm.feePrice)
+  if (chargingFeeValue !== undefined) {
+    payload.charging_fee = {
+      ...(hasText(feeForm.chargingFeeDescription)
+        ? { description: feeForm.chargingFeeDescription.trim() }
+        : {}),
+      fee: chargingFeeValue,
+      apply_after_minute: parseInteger(feeForm.applyAfterMinute, 0),
+    }
+  }
+
+  const minuteFeeValue = parseNumber(feeForm.feePerMin)
+  if (minuteFeeValue !== undefined) {
+    const feeStopsAfterMinute = parseInteger(feeForm.feeStopsAfterMinute, -1)
+    payload.minute_fee = {
+      ...(hasText(feeForm.minuteFeeDescription)
+        ? { description: feeForm.minuteFeeDescription.trim() }
+        : {}),
+      fee: minuteFeeValue,
+      apply_fee_after_minute: parseInteger(feeForm.applyFeeAfterMinute, 0),
+      ...(feeStopsAfterMinute >= 0 ? { fee_stops_after_minute: feeStopsAfterMinute } : {}),
+    }
+  }
+
+  const idleFeeValue = parseNumber(feeForm.feePerMinIdle)
+  if (idleFeeValue !== undefined) {
+    const maxTotalIdleFee = parseNumber(feeForm.maxTotalIdleFee)
+    payload.idle_fee = {
+      ...(hasText(feeForm.idleFeeDescription)
+        ? { description: feeForm.idleFeeDescription.trim() }
+        : {}),
+      fee_per_min: idleFeeValue,
+      time_before_idle_fee_applied: parseInteger(feeForm.timeBeforeIdleFeeApplied, 0),
+      ...(maxTotalIdleFee !== undefined ? { max_total_idle_fee: maxTotalIdleFee } : {}),
+    }
+  }
+
+  return payload
 }

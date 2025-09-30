@@ -1,4 +1,4 @@
-import { useUser } from '@modules/auth'
+import { useUser } from '@/app/[locale]/(auth)'
 
 export function useTeamHostId() {
   const { data, isLoading, error } = useUser()

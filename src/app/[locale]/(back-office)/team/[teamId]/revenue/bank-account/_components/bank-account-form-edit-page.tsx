@@ -12,8 +12,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { useToast } from '@/hooks/use-toast'
-import type { IBankListItem } from '@/lib/schemas/bank.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft } from 'lucide-react'
@@ -21,6 +19,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import {
   BANK_QUERY_KEYS,
@@ -28,6 +27,7 @@ import {
   useBankLists,
   useUpdateBankAccount,
 } from '../_hooks/use-bank'
+import { IBankListItem } from '../_schemas/bank.schema'
 
 const bankAccountSchema = z.object({
   bank_id: z.string().min(1, 'กรุณาเลือกธนาคาร'),
@@ -50,11 +50,11 @@ export const BankAccountFormEditPage = ({
   accountId,
 }: BankAccountFormEditPageProps) => {
   const router = useRouter()
-  const { toast } = useToast()
+
   const queryClient = useQueryClient()
   const { data: bankListsResponse, isLoading: bankListsLoading } = useBankLists()
   const { data: bankAccountResponse, isLoading: isLoadingAccount } = useBankAccountById(accountId)
-  const updateBankAccountMutation = useUpdateBankAccount()
+  const updateBankAccountMutation = useUpdateBankAccount(teamId)
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [hasNewFile, setHasNewFile] = useState(false)
@@ -95,7 +95,9 @@ export const BankAccountFormEditPage = ({
         is_primary: bankAccount.is_primary ?? false, // ใช้ nullish coalescing แทน
       }
 
-      const bankExists = bankLists.find((bank) => bank.id.toString() === initData.bank_id)
+      const bankExists = bankLists.find(
+        (bank: IBankListItem) => bank.id.toString() === initData.bank_id,
+      )
 
       if (bankExists) {
         reset(initData)
@@ -122,42 +124,28 @@ export const BankAccountFormEditPage = ({
     input?.click()
   }, [])
 
-  const handleFileInput = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (!file) return
+  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
 
-      // Simple file validation
-      const maxSize = 5 * 1024 * 1024 // 5MB
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
+    // Simple file validation
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
 
-      if (file.size > maxSize) {
-        toast({
-          title: 'ข้อผิดพลาด',
-          description: 'ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง',
-          variant: 'destructive',
-        })
-        return
-      }
+    if (file.size > maxSize) {
+      toast.error('ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง')
+      return
+    }
 
-      if (!allowedTypes.includes(file.type)) {
-        toast({
-          title: 'ข้อผิดพลาด',
-          description: 'รองรับเฉพาะไฟล์ JPG, PNG และ PDF เท่านั้น',
-          variant: 'destructive',
-        })
-        return
-      }
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('รองรับเฉพาะไฟล์ JPG, PNG และ PDF เท่านั้น')
+      return
+    }
 
-      setSelectedFile(file)
-      setHasNewFile(true) // เป็นไฟล์ใหม่
-      toast({
-        title: 'สำเร็จ',
-        description: 'อัพโหลดไฟล์เรียบร้อย',
-      })
-    },
-    [toast],
-  )
+    setSelectedFile(file)
+    setHasNewFile(true) // เป็นไฟล์ใหม่
+    toast.success('อัพโหลดไฟล์เรียบร้อย')
+  }, [])
 
   const handleRemoveFile = useCallback(() => {
     setSelectedFile(null)
@@ -175,11 +163,7 @@ export const BankAccountFormEditPage = ({
       }
 
       if (selectedFile && selectedFile.size > 5 * 1024 * 1024) {
-        toast({
-          title: 'ข้อผิดพลาด',
-          description: 'ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง',
-          variant: 'destructive',
-        })
+        toast.error('ไฟล์มีขนาดใหญ่เกิน 5MB กรุณาลดขนาดไฟล์แล้วลองอีกครั้ง')
         return
       }
 
@@ -190,6 +174,7 @@ export const BankAccountFormEditPage = ({
         account_number: data.account_number,
         is_primary: data.is_primary,
         bank_id: parseInt(data.bank_id),
+        team_group_id: parseInt(teamId),
         // ส่ง file เฉพาะเมื่อมีการอัพโหลดไฟล์ใหม่
         ...(hasNewFile && selectedFile && { file: selectedFile }),
       }
@@ -220,9 +205,9 @@ export const BankAccountFormEditPage = ({
     },
     [
       selectedFile,
+      hasNewFile,
       updateBankAccountMutation,
       queryClient,
-      toast,
       router,
       locale,
       teamId,

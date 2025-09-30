@@ -42,13 +42,15 @@ async function getRefreshHeaders() {
     const cookieStore = await cookies()
     const refreshTokenCookie = cookieStore.get('refresh_token')
 
-    if (refreshTokenCookie?.value) {
-      return {
-        Authorization: `Bearer ${refreshTokenCookie.value}`,
-      }
-    }
+    const allCookies = cookieStore.getAll()
+    const cookieString = allCookies
+      .map((cookie: any) => `${cookie.name}=${cookie.value}`)
+      .join('; ')
 
-    return {}
+    return {
+      ...(cookieString ? { Cookie: cookieString } : {}),
+      ...(refreshTokenCookie?.value ? { Authorization: `Bearer ${refreshTokenCookie.value}` } : {}),
+    }
   } catch (error) {
     console.error('Error getting refresh token from cookies:', error)
     return {}
@@ -147,8 +149,20 @@ apiClient.interceptors.response.use(
         // For server-side, include refresh_token from cookies
         const refreshHeaders = await getRefreshHeaders()
 
+        console.log('[AxiosServer] apiClient -> refresh start', {
+          url: '/api/auth/refresh',
+          hasCookieHeader: Boolean((refreshHeaders as any)?.Cookie),
+          hasAuthHeader: Boolean((refreshHeaders as any)?.Authorization),
+          originalUrl: originalRequest?.url,
+        })
+
         const refreshResponse = await localApiClient.get('/api/auth/refresh', {
           headers: refreshHeaders,
+        })
+
+        console.log('[AxiosServer] apiClient -> refresh success', {
+          status: refreshResponse?.status,
+          originalUrl: originalRequest?.url,
         })
 
         if (refreshResponse) {
@@ -236,11 +250,23 @@ localApiClient.interceptors.response.use(
         // Try to refresh tokens with refresh_token from cookies if server-side
         const refreshHeaders = await getRefreshHeaders()
 
-        await localApiClient.get('/api/auth/refresh', {
+        console.log('[AxiosServer] localApiClient -> refresh start', {
+          url: '/api/auth/refresh',
+          hasCookieHeader: Boolean((refreshHeaders as any)?.Cookie),
+          hasAuthHeader: Boolean((refreshHeaders as any)?.Authorization),
+          originalUrl: originalRequest?.url,
+        })
+
+        const refreshResult = await localApiClient.get('/api/auth/refresh', {
           headers: {
             ...refreshHeaders,
             ...(originalRequest.headers.Cookie ? { Cookie: originalRequest.headers.Cookie } : {}),
           },
+        })
+
+        console.log('[AxiosServer] localApiClient -> refresh success', {
+          status: refreshResult?.status,
+          originalUrl: originalRequest?.url,
         })
         // Retry the original request
         return localApiClient(originalRequest)

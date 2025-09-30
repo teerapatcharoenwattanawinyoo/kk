@@ -63,7 +63,23 @@ export async function getBankListsServerAction(): Promise<any> {
  */
 export async function createBankAccountServerAction(data: IBankAccount): Promise<any> {
   try {
-    const result = await api.post(API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.CREATE, data)
+    const formData = new FormData()
+
+    formData.append('bank_id', data.bank_id.toString())
+    formData.append('account_name', data.account_name)
+    formData.append('account_number', data.account_number)
+    formData.append('is_primary', data.is_primary.toString())
+    formData.append('team_group_id', data.team_group_id.toString())
+
+    if (data.file) {
+      formData.append('file', data.file)
+    }
+
+    const result = await api.post(API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.CREATE, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
 
     // Revalidate bank-related cache
     revalidateTag('bank-accounts')
@@ -84,13 +100,45 @@ export async function updateBankAccountServerAction(
 ): Promise<any> {
   try {
     const apiUrl = API_ENDPOINTS.TEAM_GROUPS.REVENUE.BANK.UPDATE.replace('{id}', id.toString())
-    const result = await api.put(apiUrl, data)
 
-    // Revalidate bank-related cache
-    revalidateTag('bank-accounts')
-    revalidateTag(`bank-account-${id}`)
+    // ถ้ามีไฟล์ ต้องใช้ FormData
+    if (data.file) {
+      const formData = new FormData()
 
-    return result
+      if (data.account_name) formData.append('account_name', data.account_name)
+      if (data.account_number) formData.append('account_number', data.account_number)
+      if (data.is_primary !== undefined) formData.append('is_primary', data.is_primary.toString())
+      if (data.bank_id) formData.append('bank_id', data.bank_id.toString())
+      if (data.team_group_id) formData.append('team_group_id', data.team_group_id.toString())
+      formData.append('file', data.file)
+
+      console.log('Updating bank account with FormData:')
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value)
+      }
+
+      const result = await api.patch(apiUrl, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      // Revalidate bank-related cache
+      revalidateTag('bank-accounts')
+      revalidateTag(`bank-account-${id}`)
+
+      return result
+    } else {
+      // ถ้าไม่มีไฟล์ ส่งเป็น JSON object
+      console.log('Updating bank account with JSON data:', data)
+      const result = await api.patch(apiUrl, data)
+
+      // Revalidate bank-related cache
+      revalidateTag('bank-accounts')
+      revalidateTag(`bank-account-${id}`)
+
+      return result
+    }
   } catch (error) {
     console.error('Error updating bank account:', error)
     throw error

@@ -17,7 +17,7 @@ interface BankAccountManagePageProps {
 export const BankAccountManagePage = ({ teamId, locale }: BankAccountManagePageProps) => {
   const router = useRouter()
   const { data: bankAccountsResponse, isLoading, error } = useBankAccounts(teamId)
-  const deleteBankAccountMutation = useDeleteBankAccount()
+  const deleteBankAccountMutation = useDeleteBankAccount(teamId)
   const [selectedAccounts, setSelectedAccounts] = useState<Set<number>>(new Set())
 
   const bankAccounts = bankAccountsResponse?.data || []
@@ -145,6 +145,7 @@ export const BankAccountManagePage = ({ teamId, locale }: BankAccountManagePageP
                 <BankAccountCard
                   key={account.id}
                   account={account}
+                  teamId={teamId}
                   isSelected={selectedAccounts.has(account.id)}
                   onToggle={handleToggleAccount}
                   onEdit={handleEditAccount}

@@ -56,6 +56,7 @@ export const API_ENDPOINTS = {
     CREATE_PRICE: '/price-set/create',
     EDIT: '/price-set/edit',
     UPDATE: '/price-set',
+    DETAIL: '/price-set/get',
   },
   TEAM_GROUPS: {
     TEAMS: {

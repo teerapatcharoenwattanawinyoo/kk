@@ -1,5 +1,5 @@
-import { signInWithCredentials } from '@modules/auth/actions'
-import { SignInForm } from '@modules/auth/components'
+import { signInWithCredentials } from '@/app/[locale]/(auth)/_actions'
+import { SignInForm } from '@/app/[locale]/(auth)/_components'
 
 export default function SignInPage() {
   return <SignInForm signIn={signInWithCredentials} />

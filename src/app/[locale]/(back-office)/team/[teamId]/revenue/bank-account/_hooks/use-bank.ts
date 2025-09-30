@@ -1,6 +1,6 @@
-import { toast } from '@/hooks/use-toast'
-import { type IBankAccount, type IBankAccountUpdate } from '@/lib/api/team-group/bank'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { IBankAccount, IBankAccountUpdate } from '../_schemas/bank.schema'
 import {
   createBankAccountServerAction,
   deleteBankAccountServerAction,
@@ -58,7 +58,7 @@ export const useBankLists = () => {
 // ==========================
 
 // Create bank account mutation
-export const useCreateBankAccount = () => {
+export const useCreateBankAccount = (team_group_id: string) => {
   const queryClient = useQueryClient()
 
   return useMutation<any, Error, IBankAccount>({
@@ -66,39 +66,44 @@ export const useCreateBankAccount = () => {
     onSuccess: (data) => {
       // Invalidate และ refetch ทันที
       queryClient.invalidateQueries({
-        queryKey: BANK_QUERY_KEYS.BANK_ACCOUNTS,
+        queryKey: [...BANK_QUERY_KEYS.BANK_ACCOUNTS, team_group_id],
       })
 
       // Force refetch ทันที
       queryClient.refetchQueries({
-        queryKey: BANK_QUERY_KEYS.BANK_ACCOUNTS,
+        queryKey: [...BANK_QUERY_KEYS.BANK_ACCOUNTS, team_group_id],
       })
 
-      toast({
-        title: 'สำเร็จ',
-        description: data?.message || 'สร้างบัญชีธนาคารเรียบร้อยแล้ว',
-      })
+      toast.success(data?.message || 'สร้างบัญชีธนาคารเรียบร้อยแล้ว')
     },
     onError: (
       error: Error & {
         response?: {
           data?: {
             message?: string
+            statusCode?: number
           }
+          status?: number
         }
       },
     ) => {
-      toast({
-        title: 'เกิดข้อผิดพลาด',
-        description: error?.response?.data?.message || 'ไม่สามารถสร้างบัญชีธนาคารได้',
-        variant: 'destructive',
-      })
+      const errorMessage = error?.response?.data?.message
+      const statusCode = error?.response?.data?.statusCode || error?.response?.status
+
+      if (errorMessage) {
+        toast.error(errorMessage)
+      } else if (statusCode === 400) {
+        toast.error('ข้อมูลที่ส่งไม่ถูกต้อง กรุณาตรวจสอบและลองใหม่')
+      } else {
+        toast.error('ไม่สามารถสร้างบัญชีธนาคารได้ กรุณาลองใหม่อีกครั้ง')
+      }
     },
+    retry: false, // Disable retry to prevent multiple API calls
   })
 }
 
 // Update bank account mutation
-export const useUpdateBankAccount = () => {
+export const useUpdateBankAccount = (team_group_id: string) => {
   const queryClient = useQueryClient()
 
   return useMutation<any, Error, { id: number; data: IBankAccountUpdate }>({
@@ -107,7 +112,7 @@ export const useUpdateBankAccount = () => {
     onSuccess: (data, variables) => {
       // Invalidate and refetch bank accounts list
       queryClient.invalidateQueries({
-        queryKey: BANK_QUERY_KEYS.BANK_ACCOUNTS,
+        queryKey: [...BANK_QUERY_KEYS.BANK_ACCOUNTS, team_group_id],
       })
 
       // Invalidate specific bank account
@@ -115,31 +120,38 @@ export const useUpdateBankAccount = () => {
         queryKey: BANK_QUERY_KEYS.BANK_ACCOUNT(variables.id),
       })
 
-      toast({
-        title: 'สำเร็จ',
-        description: data?.message || 'อัปเดตบัญชีธนาคารเรียบร้อยแล้ว',
-      })
+      toast.success(data?.message || 'อัปเดตบัญชีธนาคารเรียบร้อยแล้ว')
     },
     onError: (
       error: Error & {
         response?: {
           data?: {
             message?: string
+            statusCode?: number
           }
+          status?: number
         }
       },
     ) => {
-      toast({
-        title: 'เกิดข้อผิดพลาด',
-        description: error?.response?.data?.message || 'ไม่สามารถอัปเดตบัญชีธนาคารได้',
-        variant: 'destructive',
-      })
+      const errorMessage = error?.response?.data?.message
+      const statusCode = error?.response?.data?.statusCode || error?.response?.status
+
+      if (errorMessage) {
+        toast.error(errorMessage)
+      } else if (statusCode === 404) {
+        toast.error('ไม่พบบัญชีธนาคาร กรุณาตรวจสอบและลองใหม่')
+      } else if (statusCode === 400) {
+        toast.error('ข้อมูลที่ส่งไม่ถูกต้อง กรุณาตรวจสอบและลองใหม่')
+      } else {
+        toast.error('ไม่สามารถอัปเดตบัญชีธนาคารได้ กรุณาลองใหม่อีกครั้ง')
+      }
     },
+    retry: false, // Disable retry to prevent multiple API calls
   })
 }
 
 // Delete bank account mutation
-export const useDeleteBankAccount = () => {
+export const useDeleteBankAccount = (team_group_id: string) => {
   const queryClient = useQueryClient()
 
   return useMutation<any, Error, number>({
@@ -147,29 +159,36 @@ export const useDeleteBankAccount = () => {
     onSuccess: (data) => {
       // Invalidate and refetch bank accounts list
       queryClient.invalidateQueries({
-        queryKey: BANK_QUERY_KEYS.BANK_ACCOUNTS,
+        queryKey: [...BANK_QUERY_KEYS.BANK_ACCOUNTS, team_group_id],
       })
 
-      toast({
-        title: 'สำเร็จ',
-        description: data?.message || 'ลบบัญชีธนาคารเรียบร้อยแล้ว',
-      })
+      toast.success(data?.message || 'ลบบัญชีธนาคารเรียบร้อยแล้ว')
     },
     onError: (
       error: Error & {
         response?: {
           data?: {
             message?: string
+            statusCode?: number
           }
+          status?: number
         }
       },
     ) => {
-      toast({
-        title: 'เกิดข้อผิดพลาด',
-        description: error?.response?.data?.message || 'ไม่สามารถลบบัญชีธนาคารได้',
-        variant: 'destructive',
-      })
+      const errorMessage = error?.response?.data?.message
+      const statusCode = error?.response?.data?.statusCode || error?.response?.status
+
+      if (errorMessage) {
+        toast.error(errorMessage)
+      } else if (statusCode === 404) {
+        toast.error('ไม่พบบัญชีธนาคาร กรุณาตรวจสอบและลองใหม่')
+      } else if (statusCode === 403) {
+        toast.error('คุณไม่มีสิทธิ์ลบบัญชีธนาคารนี้')
+      } else {
+        toast.error('ไม่สามารถลบบัญชีธนาคารได้ กรุณาลองใหม่อีกครั้ง')
+      }
     },
+    retry: false, // Disable retry to prevent multiple API calls
   })
 }
 

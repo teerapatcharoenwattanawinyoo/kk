@@ -1,7 +1,24 @@
 'use client'
 
+import {
+  type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import * as React from 'react'
+
 import { Button } from '@/components/ui/button'
-import { DataTable, TableColumn } from '@/components/ui/data-table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 import { ChargeSession } from '../../_schemas/team-wallet.schema'
 
@@ -9,96 +26,97 @@ interface ChargeSessionsTableProps {
   sessions: ChargeSession[]
 }
 
-type ChargeSessionRow = ChargeSession & Record<string, string>
+type ChargeSessionsColumn = ColumnDef<ChargeSession> & {
+  meta?: {
+    className?: string
+  }
+}
 
-const columns: TableColumn<ChargeSessionRow>[] = [
+const columns: ChargeSessionsColumn[] = [
   {
-    key: 'orderNumber',
+    accessorKey: 'orderNumber',
     header: 'ORDER NUMBER',
-    align: 'center',
-    width: '16%',
-    render: (_, row) => (
+    meta: { className: 'w-[16%]' },
+    cell: ({ row }) => (
       <div className="flex flex-col items-center">
-        <span className="text-xs font-medium text-oc-sidebar">{row.orderNumber}</span>
-        <span className="text-xs text-muted-foreground">{row.location}</span>
+        <span className="text-oc-sidebar text-xs font-medium">{row.original.orderNumber}</span>
+        <span className="text-xs text-muted-foreground">{row.original.location}</span>
       </div>
     ),
   },
   {
-    key: 'station',
+    accessorKey: 'station',
     header: 'CHARGING STATION',
-    align: 'center',
-    width: '12%',
-    render: (value) => <span className="text-xs text-oc-sidebar">{value}</span>,
+    meta: { className: 'w-[12%]' },
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    key: 'charger',
+    accessorKey: 'charger',
     header: 'CHARGER',
-    align: 'center',
-    width: '10%',
-    render: (value) => <span className="text-xs text-oc-sidebar">{value}</span>,
+    meta: { className: 'w-[10%]' },
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    key: 'rate',
+    accessorKey: 'rate',
     header: 'RATE',
-    align: 'center',
-    width: '8%',
-    render: (value) => <span className="text-xs text-oc-sidebar">{value}</span>,
+    meta: { className: 'w-[8%]' },
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    key: 'startCharge',
+    accessorKey: 'startCharge',
     header: 'START CHARGE',
-    align: 'center',
-    width: '12%',
-    render: (value) => <span className="text-xs text-oc-sidebar">{value}</span>,
+    meta: { className: 'w-[12%]' },
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    key: 'stopCharge',
+    accessorKey: 'stopCharge',
     header: 'STOP CHARGE',
-    align: 'center',
-    width: '12%',
-    render: (value) => <span className="text-xs text-oc-sidebar">{value}</span>,
+    meta: { className: 'w-[12%]' },
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    key: 'time',
+    accessorKey: 'time',
     header: 'TIME',
-    align: 'center',
-    width: '8%',
-    render: (value) => <span className="text-xs text-oc-sidebar">{value}</span>,
+    meta: { className: 'w-[8%]' },
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    key: 'kWh',
+    accessorKey: 'kWh',
     header: 'KWH',
-    align: 'center',
-    width: '6%',
-    render: (value) => <span className="text-xs text-oc-sidebar">{value}</span>,
+    meta: { className: 'w-[6%]' },
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    key: 'revenue',
+    accessorKey: 'revenue',
     header: 'REVENUE',
-    align: 'center',
-    width: '10%',
-    render: (value) => <span className="text-xs text-oc-sidebar">{value}</span>,
+    meta: { className: 'w-[10%]' },
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    key: 'status',
+    accessorKey: 'status',
     header: 'STATUS',
-    align: 'center',
-    width: '10%',
-    render: (value) => (
+    meta: { className: 'w-[10%]' },
+    cell: ({ getValue }) => (
       <span className="inline-flex rounded-md bg-[#DFF8F3] px-2 py-1 text-xs font-semibold leading-5 text-[#0D8A72]">
-        {value}
+        {getValue<string>()}
       </span>
     ),
   },
   {
-    key: 'action',
+    id: 'action',
     header: 'ACTION',
-    align: 'center',
-    width: '8%',
-    render: () => (
+    enableSorting: false,
+    enableHiding: false,
+    meta: { className: 'w-[8%]' },
+    cell: () => (
       <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-100">
-        <svg width="10" height="10" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 13 13"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -112,11 +130,129 @@ const columns: TableColumn<ChargeSessionRow>[] = [
 ]
 
 export function ChargeSessionsTable({ sessions }: ChargeSessionsTableProps) {
-  const tableData = sessions.map((session) => ({ ...session })) as ChargeSessionRow[]
+  const data = React.useMemo(() => sessions, [sessions])
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 5,
+      },
+    },
+  })
+
+  const pageCount = table.getPageCount()
 
   return (
     <div className="mt-4">
-      <DataTable data={tableData} columns={columns} className="border-0 shadow-none" />
+      <div className="overflow-hidden rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className={cn(
+                      'bg-[#F7FAFC] px-4 py-3 text-center text-[10px] font-semibold uppercase text-[#6A7995]',
+                      (header.column.columnDef as ChargeSessionsColumn).meta?.className,
+                    )}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        'px-4 py-3 text-center align-middle',
+                        (cell.column.columnDef as ChargeSessionsColumn).meta?.className,
+                      )}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center text-sm">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex flex-col gap-3 py-4 text-xs text-[#475467] sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center space-x-2">
+          <p className="text-sm font-medium">Rows per page</p>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(event) => table.setPageSize(Number(event.target.value))}
+            className="h-8 w-[72px] rounded border border-input bg-background px-2 text-sm"
+          >
+            {[5, 10, 20, 30, 40].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center justify-end space-x-6 sm:space-x-8">
+          <div className="text-sm font-medium text-[#6A7995]">
+            Page {table.getState().pagination.pageIndex + 1} of {Math.max(pageCount, 1)}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              First
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.setPageIndex(Math.max(pageCount - 1, 0))}
+              disabled={!table.getCanNextPage()}
+            >
+              Last
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

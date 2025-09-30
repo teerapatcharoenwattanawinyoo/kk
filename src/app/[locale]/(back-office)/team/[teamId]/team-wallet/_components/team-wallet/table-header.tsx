@@ -1,8 +1,14 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ChevronDown, Search } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Search } from 'lucide-react'
 
 interface TableHeaderProps {
   searchQuery: string
@@ -29,14 +35,16 @@ export function TableHeader({
             <Search className="h-4 w-4 text-[#A1B1D1]" />
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-10 gap-1 whitespace-nowrap bg-[#ECF2F8] text-xs sm:text-sm"
-        >
-          <span className="text-[#A1B1D1]">Filter by Status</span>
-          <ChevronDown className="h-4 w-4 text-[#A1B1D1]" />
-        </Button>
+        <Select>
+          <SelectTrigger className="h-10 w-[180px] bg-[#ECF2F8] text-xs sm:text-sm">
+            <SelectValue className="text-[#A1B1D1]" placeholder="Filter by Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   )

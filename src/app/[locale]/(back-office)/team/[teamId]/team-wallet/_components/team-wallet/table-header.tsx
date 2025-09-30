@@ -14,12 +14,18 @@ interface TableHeaderProps {
   searchQuery: string
   onSearchChange: (value: string) => void
   searchPlaceholder?: string
+  statusFilter: string
+  onStatusChange: (value: string) => void
+  statuses: string[]
 }
 
 export function TableHeader({
   searchQuery,
   onSearchChange,
   searchPlaceholder = 'Search by ID Announcement',
+  statusFilter,
+  onStatusChange,
+  statuses,
 }: TableHeaderProps) {
   return (
     <div className="mt-4 flex flex-col justify-between gap-3 sm:flex-row">
@@ -35,14 +41,17 @@ export function TableHeader({
             <Search className="h-4 w-4 text-[#A1B1D1]" />
           </div>
         </div>
-        <Select>
-          <SelectTrigger className="h-10 w-[180px] bg-[#ECF2F8] text-xs sm:text-sm">
-            <SelectValue className="text-[#A1B1D1]" placeholder="Filter by Status" />
+        <Select value={statusFilter} onValueChange={onStatusChange}>
+          <SelectTrigger className="h-10 w-full max-w-[200px] justify-between bg-[#ECF2F8] text-left text-xs text-[#A1B1D1] sm:text-sm">
+            <SelectValue placeholder="Filter by Status" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
+          <SelectContent className="text-xs sm:text-sm">
+            <SelectItem value="all">All statuses</SelectItem>
+            {statuses.map((status) => (
+              <SelectItem key={status} value={status} className="capitalize">
+                {status}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

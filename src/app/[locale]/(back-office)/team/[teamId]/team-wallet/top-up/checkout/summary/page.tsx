@@ -2,8 +2,6 @@ import { TeamGuard } from '@/app/[locale]/(back-office)/team/_components/team-gu
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
-
-import { topUpPaymentMethodSchema } from '../../../_schemas/top-up.schema'
 import { SummaryContent } from '../../../_components/top-up/summary-content'
 
 interface SummaryPageProps {
@@ -31,11 +29,6 @@ export default async function SummaryPage({ params, searchParams }: SummaryPageP
     parsedMethodData = undefined
   }
 
-  const parsedResult = parsedMethodData
-    ? topUpPaymentMethodSchema.safeParse(parsedMethodData)
-    : undefined
-  const validatedMethodData = parsedResult?.success ? parsedResult.data : undefined
-
   return (
     <TeamGuard teamId={teamId} locale={locale}>
       <div className="flex min-h-[calc(100vh-4rem)] flex-col">
@@ -62,7 +55,7 @@ export default async function SummaryPage({ params, searchParams }: SummaryPageP
               <SummaryContent
                 amount={amount || '0'}
                 paymentMethod={method || ''}
-                paymentMethodData={validatedMethodData}
+                paymentMethodData={parsedMethodData}
                 teamId={teamId}
                 locale={locale}
               />

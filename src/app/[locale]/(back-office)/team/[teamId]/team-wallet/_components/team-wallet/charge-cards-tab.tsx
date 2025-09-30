@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus } from 'lucide-react'
-import { ChargeCard } from '../../_schemas/team-wallet.schema'
+import { ChargeCard } from '../../_schemas/team-wallet-types'
 import { ChargeCardsTable } from './charge-cards-table'
 
 interface ChargeCardsTabProps {

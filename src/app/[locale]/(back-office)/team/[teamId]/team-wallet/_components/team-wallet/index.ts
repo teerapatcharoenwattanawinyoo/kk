@@ -2,7 +2,6 @@
 export { TopUpPage } from '../top-up/top-up-page'
 export { ChargeCardsTab } from './charge-cards-tab'
 export { PaymentPage } from './payment-page'
-export { TeamWalletPageView } from './team-wallet-page-view'
 export { TeamWalletTab } from './team-wallet-tab'
 
 // UI components

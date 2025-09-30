@@ -8,15 +8,46 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { useMemo, useState } from 'react'
 
-import { TopUpPaymentMethod } from '../../_schemas/top-up.schema'
+interface PaymentMethod {
+  id: string
+  name: string
+  icon: string
+  description: string
+}
+
+const PAYMENT_METHODS: PaymentMethod[] = [
+  // {
+  //   id: "scb_easy",
+  //   name: "ง่ายออนไลน์ - เอสซีบี (EATM)",
+  //   icon: "/assets/icons/iconOnecharge.png",
+  //   description: "ออนไลน์แบงกิ้ง",
+  // },
+  {
+    id: 'promptpay',
+    name: 'พร้อมเพย์',
+    icon: '/assets/images/payment/prompPay.png',
+    description: '(จ่ายได้ทุกธนาคาร)',
+  },
+  // {
+  //   id: "kbank_line",
+  //   name: "อินเทอร์เน็ตแบงกิ้ง ธนาคารไทย",
+  //   icon: "/assets/icons/iconOnecharge.png",
+  //   description: "",
+  // },
+  // {
+  //   id: "wallet",
+  //   name: "วอลเลทอิเล็กทรอนิกส์",
+  //   icon: "/assets/icons/iconOnecharge.png",
+  //   description: "",
+  // },
+]
 
 interface PaymentMethodSelectorProps {
   amount: string
-  paymentMethods: TopUpPaymentMethod[]
-  onPaymentSelect: (methodId: string, methodData: TopUpPaymentMethod) => void
+  onPaymentSelect: (methodId: string, methodData: PaymentMethod) => void
 }
 
-export function PaymentMethodSelector({ amount, paymentMethods, onPaymentSelect }: PaymentMethodSelectorProps) {
+export function PaymentMethodSelector({ amount, onPaymentSelect }: PaymentMethodSelectorProps) {
   const [selectedMethod, setSelectedMethod] = useState<string>('')
 
   const THB = useMemo(
@@ -25,8 +56,8 @@ export function PaymentMethodSelector({ amount, paymentMethods, onPaymentSelect 
   )
 
   const selectedMethodName = useMemo(
-    () => paymentMethods.find((m) => m.id === selectedMethod)?.name ?? '-',
-    [paymentMethods, selectedMethod],
+    () => PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.name ?? '-',
+    [selectedMethod],
   )
 
   const handleMethodSelect = (methodId: string) => {
@@ -35,7 +66,7 @@ export function PaymentMethodSelector({ amount, paymentMethods, onPaymentSelect 
 
   const handleProceed = () => {
     if (selectedMethod) {
-      const methodData = paymentMethods.find((m) => m.id === selectedMethod)
+      const methodData = PAYMENT_METHODS.find((m) => m.id === selectedMethod)
       if (methodData) {
         onPaymentSelect(selectedMethod, methodData)
       }
@@ -62,7 +93,7 @@ export function PaymentMethodSelector({ amount, paymentMethods, onPaymentSelect 
             onValueChange={handleMethodSelect}
             className="grid gap-4 sm:grid-cols-2"
           >
-            {paymentMethods.map((method) => (
+            {PAYMENT_METHODS.map((method) => (
               <label
                 key={method.id}
                 htmlFor={`pm-${method.id}`}

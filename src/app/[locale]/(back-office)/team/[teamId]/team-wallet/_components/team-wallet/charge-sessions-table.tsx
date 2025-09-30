@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ChargeSession } from '../../_schemas/team-wallet.schema'
+import { ChargeSession } from '../../_schemas/team-wallet-types'
 
 interface ChargeSessionsTableProps {
   sessions: ChargeSession[]

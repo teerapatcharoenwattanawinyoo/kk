@@ -1,8 +1,6 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { topUpMockPaymentMethods } from '../../mock/top-up.mock'
-import { TopUpPaymentMethod } from '../../_schemas/top-up.schema'
 import { PaymentMethodSelector } from './payment-method-selector'
 
 interface CheckoutContentProps {
@@ -14,7 +12,7 @@ interface CheckoutContentProps {
 export function CheckoutContent({ amount, teamId, locale }: CheckoutContentProps) {
   const router = useRouter()
 
-  const handlePaymentSelect = (methodId: string, methodData: TopUpPaymentMethod) => {
+  const handlePaymentSelect = (methodId: string, methodData: any) => {
     // Navigate to summary page with method data
     const methodParams = encodeURIComponent(JSON.stringify(methodData))
     router.push(
@@ -24,11 +22,7 @@ export function CheckoutContent({ amount, teamId, locale }: CheckoutContentProps
 
   return (
     <div className="mx-auto max-w-md">
-      <PaymentMethodSelector
-        amount={amount}
-        paymentMethods={topUpMockPaymentMethods}
-        onPaymentSelect={handlePaymentSelect}
-      />
+      <PaymentMethodSelector amount={amount} onPaymentSelect={handlePaymentSelect} />
     </div>
   )
 }

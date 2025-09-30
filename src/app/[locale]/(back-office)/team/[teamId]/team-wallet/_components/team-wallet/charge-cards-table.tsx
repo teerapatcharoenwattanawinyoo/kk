@@ -2,8 +2,8 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ChargeCard } from '@/types'
 import { CreditCard, MoreHorizontal } from 'lucide-react'
+import { ChargeCard } from '../../_schemas/team-wallet.schema'
 
 interface ChargeCardsTableProps {
   cards: ChargeCard[]

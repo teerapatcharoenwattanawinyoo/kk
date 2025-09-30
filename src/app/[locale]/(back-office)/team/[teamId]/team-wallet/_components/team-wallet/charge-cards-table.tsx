@@ -3,7 +3,8 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CreditCard, MoreHorizontal } from 'lucide-react'
-import { ChargeCard } from '../../_schemas/team-wallet-types'
+
+import { ChargeCard } from '../../_schemas/team-wallet.schema'
 
 interface ChargeCardsTableProps {
   cards: ChargeCard[]

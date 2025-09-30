@@ -1,6 +1,5 @@
 'use client'
 
-import * as React from 'react'
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -14,6 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -56,12 +56,12 @@ const searchableFields: (keyof ChargeSession)[] = [
   'status',
 ]
 
-const createSortableHeader = (title: string) =>
+const createSortableHeader =
+  (title: string) =>
   ({ column }: HeaderContext<ChargeSession, unknown>) => {
     const sorted = column.getIsSorted()
 
-    const Icon =
-      sorted === 'asc' ? ArrowUp : sorted === 'desc' ? ArrowDown : ArrowUpDown
+    const Icon = sorted === 'asc' ? ArrowUp : sorted === 'desc' ? ArrowDown : ArrowUpDown
 
     return (
       <button
@@ -89,9 +89,7 @@ const globalFilterFn: FilterFn<ChargeSession> = (row, _columnId, filterValue) =>
     return true
   }
 
-  return searchableFields.some((field) =>
-    row.original[field].toLowerCase().includes(search),
-  )
+  return searchableFields.some((field) => row.original[field].toLowerCase().includes(search))
 }
 
 const columns: ChargeSessionsColumn[] = [
@@ -101,7 +99,7 @@ const columns: ChargeSessionsColumn[] = [
     meta: { className: 'w-[16%]' },
     cell: ({ row }) => (
       <div className="flex flex-col items-center">
-        <span className="text-xs font-medium text-oc-sidebar">{row.original.orderNumber}</span>
+        <span className="text-oc-sidebar text-xs font-medium">{row.original.orderNumber}</span>
         <span className="text-xs text-muted-foreground">{row.original.location}</span>
       </div>
     ),
@@ -110,49 +108,49 @@ const columns: ChargeSessionsColumn[] = [
     accessorKey: 'station',
     header: createSortableHeader('CHARGING STATION'),
     meta: { className: 'w-[12%]' },
-    cell: ({ getValue }) => <span className="text-xs text-oc-sidebar">{getValue<string>()}</span>,
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
     accessorKey: 'charger',
     header: createSortableHeader('CHARGER'),
     meta: { className: 'w-[10%]' },
-    cell: ({ getValue }) => <span className="text-xs text-oc-sidebar">{getValue<string>()}</span>,
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
     accessorKey: 'rate',
     header: createSortableHeader('RATE'),
     meta: { className: 'w-[8%]' },
-    cell: ({ getValue }) => <span className="text-xs text-oc-sidebar">{getValue<string>()}</span>,
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
     accessorKey: 'startCharge',
     header: createSortableHeader('START CHARGE'),
     meta: { className: 'w-[12%]' },
-    cell: ({ getValue }) => <span className="text-xs text-oc-sidebar">{getValue<string>()}</span>,
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
     accessorKey: 'stopCharge',
     header: createSortableHeader('STOP CHARGE'),
     meta: { className: 'w-[12%]' },
-    cell: ({ getValue }) => <span className="text-xs text-oc-sidebar">{getValue<string>()}</span>,
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
     accessorKey: 'time',
     header: createSortableHeader('TIME'),
     meta: { className: 'w-[8%]' },
-    cell: ({ getValue }) => <span className="text-xs text-oc-sidebar">{getValue<string>()}</span>,
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
     accessorKey: 'kWh',
     header: createSortableHeader('KWH'),
     meta: { className: 'w-[6%]' },
-    cell: ({ getValue }) => <span className="text-xs text-oc-sidebar">{getValue<string>()}</span>,
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
     accessorKey: 'revenue',
     header: createSortableHeader('REVENUE'),
     meta: { className: 'w-[10%]' },
-    cell: ({ getValue }) => <span className="text-xs text-oc-sidebar">{getValue<string>()}</span>,
+    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
     accessorKey: 'status',
@@ -173,7 +171,13 @@ const columns: ChargeSessionsColumn[] = [
     meta: { className: 'w-[8%]' },
     cell: () => (
       <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-100">
-        <svg width="10" height="10" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 13 13"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -245,7 +249,7 @@ export function ChargeSessionsTable({
                     <TableHead
                       key={header.id}
                       className={cn(
-                        'bg-[#F7FAFC] px-4 py-3 text-[10px] font-semibold uppercase text-[#6A7995] text-center',
+                        'bg-[#F7FAFC] px-4 py-3 text-center text-[10px] font-semibold uppercase text-[#6A7995]',
                         isSorted && 'text-[#0D8A72]',
                         (header.column.columnDef as ChargeSessionsColumn).meta?.className,
                       )}

@@ -103,6 +103,9 @@ export const API_ENDPOINTS = {
         CONFIRM: '/partner/revenue/payout/confirm',
       },
     },
+    WALLET: {
+      BALANCE: '/wallet/team/{team_group_id}',
+    },
   },
 } as const
 
@@ -171,4 +174,5 @@ export const QUERY_KEYS = {
   REVENUE_BALANCE: ['revenue_balance'],
   PAYOUT: ['payout'],
   PRICING_PLANS: ['pricing_plans'],
+  TEAM_WALLET: ['team_wallet'],
 } as const

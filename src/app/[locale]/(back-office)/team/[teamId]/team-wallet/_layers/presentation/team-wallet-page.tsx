@@ -1,16 +1,17 @@
+
 'use client'
 
 import { TeamHeader } from '@/app/[locale]/(back-office)/team/_components/team-header'
 import { TeamTabMenu } from '@/app/[locale]/(back-office)/team/_components/team-tab-menu'
 import { useI18n } from '@/lib/i18n'
+import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { useState } from 'react'
 
 import {
   chargeCardsMock,
   chargeSessionsMock,
-  walletBalanceMock,
 } from '../../mock/team-wallet.mock'
+import { useTeamWalletQuery } from '../../_hooks/use-team-wallet-query'
 import { ChargeCard, ChargeSession } from '../../_schemas/team-wallet.schema'
 import { ChargeCardsTab } from '../../_components/team-wallet/charge-cards-tab'
 import { Pagination } from '../../_components/team-wallet/pagination'
@@ -29,7 +30,19 @@ export function TeamWalletPage({ teamId }: TeamWalletPageProps) {
   const [activeSubTab, setActiveSubTab] = useState<TeamWalletSubTab>('team-wallet')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const walletBalance = walletBalanceMock
+  const {
+    data: teamWallet,
+    isLoading: isWalletLoading,
+    error: walletError,
+  } = useTeamWalletQuery(teamId)
+
+  useEffect(() => {
+    if (walletError) {
+      console.error('[TeamWalletPage] Failed to fetch team wallet balance', walletError)
+    }
+  }, [walletError])
+
+  const walletBalance = teamWallet?.data.walletBalance ?? 0
   const chargeSessions: ChargeSession[] = chargeSessionsMock
   const chargeCards: ChargeCard[] = chargeCardsMock
 
@@ -74,6 +87,7 @@ export function TeamWalletPage({ teamId }: TeamWalletPageProps) {
               <TeamWalletTab
                 teamId={teamId}
                 walletBalance={walletBalance}
+                isWalletLoading={isWalletLoading}
                 chargeSessions={chargeSessions}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}

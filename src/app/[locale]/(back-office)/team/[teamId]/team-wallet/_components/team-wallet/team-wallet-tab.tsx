@@ -1,3 +1,4 @@
+
 'use client'
 
 import { Separator } from '@/components/ui/separator'
@@ -14,6 +15,7 @@ interface TeamWalletTabProps {
   chargeSessions: ChargeSession[]
   searchQuery: string
   onSearchChange: (value: string) => void
+  isWalletLoading?: boolean
 }
 
 export function TeamWalletTab({
@@ -22,11 +24,12 @@ export function TeamWalletTab({
   chargeSessions,
   searchQuery,
   onSearchChange,
+  isWalletLoading = false,
 }: TeamWalletTabProps) {
   return (
     <>
       <div className="mt-4 flex items-stretch gap-4">
-        <WalletCard walletBalance={walletBalance} teamId={teamId} />
+        <WalletCard walletBalance={walletBalance} teamId={teamId} isLoading={isWalletLoading} />
         <TopUpCard />
       </div>
 

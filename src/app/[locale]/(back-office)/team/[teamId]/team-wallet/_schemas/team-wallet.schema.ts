@@ -1,3 +1,4 @@
+
 import { z } from 'zod'
 
 export const ChargeSessionSchema = z.object({
@@ -36,3 +37,16 @@ export const TeamWalletSchema = z.object({
 })
 
 export type TeamWalletData = z.infer<typeof TeamWalletSchema>
+
+export const TeamWalletBalanceDataSchema = z.object({
+  walletBalance: WalletBalanceSchema,
+})
+
+export const TeamWalletBalanceResponseSchema = z.object({
+  statusCode: z.number().optional(),
+  message: z.string().optional(),
+  data: TeamWalletBalanceDataSchema,
+})
+
+export type TeamWalletBalanceData = z.infer<typeof TeamWalletBalanceDataSchema>
+export type TeamWalletBalanceResponse = z.infer<typeof TeamWalletBalanceResponseSchema>

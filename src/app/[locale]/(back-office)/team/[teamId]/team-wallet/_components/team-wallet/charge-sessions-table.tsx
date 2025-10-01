@@ -188,11 +188,7 @@ const columns: ChargeSessionsColumn[] = [
   },
 ]
 
-export function ChargeSessionsTable({
-  sessions,
-  searchQuery,
-  statusFilter,
-}: ChargeSessionsTableProps) {
+const ChargeSessionsTable = ({ sessions, searchQuery, statusFilter }: ChargeSessionsTableProps) => {
   const data = React.useMemo(() => sessions, [sessions])
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -348,3 +344,5 @@ export function ChargeSessionsTable({
     </div>
   )
 }
+
+export { ChargeSessionsTable }

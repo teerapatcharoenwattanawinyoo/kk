@@ -1,4 +1,3 @@
-
 'use client'
 
 import * as React from 'react'
@@ -20,14 +19,14 @@ interface TeamWalletTabProps {
   isWalletLoading?: boolean
 }
 
-export function TeamWalletTab({
+const TeamWalletTab = ({
   teamId,
   walletBalance,
   chargeSessions,
   searchQuery,
   onSearchChange,
   isWalletLoading = false,
-}: TeamWalletTabProps) {
+}: TeamWalletTabProps) => {
   const [statusFilter, setStatusFilter] = React.useState<string>('all')
 
   const statuses = React.useMemo(
@@ -66,3 +65,5 @@ export function TeamWalletTab({
     </>
   )
 }
+
+export { TeamWalletTab }

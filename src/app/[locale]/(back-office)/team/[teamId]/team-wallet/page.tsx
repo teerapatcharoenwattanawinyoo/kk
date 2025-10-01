@@ -9,7 +9,7 @@ interface TeamWalletRouteProps {
   }>
 }
 
-export default async function TeamWallet({ params }: TeamWalletRouteProps) {
+const TeamWallet = async ({ params }: TeamWalletRouteProps) => {
   const { teamId, locale } = await params
 
   return (
@@ -18,3 +18,5 @@ export default async function TeamWallet({ params }: TeamWalletRouteProps) {
     </TeamGuard>
   )
 }
+
+export default TeamWallet

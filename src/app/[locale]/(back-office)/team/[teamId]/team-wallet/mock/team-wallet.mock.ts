@@ -163,8 +163,10 @@ const teamWalletMockSource = {
   ],
 }
 
-export const teamWalletMock = TeamWalletSchema.parse(teamWalletMockSource)
+const teamWalletMock = TeamWalletSchema.parse(teamWalletMockSource)
 
-export const walletBalanceMock = teamWalletMock.walletBalance
-export const chargeSessionsMock = teamWalletMock.chargeSessions
-export const chargeCardsMock = teamWalletMock.chargeCards
+const walletBalanceMock = teamWalletMock.walletBalance
+const chargeSessionsMock = teamWalletMock.chargeSessions
+const chargeCardsMock = teamWalletMock.chargeCards
+
+export { chargeCardsMock, chargeSessionsMock, teamWalletMock, walletBalanceMock }

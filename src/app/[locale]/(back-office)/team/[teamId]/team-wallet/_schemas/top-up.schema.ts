@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
-export const topUpPresetAmountSchema = z.number().int().nonnegative()
+const topUpPresetAmountSchema = z.number().int().nonnegative()
 
-export const topUpTransactionSchema = z.object({
+const topUpTransactionSchema = z.object({
   id: z.string(),
   title: z.string(),
   datetime: z.string(),
@@ -10,12 +10,12 @@ export const topUpTransactionSchema = z.object({
   channel: z.string(),
 })
 
-export const topUpTransactionGroupSchema = z.object({
+const topUpTransactionGroupSchema = z.object({
   date: z.string(),
   items: z.array(topUpTransactionSchema),
 })
 
-export const topUpPaymentMethodSchema = z.object({
+const topUpPaymentMethodSchema = z.object({
   id: z.string(),
   name: z.string(),
   icon: z.string(),
@@ -26,3 +26,10 @@ export type TopUpPresetAmount = z.infer<typeof topUpPresetAmountSchema>
 export type TopUpTransaction = z.infer<typeof topUpTransactionSchema>
 export type TopUpTransactionGroup = z.infer<typeof topUpTransactionGroupSchema>
 export type TopUpPaymentMethod = z.infer<typeof topUpPaymentMethodSchema>
+
+export {
+  topUpPaymentMethodSchema,
+  topUpPresetAmountSchema,
+  topUpTransactionGroupSchema,
+  topUpTransactionSchema,
+}

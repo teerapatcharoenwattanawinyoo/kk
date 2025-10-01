@@ -8,7 +8,7 @@ interface PaymentPageProps {
   }>
 }
 
-export default async function TopUp({ params }: PaymentPageProps) {
+const TopUp = async ({ params }: PaymentPageProps) => {
   const { teamId, locale } = await params
   return (
     <TeamGuard teamId={teamId} locale={locale}>
@@ -16,3 +16,5 @@ export default async function TopUp({ params }: PaymentPageProps) {
     </TeamGuard>
   )
 }
+
+export default TopUp

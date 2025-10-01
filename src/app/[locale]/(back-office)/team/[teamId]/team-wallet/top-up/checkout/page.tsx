@@ -11,7 +11,7 @@ interface CheckoutPageProps {
   }>
 }
 
-export default async function CheckoutPage({ params, searchParams }: CheckoutPageProps) {
+const CheckoutPage = async ({ params, searchParams }: CheckoutPageProps) => {
   const { teamId, locale } = await params
   const { amount } = await searchParams
 
@@ -21,3 +21,5 @@ export default async function CheckoutPage({ params, searchParams }: CheckoutPag
     </TeamGuard>
   )
 }
+
+export default CheckoutPage

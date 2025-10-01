@@ -17,11 +17,11 @@ interface PaymentMethodSelectorProps {
   methods?: TopUpPaymentMethod[]
 }
 
-export function PaymentMethodSelector({
+const PaymentMethodSelector = ({
   amount,
   onPaymentSelect,
   methods = topUpPaymentMethodsMock,
-}: PaymentMethodSelectorProps) {
+}: PaymentMethodSelectorProps) => {
   const [selectedMethod, setSelectedMethod] = useState<string>('')
 
   const THB = useMemo(
@@ -147,3 +147,5 @@ export function PaymentMethodSelector({
     </div>
   )
 }
+
+export { PaymentMethodSelector }

@@ -7,10 +7,12 @@ interface ChargeCardsTabProps {
   chargeCards: ChargeCard[]
 }
 
-export function ChargeCardsTab({ chargeCards }: ChargeCardsTabProps) {
+const ChargeCardsTab = ({ chargeCards }: ChargeCardsTabProps) => {
   return (
     <div className="mt-4">
       <ChargeCardsTable cards={chargeCards} />
     </div>
   )
 }
+
+export { ChargeCardsTab }

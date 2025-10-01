@@ -19,7 +19,7 @@ interface OrderSummaryProps {
   onConfirm: () => void
 }
 
-export function OrderSummary({
+const OrderSummary = ({
   amount,
   paymentMethod,
   paymentMethodData,
@@ -28,7 +28,7 @@ export function OrderSummary({
   logoSrc = '/assets/icons/iconOnecharge.png',
   logoAlt = 'OneCharge',
   onConfirm,
-}: OrderSummaryProps) {
+}: OrderSummaryProps) => {
   const THB = useMemo(
     () => new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
     [],
@@ -112,3 +112,5 @@ export function OrderSummary({
     </div>
   )
 }
+
+export { OrderSummary }

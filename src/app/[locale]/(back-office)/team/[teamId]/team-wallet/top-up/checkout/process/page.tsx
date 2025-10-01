@@ -15,7 +15,7 @@ interface ProcessPageProps {
   }>
 }
 
-export default async function ProcessPage({ params, searchParams }: ProcessPageProps) {
+const ProcessPage = async ({ params, searchParams }: ProcessPageProps) => {
   const { teamId, locale } = await params
   const { amount, method, orderId } = await searchParams
 
@@ -31,3 +31,5 @@ export default async function ProcessPage({ params, searchParams }: ProcessPageP
     </TeamGuard>
   )
 }
+
+export default ProcessPage

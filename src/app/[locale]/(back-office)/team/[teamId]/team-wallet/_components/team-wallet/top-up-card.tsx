@@ -9,7 +9,7 @@ interface TopUpCardProps {
   teamId?: string
 }
 
-export function TopUpCard({ teamId }: TopUpCardProps = {}) {
+const TopUpCard = ({ teamId }: TopUpCardProps = {}) => {
   const params = useParams()
   const currentTeamId = teamId || params.teamId
 
@@ -28,3 +28,5 @@ export function TopUpCard({ teamId }: TopUpCardProps = {}) {
     </Link>
   )
 }
+
+export { TopUpCard }

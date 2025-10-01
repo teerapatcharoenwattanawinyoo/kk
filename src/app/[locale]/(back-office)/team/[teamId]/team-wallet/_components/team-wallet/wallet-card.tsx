@@ -10,7 +10,7 @@ interface WalletCardProps {
   isLoading?: boolean
 }
 
-export function WalletCard({ walletBalance, teamId, isLoading = false }: WalletCardProps) {
+const WalletCard = ({ walletBalance, teamId, isLoading = false }: WalletCardProps) => {
   const safeBalance = Number.isFinite(walletBalance) ? walletBalance : 0
   const formattedBalance = safeBalance.toLocaleString('th-TH', {
     minimumFractionDigits: 2,
@@ -50,3 +50,5 @@ export function WalletCard({ walletBalance, teamId, isLoading = false }: WalletC
     </div>
   )
 }
+
+export { WalletCard }

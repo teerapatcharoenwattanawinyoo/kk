@@ -10,15 +10,7 @@ import {
 } from '../_schemas/top-up.schema'
 
 const presetAmountData = [
-  300,
-  500,
-  700,
-  3000,
-  5000,
-  7000,
-  30000,
-  50000,
-  70000,
+  300, 500, 700, 3000, 5000, 7000, 30000, 50000, 70000,
 ] as const satisfies ReadonlyArray<TopUpPresetAmount>
 
 const paymentMethodData = [
@@ -64,8 +56,10 @@ const transactionGroupData = [
   },
 ] as const satisfies ReadonlyArray<TopUpTransactionGroup>
 
-export const topUpPresetAmountsMock = z.array(topUpPresetAmountSchema).parse(presetAmountData)
+const topUpPresetAmountsMock = z.array(topUpPresetAmountSchema).parse(presetAmountData)
 
-export const topUpPaymentMethodsMock = z.array(topUpPaymentMethodSchema).parse(paymentMethodData)
+const topUpPaymentMethodsMock = z.array(topUpPaymentMethodSchema).parse(paymentMethodData)
 
-export const topUpTransactionsMock = z.array(topUpTransactionGroupSchema).parse(transactionGroupData)
+const topUpTransactionsMock = z.array(topUpTransactionGroupSchema).parse(transactionGroupData)
+
+export { topUpPaymentMethodsMock, topUpPresetAmountsMock, topUpTransactionsMock }

@@ -32,7 +32,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp, ArrowUpDown, CreditCard, MoreHorizontal, Plus } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  CreditCard,
+  MoreHorizontal,
+  Plus,
+} from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -227,7 +236,7 @@ interface ChargeCardsTableProps {
 
 const centeredColumnIds = new Set(['owner', 'accessibility', 'status', 'created', 'actions'])
 
-export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
+const ChargeCardsTable = ({ cards }: ChargeCardsTableProps) => {
   const data = React.useMemo(() => cards, [cards])
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = React.useState('')
@@ -333,7 +342,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            <ChevronLeft />
           </Button>
           <Button
             variant="outline"
@@ -341,10 +350,12 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            <ChevronRight />
           </Button>
         </div>
       </div>
     </div>
   )
 }
+
+export { ChargeCardsTable }

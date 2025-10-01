@@ -19,14 +19,14 @@ interface TableHeaderProps {
   statuses: string[]
 }
 
-export function TableHeader({
+const TableHeader = ({
   searchQuery,
   onSearchChange,
   searchPlaceholder = 'Search by ID Announcement',
   statusFilter,
   onStatusChange,
   statuses,
-}: TableHeaderProps) {
+}: TableHeaderProps) => {
   return (
     <div className="mt-4 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap md:flex-nowrap">
@@ -58,3 +58,5 @@ export function TableHeader({
     </div>
   )
 }
+
+export { TableHeader }

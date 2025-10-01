@@ -249,9 +249,7 @@ export function ChargeSessionsTable({
                     <TableHead
                       key={header.id}
                       className={cn(
-                        'bg-[#F7FAFC] px-4 py-3 text-center text-[10px] font-semibold uppercase text-[#6A7995]',
-                        isSorted && 'text-[#0D8A72]',
-                        (header.column.columnDef as ChargeSessionsColumn).meta?.className,
+                        'bg-primary px-4 py-3 text-center text-[10px] font-semibold uppercase text-primary-foreground',
                       )}
                     >
                       {header.isPlaceholder

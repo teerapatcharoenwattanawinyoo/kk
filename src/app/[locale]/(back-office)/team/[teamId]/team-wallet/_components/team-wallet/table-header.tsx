@@ -35,7 +35,7 @@ export function TableHeader({
             placeholder={searchPlaceholder}
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="h-10 w-full bg-background pl-4 pr-10 text-sm placeholder:font-medium placeholder:text-foreground sm:text-base"
+            className="h-10 w-full bg-background pl-4 pr-10 text-sm placeholder:font-medium placeholder:text-muted-foreground sm:text-base"
           />
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <Search className="size-4 text-muted-foreground" />

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -25,7 +24,6 @@ import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -33,7 +31,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { CreditCard, MoreHorizontal, Plus } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, CreditCard, MoreHorizontal, Plus } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -50,7 +48,6 @@ const centeredColumnIds = new Set(['owner', 'accessibility', 'status', 'created'
 export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
   const columns = React.useMemo<ColumnDef<ChargeCardRow>[]>(
@@ -127,16 +124,34 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
             Owner
+            {column.getIsSorted() === 'asc' ? (
+              <ArrowUp className="ml-2 h-3.5 w-3.5" />
+            ) : column.getIsSorted() === 'desc' ? (
+              <ArrowDown className="ml-2 h-3.5 w-3.5" />
+            ) : (
+              <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+            )}
           </Button>
         ),
         cell: ({ row }) => <span className="text-sm text-[#6E82A5]">{row.getValue('owner')}</span>,
       },
       {
         accessorKey: 'accessibility',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Accessibility
-          </span>
+            {column.getIsSorted() === 'asc' ? (
+              <ArrowUp className="ml-2 h-3.5 w-3.5" />
+            ) : column.getIsSorted() === 'desc' ? (
+              <ArrowDown className="ml-2 h-3.5 w-3.5" />
+            ) : (
+              <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+            )}
+          </Button>
         ),
         cell: ({ row }) => (
           <span className="text-sm text-[#6E82A5]">{row.getValue('accessibility')}</span>
@@ -144,10 +159,21 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
       },
       {
         accessorKey: 'status',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Status
-          </span>
+            {column.getIsSorted() === 'asc' ? (
+              <ArrowUp className="ml-2 h-3.5 w-3.5" />
+            ) : column.getIsSorted() === 'desc' ? (
+              <ArrowDown className="ml-2 h-3.5 w-3.5" />
+            ) : (
+              <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+            )}
+          </Button>
         ),
         cell: ({ row }) => {
           const status = row.getValue('status') as string
@@ -169,10 +195,21 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
       },
       {
         accessorKey: 'created',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Created
-          </span>
+            {column.getIsSorted() === 'asc' ? (
+              <ArrowUp className="ml-2 h-3.5 w-3.5" />
+            ) : column.getIsSorted() === 'desc' ? (
+              <ArrowDown className="ml-2 h-3.5 w-3.5" />
+            ) : (
+              <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+            )}
+          </Button>
         ),
         cell: ({ row }) => (
           <span className="whitespace-pre-line text-sm text-[#6E82A5]">
@@ -225,12 +262,10 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
     state: {
       sorting,
       columnFilters,
-      columnVisibility,
       rowSelection,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -250,30 +285,6 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
           className="w-full max-w-sm"
         />
         <div className="flex flex-1 items-center justify-end gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  )
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
           <Button className="h-10 text-xs sm:text-sm">
             <Plus className="mr-1.5 h-3.5 w-3.5" />
             Add Card

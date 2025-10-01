@@ -1,17 +1,5 @@
 'use client'
 
-import * as React from 'react'
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -32,7 +20,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, ArrowUpDown, CreditCard, MoreHorizontal, Plus } from 'lucide-react'
+import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 import { type ChargeCard } from '../../_schemas/team-wallet.schema'
@@ -185,7 +185,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
                 'rounded-lg px-4 py-1 text-xs font-medium',
                 isActive
                   ? 'bg-[#DFF8F3] text-[#0D8A72] hover:bg-[#DFF8F3] hover:text-[#0D8A72]'
-                  : 'bg-[#D1E9FF] text-[#40A3FF] hover:bg-[#D1E9FF] hover:text-[#40A3FF]'
+                  : 'bg-[#D1E9FF] text-[#40A3FF] hover:bg-[#D1E9FF] hover:text-[#40A3FF]',
               )}
             >
               {status}
@@ -239,14 +239,10 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => navigator.clipboard?.writeText(card.cardId)}
-                >
+                <DropdownMenuItem onClick={() => navigator.clipboard?.writeText(card.cardId)}>
                   Copy card ID
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => navigator.clipboard?.writeText(card.owner)}
-                >
+                <DropdownMenuItem onClick={() => navigator.clipboard?.writeText(card.owner)}>
                   Copy owner name
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -257,7 +253,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
         },
       },
     ],
-    [cards.length]
+    [cards.length],
   )
 
   const table = useReactTable({
@@ -285,9 +281,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
         <Input
           placeholder="Search cards..."
           value={filterValue}
-          onChange={(event) =>
-            table.getColumn('cardId')?.setFilterValue(event.target.value)
-          }
+          onChange={(event) => table.getColumn('cardId')?.setFilterValue(event.target.value)}
           className="w-full max-w-sm"
         />
         <div className="flex flex-1 items-center justify-end gap-2">
@@ -306,18 +300,13 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
                   <TableHead
                     key={header.id}
                     className={cn(
-                      centeredColumnIds.has(header.column.id)
-                        ? 'text-center'
-                        : 'text-left',
-                      header.column.id === 'select' && 'w-12'
+                      centeredColumnIds.has(header.column.id) ? 'text-center' : 'text-left',
+                      header.column.id === 'select' && 'w-12',
                     )}
                   >
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -326,23 +315,15 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
                       className={cn(
-                        centeredColumnIds.has(cell.column.id)
-                          ? 'text-center'
-                          : 'text-left'
+                        centeredColumnIds.has(cell.column.id) ? 'text-center' : 'text-left',
                       )}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>

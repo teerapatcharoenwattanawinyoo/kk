@@ -246,7 +246,7 @@ export function ChargeSessionsTable({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      'bg-[#F7FAFC] px-4 py-3 text-center text-[10px] font-semibold uppercase text-primary',
+                      'bg-background px-4 py-3 text-center text-[10px] font-semibold uppercase text-primary',
                       (header.column.columnDef as ChargeSessionsColumn).meta?.className,
                     )}
                   >

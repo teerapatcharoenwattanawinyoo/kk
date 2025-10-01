@@ -4,7 +4,9 @@ import { SuccessDialog } from '@/components/notifications'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-interface ProcessContentProps {
+import { TopUpFlowLayout } from './top-up-flow-layout'
+
+interface TopUpProcessPageProps {
   amount: string
   method: string
   orderId: string
@@ -12,31 +14,36 @@ interface ProcessContentProps {
   locale: string
 }
 
-export function ProcessContent({ amount, method, orderId, teamId, locale }: ProcessContentProps) {
+const PROCESS_SIMULATION_DELAY = 3000
+
+export function TopUpProcessPage({ amount, method, orderId, teamId, locale }: TopUpProcessPageProps) {
   const router = useRouter()
   const [showSuccess, setShowSuccess] = useState(false)
   const [isProcessing, setIsProcessing] = useState(true)
 
   useEffect(() => {
-    // Simulate payment processing
     const timer = setTimeout(() => {
       setIsProcessing(false)
       setShowSuccess(true)
-    }, 3000) // 3 seconds simulation
+    }, PROCESS_SIMULATION_DELAY)
 
     return () => clearTimeout(timer)
   }, [])
 
   const handleSuccessClose = () => {
     setShowSuccess(false)
-    // Navigate back to team wallet
     router.push(`/${locale}/team/${teamId}/team-wallet`)
   }
 
   return (
-    <>
+    <TopUpFlowLayout
+      backHref={`/${locale}/team/${teamId}/team-wallet/top-up/checkout?amount=${amount}`}
+      title="ประมวลผลการชำระเงิน"
+    >
       <div className="space-y-4 text-center">
-        <div className="mx-auto h-16 w-16 animate-spin rounded-full border-b-2 border-primary"></div>
+        <div
+          className={`mx-auto h-16 w-16 rounded-full border-b-2 border-primary ${isProcessing ? 'animate-spin' : ''}`}
+        ></div>
         <h3 className="text-lg font-semibold">กำลังประมวลผลการชำระเงิน</h3>
         <p className="text-muted-foreground">
           เลขที่อ้างอิง: {orderId}
@@ -55,6 +62,6 @@ export function ProcessContent({ amount, method, orderId, teamId, locale }: Proc
         buttonText="Done"
         onButtonClick={handleSuccessClose}
       />
-    </>
+    </TopUpFlowLayout>
   )
 }

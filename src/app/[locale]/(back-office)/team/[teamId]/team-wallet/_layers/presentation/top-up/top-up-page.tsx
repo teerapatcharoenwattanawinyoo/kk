@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
@@ -11,77 +12,46 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { ChevronLeft, Download, Smartphone } from 'lucide-react'
-import Link from 'next/link'
 
-interface PaymentPageProps {
+import {
+  type TopUpPresetAmount,
+  type TopUpTransactionGroup,
+} from '../../../_schemas/top-up.schema'
+import {
+  topUpPresetAmountsMock,
+  topUpTransactionsMock,
+} from '../../../mock/top-up.mock'
+
+interface TopUpPageProps {
   teamId: string
   locale: string
+  presetAmounts?: TopUpPresetAmount[]
+  transactions?: TopUpTransactionGroup[]
 }
 
-const PRESET_AMOUNTS = [300, 500, 700, 3000, 5000, 7000, 30000, 50000, 70000] as const
+const MIN_TOP_UP_AMOUNT = 300
+const MAX_TOP_UP_AMOUNT = 70000
 
-export function TopUpPage({ teamId, locale }: PaymentPageProps) {
+export function TopUpPage({
+  teamId,
+  locale,
+  presetAmounts = topUpPresetAmountsMock,
+  transactions = topUpTransactionsMock,
+}: TopUpPageProps) {
   const router = useRouter()
-  const [amount, setAmount] = useState<number>(300)
+
+  const [amount, setAmount] = useState<number>(presetAmounts?.[0] ?? MIN_TOP_UP_AMOUNT)
+
   const THB = useMemo(
     () => new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }),
     [],
   )
 
-  const appendDigit = (d: number) =>
-    setAmount((prev) => {
-      const base = Number.isFinite(prev) ? String(prev ?? 0) : '0'
-      const nextNum = Number(`${base === '0' ? '' : base}${d}`)
-      return Number.isFinite(nextNum) ? nextNum : prev
-    })
-
-  const backspace = () =>
-    setAmount((prev) => {
-      const base = Number.isFinite(prev) ? String(prev ?? 0) : '0'
-      const chopped = base.length > 1 ? base.slice(0, -1) : '0'
-      return Number(chopped)
-    })
-
-  const clearAmount = () => setAmount(0)
-
   const handleContinue = () => {
-    // Navigate to payment method selection page with amount
     router.push(`/${locale}/team/${teamId}/team-wallet/top-up/checkout?amount=${amount}`)
   }
 
-  const txGroups = [
-    {
-      date: '20 Nov 2025',
-      items: [
-        {
-          id: '0x0000030',
-          title: 'Top up',
-          datetime: '20/11/2025 17:35 PM',
-          amount: 3220,
-          channel: 'PromptPay',
-        },
-        {
-          id: '0x0000029',
-          title: 'Top up',
-          datetime: '20/11/2025 13:36 PM',
-          amount: 220,
-          channel: 'PromptPay',
-        },
-      ],
-    },
-    {
-      date: '19 Nov 2025',
-      items: [
-        {
-          id: '0x0000028',
-          title: 'Top up',
-          datetime: '19/11/2025 17:35 PM',
-          amount: 220,
-          channel: 'PromptPay',
-        },
-      ],
-    },
-  ] as const
+  const disableContinue = amount < MIN_TOP_UP_AMOUNT || amount > MAX_TOP_UP_AMOUNT
 
   return (
     <div className="space-y-6 p-4">
@@ -140,7 +110,7 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
                   </div>
                   <CardContent className="pb-6 pt-2">
                     <div className="space-y-6">
-                      {txGroups.map((group) => (
+                      {transactions.map((group) => (
                         <div key={group.date} className="space-y-3">
                           <div className="px-1 text-xs text-muted-foreground">{group.date}</div>
                           <div className="space-y-3">
@@ -168,11 +138,7 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
                                   <div className="text-right font-semibold text-emerald-600">
                                     +{tx.amount.toLocaleString('th-TH')} ฿
                                   </div>
-                                  <Button
-                                    variant={'darkwhite'}
-                                    size={'sm'}
-                                    className="rounded-full text-xs"
-                                  >
+                                  <Button variant={'darkwhite'} size={'sm'} className="rounded-full text-xs">
                                     <Download className="mr-2 h-4 w-4 text-xs" />
                                     ดาวน์โหลดใบเสร็จ
                                   </Button>
@@ -201,42 +167,39 @@ export function TopUpPage({ teamId, locale }: PaymentPageProps) {
                           id="amount-input"
                           inputMode="numeric"
                           pattern="[0-9]*"
-                          value={amount ? amount.toString() : ''}
+                          value={Number.isFinite(amount) ? amount.toString() : ''}
                           placeholder="0"
-                          onChange={(e) => {
-                            const n = Number(e.target.value.replace(/[^0-9]/g, ''))
+                          onChange={(event) => {
+                            const n = Number(event.target.value.replace(/[^0-9]/g, ''))
                             setAmount(Number.isFinite(n) ? n : 0)
                           }}
                           className="h-14 bg-muted text-center text-2xl font-semibold"
                         />
                       </div>
 
-                      {/* Preset amount buttons */}
                       <div className="grid grid-cols-3 gap-3">
-                        {PRESET_AMOUNTS.map((v) => {
-                          const selected = amount === v
+                        {presetAmounts.map((value) => {
+                          const selected = amount === value
                           return (
                             <Button
-                              key={v}
+                              key={value}
                               type="button"
                               variant={selected ? 'default' : 'outline'}
                               className="h-20 border border-primary font-normal"
-                              onClick={() => setAmount(v)}
+                              onClick={() => setAmount(value)}
                             >
-                              {v.toLocaleString('th-TH')}
+                              {value.toLocaleString('th-TH')}
                             </Button>
                           )
                         })}
                       </div>
 
-                      {/* Submit button */}
-                      <Button
-                        className="h-11 w-full"
-                        disabled={amount < 300 || amount > 70000}
-                        onClick={handleContinue}
-                      >
+                      <Button className="h-11 w-full" disabled={disableContinue} onClick={handleContinue}>
                         Continue
                       </Button>
+                      <p className="text-center text-xs text-muted-foreground">
+                        {`ยอดขั้นต่ำ ${THB.format(MIN_TOP_UP_AMOUNT)} และยอดสูงสุด ${THB.format(MAX_TOP_UP_AMOUNT)}`}
+                      </p>
                     </CardContent>
                   </Card>
                 </div>

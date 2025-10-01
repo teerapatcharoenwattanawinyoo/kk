@@ -1,18 +1,5 @@
 'use client'
 
-import * as React from 'react'
-import {
-  type ColumnDef,
-  type FilterFn,
-  type HeaderContext,
-  type SortingState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -33,7 +20,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  type ColumnDef,
+  type FilterFn,
+  type HeaderContext,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, ArrowUpDown, CreditCard, MoreHorizontal, Plus } from 'lucide-react'
+import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 import { type ChargeCard } from '../../_schemas/team-wallet.schema'
@@ -67,7 +67,7 @@ const createSortableHeader =
         onClick={() => column.toggleSorting(sorted === 'asc')}
         className={cn(
           'flex w-full items-center gap-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground',
-          alignment === 'center' ? 'justify-center' : 'justify-start'
+          alignment === 'center' ? 'justify-center' : 'justify-start',
         )}
       >
         <span>{title}</span>
@@ -83,9 +83,7 @@ const globalFilterFn: FilterFn<ChargeCardRow> = (row, _columnId, value) => {
     return true
   }
 
-  return searchableFields.some((field) =>
-    row.original[field].toLowerCase().includes(search)
-  )
+  return searchableFields.some((field) => row.original[field].toLowerCase().includes(search))
 }
 
 const columns: ChargeCardsColumn[] = [
@@ -94,8 +92,7 @@ const columns: ChargeCardsColumn[] = [
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -147,17 +144,13 @@ const columns: ChargeCardsColumn[] = [
   {
     accessorKey: 'owner',
     header: createSortableHeader('Owner', 'center'),
-    cell: ({ getValue }) => (
-      <span className="text-sm text-[#6E82A5]">{getValue<string>()}</span>
-    ),
+    cell: ({ getValue }) => <span className="text-sm text-[#6E82A5]">{getValue<string>()}</span>,
     meta: { className: 'px-4 text-center' },
   },
   {
     accessorKey: 'accessibility',
     header: createSortableHeader('Accessibility', 'center'),
-    cell: ({ getValue }) => (
-      <span className="text-sm text-[#6E82A5]">{getValue<string>()}</span>
-    ),
+    cell: ({ getValue }) => <span className="text-sm text-[#6E82A5]">{getValue<string>()}</span>,
     meta: { className: 'px-4 text-center' },
   },
   {
@@ -173,7 +166,7 @@ const columns: ChargeCardsColumn[] = [
             'rounded-lg px-4 py-1 text-xs font-medium',
             isActive
               ? 'bg-[#DFF8F3] text-[#0D8A72] hover:bg-[#DFF8F3] hover:text-[#0D8A72]'
-              : 'bg-[#D1E9FF] text-[#40A3FF] hover:bg-[#D1E9FF] hover:text-[#40A3FF]'
+              : 'bg-[#D1E9FF] text-[#40A3FF] hover:bg-[#D1E9FF] hover:text-[#40A3FF]',
           )}
         >
           {status}
@@ -186,9 +179,7 @@ const columns: ChargeCardsColumn[] = [
     accessorKey: 'created',
     header: createSortableHeader('Created', 'center'),
     cell: ({ getValue }) => (
-      <span className="whitespace-pre-line text-sm text-[#6E82A5]">
-        {getValue<string>()}
-      </span>
+      <span className="whitespace-pre-line text-sm text-[#6E82A5]">{getValue<string>()}</span>
     ),
     meta: { className: 'px-4 text-center' },
   },
@@ -214,14 +205,10 @@ const columns: ChargeCardsColumn[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard?.writeText(card.cardId)}
-            >
+            <DropdownMenuItem onClick={() => navigator.clipboard?.writeText(card.cardId)}>
               Copy card ID
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard?.writeText(card.owner)}
-            >
+            <DropdownMenuItem onClick={() => navigator.clipboard?.writeText(card.owner)}>
               Copy owner name
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -237,6 +224,8 @@ const columns: ChargeCardsColumn[] = [
 interface ChargeCardsTableProps {
   cards: ChargeCard[]
 }
+
+const centeredColumnIds = new Set(['owner', 'accessibility', 'status', 'created', 'actions'])
 
 export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
   const data = React.useMemo(() => cards, [cards])
@@ -292,7 +281,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
                       className={cn(
                         'px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground',
                         column.meta?.className,
-                        header.column.id === 'cardId' && 'text-left'
+                        header.column.id === 'cardId' && 'text-left',
                       )}
                     >
                       {header.isPlaceholder

@@ -8,10 +8,8 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { useMemo, useState } from 'react'
 
-import {
-  topUpPaymentMethodsMock,
-} from '../../../mock/top-up.mock'
-import { type TopUpPaymentMethod } from '../../../_schemas/top-up.schema'
+import { type TopUpPaymentMethod } from '../../_schemas/top-up.schema'
+import { topUpPaymentMethodsMock } from '../../mock/top-up.mock'
 
 interface PaymentMethodSelectorProps {
   amount: string

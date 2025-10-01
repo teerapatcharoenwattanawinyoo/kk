@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator'
 import Image from 'next/image'
 import { useMemo } from 'react'
 
-import { type TopUpPaymentMethod } from '../../../_schemas/top-up.schema'
+import { type TopUpPaymentMethod } from '../../_schemas/top-up.schema'
 
 interface OrderSummaryProps {
   amount: string

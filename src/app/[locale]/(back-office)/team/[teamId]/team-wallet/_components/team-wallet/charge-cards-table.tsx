@@ -78,7 +78,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
       {
         accessorKey: 'cardId',
         header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <span className="text-xs font-semibold uppercase tracking-wide text-primary-foreground">
             {cards.length} Charge Cards
           </span>
         ),
@@ -93,10 +93,10 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
                 <div className="absolute bottom-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />
               </div>
               <div>
-                <div className="text-sm font-medium uppercase tracking-wide text-[#6E82A5]">
+                <div className="text-oc-title text-sm font-medium uppercase tracking-wide">
                   Card {card.id}
                 </div>
-                <div className="text-xs text-[#818894]">ID: {card.cardId}</div>
+                <div className="text-xs text-muted-foreground">ID: {card.cardId}</div>
               </div>
             </div>
           )
@@ -120,7 +120,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
         header: ({ column }) => (
           <Button
             variant="ghost"
-            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-primary-foreground"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
             Owner
@@ -133,14 +133,14 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
             )}
           </Button>
         ),
-        cell: ({ row }) => <span className="text-sm text-[#6E82A5]">{row.getValue('owner')}</span>,
+        cell: ({ row }) => <span className="text-oc-title text-sm">{row.getValue('owner')}</span>,
       },
       {
         accessorKey: 'accessibility',
         header: ({ column }) => (
           <Button
             variant="ghost"
-            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-primary-foreground"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
             Accessibility
@@ -154,7 +154,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
           </Button>
         ),
         cell: ({ row }) => (
-          <span className="text-sm text-[#6E82A5]">{row.getValue('accessibility')}</span>
+          <span className="text-oc-title text-sm">{row.getValue('accessibility')}</span>
         ),
       },
       {
@@ -162,7 +162,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
         header: ({ column }) => (
           <Button
             variant="ghost"
-            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-primary-foreground"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
             Status
@@ -198,7 +198,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
         header: ({ column }) => (
           <Button
             variant="ghost"
-            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            className="mx-auto -ml-2 h-8 px-2 text-xs font-semibold uppercase tracking-wide text-primary-foreground"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
             Created
@@ -212,7 +212,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
           </Button>
         ),
         cell: ({ row }) => (
-          <span className="whitespace-pre-line text-sm text-[#6E82A5]">
+          <span className="text-oc-title whitespace-pre-line text-sm">
             {row.getValue('created') as string}
           </span>
         ),
@@ -222,7 +222,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
         enableSorting: false,
         enableHiding: false,
         header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <span className="text-xs font-semibold uppercase tracking-wide text-primary-foreground">
             Action
           </span>
         ),
@@ -293,7 +293,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
       </div>
       <div className="overflow-hidden rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-primary">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

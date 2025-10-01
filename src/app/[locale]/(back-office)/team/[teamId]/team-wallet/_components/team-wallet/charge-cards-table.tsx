@@ -66,7 +66,7 @@ const createSortableHeader =
         type="button"
         onClick={() => column.toggleSorting(sorted === 'asc')}
         className={cn(
-          'flex w-full items-center gap-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground',
+          'flex w-full items-center gap-1 text-xs font-semibold uppercase tracking-wide text-primary-foreground',
           alignment === 'center' ? 'justify-center' : 'justify-start',
         )}
       >
@@ -115,7 +115,7 @@ const columns: ChargeCardsColumn[] = [
       const totalCards = table.getPreFilteredRowModel().rows.length
 
       return (
-        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <span className="text-xs font-semibold uppercase tracking-wide text-primary-foreground">
           {totalCards} Charge Cards
         </span>
       )
@@ -188,7 +188,7 @@ const columns: ChargeCardsColumn[] = [
     enableSorting: false,
     enableHiding: false,
     header: () => (
-      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <span className="text-xs font-semibold uppercase tracking-wide text-primary-foreground">
         Action
       </span>
     ),
@@ -279,7 +279,7 @@ export function ChargeCardsTable({ cards }: ChargeCardsTableProps) {
                     <TableHead
                       key={header.id}
                       className={cn(
-                        'px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground',
+                        'bg-primary px-4 py-3 text-xs font-semibold uppercase tracking-wide',
                         column.meta?.className,
                         header.column.id === 'cardId' && 'text-left',
                       )}

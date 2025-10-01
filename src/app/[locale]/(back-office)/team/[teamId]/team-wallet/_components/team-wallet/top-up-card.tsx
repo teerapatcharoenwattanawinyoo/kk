@@ -18,7 +18,7 @@ export function TopUpCard({ teamId }: TopUpCardProps = {}) {
       <Button
         type="button"
         variant="outline"
-        className="shadow-xs group relative grid h-44 w-40 place-items-center rounded-2xl border border-primary/20 p-4 text-center transition-colors"
+        className="shadow-xs group relative grid h-full w-40 place-items-center rounded-2xl border border-primary/20 p-4 text-center transition-colors"
       >
         <span className="flex size-14 items-center justify-center rounded-full bg-primary/10">
           <TopUpCardIcon className="size-6 text-primary" />

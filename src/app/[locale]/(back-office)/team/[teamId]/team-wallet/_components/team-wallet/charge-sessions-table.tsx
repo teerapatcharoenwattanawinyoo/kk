@@ -67,10 +67,10 @@ const createSortableHeader =
       <button
         type="button"
         onClick={() => column.toggleSorting(sorted === 'asc')}
-        className="flex w-full items-center justify-center gap-1 text-[10px] font-semibold uppercase text-[#6A7995]"
+        className="flex w-full items-center justify-center gap-1 text-[10px] font-semibold uppercase text-current"
       >
         <span>{title}</span>
-        <Icon className="h-3 w-3" />
+        <Icon className="h-3 w-3 text-current" />
       </button>
     )
   }
@@ -242,19 +242,22 @@ export function ChargeSessionsTable({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      'bg-background px-4 py-3 text-center text-[10px] font-semibold uppercase text-primary',
-                      (header.column.columnDef as ChargeSessionsColumn).meta?.className,
-                    )}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const isSorted = header.column.getIsSorted()
+
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        'bg-primary px-4 py-3 text-center text-[10px] font-semibold uppercase text-primary-foreground',
+                      )}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
             ))}
           </TableHeader>

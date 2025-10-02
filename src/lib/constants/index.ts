@@ -105,6 +105,8 @@ export const API_ENDPOINTS = {
     },
     WALLET: {
       BALANCE: '/wallet/team/{team_group_id}',
+      TRANSACTIONS: '/wallet/transaction/team/{id}',
+      TOPUP_TRANSACTIONS: '/wallet/topup/team/{id}',
     },
   },
 } as const
@@ -175,4 +177,6 @@ export const QUERY_KEYS = {
   PAYOUT: ['payout'],
   PRICING_PLANS: ['pricing_plans'],
   TEAM_WALLET: ['team_wallet'],
+  TEAM_WALLET_TRANSACTIONS: ['team_wallet_transactions'],
+  TEAM_WALLET_TOPUP_TRANSACTIONS: ['team_wallet_topup_transactions'],
 } as const

@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -13,52 +14,37 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import * as React from 'react'
-
-import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { cn } from '@/lib/utils'
-
+import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui'
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Pencil } from 'lucide-react'
-
-import { ChargeSession } from '../../_schemas/team-wallet.schema'
+import * as React from 'react'
+import { WalletTransactionItem } from '../../_schemas/team-wallet-transactions.schema'
 
 interface ChargeSessionsTableProps {
-  sessions: ChargeSession[]
+  sessions: WalletTransactionItem[]
   searchQuery: string
   statusFilter: string
 }
 
-type ChargeSessionsColumn = ColumnDef<ChargeSession> & {
+type ChargeSessionsColumn = ColumnDef<WalletTransactionItem> & {
   meta?: {
     className?: string
   }
 }
 
-const searchableFields: (keyof ChargeSession)[] = [
-  'orderNumber',
-  'location',
-  'station',
-  'charger',
+const searchableFields: (keyof WalletTransactionItem)[] = [
+  'order_number',
+  'charging_station',
+  'charger_id',
   'rate',
-  'startCharge',
-  'stopCharge',
-  'time',
-  'kWh',
-  'revenue',
+  'start_time',
+  'end_time',
+  'charging_time',
   'status',
 ]
 
 const createSortableHeader =
   (title: string) =>
-  ({ column }: HeaderContext<ChargeSession, unknown>) => {
+  ({ column }: HeaderContext<WalletTransactionItem, unknown>) => {
     const sorted = column.getIsSorted()
 
     const Icon = sorted === 'asc' ? ArrowUp : sorted === 'desc' ? ArrowDown : ArrowUpDown
@@ -70,48 +56,51 @@ const createSortableHeader =
         className="flex w-full items-center justify-center gap-1 text-xs font-semibold uppercase text-current"
       >
         <span>{title}</span>
-        <Icon className="h-3 w-3 text-current" />
+        <Icon className="size-3 text-current" />
       </button>
     )
   }
 
-const statusFilterFn: FilterFn<ChargeSession> = (row, columnId, filterValue) => {
+const statusFilterFn: FilterFn<WalletTransactionItem> = (row, columnId, filterValue) => {
   const status = String(row.getValue<string>(columnId)).toLowerCase()
   const filter = String(filterValue).toLowerCase()
 
   return status === filter
 }
 
-const globalFilterFn: FilterFn<ChargeSession> = (row, _columnId, filterValue) => {
+const globalFilterFn: FilterFn<WalletTransactionItem> = (row, _columnId, filterValue) => {
   const search = String(filterValue).trim().toLowerCase()
 
   if (!search) {
     return true
   }
 
-  return searchableFields.some((field) => row.original[field].toLowerCase().includes(search))
+  return searchableFields.some((field) => {
+    const value = row.original[field]
+    return String(value).toLowerCase().includes(search)
+  })
 }
 
 const columns: ChargeSessionsColumn[] = [
   {
-    accessorKey: 'orderNumber',
+    accessorKey: 'order_number',
     header: createSortableHeader('ORDER NUMBER'),
     meta: { className: 'w-[16%]' },
     cell: ({ row }) => (
       <div className="flex flex-col items-center">
-        <span className="text-oc-sidebar text-xs font-medium">{row.original.orderNumber}</span>
-        <span className="text-xs text-muted-foreground">{row.original.location}</span>
+        <span className="text-oc-sidebar text-xs font-medium">{row.original.order_number}</span>
+        <span className="text-xs text-muted-foreground">{row.original.charging_station}</span>
       </div>
     ),
   },
   {
-    accessorKey: 'station',
+    accessorKey: 'charging_station',
     header: createSortableHeader('CHARGING STATION'),
     meta: { className: 'w-[12%]' },
     cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    accessorKey: 'charger',
+    accessorKey: 'charger_id',
     header: createSortableHeader('CHARGER'),
     meta: { className: 'w-[10%]' },
     cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
@@ -120,37 +109,53 @@ const columns: ChargeSessionsColumn[] = [
     accessorKey: 'rate',
     header: createSortableHeader('RATE'),
     meta: { className: 'w-[8%]' },
-    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
+    cell: ({ getValue }) => (
+      <span className="text-oc-sidebar text-xs">{getValue<string>()} ฿/kWh</span>
+    ),
   },
   {
-    accessorKey: 'startCharge',
+    accessorKey: 'start_time',
     header: createSortableHeader('START CHARGE'),
     meta: { className: 'w-[12%]' },
-    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
+    cell: ({ getValue }) => {
+      const date = new Date(getValue<string>())
+      return <span className="text-oc-sidebar text-xs">{date.toLocaleString()}</span>
+    },
   },
   {
-    accessorKey: 'stopCharge',
+    accessorKey: 'end_time',
     header: createSortableHeader('STOP CHARGE'),
     meta: { className: 'w-[12%]' },
-    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
+    cell: ({ getValue }) => {
+      const date = new Date(getValue<string>())
+      return <span className="text-oc-sidebar text-xs">{date.toLocaleString()}</span>
+    },
   },
   {
-    accessorKey: 'time',
+    accessorKey: 'charging_time',
     header: createSortableHeader('TIME'),
     meta: { className: 'w-[8%]' },
     cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
   },
   {
-    accessorKey: 'kWh',
+    accessorKey: 'kwh',
     header: createSortableHeader('KWH'),
     meta: { className: 'w-[6%]' },
-    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
+    cell: ({ getValue }) => {
+      const value = getValue<number>()
+      const numValue = typeof value === 'number' ? value : Number(value) || 0
+      return <span className="text-oc-sidebar text-xs">{numValue.toFixed(2)}</span>
+    },
   },
   {
     accessorKey: 'revenue',
     header: createSortableHeader('REVENUE'),
     meta: { className: 'w-[10%]' },
-    cell: ({ getValue }) => <span className="text-oc-sidebar text-xs">{getValue<string>()}</span>,
+    cell: ({ getValue }) => {
+      const value = getValue<number>()
+      const numValue = typeof value === 'number' ? value : Number(value) || 0
+      return <span className="text-oc-sidebar text-xs">฿{numValue.toFixed(2)}</span>
+    },
   },
   {
     accessorKey: 'status',
@@ -276,7 +281,10 @@ const ChargeSessionsTable = ({ sessions, searchQuery, statusFilter }: ChargeSess
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-sm">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-sm text-muted-foreground"
+                >
                   No results.
                 </TableCell>
               </TableRow>

@@ -1,10 +1,17 @@
 'use client'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Card, CardTitle } from '@/components/ui/card'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Separator } from '@/components/ui/separator'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  Card,
+  CardTitle,
+  RadioGroup,
+  RadioGroupItem,
+  Separator,
+} from '@ui'
+
 import { cn } from '@/lib/utils'
 import { useMemo, useState } from 'react'
 

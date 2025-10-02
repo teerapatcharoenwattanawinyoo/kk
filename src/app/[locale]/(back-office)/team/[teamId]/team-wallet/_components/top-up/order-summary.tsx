@@ -1,8 +1,5 @@
 'use client'
-
-import { Button } from '@/components/ui/button'
-import { Card, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { Button, Card, CardTitle, Separator } from '@ui'
 import Image from 'next/image'
 import { useMemo } from 'react'
 

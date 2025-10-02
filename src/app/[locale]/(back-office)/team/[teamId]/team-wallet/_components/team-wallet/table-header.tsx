@@ -1,13 +1,7 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ui'
+
 import { Search } from 'lucide-react'
 
 interface TableHeaderProps {

@@ -21,16 +21,12 @@
     "paths": {
       "@/*": ["./src/*"],
       //Modules path alias
+      "@ui": ["./src/components/ui"],
+      "@ui/*": ["./src/components/ui/*"],
       "@modules/*": ["./src/modules/*"],
       "@shared/*": ["./src/shared/*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "src/**/*"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/**/*"],
   "exclude": ["node_modules"]
 }

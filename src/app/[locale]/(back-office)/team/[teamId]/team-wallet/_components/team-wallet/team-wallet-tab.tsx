@@ -1,10 +1,9 @@
 'use client'
 
+import { Separator } from '@ui'
 import * as React from 'react'
 
-import { Separator } from '@/components/ui/separator'
-
-import { ChargeSession } from '../../_schemas/team-wallet.schema'
+import { WalletTransactionItem } from '../../_schemas/team-wallet-transactions.schema'
 import { ChargeSessionsTable } from './charge-sessions-table'
 import { TableHeader } from './table-header'
 import { TopUpCard } from './top-up-card'
@@ -13,7 +12,7 @@ import { WalletCard } from './wallet-card'
 interface TeamWalletTabProps {
   teamId: string
   walletBalance: number
-  chargeSessions: ChargeSession[]
+  chargeSessions: WalletTransactionItem[]
   searchQuery: string
   onSearchChange: (value: string) => void
   isWalletLoading?: boolean

@@ -7,9 +7,9 @@ import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { ChargeCardsTab } from '../../_components/team-wallet/charge-cards-tab'
-import { useTeamWalletQuery } from '../../_hooks/use-team-wallet-query'
-import { ChargeCard, ChargeSession } from '../../_schemas/team-wallet.schema'
-import { chargeCardsMock, chargeSessionsMock } from '../../mock/team-wallet.mock'
+import { useTeamWalletQuery, useWalletTransactionsQuery } from '../../_hooks/use-team-wallet-query'
+import { ChargeCard } from '../../_schemas/team-wallet.schema'
+import { chargeCardsMock } from '../../mock/team-wallet.mock'
 
 import { TeamWalletTab } from '../../_components/team-wallet/team-wallet-tab'
 
@@ -25,6 +25,8 @@ export function TeamWalletPage({ teamId }: TeamWalletPageProps) {
 
   const [activeSubTab, setActiveSubTab] = useState<TeamWalletSubTab>('team-wallet')
   const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   const {
     data: teamWallet,
@@ -32,14 +34,33 @@ export function TeamWalletPage({ teamId }: TeamWalletPageProps) {
     error: walletError,
   } = useTeamWalletQuery(teamId)
 
+  const {
+    data: transactionsData,
+    isLoading: isTransactionsLoading,
+    error: transactionsError,
+  } = useWalletTransactionsQuery({
+    teamId,
+    params: {
+      page: currentPage,
+      limit: pageSize,
+      search: searchQuery || undefined,
+    },
+  })
+
   useEffect(() => {
     if (walletError) {
       console.error('[TeamWalletPage] Failed to fetch team wallet balance', walletError)
     }
   }, [walletError])
 
+  useEffect(() => {
+    if (transactionsError) {
+      console.error('[TeamWalletPage] Failed to fetch transactions', transactionsError)
+    }
+  }, [transactionsError])
+
   const walletBalance = teamWallet?.data.walletBalance ?? 0
-  const chargeSessions: ChargeSession[] = chargeSessionsMock
+  const chargeSessions = transactionsData?.data.items ?? []
   const chargeCards: ChargeCard[] = chargeCardsMock
 
   return (

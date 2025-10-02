@@ -5,28 +5,28 @@ import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
 import { TeamHeader } from '@/app/[locale]/(back-office)/team/_components/team-header'
-import { CoinSolid } from '@/components/icons'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { ChevronLeft, Download, Smartphone } from 'lucide-react'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  RadioGroup,
+  RadioGroupItem,
+} from '@ui'
+import { ChevronLeft, Smartphone } from 'lucide-react'
 
-import {
-  type TopUpPresetAmount,
-  type TopUpTransactionGroup,
-} from '../../../_schemas/top-up.schema'
-import {
-  topUpPresetAmountsMock,
-  topUpTransactionsMock,
-} from '../../../mock/top-up.mock'
+import { TopUpTransaction } from '../../../_components/team-wallet/top-up-transaction-list'
+
+import { type TopUpPresetAmount } from '../../../_schemas/top-up.schema'
+import { topUpPresetAmountsMock } from '../../../mock/top-up.mock'
 
 interface TopUpPageProps {
   teamId: string
   locale: string
   presetAmounts?: TopUpPresetAmount[]
-  transactions?: TopUpTransactionGroup[]
 }
 
 const MIN_TOP_UP_AMOUNT = 300
@@ -36,7 +36,6 @@ export function TopUpPage({
   teamId,
   locale,
   presetAmounts = topUpPresetAmountsMock,
-  transactions = topUpTransactionsMock,
 }: TopUpPageProps) {
   const router = useRouter()
 
@@ -104,53 +103,7 @@ export function TopUpPage({
                     </RadioGroup>
                   </CardContent>
                 </Card>
-                <Card className="border-none shadow-none">
-                  <div className="flex items-center justify-between px-6 pt-5">
-                    <h3 className="text-lg font-semibold">Transaction</h3>
-                  </div>
-                  <CardContent className="pb-6 pt-2">
-                    <div className="space-y-6">
-                      {transactions.map((group) => (
-                        <div key={group.date} className="space-y-3">
-                          <div className="px-1 text-xs text-muted-foreground">{group.date}</div>
-                          <div className="space-y-3">
-                            {group.items.map((tx) => (
-                              <div
-                                key={tx.id}
-                                className="flex items-center justify-between gap-4 rounded-xl border-none bg-muted/50 p-4"
-                              >
-                                <div className="flex items-start gap-3">
-                                  <div className="mt-0.5 grid h-7 w-7 place-items-center rounded-full bg-muted">
-                                    <CoinSolid className="size-4" />
-                                  </div>
-                                  <div>
-                                    <div className="font-medium">{tx.title}</div>
-                                    <div className="mt-8 flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
-                                      <span>{tx.datetime}</span>
-                                      <span className="hidden sm:inline">|</span>
-                                      <span>ID: {tx.id}</span>
-                                      <span className="hidden sm:inline">|</span>
-                                      <span>{tx.channel}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="flex shrink-0 flex-col items-end gap-2">
-                                  <div className="text-right font-semibold text-emerald-600">
-                                    +{tx.amount.toLocaleString('th-TH')} ฿
-                                  </div>
-                                  <Button variant={'darkwhite'} size={'sm'} className="rounded-full text-xs">
-                                    <Download className="mr-2 h-4 w-4 text-xs" />
-                                    ดาวน์โหลดใบเสร็จ
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <TopUpTransaction teamId={teamId} />
               </section>
               <aside className="px-10 py-10 lg:col-span-5">
                 <div className="sticky top-20 space-y-4">
@@ -194,7 +147,11 @@ export function TopUpPage({
                         })}
                       </div>
 
-                      <Button className="h-11 w-full" disabled={disableContinue} onClick={handleContinue}>
+                      <Button
+                        className="h-11 w-full"
+                        disabled={disableContinue}
+                        onClick={handleContinue}
+                      >
                         Continue
                       </Button>
                       <p className="text-center text-xs text-muted-foreground">

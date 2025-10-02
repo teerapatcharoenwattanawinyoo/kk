@@ -1,7 +1,7 @@
 'use client'
 
 import { TopUpCardIcon } from '@/components/icons'
-import { Button } from '@/components/ui/button'
+import { Button } from '@ui'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 

@@ -149,27 +149,25 @@
 }
 
 .dark {
-  --background: oklch(0.2408 0.0115 278.0097);
-  --foreground: oklch(0.9851 0 0);
-  --oc-muted-background: oklch(
-    24% 0 0
-  ); /* match sidebar family (neutral), a touch lighter than --sidebar (L~20.5%) */
+  /* --- OC variables first --- */
+  --oc-muted-background: oklch(24% 0 0);
   --oc-sidebar: oklch(76.3%, 10.75%, 260.921%);
   --oc-title: oklch(76.838% 0.03698 264.354);
   --oc-title-secondary: oklch(92.876% 0.01272 255.643);
   --oc-neutral: oklch(76.993% 0.00009 271.152);
+  --oc-warning: oklch(72% 0.17 82);
+  --oc-warning-soft: oklch(70% 0.155 82.24 / 0.1);
+  --oc-construction: oklch(65% 0.18 48.56);
+  --oc-construction-soft: oklch(30% 0.04 58.82);
+
+  /* --- General tokens --- */
+  --background: oklch(0.2408 0.0115 278.0097);
+  --foreground: oklch(0.9851 0 0);
   --card: oklch(0.2046 0 0);
   --card-foreground: oklch(0.9851 0 0);
   --success: oklch(74.6% 0.231 143.49);
   --success-dark: oklch(74% 0.12 174.39);
   --success-soft: oklch(26.115% 0.02908 142.814);
-  --oc-warning: oklch(72% 0.17 82); /* main: amber ชัด อ่านง่ายบนพื้น dark */
-  --oc-warning-soft: oklch(
-    70% 0.155 82.24 / 0.1
-  ); /* soft: พื้นหลัง/outline บน dark แบบละมุน ไม่แทงตา */
-  --oc-construction: oklch(65% 0.18 48.56);
-  --oc-construction-soft: oklch(30% 0.04 58.82);
-
   --popover: oklch(0.2046 0 0);
   --popover-foreground: oklch(0.9851 0 0);
   --primary: oklch(57.104% 0.23494 264.535);
@@ -201,6 +199,7 @@
   --sidebar-accent-foreground: oklch(0.9851 0 0);
   --sidebar-border: oklch(1 0 0);
   --sidebar-ring: oklch(0.5555 0 0);
+
   --font-sans: Kanit, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
